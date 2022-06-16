@@ -1,13 +1,13 @@
 export default {
   name: "begin",
   needChar: false,
-  async execute(message, args, prisma, config, player) {
+  async execute(message, args, prisma, config, player, functions) {
     if (player) return message.reply("You already have a character");
 
     const auth = message.author;
 
     // Create new user in database
-    const newPlayer = await prisma.player.create({
+    await prisma.player.create({
       data: {
         discordId: auth.id,
         username: auth.username,
@@ -17,16 +17,13 @@ export default {
           size: 128,
           format: "png",
         }),
-        exploration: {
-          create: {
-            areaId: 1,
-          },
-        },
       },
     });
 
-    message.reply(
-      `Character created successfully! Open your profile with \`-profile\``
-    );
+    functions.sendEmbed(message, {
+      color: config.botColor,
+      description:
+        "Welcome to **Tower**!\nIn this game you progress and become overpowered while slowly climbing the tower.\nCheck out your profile with `-profile`.",
+    });
   },
 };

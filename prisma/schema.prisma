@@ -12,6 +12,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Server {
+  id            Int       @id @default(autoincrement())
+  serverId      String    @unique
+  prefix        String    @default("-")
+}
+
 model Player {
   // Info things
   id            Int       @id @default(autoincrement())
@@ -34,6 +40,7 @@ model Inventory {
   playerId      Int
   itemId        Int
   quantity      Int
+  equipslot     String?
   equipped      Boolean   @default(false)
 }
 

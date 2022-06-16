@@ -3,6 +3,7 @@ import { Client, Intents } from "discord.js";
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
 import fs from "fs";
+import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 import * as config from "./config.js";
@@ -21,20 +22,52 @@ const client = new Client({
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 
-const commandFiles = fs
-  .readdirSync("./src/commands")
-  .filter((file) => file.endsWith(".js"));
+// Main functions object
+let functions = new Object();
+
+// Collect commands
+let commandFiles = [];
+function throughDirectory(directory, array) {
+  fs.readdirSync(directory).forEach((file) => {
+    const absolute = path.join(directory, file);
+    if (fs.statSync(absolute).isDirectory())
+      return throughDirectory(absolute, array);
+    else return array.push(absolute);
+  });
+}
+throughDirectory("./src/commands", commandFiles);
 
 for (const file of commandFiles) {
-  const { default: command } = await import(`./commands/${file}`);
+  const { default: command } = await import(`../${file}`);
   client.commands.set(command.name, command);
 }
 
+// Collect functions
+let functionFiles = [];
+throughDirectory("./src/functions", functionFiles);
+
+for (const file of functionFiles) {
+  const { default: gameFunction } = await import(`../${file}`);
+  functions = { ...functions, ...gameFunction };
+}
+
+// On message sent
 client.on("messageCreate", async (message) => {
-  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
+  // Create or fetch server in database
+  let server = await prisma.server.findUnique({
+    where: { serverId: message.guild.id },
+  });
+
+  if (!server) {
+    server = await prisma.server.create({
+      data: { serverId: message.guild.id },
+    });
+  }
+
+  if (!message.content.startsWith(server.prefix) || message.author.bot) return;
 
   // Create command and arguments
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/);
+  const args = message.content.slice(server.prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 
   // Check for aliases
@@ -75,7 +108,7 @@ client.on("messageCreate", async (message) => {
 
   // Make object null if no player data
   if (playerData) {
-    var player = { ...playerData, ...config.player, prisma };
+    var player = { ...playerData, ...functions.player, prisma };
   } else {
     var player = null;
   }
@@ -93,7 +126,15 @@ client.on("messageCreate", async (message) => {
 
   // Try to run the command
   try {
-    await command.execute(message, args, prisma, config, player);
+    await command.execute(
+      message,
+      args,
+      prisma,
+      config,
+      player,
+      functions,
+      server
+    );
   } catch (error) {
     console.error(error);
   }
@@ -105,7 +146,7 @@ client.on("ready", () => {
     type: "WATCHING",
   });
 
-  console.log("> Shinbuo has logged in.");
+  console.log(`> ${client.user.username} has logged in.`);
 });
 
 client.login(process.env.BOT_TOKEN);
