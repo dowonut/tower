@@ -1,7 +1,10 @@
 export default {
   name: "setprefix",
+  description: "Change the command prefix for your server.",
+  category: "Settings",
+  arguments: "<new prefix>",
   aliases: ["sp"],
-  async execute(message, args, prisma, config, player, functions, server) {
+  async execute(message, args, prisma, config, player, game, server) {
     const prefix = args[0];
 
     if (!prefix)
@@ -10,7 +13,9 @@ export default {
       );
 
     if (prefix.length > 10)
-      return message.channel.send("Prefix can't be longer than 10 letters.");
+      return message.channel.send(
+        ":x: Prefix can't be longer than 10 letters."
+      );
 
     server = await prisma.server.update({
       where: { serverId: server.serverId },

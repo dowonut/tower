@@ -22,8 +22,8 @@ const client = new Client({
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 
-// Main functions object
-let functions = new Object();
+// Main game object
+let game = new Object();
 
 // Collect commands
 let commandFiles = [];
@@ -48,7 +48,7 @@ throughDirectory("./src/functions", functionFiles);
 
 for (const file of functionFiles) {
   const { default: gameFunction } = await import(`../${file}`);
-  functions = { ...functions, ...gameFunction };
+  game = { ...game, ...gameFunction };
 }
 
 // On message sent
@@ -93,7 +93,7 @@ client.on("messageCreate", async (message) => {
   const authorPerms = message.channel.permissionsFor(message.author);
   if (command.permissions) {
     if (!authorPerms || !authorPerms.has(command.permissions)) {
-      return message.channel.send("You are not worthy of this command.");
+      return message.channel.send(":x: You are not worthy of this command.");
     }
   }
 
@@ -103,12 +103,31 @@ client.on("messageCreate", async (message) => {
 
   // Check if user has player character
   if (command.needChar !== false && !playerData) {
-    return message.reply(`Get started with \`-begin\``);
+    return message.channel.send(
+      `**${message.author.username}**, get started with \`-begin\``
+    );
   }
 
   // Make object null if no player data
   if (playerData) {
-    var player = { ...playerData, ...functions.player, prisma };
+    var player = { ...playerData, ...game.player, prisma };
+
+    // Check if user is in combat
+    if (player.inCombat == false && command.useInCombatOnly == true) {
+      return message.channel.send(
+        `:x: **${player.username}**, this command can only be used in combat.`
+      );
+    }
+
+    if (
+      player.inCombat == true &&
+      command.useInCombat !== true &&
+      command.useInCombatOnly !== true
+    ) {
+      return message.channel.send(
+        `:x: **${player.username}**, this command can't be used while in combat.`
+      );
+    }
   } else {
     var player = null;
   }
@@ -117,7 +136,9 @@ client.on("messageCreate", async (message) => {
   if (timestamps.has(message.author.id)) {
     const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
     if (now < expirationTime) {
-      return message.channel.send("Wait before using this command again.");
+      return message.channel.send(
+        ":hourglass_flowing_sand: Wait before using this command again."
+      );
     }
   }
 
@@ -126,15 +147,7 @@ client.on("messageCreate", async (message) => {
 
   // Try to run the command
   try {
-    await command.execute(
-      message,
-      args,
-      prisma,
-      config,
-      player,
-      functions,
-      server
-    );
+    await command.execute(message, args, prisma, config, player, game, server);
   } catch (error) {
     console.error(error);
   }

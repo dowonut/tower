@@ -1,3 +1,5 @@
+import enemies from "../game/enemies.js";
+
 export default {
   player: {
     // Delete player
@@ -13,6 +15,17 @@ export default {
         where: { id: this.id },
         data: update,
       });
+    },
+
+    getCurrentEnemy: async function () {
+      const enemyInfo = await this.prisma.enemy.findUnique({
+        where: { id: this.fighting },
+      });
+      const enemyType = enemies[enemyInfo.enemyType];
+
+      const enemy = { ...enemyInfo, ...enemyType };
+
+      return enemy;
     },
   },
 };

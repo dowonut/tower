@@ -1,14 +1,19 @@
 export default {
   name: "profile",
+  description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
+  useInCombat: true,
   async execute(message, args, prisma, config, player, game) {
     if (args[0] && args[0].startsWith("<@")) {
       const user = message.mentions.users.first();
 
       if (user) {
-        player = await player.prisma.player.findUnique({
+        const playerInfo = await player.prisma.player.findUnique({
           where: { discordId: user.id },
         });
+
+        if (playerInfo) player = playerInfo;
+        else return message.channel.send(":x: This user has no character.");
       }
     }
 
@@ -21,15 +26,13 @@ export default {
       },
       //thumbnail: { url: player.pfp },
       description: `
-      Level: **\`${player.level}\`**
-      XP: **\`${player.xp} / ${player.xp}\`** ${config.emojis.xp}
+Level: **\`${player.level}\`**
+XP: **\`${player.xp} / ${player.xp}\`** ${config.emojis.xp}
 
-      Marks: **\`${player.marks}\`** ${config.emojis.mark}
+Marks: **\`${player.marks}\`** ${config.emojis.mark}
       `,
     };
 
     game.sendEmbed(message, embed);
-
-    game;
   },
 };

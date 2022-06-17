@@ -32,6 +32,9 @@ model Player {
   level         Int      @default(0)
   xp            Int      @default(0)
   marks         Int      @default(0) 
+  // Misc
+  inCombat      Boolean  @default(false)
+  fighting      Int?
 }
 
 model Inventory {
@@ -54,8 +57,9 @@ model Item {
 
 model Enemy {
   id            Int       @id @default(autoincrement())
-  enemyType     Int
+  enemyType     String
   health        Int
+  fighting      String?
 }
 
 model enemyType {
