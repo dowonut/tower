@@ -17,6 +17,16 @@ export default {
       });
     },
 
+    enterCombat: async function (enemy) {
+      // Update player to be in combat
+      this.update({ inCombat: true, fighting: enemy.id });
+    },
+
+    exitCombat: async function () {
+      // Update player to be in combat
+      this.update({ fighting: null, inCombat: false });
+    },
+
     getCurrentEnemy: async function () {
       const enemyInfo = await this.prisma.enemy.findUnique({
         where: { id: this.fighting },
@@ -26,6 +36,13 @@ export default {
       const enemy = { ...enemyInfo, ...enemyType };
 
       return enemy;
+    },
+
+    updateEnemy: async function (update) {
+      return await this.prisma.enemy.update({
+        where: { id: this.fighting },
+        data: update,
+      });
     },
   },
 };

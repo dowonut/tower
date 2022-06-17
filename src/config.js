@@ -5,10 +5,8 @@ export const embedColor = "#2f3136"; //"#191919";
 export const green = "#C0EDA6";
 export const red = "#FD5D5D";
 export const purple = "#9600ff";
-export const banner =
-  "https://media.discordapp.net/attachments/788544126526160969/891309463867367424/ascendant_banner.png";
-export const botIcon =
-  "https://cdn.discordapp.com/avatars/855569016810373140/94bb34839ff721a778973f1cb4818582.png?size=4096";
+export const botBanner = "https://i.imgur.com/RwqxsiL.png";
+export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
 export const emojis = {
   mark: "<:mark:986634284355969026>",

@@ -3,5 +3,24 @@ export default {
   aliases: ["s"],
   description: "Show your current status during combat.",
   category: "Combat",
-  async execute(message, args, prisma, config, player, game, server) {},
+  useInCombatOnly: true,
+  async execute(message, args, prisma, config, player, game, server) {
+    const enemy = await player.getCurrentEnemy();
+
+    const embed = {
+      color: config.botColor,
+      author: {
+        //icon_url: player.pfp,
+        name: `${player.username} (fighting ${enemy.name})`,
+      },
+      thumbnail: {
+        url: player.pfp,
+      },
+      description: `
+:drop_of_blood: Health: **\`${player.health} / ${player.maxHealth}\`**
+      `,
+    };
+
+    game.sendEmbed(message, embed);
+  },
 };

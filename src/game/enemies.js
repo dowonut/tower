@@ -6,5 +6,6 @@ export default {
     defence: 1,
     attribute: "",
     weak: "",
+    image: "https://imgur.com/HV0tsn9.png",
   },
 };

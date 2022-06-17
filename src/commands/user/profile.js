@@ -17,20 +17,27 @@ export default {
       }
     }
 
+    let description = `
+    Level: **\`${player.level}\`**
+    XP: **\`${player.xp} / ${player.xp}\`** ${config.emojis.xp}
+    
+    Marks: **\`${player.marks}\`** ${config.emojis.mark}
+          `;
+
+    if (player.inCombat == true)
+      description += `\n:dagger: **Currently in combat.**`;
+
     const embed = {
       color: config.botColor,
       //title: player.username,
       author: {
-        name: player.username,
-        icon_url: player.pfp,
+        name: player.username + "#" + player.discriminator,
+      },
+      thumbnail: {
+        url: player.pfp,
       },
       //thumbnail: { url: player.pfp },
-      description: `
-Level: **\`${player.level}\`**
-XP: **\`${player.xp} / ${player.xp}\`** ${config.emojis.xp}
-
-Marks: **\`${player.marks}\`** ${config.emojis.mark}
-      `,
+      description: description,
     };
 
     game.sendEmbed(message, embed);

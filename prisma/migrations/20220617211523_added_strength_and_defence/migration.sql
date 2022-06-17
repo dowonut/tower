@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Player" ADD COLUMN     "defence" INTEGER NOT NULL DEFAULT 1,
+ADD COLUMN     "strength" INTEGER NOT NULL DEFAULT 1;

@@ -4,6 +4,7 @@ import path from "path";
 export default {
   name: "help",
   aliases: ["h"],
+  useInCombat: true,
   ignoreInHelp: true,
   async execute(message, args, prisma, config, player, game, server) {
     let commands = [];
@@ -59,9 +60,9 @@ export default {
 
     const embed = {
       color: config.botColor,
-      author: {
-        icon_url: player.pfp,
-        name: "Game Commands",
+      title: "Game Commands",
+      thumbnail: {
+        url: config.botIcon,
       },
       description: description,
     };

@@ -38,8 +38,7 @@ What do you want to do?
       },
     });
 
-    // Update player to be in combat
-    player.update({ inCombat: true, fighting: enemy.id });
+    player.enterCombat(enemy);
 
     console.log(enemy);
   },

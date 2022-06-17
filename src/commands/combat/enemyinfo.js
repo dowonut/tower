@@ -9,9 +9,12 @@ export default {
 
     const embed = {
       color: config.botColor,
+      thumbnail: {
+        url: enemy.image,
+      },
       author: {
         icon_url: player.pfp,
-        name: enemy.name + ` fighting ` + player.username,
+        name: enemy.name + ` (fighting ` + player.username + `)`,
       },
       description: `
 :drop_of_blood: Health: **\`${enemy.health} / ${enemy.maxHealth}\`**

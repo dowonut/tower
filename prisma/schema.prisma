@@ -32,6 +32,11 @@ model Player {
   level         Int      @default(0)
   xp            Int      @default(0)
   marks         Int      @default(0) 
+  health        Int      @default(10)
+  maxHealth     Int      @default(10)
+  // Stats
+  strength      Int      @default(1)
+  defence       Int      @default(1)
   // Misc
   inCombat      Boolean  @default(false)
   fighting      Int?

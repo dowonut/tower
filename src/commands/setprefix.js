@@ -4,6 +4,7 @@ export default {
   category: "Settings",
   arguments: "<new prefix>",
   aliases: ["sp"],
+  permissions: ["ADMINISTRATOR"],
   async execute(message, args, prisma, config, player, game, server) {
     const prefix = args[0];
 
