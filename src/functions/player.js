@@ -26,7 +26,7 @@ export default {
 
     // Give item
     giveItem: async function (itemName, quantity) {
-      const item = items[itemName];
+      const item = items[itemName.toLowerCase()];
       const itemQuantity = quantity ? quantity : 1;
 
       const playerItem = await this.prisma.inventory.findMany({
@@ -56,13 +56,17 @@ export default {
 
     // Get item info
     getItem: async function (itemName) {
-      const itemRef = await this.prisma.inventory.findUnique({
-        where: { playerId: this.id, name: itemName },
+      const itemRef = await this.prisma.inventory.findMany({
+        where: {
+          playerId: this.id,
+          name: { equals: itemName, mode: "insensitive" },
+        },
       });
+      if (!itemRef[0]) return undefined;
 
-      const itemData = items[itemName];
+      const itemData = items[itemRef[0].name.toLowerCase()];
 
-      return { ...itemData, ...itemRef };
+      return { ...itemData, ...itemRef[0] };
     },
 
     // Get all items
@@ -73,7 +77,7 @@ export default {
 
       let itemArray = [];
       for (const playerItem of playerItems) {
-        const itemData = items[playerItem.name];
+        const itemData = items[playerItem.name.toLowerCase()];
         const item = { ...playerItem, ...itemData };
 
         itemArray.push(item);
@@ -131,7 +135,7 @@ export default {
           const quantity = game.random(lootInfo.dropMin, lootInfo.dropMax);
 
           this.giveItem(lootInfo.name, quantity);
-          const item = items[lootInfo.name];
+          const item = items[lootInfo.name.toLowerCase()];
           loots.push({ ...item, quantity });
         }
       }
