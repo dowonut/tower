@@ -23,8 +23,6 @@ export default {
       data: { prefix: prefix },
     });
 
-    console.log(server);
-
     message.channel.send(`Server prefix changed to \`${prefix}\``);
   },
 };

@@ -12,6 +12,7 @@ export const emojis = {
   mark: "<:mark:986634284355969026>",
   xp: "<:xp:987750164481597480>",
   staircase: "<:staircase:987744955067949126>",
+  plus: "<:plus:987810098183303208>",
 };
 
 // Choose random entry from array

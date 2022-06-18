@@ -62,7 +62,7 @@ model Item {
 
 model Enemy {
   id            Int       @id @default(autoincrement())
-  enemyType     String
+  name          String
   health        Int
   fighting      String?
 }

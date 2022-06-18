@@ -6,7 +6,6 @@ export default {
   category: "Character",
   async execute(message, args, prisma, config, player, game, server) {
     const items = await player.getItems();
-    console.log(items);
 
     let description = ``;
 

@@ -25,6 +25,5 @@ export default {
     };
 
     game.sendEmbed(message, embed);
-    console.log(enemy);
   },
 };

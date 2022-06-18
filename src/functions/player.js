@@ -1,6 +1,8 @@
 import enemies from "../game/enemies.js";
 import items from "../game/items.js";
 
+import * as config from "../config.js";
+
 export default {
   player: {
     // Delete player
@@ -27,13 +29,29 @@ export default {
       const item = items[itemName];
       const itemQuantity = quantity ? quantity : 1;
 
-      return await this.prisma.inventory.create({
-        data: {
-          playerId: this.id,
-          name: item.name,
-          quantity: itemQuantity,
-        },
+      const playerItem = await this.prisma.inventory.findMany({
+        where: { playerId: this.id, name: itemName },
       });
+
+      let newItem;
+      if (playerItem[0]) {
+        newItem = await this.prisma.inventory.updateMany({
+          where: { playerId: this.id, name: itemName },
+          data: {
+            quantity: { increment: quantity },
+          },
+        });
+      } else {
+        newItem = await this.prisma.inventory.create({
+          data: {
+            playerId: this.id,
+            name: item.name,
+            quantity: itemQuantity,
+          },
+        });
+      }
+
+      return newItem;
     },
 
     // Get item info
@@ -81,7 +99,7 @@ export default {
       const enemyInfo = await this.prisma.enemy.findUnique({
         where: { id: this.fighting },
       });
-      const enemyType = enemies[enemyInfo.enemyType];
+      const enemyType = enemies[enemyInfo.name];
 
       const enemy = { ...enemyInfo, ...enemyType };
 
@@ -104,18 +122,32 @@ export default {
     },
 
     // Give loot from enemy
-    enemyLoot: async function (enemy, game) {
-      for (const [loot, lootInfo] of Object.entries(enemy.loot)) {
-        console.log(lootInfo);
+    enemyLoot: async function (enemy, game, message) {
+      const loots = [];
 
+      for (const [loot, lootInfo] of Object.entries(enemy.loot)) {
         const chance = Math.random() * 100;
         if (chance < lootInfo.dropChance) {
           const quantity = game.random(lootInfo.dropMin, lootInfo.dropMax);
 
           this.giveItem(lootInfo.name, quantity);
-          console.log(`gave ${quantity} ${lootInfo.name} to ${this.username}`);
+          const item = items[lootInfo.name];
+          loots.push({ ...item, quantity });
         }
       }
+
+      let lootList = ``;
+      for (const item of loots) {
+        lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
+      }
+
+      const embed = {
+        description: lootList,
+      };
+
+      // Send death message
+      game.reply(message, `you killed **${enemy.name}**.`);
+      game.fastEmbed(message, this, embed, `Loot from ${enemy.name}`);
     },
   },
 };

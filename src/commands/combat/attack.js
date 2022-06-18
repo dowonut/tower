@@ -76,6 +76,7 @@ async function performAttack(
   server
 ) {
   let enemy = await player.getCurrentEnemy();
+
   const attack = attacks[args[0].toLowerCase()];
 
   const damage = attack.damage(player.strength);
@@ -92,14 +93,11 @@ async function performAttack(
 
   // Run when enemy is dead
   if (enemyData.health <= 0) {
-    // Send death message
-    game.reply(message, `you killed **${enemy.name}**.`);
-
     // Remove enemy from database
     player.killEnemy(enemy);
 
     // Give loot to player
-    player.enemyLoot(enemy, game);
+    player.enemyLoot(enemy, game, message);
 
     // Exit out of combat
     player.exitCombat();

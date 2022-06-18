@@ -1,4 +1,5 @@
 import enemies from "../game/enemies.js";
+import floors from "../game/floors.js";
 
 export default {
   startEnemyEncounter: async (
@@ -10,12 +11,20 @@ export default {
     game,
     server
   ) => {
-    // Choose random enemy
-    const enemyNames = Object.keys(enemies);
-    const selectEnemy =
-      enemyNames[Math.floor(Math.random() * enemyNames.length)];
+    // Choose random enemy from floor
 
-    const enemyData = enemies[selectEnemy];
+    // Get all enemies on the current floor
+    const floorEnemies = floors[player.floor - 1].enemies;
+
+    // Get names and weights from enemies
+    const enemyNames = floorEnemies.map((enemy) => enemy.name);
+    const enemyWeights = floorEnemies.map((enemy) => enemy.weight);
+
+    // Select enemy randomly based on weights
+    const chosenEnemy = game.weightedRandom(enemyNames, enemyWeights);
+
+    // Get data from chosen enemy
+    const enemyData = enemies[chosenEnemy.item];
 
     // Create embed for start of encounter
     const embed = {
@@ -40,7 +49,7 @@ What do you want to do?
     // Create enemy in database
     const enemy = await prisma.enemy.create({
       data: {
-        enemyType: enemyData.name,
+        name: enemyData.name,
         health: enemyData.maxHealth,
         fighting: player.discordId,
       },
