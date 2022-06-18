@@ -10,16 +10,24 @@ export default {
     game,
     server
   ) => {
+    // Choose random enemy
+    const enemyNames = Object.keys(enemies);
+    const selectEnemy =
+      enemyNames[Math.floor(Math.random() * enemyNames.length)];
+
+    const enemyData = enemies[selectEnemy];
+
     // Create embed for start of encounter
     const embed = {
+      thumbnail: {
+        url: enemyData.image,
+      },
       color: config.botColor,
       author: {
-        name: `An enemy has appeared!`,
+        name: `${enemyData.name} has appeared!`,
         icon_url: player.pfp,
       },
       description: `
-      
-**\`[ Slime | 5 HP ]\`**
       
 What do you want to do?
 \`${server.prefix}enemyinfo | ${server.prefix}attack | ${server.prefix}magic | ${server.prefix}flee\`
@@ -32,14 +40,12 @@ What do you want to do?
     // Create enemy in database
     const enemy = await prisma.enemy.create({
       data: {
-        enemyType: enemies.Slime.name,
-        health: enemies.Slime.maxHealth,
+        enemyType: enemyData.name,
+        health: enemyData.maxHealth,
         fighting: player.discordId,
       },
     });
 
     player.enterCombat(enemy);
-
-    console.log(enemy);
   },
 };

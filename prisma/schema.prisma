@@ -46,7 +46,7 @@ model Inventory {
   id            Int       @id @default(autoincrement())
   player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId      Int
-  itemId        Int
+  name          String
   quantity      Int
   equipslot     String?
   equipped      Boolean   @default(false)

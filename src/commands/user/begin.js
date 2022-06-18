@@ -11,7 +11,7 @@ export default {
       );
 
     // Create new user in database
-    player = await prisma.player.create({
+    const playerData = await prisma.player.create({
       data: {
         discordId: auth.id,
         username: auth.username,
@@ -23,6 +23,11 @@ export default {
         }),
       },
     });
+
+    player = { ...playerData, ...game.player, prisma };
+
+    // Give apple
+    player.giveItem("Apple");
 
     game.sendEmbed(message, {
       thumbnail: { url: player.pfp },

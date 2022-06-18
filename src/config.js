@@ -10,7 +10,8 @@ export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
 export const emojis = {
   mark: "<:mark:986634284355969026>",
-  xp: "<:xp:986631785058304001>",
+  xp: "<:xp:987750164481597480>",
+  staircase: "<:staircase:987744955067949126>",
 };
 
 // Choose random entry from array
@@ -32,13 +33,4 @@ export function description(area) {
   }
 
   return description;
-}
-
-// Get enemy from database
-export async function getEnemy(enemyName, prisma) {
-  const enemy = await prisma.enemyType.findMany({
-    where: { name: { equals: enemyName, mode: "insensitive" } },
-  });
-
-  return enemy[0];
 }

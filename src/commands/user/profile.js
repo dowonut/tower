@@ -2,6 +2,7 @@ export default {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
+  category: "Character",
   useInCombat: true,
   async execute(message, args, prisma, config, player, game) {
     if (args[0] && args[0].startsWith("<@")) {
@@ -18,10 +19,14 @@ export default {
     }
 
     let description = `
-    Level: **\`${player.level}\`**
-    XP: **\`${player.xp} / ${player.xp}\`** ${config.emojis.xp}
+Level: **\`${player.level}\`**
+${config.emojis.xp} **\`${player.xp} / ${player.xp}\`**
+
+:drop_of_blood: **\`${player.health} / ${player.maxHealth}\`**
     
-    Marks: **\`${player.marks}\`** ${config.emojis.mark}
+${config.emojis.mark} Marks: **\`${player.marks}\`**
+
+${config.emojis.staircase} Current Floor: **\`${player.floor}\`**
           `;
 
     if (player.inCombat == true)

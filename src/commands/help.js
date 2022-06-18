@@ -28,6 +28,9 @@ export default {
       General: `
 **General**
         `,
+      Character: `
+**Character**
+        `,
       Combat: `
 **Combat**
         `,

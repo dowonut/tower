@@ -139,7 +139,7 @@ client.on("messageCreate", async (message) => {
     const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
     if (now < expirationTime) {
       return message.channel.send(
-        ":hourglass_flowing_sand: Wait before using this command again."
+        `:hourglass_flowing_sand: **${message.author.username}**, wait before using this command again.`
       );
     }
   }

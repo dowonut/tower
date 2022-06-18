@@ -83,15 +83,25 @@ async function performAttack(
 
   game.reply(
     message,
-    `you deal **${damage}** damage to the **${enemy.name}** (${remainingHealth}/${enemy.maxHealth} HP).`
+    `you deal **${damage}** damage to **${enemy.name}** (${remainingHealth}/${enemy.maxHealth} HP).`
   );
 
   const enemyData = await player.updateEnemy({
     health: { increment: -damage },
   });
 
+  // Run when enemy is dead
   if (enemyData.health <= 0) {
-    game.reply(message, `you killed the **${enemy.name}**.`);
+    // Send death message
+    game.reply(message, `you killed **${enemy.name}**.`);
+
+    // Remove enemy from database
+    player.killEnemy(enemy);
+
+    // Give loot to player
+    player.enemyLoot(enemy, game);
+
+    // Exit out of combat
     player.exitCombat();
   }
 }
