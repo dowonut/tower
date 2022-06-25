@@ -24,7 +24,7 @@ export default {
     const chosenEnemy = game.weightedRandom(enemyNames, enemyWeights);
 
     // Get data from chosen enemy
-    const enemyData = enemies[chosenEnemy.item];
+    const enemyData = enemies[chosenEnemy.item.toLowerCase()];
 
     // Create embed for start of encounter
     const embed = {

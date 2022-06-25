@@ -38,9 +38,15 @@ export default {
         newItem = await this.prisma.inventory.updateMany({
           where: { playerId: this.id, name: itemName },
           data: {
-            quantity: { increment: quantity },
+            quantity: { increment: itemQuantity },
           },
         });
+
+        if (playerItem[0].quantity + itemQuantity <= 0) {
+          return await this.prisma.inventory.deleteMany({
+            where: { playerId: this.id, name: itemName },
+          });
+        }
       } else {
         newItem = await this.prisma.inventory.create({
           data: {
@@ -103,7 +109,7 @@ export default {
       const enemyInfo = await this.prisma.enemy.findUnique({
         where: { id: this.fighting },
       });
-      const enemyType = enemies[enemyInfo.name];
+      const enemyType = enemies[enemyInfo.name.toLowerCase()];
 
       const enemy = { ...enemyInfo, ...enemyType };
 

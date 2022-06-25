@@ -14,6 +14,9 @@ export const emojis = {
   xp: "<:xp:987750164481597480>",
   staircase: "<:staircase:987744955067949126>",
   plus: "<:plus:987810098183303208>",
+  health: ":drop_of_blood:",
+  defence: ":shield:",
+  strength: ":crossed_swords:",
 };
 
 // Choose random entry from array

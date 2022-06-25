@@ -21,13 +21,13 @@ export default {
       return strength + random(1, 6);
     },
   },
-  cum: {
-    name: "Cum",
-    type: "Fists",
-    description: "yeah",
-    damageInfo: "STR+100D50 bludgeoning",
-    damage: (strength) => {
-      return strength + random(100, 5000);
-    },
-  },
+  // cum: {
+  //   name: "Cum",
+  //   type: "Fists",
+  //   description: "yeah",
+  //   damageInfo: "STR+100D50 bludgeoning",
+  //   damage: (strength) => {
+  //     return strength + random(100, 5000);
+  //   },
+  // },
 };

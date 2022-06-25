@@ -8,6 +8,7 @@ export default {
   arguments: "<name of attack>",
   category: "Combat",
   useInCombatOnly: true,
+  cooldown: "2",
   async execute(message, args, prisma, config, player, game, server) {
     let attack;
 
@@ -58,7 +59,9 @@ Damage: \`${attack.damageInfo}\`\n`;
       icon_url: player.pfp,
       name: "Available Attacks",
     },
-    description: description,
+    description:
+      description +
+      `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
   };
 
   game.sendEmbed(message, embed);
@@ -81,15 +84,16 @@ async function performAttack(
 
   const damage = attack.damage(player.strength);
   const remainingHealth = enemy.health - damage < 0 ? 0 : enemy.health - damage;
-
-  game.reply(
-    message,
-    `you deal **${damage}** damage to **${enemy.name}** (${remainingHealth}/${enemy.maxHealth} HP).`
-  );
+  const enemyDamage = enemy.damage();
 
   const enemyData = await player.updateEnemy({
     health: { increment: -damage },
   });
+
+  game.reply(
+    message,
+    `you deal **\`${damage}\`** damage to **${enemy.name}** | :drop_of_blood:\`${remainingHealth}/${enemy.maxHealth}\``
+  );
 
   // Run when enemy is dead
   if (enemyData.health <= 0) {
@@ -100,6 +104,23 @@ async function performAttack(
     player.enemyLoot(enemy, game, message);
 
     // Exit out of combat
-    player.exitCombat();
+    return player.exitCombat();
+  }
+
+  const playerData = await player.update({
+    health: { increment: -enemyDamage },
+  });
+
+  game.reply(
+    message,
+    `you take **\`${enemyDamage}\`** damage from **${enemy.name}**! | :drop_of_blood:\`${playerData.health}/${player.maxHealth}\``
+  );
+
+  if (playerData.health <= 0) {
+    message.channel.send(
+      `:skull_crossbones: ${message.author} **you have died!** :skull_crossbones:\nYour character has been completely reset. Try not to die again.`
+    );
+
+    return player.erase();
   }
 }

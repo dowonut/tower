@@ -18,16 +18,19 @@ export default {
       }
     }
 
-    let description = `
-Level: **\`${player.level}\`**
-${config.emojis.xp} **\`${player.xp} / ${player.xp}\`**
+    const rawText = `
+NAME LEVEL
+NAME XP
 
-:drop_of_blood: **\`${player.health} / ${player.maxHealth}\`**
-    
-${config.emojis.mark} Marks: **\`${player.marks}\`**
+EMOJI NAME HEALTH
 
-${config.emojis.staircase} Current Floor: **\`${player.floor}\`**
-          `;
+EMOJI NAME STRENGTH
+EMOJI NAME DEFENCE
+
+EMOJI NAME MARKS
+EMOJI NAME FLOOR`;
+
+    let description = game.description(rawText, player, config);
 
     if (player.inCombat == true)
       description += `\n:dagger: **Currently in combat.**`;

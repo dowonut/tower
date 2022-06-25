@@ -22,8 +22,6 @@ export default {
 
     const newItem = await game.giveItem(userData, prisma, itemName, quantity);
 
-    console.log(newItem);
-
     message.channel.send(
       `Gave **${quantity}x ${newItem.name}** to **${user.username}**`
     );

@@ -1,11 +1,24 @@
+import randomF from "../functions/random.js";
+const random = randomF.random;
+
+class Enemy {
+  constructor(object) {
+    for (const [key, value] of Object.entries(object)) {
+      this[key] = value;
+    }
+
+    this.damage = () => {
+      return this.strength + random(1, 3);
+    };
+  }
+}
+
 export default {
-  Slime: {
+  slime: new Enemy({
     name: "Slime",
     maxHealth: 5,
     strength: 1,
     defence: 1,
-    attribute: "",
-    weak: "",
     image: "https://imgur.com/HV0tsn9.png",
     loot: {
       Slimeball: {
@@ -17,14 +30,12 @@ export default {
     },
     xpMin: 10,
     xpMax: 20,
-  },
-  Goblin: {
+  }),
+  goblin: new Enemy({
     name: "Goblin",
     maxHealth: 15,
     strength: 3,
     defence: 1,
-    attribute: "",
-    weak: "",
     image: "https://imgur.com/Fte78Qa.png",
     loot: {
       "Goblin Skin": {
@@ -36,14 +47,12 @@ export default {
     },
     xpMin: 15,
     xpMax: 25,
-  },
-  "The Demon Lord": {
+  }),
+  "the demon lord": new Enemy({
     name: "The Demon Lord",
     maxHealth: 10000,
     strength: 100,
     defence: 100,
-    attribute: "",
-    weak: "",
     image:
       "https://cdn4.iconfinder.com/data/icons/cute-funny-monster-characters/66/28-512.png",
     loot: {
@@ -56,5 +65,5 @@ export default {
     },
     xpMin: 1000,
     xpMax: 2000,
-  },
+  }),
 };

@@ -10,7 +10,7 @@ export default {
     let description = ``;
 
     for (const item of items) {
-      const quantity = item.quantity > 1 ? `**\`${item.quantity}\`** | ` : ``;
+      const quantity = item.quantity > 1 ? `**\`x${item.quantity}\`** | ` : ``;
 
       description += `**${item.name}** | ${quantity}${item.description}\n`;
     }
