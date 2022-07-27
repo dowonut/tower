@@ -121,6 +121,13 @@ client.on("messageCreate", async (message) => {
       );
     }
 
+    // check if user is allowed to attack in combat
+    if (player.canAttack == false && command.useInCombatOnly == true) {
+      return message.channel.send(
+        `:x: **${player.username}**, you can't do this right now.`
+      );
+    }
+
     if (
       player.inCombat == true &&
       command.useInCombat !== true &&

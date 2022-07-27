@@ -1,41 +1,40 @@
 class Item {
-  constructor(name, cat, desc, itemInfo, image, value, heal) {
-    this.name = name;
-    this.category = cat;
-    this.description = desc;
-    this.itemInfo = itemInfo;
-    this.image = image || null;
-    this.value = value || null;
-    this.health = heal || null;
+  constructor(object) {
+    for (const [key, value] of Object.entries(object)) {
+      this[key] = value;
+    }
 
-    if (this.category == "Food") this.description += ` Heals ${heal} HP.`;
+    if (this.category == "Food")
+      this.description += ` Heals ${this.health} HP.`;
   }
 }
 
 export default {
-  apple: new Item(
-    "Apple",
-    "Food",
-    "A tasty apple.",
-    "A tasty apple you found lying on the ground somewhere...",
-    "https://imgur.com/GdkgHAm.png",
-    null,
-    5
-  ),
-  slimeball: new Item(
-    "Slimeball",
-    "Crafting",
-    "A ball of slime, very round and slimy.",
-    "A concentrated ball of slime collected by killing Slimes.",
-    "https://imgur.com/LsZOZhU.png",
-    1
-  ),
-  "goblin skin": new Item(
-    "Goblin Skin",
-    "Crafting",
-    "Has a rought texture and an unpleasant smell.",
-    "A rough hide of skin collected by killing Goblins.",
-    "https://imgur.com/EQmCvy0.png",
-    3
-  ),
+  apple: new Item({
+    name: "Apple",
+    category: "Food",
+    description: "A tasty apple.",
+    info: "A tasty apple you found lying on the ground somewhere...",
+    image: "https://imgur.com/GdkgHAm.png",
+    health: 5,
+    canSell: false,
+  }),
+  slimeball: new Item({
+    name: "Slimeball",
+    category: "Crafting",
+    description: "A ball of slime, very round and slimy.",
+    info: "A concentrated ball of slime collected by killing Slimes.",
+    image: "https://imgur.com/LsZOZhU.png",
+    value: 1,
+    canSell: true,
+  }),
+  "goblin skin": new Item({
+    name: "Goblin Skin",
+    category: "Crafting",
+    description: "Has a rought texture and an unpleasant smell.",
+    info: "A rough hide of skin collected by killing Goblins.",
+    image: "https://imgur.com/EQmCvy0.png",
+    value: 3,
+    canSell: true,
+  }),
 };

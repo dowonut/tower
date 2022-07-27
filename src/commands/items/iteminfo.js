@@ -1,8 +1,9 @@
 export default {
   name: "iteminfo",
   aliases: ["ii"],
-  arguments: "<name of item>",
+  arguments: "<item name>",
   description: "Get detailed information about an item in your inventory.",
+  category: "Items",
   async execute(message, args, prisma, config, player, game, server) {
     if (!args[0]) return game.reply(message, "provide the name of an item.");
 
@@ -14,14 +15,14 @@ export default {
         `not a valid item. Check your items with \`${server.prefix}inventory\``
       );
 
-    let description = `${item.itemInfo}`;
+    let description = `${item.info}`;
 
     if (item.category == "Food") {
-      description += `\n\nCan be eaten to regain **\`${item.health}\`** :drop_of_blood:\n*\`${server.prefix}eat <name of food>\`*`;
+      description += `\n\nCan be eaten to regain \`${item.health}\` :drop_of_blood:`;
     }
 
     if (item.category == "Crafting")
-      description += `\n\nCan be sold to a vendor for **\`${item.value}\`** ${config.emojis.mark}\n*\`${server.prefix}sell <name of item> <quantity>\`*`;
+      description += `\n\nCan be sold to a vendor for \`${item.value}\` ${config.emojis.mark}`;
 
     const embed = {
       description,
@@ -34,5 +35,7 @@ export default {
       embed,
       `${item.name} ${item.quantity > 1 ? `(${item.quantity})` : ``}`
     );
+
+    player.unlockCommands(message, server, ["sell", "eat"]);
   },
 };

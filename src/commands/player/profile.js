@@ -2,12 +2,21 @@ export default {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
-  category: "Character",
+  category: "Player",
   useInCombat: true,
   async execute(message, args, prisma, config, player, game) {
+    // update user info if outdated
+    if (
+      player.username !== message.author.username ||
+      player.discriminator !== message.author.discriminator
+    ) {
+      await game.updateInfo(message.author, player);
+    }
+
     if (args[0] && args[0].startsWith("<@")) {
       const user = message.mentions.users.first();
 
+      // fetch player data when pinging
       if (user) {
         const playerInfo = await player.prisma.player.findUnique({
           where: { discordId: user.id },
@@ -18,6 +27,7 @@ export default {
       }
     }
 
+    // format profile embed
     const rawText = `
 NAME LEVEL
 NAME XP

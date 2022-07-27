@@ -48,7 +48,7 @@ export default {
             emoji = config.emojis.defence;
           }
         }
-        let variableText = `**\`${variable}\`**`;
+        let variableText = `\`${variable}\``;
 
         if (useName && useEmoji) {
           description += emoji + " " + name + variableText;

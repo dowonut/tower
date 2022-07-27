@@ -17,6 +17,17 @@ export const emojis = {
   health: ":drop_of_blood:",
   defence: ":shield:",
   strength: ":crossed_swords:",
+  damage: {
+    fire: "<:fire_damage:988863829146468352>",
+    water: "<:water_damage:988862206651301898>",
+    air: "<:air_damage:988870803963666482>",
+    earth: "<:earth_damage:988870754085003365>",
+    void: "<:void_damage:988923541799989288>",
+    light: "<:light_damage:988923540571033640>",
+    bludgeoning: "<:bludgeoning_damage:988918961313828864>",
+    piercing: "<:piercing_damage:988918962559524974>",
+    slashing: "<:slashing_damage:988918963595542589>",
+  },
 };
 
 // Choose random entry from array

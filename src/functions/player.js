@@ -1,5 +1,6 @@
 import enemies from "../game/enemies.js";
 import items from "../game/items.js";
+import attacks from "../game/attacks.js";
 
 import * as config from "../config.js";
 
@@ -30,13 +31,19 @@ export default {
       const itemQuantity = quantity ? quantity : 1;
 
       const playerItem = await this.prisma.inventory.findMany({
-        where: { playerId: this.id, name: itemName },
+        where: {
+          playerId: this.id,
+          name: { equals: itemName, mode: "insensitive" },
+        },
       });
 
       let newItem;
       if (playerItem[0]) {
         newItem = await this.prisma.inventory.updateMany({
-          where: { playerId: this.id, name: itemName },
+          where: {
+            playerId: this.id,
+            name: { equals: itemName, mode: "insensitive" },
+          },
           data: {
             quantity: { increment: itemQuantity },
           },
@@ -44,7 +51,10 @@ export default {
 
         if (playerItem[0].quantity + itemQuantity <= 0) {
           return await this.prisma.inventory.deleteMany({
-            where: { playerId: this.id, name: itemName },
+            where: {
+              playerId: this.id,
+              name: { equals: itemName, mode: "insensitive" },
+            },
           });
         }
       } else {
@@ -58,6 +68,44 @@ export default {
       }
 
       return newItem;
+    },
+
+    unlockCommand: async function (message, server, commandName) {
+      if (this.unlockedCommands.includes(commandName)) return;
+
+      await this.prisma.player.update({
+        where: { id: this.id },
+        data: {
+          unlockedCommands: { push: commandName },
+        },
+      });
+
+      return message.author.send(
+        `New command unlocked: **\`${commandName}\`**\nRead about it with \`${server.prefix}help\``
+      );
+    },
+
+    unlockCommands: async function (message, server, commandNames) {
+      let commands = [];
+      for (const commandName of commandNames) {
+        if (!this.unlockedCommands.includes(commandName)) {
+          await this.prisma.player.update({
+            where: { id: this.id },
+            data: {
+              unlockedCommands: { push: commandName },
+            },
+          });
+          commands.push(commandName);
+        }
+      }
+
+      if (!commands[0]) return;
+
+      let commandList = commands.join(", ");
+
+      return message.author.send(
+        `New commands unlocked: **\`${commandList}\`**\nRead about them with \`${server.prefix}help\``
+      );
     },
 
     // Get item info
@@ -90,6 +138,40 @@ export default {
       }
 
       return itemArray;
+    },
+
+    // Get specific attack
+    getAttack: async function (attackName) {
+      const attackRef = await this.prisma.attack.findMany({
+        where: {
+          playerId: this.id,
+          name: { equals: attackName, mode: "insensitive" },
+        },
+      });
+      if (!attackRef[0]) return undefined;
+
+      const attackData = attacks[attackRef[0].name.toLowerCase()];
+
+      return { ...attackData, ...attackRef[0] };
+    },
+
+    // Get all available attacks
+    getAttacks: async function () {
+      const playerAttacks = await this.prisma.attack.findMany({
+        orderBy: [{ remCooldown: "asc" }],
+        where: { playerId: this.id },
+      });
+
+      let attackArray = [];
+
+      for (const playerAttack of playerAttacks) {
+        const attackData = attacks[playerAttack.name.toLowerCase()];
+        const attack = { ...playerAttack, ...attackData };
+
+        attackArray.push(attack);
+      }
+
+      return attackArray;
     },
 
     // Enter combat
@@ -148,7 +230,12 @@ export default {
 
       let lootList = ``;
       for (const item of loots) {
-        lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
+        //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
+        if (item.quantity > 1) {
+          lootList += `\\> **${item.name}** | \`x${item.quantity}\``;
+        } else {
+          lootList += `\\> **${item.name}**`;
+        }
       }
 
       const embed = {
@@ -156,7 +243,10 @@ export default {
       };
 
       // Send death message
-      game.reply(message, `you killed **${enemy.name}**.`);
+      //game.reply(message, `you killed **${enemy.name}**.`);
+      message.channel.send(
+        `**${message.author.username}** killed **${enemy.name}** :skull:`
+      );
       game.fastEmbed(message, this, embed, `Loot from ${enemy.name}`);
     },
   },

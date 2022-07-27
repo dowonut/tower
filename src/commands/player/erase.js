@@ -4,7 +4,7 @@ export default {
   name: "erase",
   description: "Completely reset your character. **CANNOT BE UNDONE.**",
   cooldown: "30",
-  category: "Character",
+  category: "Player",
   async execute(message, args, prisma, config, player) {
     const button1 = new MessageButton()
       .setCustomId("yes")

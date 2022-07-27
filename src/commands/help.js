@@ -28,8 +28,11 @@ export default {
       General: `
 **General**
         `,
-      Character: `
-**Character**
+      Player: `
+**Player**
+        `,
+      Items: `
+**Items**
         `,
       Combat: `
 **Combat**
@@ -43,7 +46,10 @@ export default {
     };
 
     for (const command of commands) {
-      if (command.ignoreInHelp !== true) {
+      if (
+        command.ignoreInHelp !== true &&
+        player.unlockedCommands.includes(command.name)
+      ) {
         let commandName = command.name;
         if (command.arguments)
           commandName = `${command.name} ${command.arguments}`;
@@ -61,7 +67,9 @@ export default {
     let description = ``;
 
     for (const [key, value] of Object.entries(categories)) {
-      description += `${value}`;
+      const lineBreaks = value.split(/\r\n|\r|\n/).length;
+
+      if (lineBreaks > 3) description += `${value}`;
     }
 
     const embed = {

@@ -1,8 +1,9 @@
 export default {
   name: "eat",
   aliases: ["ea"],
-  arguments: "<name of food>",
+  arguments: "<item name>",
   description: "Eat food you have in your inventory.",
+  category: "Items",
   async execute(message, args, prisma, config, player, game, server) {
     if (!args[0])
       return game.reply(message, "provide the name of a food item.");

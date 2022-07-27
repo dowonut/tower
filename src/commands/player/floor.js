@@ -1,7 +1,7 @@
 export default {
   name: "floor",
   aliases: ["f"],
-  category: "Character",
+  category: "Player",
   description: "Show information about your current floor.",
   async execute(message, args, prisma, config, player, game, server) {
     // const embed = {

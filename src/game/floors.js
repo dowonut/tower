@@ -1,5 +1,13 @@
+class Floor {
+  constructor(object) {
+    for (const [key, value] of Object.entries(object)) {
+      this[key] = value;
+    }
+  }
+}
+
 export default [
-  {
+  new Floor({
     floor: 1,
     enemies: [
       {
@@ -11,8 +19,8 @@ export default [
         weight: 20,
       },
     ],
-  },
-  {
+  }),
+  new Floor({
     floor: 2,
     enemies: [
       {
@@ -20,5 +28,5 @@ export default [
         weight: 100,
       },
     ],
-  },
+  }),
 ];

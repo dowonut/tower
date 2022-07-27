@@ -48,22 +48,4 @@ export default {
     xpMin: 15,
     xpMax: 25,
   }),
-  "the demon lord": new Enemy({
-    name: "The Demon Lord",
-    maxHealth: 10000,
-    strength: 100,
-    defence: 100,
-    image:
-      "https://cdn4.iconfinder.com/data/icons/cute-funny-monster-characters/66/28-512.png",
-    loot: {
-      "Key Shard 1": {
-        name: "Floor Key 1",
-        dropChance: 100,
-        dropMin: 1,
-        dropMax: 1,
-      },
-    },
-    xpMin: 1000,
-    xpMax: 2000,
-  }),
 };

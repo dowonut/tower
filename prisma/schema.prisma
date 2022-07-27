@@ -29,6 +29,7 @@ model Player {
   floor         Int      @default(1)
   // Inventory and character
   inventory     Inventory[]
+  attacks       Attack[]
   level         Int      @default(0)
   xp            Int      @default(0)
   marks         Int      @default(0) 
@@ -39,7 +40,9 @@ model Player {
   defence       Int      @default(1)
   // Misc
   inCombat      Boolean  @default(false)
+  canAttack     Boolean  @default(true)
   fighting      Int?
+  unlockedCommands String[]
 }
 
 model Inventory {
@@ -50,6 +53,14 @@ model Inventory {
   quantity      Int
   equipslot     String?
   equipped      Boolean   @default(false)
+}
+
+model Attack {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId      Int
+  name          String
+  remCooldown   Int       @default(0)
 }
 
 model Item {

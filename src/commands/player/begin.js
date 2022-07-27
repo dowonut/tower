@@ -21,7 +21,16 @@ export default {
           size: 128,
           format: "png",
         }),
+        unlockedCommands: ["erase", "begin", "profile", "explore", "help"],
       },
+    });
+
+    await prisma.attack.createMany({
+      data: [
+        { playerId: playerData.id, name: "Punch" },
+        { playerId: playerData.id, name: "Uppercut" },
+        { playerId: playerData.id, name: "Fire Breath" },
+      ],
     });
 
     player = { ...playerData, ...game.player, prisma };
@@ -32,7 +41,7 @@ export default {
     game.sendEmbed(message, {
       thumbnail: { url: player.pfp },
       color: config.botColor,
-      description: `**${auth.username}**, welcome to **Tower**!\nIn this game you progress and become overpowered while slowly climbing the tower.\nCheck out your profile with \`${server.prefix}profile\`\nSee the list of available commands with \`${server.prefix}help\``,
+      description: `**${auth.username}**, welcome to **Tower**!\nIn this game you progress and become overpowered while gradually climbing the tower.\nCheck out your profile with \`${server.prefix}profile\`\nBegin exploring the first floor with \`${server.prefix}explore\`\nSee the list of available commands with \`${server.prefix}help\``,
     });
   },
 };

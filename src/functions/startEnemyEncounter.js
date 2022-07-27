@@ -39,7 +39,7 @@ export default {
       description: `
       
 What do you want to do?
-\`${server.prefix}enemyinfo | ${server.prefix}attack | ${server.prefix}magic | ${server.prefix}flee\`
+\`${server.prefix}enemyinfo | ${server.prefix}attack | ${server.prefix}flee\`
             `,
     };
 
@@ -54,6 +54,13 @@ What do you want to do?
         fighting: player.discordId,
       },
     });
+
+    await player.unlockCommands(message, server, [
+      "attack",
+      "enemyinfo",
+      "flee",
+      "status",
+    ]);
 
     player.enterCombat(enemy);
   },
