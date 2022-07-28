@@ -30,6 +30,7 @@ model Player {
   // Inventory and character
   inventory     Inventory[]
   attacks       Attack[]
+  merchantStock merchantStock[]
   level         Int      @default(0)
   xp            Int      @default(0)
   marks         Int      @default(0) 
@@ -43,6 +44,7 @@ model Player {
   canAttack     Boolean  @default(true)
   fighting      Int?
   unlockedCommands String[]
+  skillpoints   Int      @default(0)
 }
 
 model Inventory {
@@ -53,6 +55,15 @@ model Inventory {
   quantity      Int
   equipslot     String?
   equipped      Boolean   @default(false)
+}
+
+model merchantStock {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId      Int
+  itemName      String
+  stock         Int
+  floor         Int
 }
 
 model Attack {

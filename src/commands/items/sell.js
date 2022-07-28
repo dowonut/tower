@@ -1,8 +1,8 @@
 export default {
   name: "sell",
   aliases: ["se"],
-  arguments: "<item name> $ [<quantity>|all]",
-  description: "Use to sell items in your inventory.",
+  arguments: "<item name> $ <quantity>|all",
+  description: "Sell items in your inventory.",
   category: "Items",
   async execute(message, args, prisma, config, player, game, server) {
     const variables = args.join(" ").split("$");
@@ -46,5 +46,7 @@ export default {
         item.value * quantity
       }\` ${config.emojis.mark}`
     );
+
+    player.unlockCommand(message, server, "merchant");
   },
 };

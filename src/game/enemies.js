@@ -45,7 +45,7 @@ export default {
         dropMax: 1,
       },
     },
-    xpMin: 15,
-    xpMax: 25,
+    xpMin: 40,
+    xpMax: 60,
   }),
 };

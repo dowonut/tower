@@ -1,5 +1,5 @@
 export default {
-  description: (rawText, player, config) => {
+  description: (rawText, player, config, game) => {
     const textArray = rawText.split("\n");
     let description = ``;
 
@@ -20,7 +20,7 @@ export default {
           } else if (item == "EMOJI") {
             useEmoji = true;
           } else if (item == "XP") {
-            variable = player.xp + " / " + player.xp;
+            variable = player.xp + " / " + config.nextLevelXp(player.level);
             name = "XP: ";
             emoji = config.emojis.xp;
           } else if (item == "HEALTH") {
@@ -46,9 +46,19 @@ export default {
             variable = player.defence;
             name = "Defence: ";
             emoji = config.emojis.defence;
+          } else if (item == "PROGRESS") {
+            variable = game.progressBar(
+              player.xp,
+              config.nextLevelXp(player.level)
+            );
           }
         }
         let variableText = `\`${variable}\``;
+
+        // if progress bar
+        if (item == "PROGRESS") {
+          variableText = variable;
+        }
 
         if (useName && useEmoji) {
           description += emoji + " " + name + variableText;

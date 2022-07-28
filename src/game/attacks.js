@@ -42,7 +42,7 @@ export default {
     name: "Fire Breath",
     type: "Magic",
     description: "Literally breathing fire.",
-    cooldown: 10,
+    //cooldown: 10,
     damageMin: 15,
     damageMax: 20,
     damageType: "fire",

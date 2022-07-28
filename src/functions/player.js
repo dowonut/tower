@@ -214,7 +214,7 @@ export default {
     },
 
     // Give loot from enemy
-    enemyLoot: async function (enemy, game, message) {
+    enemyLoot: async function (enemy, game, server, message) {
       const loots = [];
 
       for (const [loot, lootInfo] of Object.entries(enemy.loot)) {
@@ -228,15 +228,46 @@ export default {
         }
       }
 
+      // Get xp from enemy kill
+      let xp = game.random(enemy.xpMin, enemy.xpMax);
+
+      // Add xp to player
+      let player = await this.update({ xp: { increment: xp } });
+
+      // Calculate xp required for next level
+      let nextLevelXp = config.nextLevelXp(player.level);
+      let levelUp = 0;
+
+      // Once level up reached
+      while (player.xp >= nextLevelXp) {
+        // Calculate remaining xp
+        let newXp = player.xp % nextLevelXp;
+
+        // Update player data
+        player = await this.update({
+          xp: newXp,
+          level: { increment: 1 },
+          skillpoints: { increment: 1 },
+        });
+
+        // Get required xp for next level
+        nextLevelXp = config.nextLevelXp(player.level);
+        levelUp++;
+
+        // Unlock new command
+        this.unlockCommand(message, server, "skillpoints");
+      }
+
       let lootList = ``;
       for (const item of loots) {
         //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
         if (item.quantity > 1) {
-          lootList += `\\> **${item.name}** | \`x${item.quantity}\``;
+          lootList += `\\> **${item.name}** | \`x${item.quantity}\`\n`;
         } else {
-          lootList += `\\> **${item.name}**`;
+          lootList += `\\> **${item.name}**\n`;
         }
       }
+      lootList += `\nXP: \`+${xp}\``;
 
       const embed = {
         description: lootList,
@@ -248,6 +279,13 @@ export default {
         `**${message.author.username}** killed **${enemy.name}** :skull:`
       );
       game.fastEmbed(message, this, embed, `Loot from ${enemy.name}`);
+
+      if (levelUp > 0) {
+        game.reply(
+          message,
+          `you leveled up! New level: \`${player.level}\` :tada:`
+        );
+      }
     },
   },
 };

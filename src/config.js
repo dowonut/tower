@@ -9,7 +9,7 @@ export const botBanner = "https://i.imgur.com/RwqxsiL.png";
 export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
 export const emojis = {
-  mark: "<:marl:987827308234690701>",
+  mark: "<:mark:987827308234690701>",
   silver_mark: "<:silver_mark:986634284355969026>",
   xp: "<:xp:987750164481597480>",
   staircase: "<:staircase:987744955067949126>",
@@ -28,6 +28,10 @@ export const emojis = {
     piercing: "<:piercing_damage:988918962559524974>",
     slashing: "<:slashing_damage:988918963595542589>",
   },
+};
+
+export const nextLevelXp = (lvl) => {
+  return 5 * (lvl ^ 2) + 50 * lvl + 100;
 };
 
 // Choose random entry from array

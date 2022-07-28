@@ -1,10 +1,10 @@
 export default {
   name: "setprefix",
   description: "Change the command prefix for your server.",
-  category: "Settings",
+  category: "Admin",
   arguments: "<new prefix>",
   aliases: ["sp"],
-  permissions: ["ADMINISTRATOR"],
+  //  permissions: ["ADMINISTRATOR"],
   async execute(message, args, prisma, config, player, game, server) {
     const prefix = args[0];
 

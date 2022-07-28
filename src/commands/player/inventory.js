@@ -12,7 +12,7 @@ export default {
     for (const item of items) {
       const quantity = item.quantity > 1 ? `\`x${item.quantity}\` | ` : ``;
 
-      description += `**${item.name}** | ${quantity}${item.description}\n`;
+      description += `**${item.name}** | ${quantity}*${item.description}*\n`;
     }
 
     const embed = {

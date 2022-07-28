@@ -3,8 +3,7 @@
 export default {
   name: "attack",
   aliases: ["a"],
-  description:
-    "Attack the enemy you're fighting. Use without arguments to list available attacks.",
+  description: "Attack the enemy you're fighting.",
   arguments: "<attack name>",
   category: "Combat",
   useInCombatOnly: true,
@@ -128,7 +127,7 @@ async function performAttack(message, config, player, game, server, attack) {
     player.unlockCommands(message, server, ["inventory", "iteminfo"]);
 
     // Give loot to player
-    player.enemyLoot(enemy, game, message);
+    player.enemyLoot(enemy, game, server, message);
 
     // Exit out of combat
     return player.exitCombat();

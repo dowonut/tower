@@ -114,6 +114,13 @@ client.on("messageCreate", async (message) => {
   if (playerData) {
     var player = { ...playerData, ...game.player, prisma };
 
+    // Check if user is admin
+    if (command.category == "Admin" && !authorPerms.has(["ADMINISTRATOR"])) {
+      return message.channel.send(
+        `:x: **${player.username}**, this command requires admin permissions.`
+      );
+    }
+
     // Check if user is in combat
     if (player.inCombat == false && command.useInCombatOnly == true) {
       return message.channel.send(

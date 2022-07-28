@@ -48,7 +48,9 @@ export default {
     for (const command of commands) {
       if (
         command.ignoreInHelp !== true &&
-        player.unlockedCommands.includes(command.name)
+        (player.unlockedCommands.includes(command.name) ||
+          command.category == "Admin" ||
+          command.category == "Settings")
       ) {
         let commandName = command.name;
         if (command.arguments)
@@ -79,6 +81,9 @@ export default {
         url: config.botIcon,
       },
       description: description,
+      footer: {
+        text: `All commands have shortcuts. Example: ${server.prefix}profile is also ${server.prefix}p`,
+      },
     };
 
     game.sendEmbed(message, embed);

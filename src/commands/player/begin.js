@@ -2,6 +2,7 @@ export default {
   name: "begin",
   description: "Start the game by creating a character.",
   needChar: false,
+  ignoreInHelp: true,
   async execute(message, args, prisma, config, player, game, server) {
     const auth = message.author;
 

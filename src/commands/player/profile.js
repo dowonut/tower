@@ -31,6 +31,7 @@ export default {
     const rawText = `
 NAME LEVEL
 NAME XP
+PROGRESS
 
 EMOJI NAME HEALTH
 
@@ -40,7 +41,7 @@ EMOJI NAME DEFENCE
 EMOJI NAME MARKS
 EMOJI NAME FLOOR`;
 
-    let description = game.description(rawText, player, config);
+    let description = game.description(rawText, player, config, game);
 
     if (player.inCombat == true)
       description += `\n:dagger: **Currently in combat.**`;
