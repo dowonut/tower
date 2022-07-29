@@ -1,13 +1,12 @@
 export default {
-  name: "giveitem",
-  aliases: ["gi"],
-  arguments: "<player> <quantity> <name of item>",
-  description: "Give an item to a player.",
+  name: "givexp",
+  aliases: ["gx"],
+  arguments: "<player> <quantity>",
+  description: "Give xp to a player.",
   category: "Admin",
   async execute(message, args, prisma, config, player, game, server) {
     if (!args[0]) return invalidArguments(message, game);
     if (!args[1]) return invalidArguments(message, game);
-    if (!args[2]) return invalidArguments(message, game);
 
     const user = message.mentions.users.first();
     const userData = await prisma.player.findUnique({
@@ -15,16 +14,9 @@ export default {
     });
     const quantity = parseInt(args[1]);
 
-    args.shift();
-    args.shift();
+    await player.giveXp(quantity, message, server, game);
 
-    const itemName = args.join(" ");
-
-    const newItem = await game.giveItem(userData, prisma, itemName, quantity);
-
-    message.channel.send(
-      `Gave **${quantity}x ${newItem.name}** to **${user.username}**`
-    );
+    message.channel.send(`Gave **${quantity} XP** to **${user.username}**`);
   },
 };
 

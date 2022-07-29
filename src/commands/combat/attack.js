@@ -44,7 +44,7 @@ async function listAttacks(message, config, player, game, server) {
     if (attack.remCooldown < 1) {
       description += `
 **${attack.name}** | ${attack.description}
-Damage: ${attack.damageInfo(player)}\n`;
+Damage: ${await attack.damageInfo(player)}\n`;
 
       if (attack.cooldown)
         description += `Cooldown: \`${attack.cooldown} rounds\`\n`;
@@ -63,7 +63,7 @@ Damage: ${attack.damageInfo(player)}\n`;
     },
     description:
       description +
-      `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
+      `\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
   };
 
   game.sendEmbed(message, embed);
@@ -74,9 +74,9 @@ Damage: ${attack.damageInfo(player)}\n`;
 async function performAttack(message, config, player, game, server, attack) {
   let enemy = await player.getCurrentEnemy();
 
-  const damage = attack.damage(player);
+  const damage = await attack.getDamage(player);
   const remainingHealth = enemy.health - damage < 0 ? 0 : enemy.health - damage;
-  const enemyDamage = enemy.damage();
+  const enemyDamage = enemy.getDamage();
 
   // Deal damage to enemy
   const enemyData = await player.updateEnemy({
@@ -86,7 +86,7 @@ async function performAttack(message, config, player, game, server, attack) {
   // Send damage message
   await message.channel.send(
     `**${player.username}** used **${attack.name}** dealing \`${damage}\`${
-      config.emojis.damage[attack.damageType]
+      config.emojis.damage[attack.damage.type]
     } damage to **${enemy.name}** | :drop_of_blood:\`${remainingHealth}/${
       enemy.maxHealth
     }\``

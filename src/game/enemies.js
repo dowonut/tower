@@ -1,5 +1,6 @@
-import randomF from "../functions/random.js";
-const random = randomF.random;
+import randomFunction from "../functions/random.js";
+import { emojis } from "../config.js";
+const random = randomFunction.random;
 
 class Enemy {
   constructor(object) {
@@ -7,8 +8,17 @@ class Enemy {
       this[key] = value;
     }
 
-    this.damage = () => {
-      return this.strength + random(1, 3);
+    this.getDamage = () => {
+      // Base damage
+      const baseDamage = random(this.damage[0], this.damage[1]);
+
+      // Damage multiplier
+      const damageMultiplier = this.strength / 100 + 1;
+
+      // Final damage
+      const damage = Math.floor(baseDamage * damageMultiplier);
+
+      return damage;
     };
   }
 }
@@ -19,6 +29,7 @@ export default {
     maxHealth: 5,
     strength: 1,
     defence: 1,
+    damage: [1, 3],
     image: "https://imgur.com/HV0tsn9.png",
     loot: {
       Slimeball: {
@@ -28,14 +39,15 @@ export default {
         dropMax: 3,
       },
     },
-    xpMin: 10,
-    xpMax: 20,
+    xpMin: 30,
+    xpMax: 40,
   }),
   goblin: new Enemy({
     name: "Goblin",
     maxHealth: 15,
     strength: 3,
     defence: 1,
+    damage: [3, 6],
     image: "https://imgur.com/Fte78Qa.png",
     loot: {
       "Goblin Skin": {

@@ -140,6 +140,24 @@ export default {
       return itemArray;
     },
 
+    // Get equipped item
+    getEquipped: async function (equipSlot) {
+      if (!this[equipSlot]) return undefined;
+
+      let equipName = this[equipSlot];
+
+      const itemRef = await this.prisma.inventory.findMany({
+        where: {
+          playerId: this.id,
+          name: { equals: equipName, mode: "insensitive" },
+        },
+      });
+
+      const itemData = items[itemRef[0].name.toLowerCase()];
+
+      return { ...itemData, ...itemRef[0] };
+    },
+
     // Get specific attack
     getAttack: async function (attackName) {
       const attackRef = await this.prisma.attack.findMany({
@@ -152,7 +170,23 @@ export default {
 
       const attackData = attacks[attackRef[0].name.toLowerCase()];
 
-      return { ...attackData, ...attackRef[0] };
+      let attack = { ...attackData, ...attackRef[0] };
+
+      if (this.hand) {
+        const item = await this.getItem(this.hand);
+
+        if (item.weaponType == attack.type) {
+          return attack;
+        } else {
+          return undefined;
+        }
+      } else {
+        if (attack.type == "unarmed") {
+          return attack;
+        } else {
+          return undefined;
+        }
+      }
     },
 
     // Get all available attacks
@@ -171,7 +205,16 @@ export default {
         attackArray.push(attack);
       }
 
-      return attackArray;
+      let finalArray;
+
+      if (this.hand) {
+        const item = await this.getItem(this.hand);
+        finalArray = attackArray.filter((x) => x.type === item.weaponType);
+      } else {
+        finalArray = attackArray.filter((x) => x.type === "unarmed");
+      }
+
+      return finalArray;
     },
 
     // Enter combat
@@ -231,33 +274,6 @@ export default {
       // Get xp from enemy kill
       let xp = game.random(enemy.xpMin, enemy.xpMax);
 
-      // Add xp to player
-      let player = await this.update({ xp: { increment: xp } });
-
-      // Calculate xp required for next level
-      let nextLevelXp = config.nextLevelXp(player.level);
-      let levelUp = 0;
-
-      // Once level up reached
-      while (player.xp >= nextLevelXp) {
-        // Calculate remaining xp
-        let newXp = player.xp % nextLevelXp;
-
-        // Update player data
-        player = await this.update({
-          xp: newXp,
-          level: { increment: 1 },
-          skillpoints: { increment: 1 },
-        });
-
-        // Get required xp for next level
-        nextLevelXp = config.nextLevelXp(player.level);
-        levelUp++;
-
-        // Unlock new command
-        this.unlockCommand(message, server, "skillpoints");
-      }
-
       let lootList = ``;
       for (const item of loots) {
         //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
@@ -280,10 +296,43 @@ export default {
       );
       game.fastEmbed(message, this, embed, `Loot from ${enemy.name}`);
 
+      // Give xp to player
+      await this.giveXp(xp, message, server, game);
+    },
+
+    // Give xp to player
+    giveXp: async function (xp, message, server, game) {
+      // Add xp to player
+      let player = await this.update({ xp: { increment: xp } });
+
+      // Calculate xp required for next level
+      let nextLevelXp = config.nextLevelXp(player.level);
+      let levelUp = 0;
+
+      // Once level up reached
+      for (let i = 0; player.xp >= nextLevelXp; i++) {
+        // Calculate remaining xp
+        let newXp = player.xp - nextLevelXp;
+
+        // Update player data
+        player = await this.update({
+          xp: newXp,
+          level: { increment: 1 },
+          statpoints: { increment: 1 },
+        });
+
+        // Get required xp for next level
+        nextLevelXp = config.nextLevelXp(player.level);
+        levelUp++;
+
+        // Unlock new commands
+        this.unlockCommands(message, server, ["statup", "stats", "floor"]);
+      }
+
       if (levelUp > 0) {
         game.reply(
           message,
-          `you leveled up! New level: \`${player.level}\` :tada:`
+          `you leveled up! New level: \`${player.level}\` :tada:\nYou have \`${levelUp}\` new stat points, assign them with \`${server.prefix}statup\``
         );
       }
     },

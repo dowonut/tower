@@ -4,7 +4,7 @@ export default {
   aliases: ["pr", "p"],
   category: "Player",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game) {
+  async execute(message, args, prisma, config, player, game, server) {
     // update user info if outdated
     if (
       player.username !== message.author.username ||
@@ -37,6 +37,7 @@ EMOJI NAME HEALTH
 
 EMOJI NAME STRENGTH
 EMOJI NAME DEFENCE
+EMOJI NAME ARCANE
 
 EMOJI NAME MARKS
 EMOJI NAME FLOOR`;
@@ -44,7 +45,10 @@ EMOJI NAME FLOOR`;
     let description = game.description(rawText, player, config, game);
 
     if (player.inCombat == true)
-      description += `\n:dagger: **Currently in combat.**`;
+      description += `\n:dagger: **Currently in combat.**\n`;
+
+    if (player.statpoints > 0)
+      description += `\n:low_brightness: **You have unassigned stat points! \n${config.emojis.blank} Check your stats with \`${server.prefix}stats\`**`;
 
     const embed = {
       color: config.botColor,

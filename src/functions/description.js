@@ -46,6 +46,10 @@ export default {
             variable = player.defence;
             name = "Defence: ";
             emoji = config.emojis.defence;
+          } else if (item == "ARCANE") {
+            variable = player.arcane;
+            name = "Arcane: ";
+            emoji = config.emojis.arcane;
           } else if (item == "PROGRESS") {
             variable = game.progressBar(
               player.xp,

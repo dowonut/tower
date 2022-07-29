@@ -4,6 +4,7 @@ export default {
   arguments: "<item name>",
   description: "Get detailed information about an item.",
   category: "Items",
+  useInCombat: true,
   async execute(message, args, prisma, config, player, game, server) {
     if (!args[0]) return game.reply(message, "provide the name of an item.");
 

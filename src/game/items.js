@@ -40,11 +40,16 @@ export default {
   "rusty sword": new Item({
     name: "Rusty Sword",
     category: "Weapon",
+    weaponType: "sword",
     description: "Not the sharpest tool in the shed.",
     info: "An old rusty sword you picked up from a merchant. Kills better than your fist does.",
     image: "",
     value: 8,
     canSell: true,
-    damage: 3,
+    equipSlot: "hand",
+    damage: {
+      value: 3,
+      type: "slashing",
+    },
   }),
 };

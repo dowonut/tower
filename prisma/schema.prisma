@@ -36,15 +36,22 @@ model Player {
   marks         Int      @default(0) 
   health        Int      @default(10)
   maxHealth     Int      @default(10)
+  // Equipment
+  head          String?
+  torso         String?
+  legs          String?
+  feet          String?
+  hand          String?
   // Stats
-  strength      Int      @default(1)
-  defence       Int      @default(1)
+  strength      Int      @default(0)
+  defence       Int      @default(0)
+  arcane        Int      @default(0)
   // Misc
   inCombat      Boolean  @default(false)
   canAttack     Boolean  @default(true)
   fighting      Int?
   unlockedCommands String[]
-  skillpoints   Int      @default(0)
+  statpoints   Int       @default(0)
 }
 
 model Inventory {
@@ -53,7 +60,7 @@ model Inventory {
   playerId      Int
   name          String
   quantity      Int
-  equipslot     String?
+//  equipSlot     String?
   equipped      Boolean   @default(false)
 }
 

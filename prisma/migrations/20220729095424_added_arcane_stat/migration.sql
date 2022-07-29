@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Player" ADD COLUMN     "arcane" INTEGER NOT NULL DEFAULT 0,
+ALTER COLUMN "defence" SET DEFAULT 0,
+ALTER COLUMN "strength" SET DEFAULT 0;

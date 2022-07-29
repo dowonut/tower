@@ -29,8 +29,9 @@ export default {
     await prisma.attack.createMany({
       data: [
         { playerId: playerData.id, name: "Punch" },
-        { playerId: playerData.id, name: "Uppercut" },
-        { playerId: playerData.id, name: "Fire Breath" },
+        { playerId: playerData.id, name: "Slash" },
+        //{ playerId: playerData.id, name: "Uppercut" },
+        //{ playerId: playerData.id, name: "Fire Breath" },
       ],
     });
 

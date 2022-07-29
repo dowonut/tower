@@ -9,6 +9,7 @@ export const botBanner = "https://i.imgur.com/RwqxsiL.png";
 export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
 export const emojis = {
+  blank: "<:blank:1002523614345703424>",
   mark: "<:mark:987827308234690701>",
   silver_mark: "<:silver_mark:986634284355969026>",
   xp: "<:xp:987750164481597480>",
@@ -17,6 +18,7 @@ export const emojis = {
   health: ":drop_of_blood:",
   defence: ":shield:",
   strength: ":crossed_swords:",
+  arcane: ":star2:",
   damage: {
     fire: "<:fire_damage:988863829146468352>",
     water: "<:water_damage:988862206651301898>",
@@ -28,6 +30,17 @@ export const emojis = {
     piercing: "<:piercing_damage:988918962559524974>",
     slashing: "<:slashing_damage:988918963595542589>",
   },
+  activities: {
+    fishing: ":fish:",
+    woodcutting: ":evergreen_tree:",
+  },
+  enemies: {},
+};
+
+export const statInfo = {
+  strength: "Increases physical damage output by `1%`",
+  defence: "Decreases physical damage taken by `1%`",
+  arcane: "Increases magical damage output by `1%`",
 };
 
 export const nextLevelXp = (lvl) => {

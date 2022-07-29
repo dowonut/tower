@@ -19,6 +19,7 @@ export default [
         weight: 20,
       },
     ],
+    activities: [{ name: "Fishing" }, { name: "Woodcutting" }],
   }),
   new Floor({
     floor: 2,

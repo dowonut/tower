@@ -1,6 +1,6 @@
 export default {
   name: "status",
-  aliases: ["s"],
+  aliases: ["st"],
   description: "Show your current status during combat.",
   category: "Combat",
   useInCombatOnly: true,

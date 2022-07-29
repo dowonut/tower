@@ -101,7 +101,10 @@ client.on("messageCreate", async (message) => {
 
   let playerData = await prisma.player.findUnique({
     where: { discordId: message.author.id },
+    //include: { inventory: true, attacks: true, merchantStock: true },
   });
+
+  //console.log(playerData);
 
   // Check if user has player character
   if (command.needChar !== false && !playerData) {
