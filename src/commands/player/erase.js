@@ -5,7 +5,7 @@ export default {
   description: "Completely reset your character. **CANNOT BE UNDONE.**",
   cooldown: "30",
   category: "Player",
-  async execute(message, args, prisma, config, player) {
+  async execute(message, args, prisma, config, player, game, server) {
     const button1 = new MessageButton()
       .setCustomId("yes")
       .setLabel("✔")
@@ -33,7 +33,13 @@ export default {
 
     collector.on("collect", async (i) => {
       if (i.customId == "yes") {
-        player.erase();
+        await player.erase();
+        await game.createPlayer(
+          message.author,
+          prisma,
+          game,
+          player.unlockedCommands
+        );
         botMsg.edit({
           content: "Reset complete.",
           components: [],

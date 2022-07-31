@@ -55,6 +55,10 @@ export default {
               player.xp,
               config.nextLevelXp(player.level)
             );
+          } else if (item == "REGION") {
+            variable = game.titleCase(player.getRegion().name);
+            name = "Region: ";
+            emoji = config.emojis.blank;
           }
         }
         let variableText = `\`${variable}\``;

@@ -1,6 +1,7 @@
 import enemies from "../game/enemies.js";
 import items from "../game/items.js";
 import attacks from "../game/attacks.js";
+import floors from "../game/floors.js";
 
 import * as config from "../config.js";
 
@@ -70,6 +71,7 @@ export default {
       return newItem;
     },
 
+    // Unlock a command
     unlockCommand: async function (message, server, commandName) {
       if (this.unlockedCommands.includes(commandName)) return;
 
@@ -85,6 +87,7 @@ export default {
       );
     },
 
+    // Unlock several commands
     unlockCommands: async function (message, server, commandNames) {
       let commands = [];
       for (const commandName of commandNames) {
@@ -106,6 +109,16 @@ export default {
       return message.author.send(
         `New commands unlocked: **\`${commandList}\`**\nRead about them with \`${server.prefix}help\``
       );
+    },
+
+    // Get current regin
+    getRegion: function () {
+      const regionName = this.region;
+      const currentFloor = floors[this.floor - 1];
+
+      const region = currentFloor.regions.find((x) => x.name == regionName);
+
+      return region;
     },
 
     // Get item info
@@ -217,6 +230,22 @@ export default {
       return finalArray;
     },
 
+    // Deal damage to player
+    getDamageTaken: async function (damageInput) {
+      // Calculate defence
+      const defenceMultiplier = 1 - this.defence / 100;
+
+      // Calculate final damage
+      const damage = Math.floor(damageInput * defenceMultiplier);
+
+      // Log damage
+      console.log(
+        `${this.username} takes damage: ${damageInput} x ${defenceMultiplier} = ${damage}`
+      );
+
+      return damage;
+    },
+
     // Enter combat
     enterCombat: async function (enemy) {
       // Update player to be in combat
@@ -249,8 +278,8 @@ export default {
       });
     },
 
-    // Remove an enemy from the database
-    killEnemy: async function (enemy) {
+    // Remove current enemy from the database
+    killEnemy: async function () {
       await this.prisma.enemy.delete({
         where: { id: this.fighting },
       });
@@ -272,7 +301,7 @@ export default {
       }
 
       // Get xp from enemy kill
-      let xp = game.random(enemy.xpMin, enemy.xpMax);
+      let xp = game.random(enemy.xp.min, enemy.xp.max);
 
       let lootList = ``;
       for (const item of loots) {
@@ -326,13 +355,18 @@ export default {
         levelUp++;
 
         // Unlock new commands
-        this.unlockCommands(message, server, ["statup", "stats", "floor"]);
+        this.unlockCommands(message, server, [
+          "stats",
+          "statup",
+          "floor",
+          "region",
+        ]);
       }
 
       if (levelUp > 0) {
         game.reply(
           message,
-          `you leveled up! New level: \`${player.level}\` :tada:\nYou have \`${levelUp}\` new stat points, assign them with \`${server.prefix}statup\``
+          `you leveled up! New level: \`${player.level}\` :tada:\n:low_brightness: You have \`${levelUp}\` new stat points. Check your stats with \`${server.prefix}stats\``
         );
       }
     },

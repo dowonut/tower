@@ -6,7 +6,7 @@ export default {
   description: "Attack the enemy you're fighting.",
   arguments: "<attack name>",
   category: "Combat",
-  useInCombatOnly: true,
+  useInCombat: true,
   cooldown: "1",
   async execute(message, args, prisma, config, player, game, server) {
     // Format imput
@@ -14,6 +14,10 @@ export default {
 
     // Check if user specified attack
     if (args[0]) {
+      // Check if player is in combat
+      if (!player.inCombat)
+        return game.error(message, "you can only use an attack during combat.");
+
       if (!isNaN(args[0]))
         return game.reply(
           message,
@@ -27,7 +31,7 @@ export default {
       if (attack.remCooldown > 0)
         return game.reply(message, "this attack is still on cooldown.");
 
-      performAttack(message, config, player, game, server, attack);
+      performAttack(message, config, player, game, server, attack, prisma);
     } else {
       listAttacks(message, config, player, game, server);
     }
@@ -61,9 +65,8 @@ Damage: ${await attack.damageInfo(player)}\n`;
       icon_url: player.pfp,
       name: "Available Attacks",
     },
-    description:
-      description +
-      `\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
+    description: description,
+    //+ `\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
   };
 
   game.sendEmbed(message, embed);
@@ -71,12 +74,20 @@ Damage: ${await attack.damageInfo(player)}\n`;
 
 // Perform attack after name is provided
 
-async function performAttack(message, config, player, game, server, attack) {
+async function performAttack(
+  message,
+  config,
+  player,
+  game,
+  server,
+  attack,
+  prisma
+) {
   let enemy = await player.getCurrentEnemy();
 
   const damage = await attack.getDamage(player);
   const remainingHealth = enemy.health - damage < 0 ? 0 : enemy.health - damage;
-  const enemyDamage = enemy.getDamage();
+  let enemyDamage = enemy.getDamage();
 
   // Deal damage to enemy
   const enemyData = await player.updateEnemy({
@@ -87,9 +98,9 @@ async function performAttack(message, config, player, game, server, attack) {
   await message.channel.send(
     `**${player.username}** used **${attack.name}** dealing \`${damage}\`${
       config.emojis.damage[attack.damage.type]
-    } damage to **${enemy.name}** | :drop_of_blood:\`${remainingHealth}/${
-      enemy.maxHealth
-    }\``
+    } damage to **${enemy.name}** | ${
+      config.emojis.health
+    }\`${remainingHealth}/${enemy.maxHealth}\``
   );
 
   // Send typing indicator
@@ -121,10 +132,10 @@ async function performAttack(message, config, player, game, server, attack) {
   // Run when enemy is dead
   if (enemyData.health <= 0) {
     // Remove enemy from database
-    player.killEnemy(enemy);
+    player.killEnemy();
 
     // Unlock new commands
-    player.unlockCommands(message, server, ["inventory", "iteminfo"]);
+    player.unlockCommands(message, server, ["inventory"]);
 
     // Give loot to player
     player.enemyLoot(enemy, game, server, message);
@@ -132,6 +143,9 @@ async function performAttack(message, config, player, game, server, attack) {
     // Exit out of combat
     return player.exitCombat();
   }
+
+  // Get player damage
+  enemyDamage = await player.getDamageTaken(enemyDamage);
 
   // Update player health
   const playerData = await player.update({
@@ -141,8 +155,14 @@ async function performAttack(message, config, player, game, server, attack) {
 
   // Deal damage to player
   setTimeout(async () => {
+    // Warn low health
+    let healthWarning =
+      (playerData.health / player.maxHealth) * 100 < 33
+        ? ` | :warning: **Low Health!**`
+        : ``;
+
     message.channel.send(
-      `**${enemy.name}** deals \`${enemyDamage}\` damage to **${player.username}** | :drop_of_blood:\`${playerData.health}/${player.maxHealth}\``
+      `**${enemy.name}** deals \`${enemyDamage}\` damage to **${player.username}** | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\`${healthWarning}`
     );
 
     await player.update({ canAttack: true });
@@ -153,7 +173,13 @@ async function performAttack(message, config, player, game, server, attack) {
         `:skull_crossbones: ${message.author} **you have died!** :skull_crossbones:\nYour character has been completely reset. Try not to die again.`
       );
 
-      return player.erase();
+      await player.erase();
+      return game.createPlayer(
+        message.author,
+        prisma,
+        game,
+        player.unlockedCommands
+      );
     }
   }, game.random(1000, 3000));
 }

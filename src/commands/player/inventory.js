@@ -23,6 +23,6 @@ export default {
 
     game.fastEmbed(message, player, embed, `${player.username}'s Inventory`);
 
-    player.unlockCommand(message, server, "equipment");
+    player.unlockCommand(message, server, "iteminfo");
   },
 };

@@ -34,7 +34,9 @@ export default {
         thumbnail: { url: player.pfp },
         title: `Equipment`,
         //fields: fields,
-        description: description,
+        description:
+          description +
+          `\n\nEquip an item with \`${server.prefix}equip <item name>\``,
       };
 
       game.sendEmbed(message, embed);

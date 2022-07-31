@@ -33,7 +33,7 @@ export default {
 
     game.reply(
       message,
-      `you ate an **${item.name}** and healed **\`${heal}\`** points! | :drop_of_blood:\`${playerData.health}/${player.maxHealth}\``
+      `you ate an **${item.name}** and healed \`${heal}\` points! | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\``
     );
   },
 };

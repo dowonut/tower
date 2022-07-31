@@ -16,25 +16,36 @@ export default {
         `not a valid item. Check your items with \`${server.prefix}inventory\``
       );
 
-    let description = `${item.info}`;
+    const itemName = item.name.split(" ").join("_").toLowerCase();
+
+    let description = `
+*${item.info}*\n
+Category: \`${item.category}\``;
+
+    if (item.category == "Weapon") {
+      description += `\nWeapon Type: \`${game.titleCase(item.weaponType)}\``;
+      description += `\nDamage: \`${item.damage.value}\`${
+        config.emojis.damage[item.damage.type]
+      }`;
+    }
 
     if (item.health) {
-      description += `\n\nCan be eaten to regain \`${item.health}\` :drop_of_blood:`;
+      description += `\nCan be eaten to regain \`${item.health}\` ${config.emojis.health}`;
     }
 
     if (item.value)
-      description += `\n\nCan be sold to a merchant for \`${item.value}\` ${config.emojis.mark}`;
+      description += `\nResell value: \`${item.value}\` ${config.emojis.mark}`;
 
     const embed = {
       description,
-      thumbnail: { url: item.image ? item.image : null },
     };
 
     game.fastEmbed(
       message,
       player,
       embed,
-      `${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`
+      `${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`,
+      itemName
     );
 
     player.unlockCommands(message, server, ["sell", "eat"]);

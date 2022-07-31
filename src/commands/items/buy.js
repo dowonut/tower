@@ -97,5 +97,10 @@ export default {
         merchantItem.price * quantity
       }\` ${config.emojis.mark}`
     );
+
+    // Unlock equipment
+    if (["Weapon"].includes(item.category)) {
+      player.unlockCommand(message, server, "equipment");
+    }
   },
 };

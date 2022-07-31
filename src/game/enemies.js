@@ -10,7 +10,7 @@ class Enemy {
 
     this.getDamage = () => {
       // Base damage
-      const baseDamage = random(this.damage[0], this.damage[1]);
+      const baseDamage = random(this.damage.min, this.damage.max);
 
       // Damage multiplier
       const damageMultiplier = this.strength / 100 + 1;
@@ -29,25 +29,33 @@ export default {
     maxHealth: 5,
     strength: 1,
     defence: 1,
-    damage: [1, 3],
+    damage: {
+      min: 1,
+      max: 3,
+    },
     image: "https://imgur.com/HV0tsn9.png",
     loot: {
       Slimeball: {
         name: "Slimeball",
         dropChance: 100,
-        dropMin: 1,
-        dropMax: 3,
+        dropMin: 2,
+        dropMax: 4,
       },
     },
-    xpMin: 30,
-    xpMax: 40,
+    xp: {
+      min: 30,
+      max: 40,
+    },
   }),
   goblin: new Enemy({
     name: "Goblin",
-    maxHealth: 15,
+    maxHealth: 10,
     strength: 3,
     defence: 1,
-    damage: [3, 6],
+    damage: {
+      min: 3,
+      max: 6,
+    },
     image: "https://imgur.com/Fte78Qa.png",
     loot: {
       "Goblin Skin": {
@@ -57,7 +65,9 @@ export default {
         dropMax: 1,
       },
     },
-    xpMin: 40,
-    xpMax: 60,
+    xp: {
+      min: 40,
+      max: 60,
+    },
   }),
 };

@@ -11,10 +11,11 @@ export default {
     game,
     server
   ) => {
-    // Choose random enemy from floor
+    // Get player region
+    const region = player.getRegion();
 
     // Get all enemies on the current floor
-    const floorEnemies = floors[player.floor - 1].enemies;
+    const floorEnemies = region.enemies;
 
     // Get names and weights from enemies
     const enemyNames = floorEnemies.map((enemy) => enemy.name);

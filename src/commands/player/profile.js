@@ -35,31 +35,34 @@ PROGRESS
 
 EMOJI NAME HEALTH
 
+EMOJI NAME MARKS
+EMOJI NAME FLOOR
+NAME REGION
+
 EMOJI NAME STRENGTH
 EMOJI NAME DEFENCE
-EMOJI NAME ARCANE
+EMOJI NAME ARCANE`;
 
-EMOJI NAME MARKS
-EMOJI NAME FLOOR`;
-
+    // Create description
     let description = game.description(rawText, player, config, game);
 
+    // Check if player is currently in combat
     if (player.inCombat == true)
       description += `\n:dagger: **Currently in combat.**\n`;
 
+    // Check if player has unused stat points
     if (player.statpoints > 0)
-      description += `\n:low_brightness: **You have unassigned stat points! \n${config.emojis.blank} Check your stats with \`${server.prefix}stats\`**`;
+      description += `\n:low_brightness: **You have \`${player.statpoints}\` unassigned stat points! \n${config.emojis.blank} Check your stats with \`${server.prefix}stats\`**`;
 
+    // Create embed
     const embed = {
       color: config.botColor,
-      //title: player.username,
       author: {
         name: player.username + "#" + player.discriminator,
       },
       thumbnail: {
         url: player.pfp,
       },
-      //thumbnail: { url: player.pfp },
       description: description,
     };
 

@@ -36,7 +36,7 @@ export default {
 
     await player.giveItem(itemNameInput, -quantity);
 
-    await player.update({
+    const playerData = await player.update({
       marks: { increment: item.value * quantity },
     });
 
@@ -44,9 +44,11 @@ export default {
       message,
       `you sold \`${quantity}x\` **${item.name}** for \`${
         item.value * quantity
-      }\` ${config.emojis.mark}`
+      }\` ${config.emojis.mark} (Total: \`${playerData.marks}\` ${
+        config.emojis.mark
+      })`
     );
 
-    player.unlockCommand(message, server, "merchant");
+    player.unlockCommand(message, server, "merchants");
   },
 };

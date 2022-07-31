@@ -42,7 +42,7 @@ class Attack {
 
       // Log damage
       console.log(
-        `${player.username} damage: (${baseDamage} + ${damageBonus}) x ${damageMultiplier} = ${damage}`
+        `${player.username} deals damage: (${baseDamage} + ${damageBonus}) x ${damageMultiplier} = ${damage}`
       );
       return damage;
     };
@@ -93,6 +93,6 @@ export default {
     name: "Slash",
     type: "sword",
     description: "A simple swing of your sword.",
-    damage: { min: 5, max: 8, type: "slashing" },
+    damage: { min: 3, max: 6, type: "slashing" },
   }),
 };

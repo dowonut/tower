@@ -9,6 +9,7 @@ export default {
   async execute(message, args, prisma, config, player, game, server) {
     let commands = [];
     let commandFiles = [];
+    const authorPerms = message.channel.permissionsFor(message.author);
     function throughDirectory(directory, array) {
       fs.readdirSync(directory).forEach((file) => {
         const absolute = path.join(directory, file);
@@ -31,6 +32,9 @@ export default {
       Player: `
 **Player**
         `,
+      Location: `
+**Location**
+        `,
       Items: `
 **Items**
         `,
@@ -49,8 +53,8 @@ export default {
       if (
         command.ignoreInHelp !== true &&
         (player.unlockedCommands.includes(command.name) ||
-          command.category == "Admin" ||
-          command.category == "Settings")
+          command.category == "Settings" ||
+          (command.category == "Admin" && authorPerms.has(["ADMINISTRATOR"])))
       ) {
         let commandName = command.name;
         if (command.arguments)

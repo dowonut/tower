@@ -34,7 +34,7 @@ export default {
     description: "Has a rought texture and an unpleasant smell.",
     info: "A rough hide of skin collected by killing Goblins.",
     image: "https://imgur.com/EQmCvy0.png",
-    value: 3,
+    value: 5,
     canSell: true,
   }),
   "rusty sword": new Item({
@@ -42,7 +42,7 @@ export default {
     category: "Weapon",
     weaponType: "sword",
     description: "Not the sharpest tool in the shed.",
-    info: "An old rusty sword you picked up from a merchant. Kills better than your fist does.",
+    info: "An old rusty sword you picked up from a merchant. Kills better than your fist.",
     image: "",
     value: 8,
     canSell: true,

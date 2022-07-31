@@ -95,7 +95,7 @@ client.on("messageCreate", async (message) => {
   const authorPerms = message.channel.permissionsFor(message.author);
   if (command.permissions) {
     if (!authorPerms || !authorPerms.has(command.permissions)) {
-      return message.channel.send(":x: You are not worthy of this command.");
+      return message.channel.send(":x: You're not worthy of this command.");
     }
   }
 
@@ -119,23 +119,25 @@ client.on("messageCreate", async (message) => {
 
     // Check if user is admin
     if (command.category == "Admin" && !authorPerms.has(["ADMINISTRATOR"])) {
-      return message.channel.send(
-        `:x: **${player.username}**, this command requires admin permissions.`
-      );
+      return game.error(message, `this command requires admin permissions.`);
+    }
+
+    // Check if command is unlocked
+    if (
+      !player.unlockedCommands.includes(command.name) &&
+      !authorPerms.has(["ADMINISTRATOR"])
+    ) {
+      return game.error(message, `you haven't unlocked this command yet.`);
     }
 
     // Check if user is in combat
     if (player.inCombat == false && command.useInCombatOnly == true) {
-      return message.channel.send(
-        `:x: **${player.username}**, this command can only be used in combat.`
-      );
+      return game.error(message, `this command can only be used in combat.`);
     }
 
     // check if user is allowed to attack in combat
     if (player.canAttack == false && command.useInCombatOnly == true) {
-      return message.channel.send(
-        `:x: **${player.username}**, you can't do this right now.`
-      );
+      return game.error(message, `you can't do this right now.`);
     }
 
     if (
@@ -143,9 +145,7 @@ client.on("messageCreate", async (message) => {
       command.useInCombat !== true &&
       command.useInCombatOnly !== true
     ) {
-      return message.channel.send(
-        `:x: **${player.username}**, this command can't be used while in combat.`
-      );
+      return game.error(message, `this command can't be used while in combat.`);
     }
   } else {
     var player = null;
@@ -156,7 +156,7 @@ client.on("messageCreate", async (message) => {
     const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
     if (now < expirationTime) {
       return message.channel.send(
-        `:hourglass_flowing_sand: **${message.author.username}**, wait before using this command again.`
+        `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`
       );
     }
   }

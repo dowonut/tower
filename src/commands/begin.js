@@ -6,39 +6,9 @@ export default {
   async execute(message, args, prisma, config, player, game, server) {
     const auth = message.author;
 
-    if (player)
-      return message.channel.send(
-        `:x: **${auth.username}**, ` + "you already have a character."
-      );
+    if (player) return game.error(message, "you already have a character.");
 
-    // Create new user in database
-    const playerData = await prisma.player.create({
-      data: {
-        discordId: auth.id,
-        username: auth.username,
-        discriminator: auth.discriminator,
-        pfp: auth.displayAvatarURL({
-          dynamic: false,
-          size: 128,
-          format: "png",
-        }),
-        unlockedCommands: ["erase", "begin", "profile", "explore", "help"],
-      },
-    });
-
-    await prisma.attack.createMany({
-      data: [
-        { playerId: playerData.id, name: "Punch" },
-        { playerId: playerData.id, name: "Slash" },
-        //{ playerId: playerData.id, name: "Uppercut" },
-        //{ playerId: playerData.id, name: "Fire Breath" },
-      ],
-    });
-
-    player = { ...playerData, ...game.player, prisma };
-
-    // Give apple
-    player.giveItem("Apple");
+    player = await game.createPlayer(auth, prisma, game);
 
     game.sendEmbed(message, {
       thumbnail: { url: player.pfp },

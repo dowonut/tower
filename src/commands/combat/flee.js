@@ -10,6 +10,6 @@ export default {
     player.exitCombat();
     player.killEnemy(enemy);
 
-    message.channel.send("you ran away like a fucking loser");
+    game.reply(message, "you ran away like a fucking wimp.");
   },
 };
