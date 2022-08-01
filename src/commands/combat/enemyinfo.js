@@ -14,7 +14,7 @@ export default {
       },
       author: {
         icon_url: player.pfp,
-        name: enemy.name + ` (fighting ` + player.username + `)`,
+        name: enemy.getName() + ` (fighting ` + player.username + `)`,
       },
       description: `
 :drop_of_blood: Health: **\`${enemy.health} / ${enemy.maxHealth}\`**

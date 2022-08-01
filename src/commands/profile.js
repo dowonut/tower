@@ -2,7 +2,7 @@ export default {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
-  category: "Player",
+  //  category: "General",
   useInCombat: true,
   async execute(message, args, prisma, config, player, game, server) {
     // update user info if outdated

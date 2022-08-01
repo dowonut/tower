@@ -41,15 +41,15 @@ export default {
           } else if (item == "STRENGTH") {
             variable = player.strength;
             name = "Strength: ";
-            emoji = config.emojis.strength;
+            emoji = config.emojis.stats.strength;
           } else if (item == "DEFENCE") {
             variable = player.defence;
             name = "Defence: ";
-            emoji = config.emojis.defence;
+            emoji = config.emojis.stats.defence;
           } else if (item == "ARCANE") {
             variable = player.arcane;
             name = "Arcane: ";
-            emoji = config.emojis.arcane;
+            emoji = config.emojis.stats.arcane;
           } else if (item == "PROGRESS") {
             variable = game.progressBar(
               player.xp,

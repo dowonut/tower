@@ -14,7 +14,9 @@ export default {
       const quantity = item.quantity > 1 ? `\`x${item.quantity}\` | ` : ``;
       const equipped = item.equipped ? `\`Equipped\` | ` : ``;
 
-      description += `**${item.name}** | ${equipped}${quantity}*${item.description}*\n`;
+      description += `**${item.getName()}** | ${equipped}${quantity}*${
+        item.description
+      }*\n`;
     }
 
     const embed = {

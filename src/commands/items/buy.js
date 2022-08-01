@@ -93,7 +93,7 @@ export default {
     // Send buy message
     game.reply(
       message,
-      `you bought \`${quantity}x\` **${item.name}** for \`${
+      `you bought \`${quantity}x\` **${item.getName()}** for \`${
         merchantItem.price * quantity
       }\` ${config.emojis.mark}`
     );

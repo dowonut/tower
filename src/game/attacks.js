@@ -1,4 +1,5 @@
 import randomFunction from "../functions/random.js";
+import game from "../functions/titleCase.js";
 import { emojis } from "../config.js";
 const random = randomFunction.random;
 
@@ -7,6 +8,11 @@ class Attack {
     for (const [key, value] of Object.entries(object)) {
       this[key] = value;
     }
+
+    // Get attack name
+    this.getName = () => {
+      return game.titleCase(this.name);
+    };
 
     // Calculate base attack damage
     this.baseDamage = async () => {
@@ -68,9 +74,9 @@ class Attack {
   }
 }
 
-export default {
-  punch: new Attack({
-    name: "Punch",
+export default [
+  new Attack({
+    name: "punch",
     type: "unarmed",
     description: "A simple punch using your fist.",
     damage: { min: 1, max: 3, type: "bludgeoning" },
@@ -89,10 +95,16 @@ export default {
   //   //cooldown: 10,
   //   damage: { min: 15, max: 20, type: "fire" },
   // }),
-  slash: new Attack({
-    name: "Slash",
+  new Attack({
+    name: "slash",
     type: "sword",
     description: "A simple swing of your sword.",
     damage: { min: 3, max: 6, type: "slashing" },
   }),
-};
+  new Attack({
+    name: "headsmasher",
+    type: "rock",
+    description: "Brutally smash a rock against your enemy's head.",
+    damage: { min: 10, max: 15, type: "bludgeoning" },
+  }),
+];

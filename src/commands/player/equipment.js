@@ -14,9 +14,9 @@ export default {
       let description = ``;
 
       for (const eqSlot of ["hand", "head", "torso", "legs", "feet"]) {
-        const item = items[player[eqSlot]];
+        const item = game.getItem(player[eqSlot]);
         const key = game.titleCase(eqSlot);
-        const value = player[eqSlot] ? item.name : " ";
+        const value = player[eqSlot] ? item.getName() : " ";
         description += `\n**${key}:** \`${value}\``;
 
         if (player[eqSlot]) {
@@ -44,7 +44,7 @@ export default {
       // If provided arguments for equipping
 
       // Check if item exists
-      if (!items[input.toLowerCase()])
+      if (!game.getItem(input))
         return game.reply(message, "this item doesn't exist.");
 
       // Fetch item from inventory
@@ -68,7 +68,7 @@ export default {
           data: { equipped: false },
         });
 
-        return game.reply(message, `unequipped **${item.name}**`);
+        return game.reply(message, `unequipped **${item.getName()}**`);
       }
 
       // Equip item
@@ -80,7 +80,7 @@ export default {
         },
         data: { equipped: true },
       });
-      return game.reply(message, `equipped **${item.name}**`);
+      return game.reply(message, `equipped **${item.getName()}**`);
     }
   },
 };

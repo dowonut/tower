@@ -16,9 +16,11 @@ export const emojis = {
   staircase: "<:staircase:987744955067949126>",
   plus: "<:plus:987810098183303208>",
   health: "<:health:1002667456684359721>",
-  strength: "<:strength:1002671427914313880>",
-  defence: "<:defence:1002673157523648663>",
-  arcane: "<:arcane:1002680877161123850>",
+  stats: {
+    strength: "<:strength:1002671427914313880>",
+    defence: "<:defence:1002673157523648663>",
+    arcane: "<:arcane:1002680877161123850>",
+  },
   damage: {
     fire: "<:fire_damage:988863829146468352>",
     water: "<:water_damage:988862206651301898>",
@@ -31,6 +33,7 @@ export const emojis = {
     slashing: "<:slashing_damage:988918963595542589>",
   },
   activities: {
+    mining: ":pick:",
     fishing: ":fish:",
     woodcutting: ":evergreen_tree:",
   },
@@ -43,8 +46,14 @@ export const statInfo = {
   arcane: "Increases magical damage output by `1%`",
 };
 
+// Player level formula
 export const nextLevelXp = (lvl) => {
-  return 5 * (lvl ^ 2) + 50 * lvl + 100;
+  return 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
+};
+
+// Skill level formula
+export const nextLevelXpSkill = (lvl) => {
+  return 5 * Math.pow(lvl, 2) + 20 * lvl + 100;
 };
 
 // Choose random entry from array

@@ -2,6 +2,7 @@ export default {
   name: "ascend",
   aliases: ["as"],
   description: "Advance to the next floor. Requires 4 key fragments.",
+  category: "Location",
   async execute(message, args, prisma, config, player, game, server) {
     game.reply(
       message,

@@ -22,8 +22,21 @@ export default {
 
     await prisma.attack.createMany({
       data: [
-        { playerId: playerData.id, name: "Punch" },
-        { playerId: playerData.id, name: "Slash" },
+        { playerId: playerData.id, name: "punch" },
+        { playerId: playerData.id, name: "slash" },
+        { playerId: playerData.id, name: "headsmasher" },
+      ],
+    });
+
+    await prisma.skill.createMany({
+      data: [
+        { playerId: playerData.id, name: "unarmed combat" },
+        // { playerId: playerData.id, name: "melee combat" },
+        // { playerId: playerData.id, name: "ranged combat" },
+        // { playerId: playerData.id, name: "magic" },
+        // { playerId: playerData.id, name: "mining" },
+        // { playerId: playerData.id, name: "fishing" },
+        // { playerId: playerData.id, name: "woodcutting" },
       ],
     });
 

@@ -15,7 +15,7 @@ export default {
           item.trackingStock = true;
         }
 
-        let itemData = { ...itemInfo[key], ...item };
+        let itemData = { ...itemInfo.find((x) => x.name == key), ...item };
 
         items.push(itemData);
       }

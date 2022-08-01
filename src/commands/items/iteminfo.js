@@ -20,7 +20,7 @@ export default {
 
     let description = `
 *${item.info}*\n
-Category: \`${item.category}\``;
+Category: \`${game.titleCase(item.category)}\``;
 
     if (item.category == "Weapon") {
       description += `\nWeapon Type: \`${game.titleCase(item.weaponType)}\``;
@@ -44,8 +44,8 @@ Category: \`${item.category}\``;
       message,
       player,
       embed,
-      `${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`,
-      itemName
+      `${item.getName()} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`,
+      item.image ? itemName : undefined
     );
 
     player.unlockCommands(message, server, ["sell", "eat"]);

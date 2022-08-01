@@ -24,8 +24,7 @@ export default {
     // Return if no item
     if (!item) return game.reply(message, "not a valid item.");
 
-    if (item.canSell == false)
-      return game.reply(message, "you can't sell this item.");
+    if (!item.value) return game.reply(message, "you can't sell this item.");
 
     if (quantity == "all") {
       quantity = item.quantity;

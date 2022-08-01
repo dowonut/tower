@@ -3,16 +3,6 @@ export default {
   description: "Explore your current floor.",
   aliases: ["e"],
   async execute(message, args, prisma, config, player, game, server) {
-    // await game.startEnemyEncounter(
-    //   message,
-    //   args,
-    //   prisma,
-    //   config,
-    //   player,
-    //   game,
-    //   server
-    // );
-
     // Get current region
     const region = player.getRegion();
 
@@ -41,12 +31,17 @@ export default {
     // Get random output from weights
     let { item } = game.weightedRandom(options, weights);
 
+    console.log("Exploring outcomes:");
+    console.log("Options:", options, "Weights:", weights);
+    console.log("Outcome:", item);
+    console.log("----------------------------");
+
     // Log output
     switch (item) {
       case "enemies":
+        // Start random enemy encounter in region
         await game.startEnemyEncounter(
           message,
-          args,
           prisma,
           config,
           player,
@@ -55,10 +50,11 @@ export default {
         );
         break;
       case "loot":
-        return console.log("give loot");
-        await player.giveRandomLoot();
+        // Give the player some random loot from that region
+        await player.giveRandomLoot(message, game);
         break;
       case "merchants":
+        // Unlock a new random merchant from that region
         return console.log("find merchant");
         await player.unlockRandomMerchant();
         break;

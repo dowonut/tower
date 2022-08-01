@@ -20,15 +20,15 @@ export default {
 
       // Check if player is at current region and update title
       if (player.region !== region.name) {
-        description += `\n**${regionName}**`;
+        description += `\n${regionName}`;
       } else {
-        description += `\n:point_right: **${regionName}**`;
+        description += `\n**${regionName}**`;
       }
 
       // Check if region is peaceful
-      if (!region.enemies) {
-        description += ` | \`Peaceful\``;
-      }
+      // if (!region.enemies) {
+      //   description += ` | \`Peaceful\``;
+      // }
 
       // Check if region has activities
       if (region.activities) {

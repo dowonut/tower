@@ -42,7 +42,7 @@ export default {
     // Send stat up message
     game.reply(
       message,
-      `increased ${config.emojis[statInput]} **${statName}** to \`${player[statInput]}\``
+      `increased ${config.emojis.stats[statInput]} **${statName}** to \`${player[statInput]}\``
     );
   },
 };

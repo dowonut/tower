@@ -2,6 +2,7 @@ import enemies from "../game/enemies.js";
 import items from "../game/items.js";
 import attacks from "../game/attacks.js";
 import floors from "../game/floors.js";
+import skills from "../game/skills.js";
 
 import * as config from "../config.js";
 
@@ -28,7 +29,8 @@ export default {
 
     // Give item
     giveItem: async function (itemName, quantity) {
-      const item = items[itemName.toLowerCase()];
+      const item = items.find((x) => x.name == itemName.toLowerCase());
+
       const itemQuantity = quantity ? quantity : 1;
 
       const playerItem = await this.prisma.inventory.findMany({
@@ -62,7 +64,7 @@ export default {
         newItem = await this.prisma.inventory.create({
           data: {
             playerId: this.id,
-            name: item.name,
+            name: item.getName(),
             quantity: itemQuantity,
           },
         });
@@ -131,7 +133,9 @@ export default {
       });
       if (!itemRef[0]) return undefined;
 
-      const itemData = items[itemRef[0].name.toLowerCase()];
+      const itemData = items.find(
+        (x) => x.name == itemRef[0].name.toLowerCase()
+      );
 
       return { ...itemData, ...itemRef[0] };
     },
@@ -144,7 +148,9 @@ export default {
 
       let itemArray = [];
       for (const playerItem of playerItems) {
-        const itemData = items[playerItem.name.toLowerCase()];
+        const itemData = items.find(
+          (x) => x.name == playerItem.name.toLowerCase()
+        );
         const item = { ...playerItem, ...itemData };
 
         itemArray.push(item);
@@ -166,7 +172,9 @@ export default {
         },
       });
 
-      const itemData = items[itemRef[0].name.toLowerCase()];
+      const itemData = items.find(
+        (x) => x.name == itemRef[0].name.toLowerCase()
+      );
 
       return { ...itemData, ...itemRef[0] };
     },
@@ -181,7 +189,9 @@ export default {
       });
       if (!attackRef[0]) return undefined;
 
-      const attackData = attacks[attackRef[0].name.toLowerCase()];
+      const attackData = attacks.find(
+        (x) => x.name == attackRef[0].name.toLowerCase()
+      );
 
       let attack = { ...attackData, ...attackRef[0] };
 
@@ -212,7 +222,9 @@ export default {
       let attackArray = [];
 
       for (const playerAttack of playerAttacks) {
-        const attackData = attacks[playerAttack.name.toLowerCase()];
+        const attackData = attacks.find(
+          (x) => x.name == playerAttack.name.toLowerCase()
+        );
         const attack = { ...playerAttack, ...attackData };
 
         attackArray.push(attack);
@@ -228,6 +240,41 @@ export default {
       }
 
       return finalArray;
+    },
+
+    // Get specific skill
+    getSkill: async function (skillName) {
+      const skillRef = await this.prisma.skill.findMany({
+        where: {
+          playerId: this.id,
+          name: { equals: skillName, mode: "insensitive" },
+        },
+      });
+      if (!skillRef[0]) return undefined;
+
+      const skillData = skills.find((x) => x.name == skillRef[0].name);
+
+      let skill = { ...skillData, ...skillRef[0] };
+
+      return skill;
+    },
+
+    // Get all player skills
+    getSkills: async function () {
+      const playerSkills = await this.prisma.skill.findMany({
+        where: { playerId: this.id },
+      });
+
+      let skillArray = [];
+
+      for (const playerSkill of playerSkills) {
+        const skillData = skills.find((x) => x.name == playerSkill.name);
+        const skill = { ...playerSkill, ...skillData };
+
+        skillArray.push(skill);
+      }
+
+      return skillArray;
     },
 
     // Deal damage to player
@@ -263,7 +310,9 @@ export default {
       const enemyInfo = await this.prisma.enemy.findUnique({
         where: { id: this.fighting },
       });
-      const enemyType = enemies[enemyInfo.name.toLowerCase()];
+      const enemyType = enemies.find(
+        (x) => x.name == enemyInfo.name.toLowerCase()
+      );
 
       const enemy = { ...enemyInfo, ...enemyType };
 
@@ -295,7 +344,7 @@ export default {
           const quantity = game.random(lootInfo.dropMin, lootInfo.dropMax);
 
           this.giveItem(lootInfo.name, quantity);
-          const item = items[lootInfo.name.toLowerCase()];
+          const item = items.find((x) => x.name == lootInfo.name.toLowerCase());
           loots.push({ ...item, quantity });
         }
       }
@@ -307,9 +356,9 @@ export default {
       for (const item of loots) {
         //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
         if (item.quantity > 1) {
-          lootList += `\\> **${item.name}** | \`x${item.quantity}\`\n`;
+          lootList += `\\> **${item.getName()}** | \`x${item.quantity}\`\n`;
         } else {
-          lootList += `\\> **${item.name}**\n`;
+          lootList += `\\> **${item.getName()}**\n`;
         }
       }
       lootList += `\nXP: \`+${xp}\``;
@@ -327,6 +376,32 @@ export default {
 
       // Give xp to player
       await this.giveXp(xp, message, server, game);
+    },
+
+    // Give the player some random loot from their current region
+    giveRandomLoot: async function (message, game) {
+      // Fetch region and format region name
+      const region = this.getRegion();
+      const regionName = game.titleCase(region.name);
+
+      // Fetch item from weights
+      const item = game.getWeightedArray(region.loot);
+      const itemName = game.titleCase(item.name);
+
+      // Determine item quantity
+      const itemQuantity = item.min ? game.random(item.min, item.max) : 1;
+
+      // Give item to player
+      await this.giveItem(item.name, itemQuantity);
+
+      // Format quantity text
+      let quantityText = itemQuantity > 1 ? `\`${itemQuantity}x\` ` : ``;
+
+      // Send message to player
+      return game.reply(
+        message,
+        `you explore the **${regionName}** and find ${quantityText}**${itemName}**`
+      );
     },
 
     // Give xp to player

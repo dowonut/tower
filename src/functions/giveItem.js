@@ -2,7 +2,7 @@ import items from "../game/items.js";
 
 export default {
   giveItem: async (user, prisma, itemName, quantity) => {
-    const item = items[itemName.toLowerCase()];
+    const item = items.find((x) => x.name == itemName.toLowerCase());
     const itemQuantity = quantity ? quantity : 1;
 
     const playerItem = await prisma.inventory.findMany({

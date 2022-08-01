@@ -4,7 +4,6 @@ import floors from "../game/floors.js";
 export default {
   startEnemyEncounter: async (
     message,
-    args,
     prisma,
     config,
     player,
@@ -17,15 +16,13 @@ export default {
     // Get all enemies on the current floor
     const floorEnemies = region.enemies;
 
-    // Get names and weights from enemies
-    const enemyNames = floorEnemies.map((enemy) => enemy.name);
-    const enemyWeights = floorEnemies.map((enemy) => enemy.weight);
-
     // Select enemy randomly based on weights
-    const chosenEnemy = game.weightedRandom(enemyNames, enemyWeights);
+    const chosenEnemy = game.getWeightedArray(floorEnemies);
 
     // Get data from chosen enemy
-    const enemyData = enemies[chosenEnemy.item.toLowerCase()];
+    const enemyData = enemies.find(
+      (x) => x.name == chosenEnemy.name.toLowerCase()
+    );
 
     // Create embed for start of encounter
     const embed = {
@@ -34,7 +31,7 @@ export default {
       },
       color: config.botColor,
       author: {
-        name: `${enemyData.name} has appeared!`,
+        name: `${enemyData.getName()} has appeared!`,
         icon_url: player.pfp,
       },
       description: `

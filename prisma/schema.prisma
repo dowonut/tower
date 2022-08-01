@@ -32,6 +32,7 @@ model Player {
   inventory     Inventory[]
   attacks       Attack[]
   merchantStock merchantStock[]
+  skills        Skill[]
   level         Int      @default(0)
   xp            Int      @default(0)
   marks         Int      @default(0) 
@@ -53,6 +54,15 @@ model Player {
   fighting      Int?
   unlockedCommands String[]
   statpoints   Int       @default(0)
+}
+
+model Skill {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId      Int
+  name          String
+  level         Int       @default(0)
+  xp            Int       @default(0)
 }
 
 model Inventory {

@@ -47,7 +47,7 @@ async function listAttacks(message, config, player, game, server) {
   for (const [attackName, attack] of Object.entries(attacks)) {
     if (attack.remCooldown < 1) {
       description += `
-**${attack.name}** | ${attack.description}
+**${attack.getName()}** | ${attack.description}
 Damage: ${await attack.damageInfo(player)}\n`;
 
       if (attack.cooldown)
@@ -98,7 +98,7 @@ async function performAttack(
   await message.channel.send(
     `**${player.username}** used **${attack.name}** dealing \`${damage}\`${
       config.emojis.damage[attack.damage.type]
-    } damage to **${enemy.name}** | ${
+    } damage to **${enemy.getName()}** | ${
       config.emojis.health
     }\`${remainingHealth}/${enemy.maxHealth}\``
   );
@@ -162,7 +162,11 @@ async function performAttack(
         : ``;
 
     message.channel.send(
-      `**${enemy.name}** deals \`${enemyDamage}\` damage to **${player.username}** | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\`${healthWarning}`
+      `**${enemy.getName()}** deals \`${enemyDamage}\` damage to **${
+        player.username
+      }** | ${config.emojis.health}\`${playerData.health}/${
+        player.maxHealth
+      }\`${healthWarning}`
     );
 
     await player.update({ canAttack: true });

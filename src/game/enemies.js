@@ -1,4 +1,5 @@
 import randomFunction from "../functions/random.js";
+import game from "../functions/titleCase.js";
 import { emojis } from "../config.js";
 const random = randomFunction.random;
 
@@ -7,6 +8,10 @@ class Enemy {
     for (const [key, value] of Object.entries(object)) {
       this[key] = value;
     }
+
+    this.getName = () => {
+      return game.titleCase(this.name);
+    };
 
     this.getDamage = () => {
       // Base damage
@@ -23,9 +28,9 @@ class Enemy {
   }
 }
 
-export default {
-  slime: new Enemy({
-    name: "Slime",
+export default [
+  new Enemy({
+    name: "slime",
     maxHealth: 5,
     strength: 1,
     defence: 1,
@@ -34,20 +39,20 @@ export default {
       max: 3,
     },
     image: "https://imgur.com/HV0tsn9.png",
-    loot: {
-      Slimeball: {
-        name: "Slimeball",
+    loot: [
+      {
+        name: "slimeball",
         dropChance: 100,
-        dropMin: 2,
-        dropMax: 4,
+        min: 2,
+        max: 4,
       },
-    },
+    ],
     xp: {
       min: 30,
       max: 40,
     },
   }),
-  goblin: new Enemy({
+  new Enemy({
     name: "Goblin",
     maxHealth: 10,
     strength: 3,
@@ -57,17 +62,17 @@ export default {
       max: 6,
     },
     image: "https://imgur.com/Fte78Qa.png",
-    loot: {
-      "Goblin Skin": {
-        name: "Goblin Skin",
+    loot: [
+      {
+        name: "goblin skin",
         dropChance: 100,
-        dropMin: 1,
-        dropMax: 1,
+        min: 1,
+        max: 1,
       },
-    },
+    ],
     xp: {
       min: 40,
       max: 60,
     },
   }),
-};
+];

@@ -15,7 +15,7 @@ export default [
         description:
           "Lush rolling fields... with strange slimy creatures everywhere.",
         enemies: [{ name: "slime", weight: 100 }],
-        loot: [{ name: "slimeball", weight: 100 }],
+        loot: [{ name: "slimeball", weight: 100, min: 1, max: 3 }],
       },
       {
         name: "goblin caves",
@@ -26,10 +26,11 @@ export default [
       },
       {
         name: "lush forest",
-        description: "A pleasant forest wish a shallow pond.",
+        description:
+          "A pleasant forest with a shallow pond. Perfect place to get some wood or do some fishing.",
         activities: [{ name: "fishing" }, { name: "woodcutting" }],
         loot: [
-          { name: "stick", weight: 60 },
+          { name: "stick", weight: 60, min: 1, max: 3 },
           { name: "apple", weight: 40 },
         ],
       },
@@ -43,22 +44,11 @@ export default [
           { name: "cartographer" },
         ],
         loot: [
-          { name: "cloth", weight: 20 },
+          { name: "fabric", weight: 20, min: 1, max: 2 },
           { name: "leather", weight: 20 },
           { name: "stick", weight: 60 },
         ],
       },
     ],
-    // enemies: [
-    //   {
-    //     name: "Slime",
-    //     weight: 80,
-    //   },
-    //   {
-    //     name: "Goblin",
-    //     weight: 20,
-    //   },
-    // ],
-    //activities: [{ name: "Fishing" }, { name: "Woodcutting" }],
   }),
 ];
