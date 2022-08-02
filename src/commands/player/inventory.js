@@ -11,12 +11,18 @@ export default {
     let description = ``;
 
     for (const item of items) {
-      const quantity = item.quantity > 1 ? `\`x${item.quantity}\` | ` : ``;
-      const equipped = item.equipped ? `\`Equipped\` | ` : ``;
+      const quantity = item.quantity > 1 ? `\`x${item.quantity}\`` : undefined;
+      const equipped = item.equipped ? `\`Equipped\`` : undefined;
 
-      description += `**${item.getName()}** | ${equipped}${quantity}*${
-        item.description
-      }*\n`;
+      let emoji = config.emojis.items[item.name]
+        ? config.emojis.items[item.name]
+        : config.emojis.blank;
+
+      description += `\n${emoji} **${item.getName()}**`;
+
+      if (quantity) description += " | " + quantity;
+      if (equipped) description += " | " + equipped;
+      if (item.description) description += " | " + `*${item.description}*`;
     }
 
     const embed = {
@@ -25,6 +31,6 @@ export default {
 
     game.fastEmbed(message, player, embed, `${player.username}'s Inventory`);
 
-    player.unlockCommand(message, server, "iteminfo");
+    player.unlockCommands(message, server, ["iteminfo"]);
   },
 };

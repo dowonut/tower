@@ -1,7 +1,13 @@
 export default {
-  sendEmbed: (message, embed) => {
-    message.channel.send({
-      embeds: [embed],
-    });
+  sendEmbed: (message, embed, file) => {
+    if (file)
+      message.channel.send({
+        embeds: [embed],
+        files: [file],
+      });
+    else
+      message.channel.send({
+        embeds: [embed],
+      });
   },
 };

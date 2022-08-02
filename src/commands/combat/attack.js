@@ -96,18 +96,25 @@ async function performAttack(
 
   // Send damage message
   await message.channel.send(
-    `**${player.username}** used **${attack.name}** dealing \`${damage}\`${
+    `**${player.username}** used **${attack.getName()}** dealing \`${damage}\`${
       config.emojis.damage[attack.damage.type]
     } damage to **${enemy.getName()}** | ${
       config.emojis.health
     }\`${remainingHealth}/${enemy.maxHealth}\``
   );
 
+  // Give skill xp
+  if (attack.type == "unarmed") {
+    const skillXp = game.random(5, 10);
+
+    await player.giveSkillXp(skillXp, "unarmed combat", message, game);
+  }
+
   // Send typing indicator
   await message.channel.sendTyping();
 
   // Update all cooldowns
-  const newAttacks = await player.prisma.attack.updateMany({
+  await player.prisma.attack.updateMany({
     where: {
       playerId: player.id,
       remCooldown: { gt: 0 },
@@ -134,11 +141,11 @@ async function performAttack(
     // Remove enemy from database
     player.killEnemy();
 
-    // Unlock new commands
-    player.unlockCommands(message, server, ["inventory"]);
-
     // Give loot to player
     player.enemyLoot(enemy, game, server, message);
+
+    // Unlock new commands
+    player.unlockCommands(message, server, ["inventory", "skills"]);
 
     // Exit out of combat
     return player.exitCombat();
@@ -149,7 +156,7 @@ async function performAttack(
 
   // Update player health
   const playerData = await player.update({
-    health: { increment: -enemyDamage },
+    health: { increment: -enemyDamage.value },
     canAttack: false,
   });
 
@@ -162,11 +169,11 @@ async function performAttack(
         : ``;
 
     message.channel.send(
-      `**${enemy.getName()}** deals \`${enemyDamage}\` damage to **${
-        player.username
-      }** | ${config.emojis.health}\`${playerData.health}/${
-        player.maxHealth
-      }\`${healthWarning}`
+      `**${enemy.getName()}** deals \`${enemyDamage.value}\`${
+        config.emojis.damage[enemyDamage.type]
+      } damage to **${player.username}** | ${config.emojis.health}\`${
+        playerData.health
+      }/${player.maxHealth}\`${healthWarning}`
     );
 
     await player.update({ canAttack: true });

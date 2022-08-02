@@ -90,6 +90,7 @@ export default {
       },
     };
 
-    game.sendEmbed(message, embed);
+    message.author.send({ embeds: [embed] });
+    game.reply(message, `check your DMs!`);
   },
 };

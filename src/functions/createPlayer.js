@@ -31,9 +31,11 @@ export default {
     await prisma.skill.createMany({
       data: [
         { playerId: playerData.id, name: "unarmed combat" },
-        // { playerId: playerData.id, name: "melee combat" },
-        // { playerId: playerData.id, name: "ranged combat" },
-        // { playerId: playerData.id, name: "magic" },
+        { playerId: playerData.id, name: "sword combat" },
+        { playerId: playerData.id, name: "axe combat" },
+        { playerId: playerData.id, name: "spear combat" },
+        { playerId: playerData.id, name: "ranged combat" },
+        //{ playerId: playerData.id, name: "magic" },
         // { playerId: playerData.id, name: "mining" },
         // { playerId: playerData.id, name: "fishing" },
         // { playerId: playerData.id, name: "woodcutting" },
@@ -43,7 +45,15 @@ export default {
     const player = { ...playerData, ...game.player, prisma };
 
     // Give apple
-    await player.giveItem("Apple");
+    await prisma.inventory.createMany({
+      data: [
+        {
+          playerId: player.id,
+          name: "apple",
+          quantity: 1,
+        },
+      ],
+    });
 
     return player;
   },

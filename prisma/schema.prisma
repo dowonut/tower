@@ -48,6 +48,7 @@ model Player {
   strength      Int      @default(0)
   defence       Int      @default(0)
   arcane        Int      @default(0)
+  vitality      Int      @default(0)
   // Misc
   inCombat      Boolean  @default(false)
   canAttack     Boolean  @default(true)

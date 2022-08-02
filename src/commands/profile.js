@@ -28,7 +28,7 @@ export default {
     }
 
     // format profile embed
-    const rawText = `
+    let rawText = `
 NAME LEVEL
 NAME XP
 PROGRESS
@@ -37,11 +37,14 @@ EMOJI NAME HEALTH
 
 EMOJI NAME MARKS
 EMOJI NAME FLOOR
-NAME REGION
+NAME REGION`;
 
+    if (player.level > 0)
+      rawText += `\n
 EMOJI NAME STRENGTH
 EMOJI NAME DEFENCE
-EMOJI NAME ARCANE`;
+EMOJI NAME ARCANE
+EMOJI NAME VITALITY`;
 
     // Create description
     let description = game.description(rawText, player, config, game);

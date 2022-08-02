@@ -24,11 +24,10 @@ export default {
       (x) => x.name == chosenEnemy.name.toLowerCase()
     );
 
+    const image = enemyData.getImage();
+
     // Create embed for start of encounter
-    const embed = {
-      thumbnail: {
-        url: enemyData.image,
-      },
+    let embed = {
       color: config.botColor,
       author: {
         name: `${enemyData.getName()} has appeared!`,
@@ -37,12 +36,14 @@ export default {
       description: `
       
 What do you want to do?
-\`${server.prefix}enemyinfo | ${server.prefix}attack | ${server.prefix}flee\`
+\`${server.prefix}attack | ${server.prefix}flee | ${server.prefix}enemyinfo\`
             `,
     };
 
+    if (image) embed.thumbnail = { url: `attachment://${image.name}` };
+
     // Send embed
-    game.sendEmbed(message, embed);
+    game.sendEmbed(message, embed, image);
 
     // Create enemy in database
     const enemy = await prisma.enemy.create({
@@ -55,9 +56,9 @@ What do you want to do?
 
     await player.unlockCommands(message, server, [
       "attack",
-      "enemyinfo",
       "flee",
-      "status",
+      "enemyinfo",
+      //"status",
     ]);
 
     player.enterCombat(enemy);

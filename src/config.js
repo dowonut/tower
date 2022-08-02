@@ -1,7 +1,7 @@
 export const prefix = "-";
 export const status = prefix + "help";
-export const botColor = "#dbbbff";
-export const embedColor = "#2f3136"; //"#191919";
+//export const botColor = "#dbbbff";
+export const botColor = "#2f3136"; //"#191919";
 export const green = "#C0EDA6";
 export const red = "#FD5D5D";
 export const purple = "#9600ff";
@@ -10,7 +10,7 @@ export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
 export const emojis = {
   blank: "<:blank:1002523614345703424>",
-  mark: "<:mark:987827308234690701>",
+  mark: "<:mark:1004049049525174352>",
   silver_mark: "<:silver_mark:986634284355969026>",
   xp: "<:xp:987750164481597480>",
   staircase: "<:staircase:987744955067949126>",
@@ -20,6 +20,7 @@ export const emojis = {
     strength: "<:strength:1002671427914313880>",
     defence: "<:defence:1002673157523648663>",
     arcane: "<:arcane:1002680877161123850>",
+    vitality: "<:vitality:1003975449401110538>",
   },
   damage: {
     fire: "<:fire_damage:988863829146468352>",
@@ -37,6 +38,13 @@ export const emojis = {
     fishing: ":fish:",
     woodcutting: ":evergreen_tree:",
   },
+  items: {
+    apple: "<:apple:1004006381927547060>",
+    slimeball: "<:slimeball:1004006395487723600>",
+    "grey shard": "<:grey_shard:1001631127980748800>",
+    "rusty sword": "<:rusty_sword:1004051535749197925>",
+    "goblin skin": "<:goblin_skin:1004067309792538655>",
+  },
   enemies: {},
 };
 
@@ -44,6 +52,7 @@ export const statInfo = {
   strength: "Increases physical damage output by `1%`",
   defence: "Decreases physical damage taken by `1%`",
   arcane: "Increases magical damage output by `1%`",
+  vitality: "Increase max health by `1`",
 };
 
 // Player level formula

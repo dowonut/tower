@@ -16,7 +16,7 @@ export default {
         `not a valid item. Check your items with \`${server.prefix}inventory\``
       );
 
-    if (item.category !== "Food")
+    if (item.category !== "food")
       return game.reply(message, `this isn't food idiot.`);
 
     let heal = item.health;
@@ -33,7 +33,9 @@ export default {
 
     game.reply(
       message,
-      `you ate an **${item.name}** and healed \`${heal}\` points! | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\``
+      `you ate an **${item.getName()}** and healed \`${heal}\` points! | ${
+        config.emojis.health
+      }\`${playerData.health}/${player.maxHealth}\``
     );
   },
 };

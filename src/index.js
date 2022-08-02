@@ -101,10 +101,8 @@ client.on("messageCreate", async (message) => {
 
   let playerData = await prisma.player.findUnique({
     where: { discordId: message.author.id },
-    //include: { inventory: true, attacks: true, merchantStock: true },
+    include: { inventory: true, attacks: true, merchantStock: true },
   });
-
-  //console.log(playerData);
 
   // Check if user has player character
   if (command.needChar !== false && !playerData) {
@@ -116,6 +114,8 @@ client.on("messageCreate", async (message) => {
   // Make object null if no player data
   if (playerData) {
     var player = { ...playerData, ...game.player, prisma };
+
+    //console.log(player);
 
     // Check if user is admin
     if (command.category == "Admin" && !authorPerms.has(["ADMINISTRATOR"])) {

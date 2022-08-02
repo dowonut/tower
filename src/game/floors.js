@@ -14,14 +14,23 @@ export default [
         name: "slime fields",
         description:
           "Lush rolling fields... with strange slimy creatures everywhere.",
-        enemies: [{ name: "slime", weight: 100 }],
-        loot: [{ name: "slimeball", weight: 100, min: 1, max: 3 }],
+        enemies: [
+          { name: "small slime", weight: 40 },
+          { name: "big slime", weight: 30 },
+          { name: "wet slime", weight: 15 },
+          { name: "burning slime", weight: 15 },
+        ],
+        loot: [{ name: "slimeball", weight: 100, min: 1, max: 2 }],
       },
       {
         name: "goblin caves",
         description:
           "Dark and gloomy caves filled with pesky goblins. You have been warned.",
-        enemies: [{ name: "goblin", weight: 100 }],
+        enemies: [
+          { name: "baby goblin", weight: 40 },
+          { name: "hungry goblin", weight: 40 },
+          { name: "hobgoblin", weight: 20 },
+        ],
         loot: [{ name: "rock", weight: 100 }],
       },
       {
@@ -30,8 +39,8 @@ export default [
           "A pleasant forest with a shallow pond. Perfect place to get some wood or do some fishing.",
         activities: [{ name: "fishing" }, { name: "woodcutting" }],
         loot: [
-          { name: "stick", weight: 60, min: 1, max: 3 },
-          { name: "apple", weight: 40 },
+          { name: "stick", weight: 90, min: 1, max: 2 },
+          { name: "apple", weight: 10 },
         ],
       },
       {
@@ -44,9 +53,8 @@ export default [
           { name: "cartographer" },
         ],
         loot: [
-          { name: "fabric", weight: 20, min: 1, max: 2 },
-          { name: "leather", weight: 20 },
-          { name: "stick", weight: 60 },
+          { name: "fabric", weight: 50 },
+          { name: "leather", weight: 50 },
         ],
       },
     ],

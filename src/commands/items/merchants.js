@@ -18,15 +18,12 @@ export default {
 
       // Grab all merchants
       for (const [key, value] of Object.entries(merchants[player.floor - 1])) {
-        description += `\\> \`${value.category} Merchant\`
-        `;
+        description += `\n\\> \`${value.category} Merchant\``;
       }
 
       title = `Merchants on Floor ${player.floor}`;
       embed = {
-        description:
-          description +
-          `\nSee what a merchant is selling with \`${server.prefix}merchant <merchant type>\``,
+        description: description,
       };
     } else {
       // Grab specific merchant
@@ -37,11 +34,21 @@ export default {
       for (const [key, value] of Object.entries(merchant.items)) {
         const item = await game.getMerchantItem(key, player);
 
+        let emoji = config.emojis.items[item.name]
+          ? config.emojis.items[item.name]
+          : config.emojis.blank;
+
+        let itemStock = ``;
+        let itemName = ``;
         if (item.stock > 0) {
-          description += `**${item.name}** | \`x${item.stock}\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
+          itemStock = `x${item.stock}`;
+          itemName = `**${item.getName()}**`;
         } else {
-          description += `${item.name} | \`Out of Stock\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
+          itemStock = `Out of Stock`;
+          itemName = `${item.getName()}`;
         }
+
+        description += `${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
       }
 
       title = `${merchant.category} Merchant`;
@@ -49,7 +56,7 @@ export default {
         description: description,
         footer: { text: `You have ${player.marks} marks` },
       };
-      player.unlockCommand(message, server, "buy");
+      player.unlockCommands(message, server, ["buy"]);
     }
 
     game.fastEmbed(message, player, embed, title);

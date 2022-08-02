@@ -1,7 +1,7 @@
 import * as config from "../config.js";
 
 export default {
-  fastEmbed: (message, player, embed, title, imageName) => {
+  fastEmbed: (message, player, embed, title, file) => {
     const embedInfo = {
       author: {
         name: title,
@@ -11,18 +11,7 @@ export default {
     };
     const finalEmbed = { ...embed, ...embedInfo };
 
-    if (imageName) {
-      // Set embed thumbnail
-      finalEmbed.thumbnail = {
-        url: `attachment://${imageName}.png`,
-      };
-
-      // Get image file
-      const file = {
-        attachment: `./assets/items/${imageName}.png`,
-        name: `${imageName}.png`,
-      };
-
+    if (file) {
       // Send embed with image
       message.channel.send({ embeds: [finalEmbed], files: [file] });
     } else {

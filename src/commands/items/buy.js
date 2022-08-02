@@ -99,8 +99,8 @@ export default {
     );
 
     // Unlock equipment
-    if (["Weapon"].includes(item.category)) {
-      player.unlockCommand(message, server, "equipment");
+    if (["weapon"].includes(item.category)) {
+      player.unlockCommands(message, server, ["equipment"]);
     }
   },
 };

@@ -48,6 +48,6 @@ export default {
       })`
     );
 
-    player.unlockCommand(message, server, "merchants");
+    player.unlockCommands(message, server, ["merchants"]);
   },
 };

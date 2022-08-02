@@ -7,7 +7,7 @@ export default {
   async execute(message, args, prisma, config, player, game, server) {
     const variables = args.join(" ").split("$");
 
-    const statInput = variables[0].trim();
+    const statInput = variables[0].trim().toLowerCase();
     const quantityInput = variables[1];
 
     // Check for valid quantity
@@ -18,7 +18,7 @@ export default {
     if (!statInput) return game.reply(message, "provide the name of a stat.");
 
     // Check if stat exists
-    if (!config.statInfo[statInput.toLowerCase()])
+    if (!config.statInfo[statInput])
       return game.reply(message, "not a valid stat.");
 
     // Set quantity to all
@@ -32,17 +32,24 @@ export default {
       );
 
     // Update player info
-    player = await player.update({
+    const newPlayer = await player.update({
       statpoints: { increment: -quantity },
       [statInput]: { increment: quantity },
     });
+
+    // Check which stat
+    switch (statInput) {
+      case "vitality":
+        // Increase max health if vitality
+        player.update({ maxHealth: { increment: quantity } });
+    }
 
     const statName = game.titleCase(statInput);
 
     // Send stat up message
     game.reply(
       message,
-      `increased ${config.emojis.stats[statInput]} **${statName}** to \`${player[statInput]}\``
+      `increased ${config.emojis.stats[statInput]} **${statName}** to \`${newPlayer[statInput]}\``
     );
   },
 };

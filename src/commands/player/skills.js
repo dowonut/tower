@@ -1,9 +1,10 @@
 export default {
-  name: "skill",
-  aliases: ["sk"],
+  name: "skills",
+  aliases: ["sk", "skill"],
   arguments: "<skill name>",
   description: "See all your skills or one specific skill.",
   category: "Player",
+  useInCombat: true,
   async execute(message, args, prisma, config, player, game, server) {
     const input = args.join(" ");
 
@@ -26,7 +27,7 @@ export default {
 
         // Create description
         description += `\n**${skillName}** \`Lvl. ${skill.level}\``;
-        description += `\n${progress} \`${xp} / ${nextXp}\``;
+        description += `\n${progress} \`${xp} / ${nextXp}\`\n`;
       }
 
       const title = `Skills`;

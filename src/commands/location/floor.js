@@ -22,7 +22,7 @@ export default {
       if (player.region !== region.name) {
         description += `\n${regionName}`;
       } else {
-        description += `\n**${regionName}**`;
+        description += `\n:round_pushpin:**${regionName}**`;
       }
 
       // Check if region is peaceful
@@ -41,7 +41,7 @@ export default {
 
     // Create embed
     const embed = {
-      title: `${config.emojis.staircase} Floor \`${player.floor}\` Regions`,
+      title: `Floor \`${player.floor}\` Regions`,
       thumbnail: { url: player.pfp },
       color: config.botColor,
       description: description,
@@ -51,6 +51,6 @@ export default {
     game.sendEmbed(message, embed);
 
     // Unlock the travel command
-    player.unlockCommand(message, server, "travel");
+    player.unlockCommands(message, server, ["travel"]);
   },
 };

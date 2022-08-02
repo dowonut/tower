@@ -3,6 +3,7 @@ import items from "../game/items.js";
 import attacks from "../game/attacks.js";
 import floors from "../game/floors.js";
 import skills from "../game/skills.js";
+import tutorials from "../game/tutorials.js";
 
 import * as config from "../config.js";
 
@@ -73,25 +74,8 @@ export default {
       return newItem;
     },
 
-    // Unlock a command
-    unlockCommand: async function (message, server, commandName) {
-      if (this.unlockedCommands.includes(commandName)) return;
-
-      await this.prisma.player.update({
-        where: { id: this.id },
-        data: {
-          unlockedCommands: { push: commandName },
-        },
-      });
-
-      return message.author.send(
-        `New command unlocked: **\`${commandName}\`**\nRead about it with \`${server.prefix}help\``
-      );
-    },
-
     // Unlock several commands
     unlockCommands: async function (message, server, commandNames) {
-      let commands = [];
       for (const commandName of commandNames) {
         if (!this.unlockedCommands.includes(commandName)) {
           await this.prisma.player.update({
@@ -100,17 +84,38 @@ export default {
               unlockedCommands: { push: commandName },
             },
           });
-          commands.push(commandName);
+        } else {
+          continue;
         }
+
+        let embed;
+
+        const tutorial = tutorials.find(
+          (x) => x.name == commandName.toLowerCase()
+        );
+
+        if (tutorial) {
+          const tutorialName = tutorial.name;
+
+          embed = {
+            title: `New Command Unlocked: \`${server.prefix}${tutorialName}\``,
+            description: tutorial.info,
+          };
+
+          if (tutorial.image) embed.image = { url: tutorial.image };
+        } else {
+          embed = {
+            title: `New Command Unlocked: \`${server.prefix}${commandName}\``,
+          };
+        }
+
+        embed.color = config.botColor;
+        embed.footer = {
+          text: `See all your unlocked commands with ${server.prefix}help`,
+        };
+
+        message.author.send({ embeds: [embed] });
       }
-
-      if (!commands[0]) return;
-
-      let commandList = commands.join(", ");
-
-      return message.author.send(
-        `New commands unlocked: **\`${commandList}\`**\nRead about them with \`${server.prefix}help\``
-      );
     },
 
     // Get current regin
@@ -143,6 +148,7 @@ export default {
     // Get all items
     getItems: async function () {
       const playerItems = await this.prisma.inventory.findMany({
+        orderBy: [{ quantity: "asc" }],
         where: { playerId: this.id },
       });
 
@@ -262,6 +268,7 @@ export default {
     // Get all player skills
     getSkills: async function () {
       const playerSkills = await this.prisma.skill.findMany({
+        orderBy: [{ level: "desc" }, { xp: "desc" }],
         where: { playerId: this.id },
       });
 
@@ -283,14 +290,15 @@ export default {
       const defenceMultiplier = 1 - this.defence / 100;
 
       // Calculate final damage
-      const damage = Math.floor(damageInput * defenceMultiplier);
+      const damage = Math.floor(damageInput.value * defenceMultiplier);
 
       // Log damage
       console.log(
-        `${this.username} takes damage: ${damageInput} x ${defenceMultiplier} = ${damage}`
+        `${this.username} takes damage: ${damageInput.value} x ${defenceMultiplier} = ${damage} ${damageInput.type}`
       );
+      console.log("----------------------------");
 
-      return damage;
+      return { value: damage, type: damageInput.type };
     },
 
     // Enter combat
@@ -340,7 +348,7 @@ export default {
 
       for (const [loot, lootInfo] of Object.entries(enemy.loot)) {
         const chance = Math.random() * 100;
-        if (chance < lootInfo.dropChance) {
+        if (chance <= lootInfo.dropChance) {
           const quantity = game.random(lootInfo.dropMin, lootInfo.dropMax);
 
           this.giveItem(lootInfo.name, quantity);
@@ -356,12 +364,26 @@ export default {
       for (const item of loots) {
         //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
         if (item.quantity > 1) {
-          lootList += `\\> **${item.getName()}** | \`x${item.quantity}\`\n`;
+          lootList += `\n+ **${item.getName()}** | \`x${item.quantity}\``;
         } else {
-          lootList += `\\> **${item.getName()}**\n`;
+          lootList += `\n+ **${item.getName()}**`;
         }
       }
-      lootList += `\nXP: \`+${xp}\``;
+
+      // Check if enemy dropped shard
+      if (enemy.shard) {
+        const chance = Math.random() * 100;
+        if (chance <= enemy.shard.dropChance) {
+          const shardName = `${enemy.shard.type} shard`;
+
+          this.giveItem(shardName);
+          lootList += `\n+ **${game.titleCase(shardName)}**${
+            config.emojis.items[shardName]
+          }`;
+        }
+      }
+
+      lootList += `\n\n\`+${xp} XP\``;
 
       const embed = {
         description: lootList,
@@ -370,9 +392,9 @@ export default {
       // Send death message
       //game.reply(message, `you killed **${enemy.name}**.`);
       message.channel.send(
-        `**${message.author.username}** killed **${enemy.name}** :skull:`
+        `**${message.author.username}** killed **${enemy.getName()}** :skull:`
       );
-      game.fastEmbed(message, this, embed, `Loot from ${enemy.name}`);
+      game.fastEmbed(message, this, embed, `Loot from ${enemy.getName()}`);
 
       // Give xp to player
       await this.giveXp(xp, message, server, game);
@@ -442,6 +464,59 @@ export default {
         game.reply(
           message,
           `you leveled up! New level: \`${player.level}\` :tada:\n:low_brightness: You have \`${levelUp}\` new stat points. Check your stats with \`${server.prefix}stats\``
+        );
+      }
+    },
+
+    // Give xp to player skill
+    giveSkillXp: async function (xp, skillName, message, game) {
+      // Add xp to player skill
+      await this.prisma.skill.updateMany({
+        where: { playerId: this.id, name: skillName },
+        data: { xp: { increment: xp } },
+      });
+
+      let skillRef = await this.prisma.skill.findMany({
+        where: { playerId: this.id, name: skillName },
+      });
+
+      // Check if skill exists
+      if (!skillRef[0]) return undefined;
+
+      // Grab skill
+      let skill = skillRef[0];
+
+      // Calculate xp required for next level
+      let nextLevelXp = config.nextLevelXpSkill(skill.level);
+      let levelUp = 0;
+
+      // Once level up reached
+      for (let i = 0; skill.xp >= nextLevelXp; i++) {
+        // Calculate remaining xp
+        let newXp = skill.xp - nextLevelXp;
+
+        // Update player data
+        await this.prisma.skill.updateMany({
+          where: { playerId: this.id, name: skillName },
+          data: { xp: newXp, level: { increment: 1 } },
+        });
+
+        skillRef = await this.prisma.skill.findMany({
+          where: { playerId: this.id, name: skillName },
+        });
+        skill = skillRef[0];
+
+        // Get required xp for next level
+        nextLevelXp = config.nextLevelXpSkill(skill.level);
+        levelUp++;
+      }
+
+      if (levelUp > 0) {
+        game.reply(
+          message,
+          `your skill **${game.titleCase(skill.name)}** has reached level \`${
+            skill.level + levelUp
+          }\` :tada:`
         );
       }
     },

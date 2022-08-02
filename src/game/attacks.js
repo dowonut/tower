@@ -99,7 +99,7 @@ export default [
     name: "slash",
     type: "sword",
     description: "A simple swing of your sword.",
-    damage: { min: 3, max: 6, type: "slashing" },
+    damage: { min: 2, max: 4, type: "slashing" },
   }),
   new Attack({
     name: "headsmasher",

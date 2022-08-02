@@ -7,7 +7,7 @@ export default {
   useInCombat: true,
   async execute(message, args, prisma, config, player, game, server) {
     let description = ``;
-    for (const stat of ["strength", "defence", "arcane"]) {
+    for (const stat of ["strength", "defence", "arcane", "vitality"]) {
       description += `${config.emojis.stats[stat]} ${game.titleCase(stat)}: \`${
         player[stat]
       }\` | *${config.statInfo[stat]}*\n`;

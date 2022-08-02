@@ -50,6 +50,10 @@ export default {
             variable = player.arcane;
             name = "Arcane: ";
             emoji = config.emojis.stats.arcane;
+          } else if (item == "VITALITY") {
+            variable = player.vitality;
+            name = "Vitality: ";
+            emoji = config.emojis.stats.vitality;
           } else if (item == "PROGRESS") {
             variable = game.progressBar(
               player.xp,

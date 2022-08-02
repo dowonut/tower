@@ -7,23 +7,26 @@ export default {
   async execute(message, args, prisma, config, player, game, server) {
     const enemy = await player.getCurrentEnemy();
 
+    const image = enemy.getImage();
+
     const embed = {
       color: config.botColor,
-      thumbnail: {
-        url: enemy.image,
-      },
       author: {
         icon_url: player.pfp,
         name: enemy.getName() + ` (fighting ` + player.username + `)`,
       },
       description: `
-:drop_of_blood: Health: **\`${enemy.health} / ${enemy.maxHealth}\`**
+*${enemy.description}*
 
-:crossed_swords: Strength: **\`${enemy.strength}\`**
-:shield: Defence: **\`${enemy.defence}\`**
+${config.emojis.health} Health: \`${enemy.health} / ${enemy.maxHealth}\`
+
+${config.emojis.stats.strength} Strength: \`${enemy.strength}\`
+${config.emojis.stats.defence} Defence: \`${enemy.defence}\`
         `,
     };
 
-    game.sendEmbed(message, embed);
+    if (image) embed.thumbnail = { url: `attachment://${image.name}` };
+
+    game.sendEmbed(message, embed, image);
   },
 };
