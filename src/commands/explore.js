@@ -2,7 +2,7 @@ export default {
   name: "explore",
   description: "Explore your current floor.",
   aliases: ["e"],
-  cooldown: "2",
+  cooldown: "0",
   async execute(message, args, prisma, config, player, game, server) {
     // Get current region
     const region = player.getRegion();
@@ -43,10 +43,8 @@ export default {
     // Get random output from weights
     let { item } = game.weightedRandom(options, weights);
 
-    console.log("Exploring outcomes:");
-    console.log("Options:", options, "Weights:", weights);
-    console.log("Outcome:", item);
-    console.log("----------------------------");
+    // Unlock region command
+    player.unlockCommands(message, server, ["region"]);
 
     // Log output
     switch (item) {
@@ -63,13 +61,13 @@ export default {
         break;
       case "loot":
         // Give the player some random loot from that region
-        await player.giveRandomLoot(message, game);
+        await player.giveRandomLoot(message, server, game);
         // Unlock new commands
         player.unlockCommands(message, server, ["inventory"]);
         break;
       case "merchants":
         // Unlock a new random merchant from that region
-        await player.unlockRandomMerchant(game);
+        await player.unlockRandomMerchant(message, server, game);
         break;
     }
   },

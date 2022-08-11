@@ -20,7 +20,7 @@ class Item {
       const itemName = this.name.split(" ").join("_").toLowerCase();
 
       // Create path and check if item image exists
-      const path = `../assets/items/${itemName}.png`;
+      const path = `./assets/items/${itemName}.png`;
       let file = undefined;
 
       // Attach image

@@ -44,11 +44,14 @@ async function listAttacks(message, config, player, game, server) {
   let description = ``;
   const attacks = await player.getAttacks();
 
-  for (const [attackName, attack] of Object.entries(attacks)) {
+  // Fetch enemy
+  let enemy = await player.getCurrentEnemy();
+
+  for (const attack of attacks) {
+    const damageInfo = await attack.damageInfo(player, enemy);
     if (attack.remCooldown < 1) {
-      description += `
-**${attack.getName()}** | ${attack.description}
-Damage: ${await attack.damageInfo(player)}\n`;
+      description += `\n**${attack.getName()}** | ${attack.description}`;
+      description += `\nDamage: ${damageInfo}`;
 
       if (attack.cooldown)
         description += `Cooldown: \`${attack.cooldown} rounds\`\n`;
@@ -65,8 +68,9 @@ Damage: ${await attack.damageInfo(player)}\n`;
       icon_url: player.pfp,
       name: "Available Attacks",
     },
-    description: description,
-    //+ `\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
+    description:
+      description +
+      `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
   };
 
   game.sendEmbed(message, embed);
@@ -85,24 +89,31 @@ async function performAttack(
 ) {
   let enemy = await player.getCurrentEnemy();
 
-  const damage = await attack.getDamage(player);
-  const remainingHealth = enemy.health - damage < 0 ? 0 : enemy.health - damage;
-  let enemyDamage = enemy.getDamage();
+  const damage = await attack.getDamage(player, enemy);
+
+  const remainingHealth =
+    enemy.health - damage.total < 0 ? 0 : enemy.health - damage.total;
+  let enemyAttack = enemy.chooseAttack(player);
 
   // Deal damage to enemy
   const enemyData = await player.updateEnemy({
-    health: { increment: -damage },
+    health: { increment: -damage.total },
   });
 
-  // Send damage message
-  await game.reply(
-    message,
-    `used **${attack.getName()}** dealing \`${damage}\`${
-      config.emojis.damage[attack.damage.type]
-    } damage to **${enemy.getName()}** | ${
-      config.emojis.health
-    }\`${remainingHealth}/${enemy.maxHealth}\``
-  );
+  // Fetch damage message
+  const attackMessage = await attack.attackMessage(damage, enemy);
+  // Format enemy health text
+  const healthText = ` | ${config.emojis.health}\`${remainingHealth}/${enemy.maxHealth}\``;
+  if (attackMessage) {
+    await message.reply(attackMessage + healthText);
+  } else {
+    await game.reply(
+      message,
+      `You used **${attack.getName()}** dealing \`${damage}\`${
+        config.emojis.damage[attack.damage.type]
+      } damage to **${enemy.getName()}**${healthText}`
+    );
+  }
 
   const combatSkills = ["unarmed", "sword", "axe", "spear", "bow"];
 
@@ -157,11 +168,11 @@ async function performAttack(
   }
 
   // Get player damage
-  enemyDamage = await player.getDamageTaken(enemyDamage);
+  enemyAttack.damage = await player.getDamageTaken(enemyAttack.damage, game);
 
   // Update player health
   const playerData = await player.update({
-    health: { increment: -enemyDamage.value },
+    health: { increment: -enemyAttack.damage.total },
     canAttack: false,
   });
 
@@ -173,19 +184,27 @@ async function performAttack(
         ? ` | :warning: **Low Health!**`
         : ``;
 
-    message.channel.send(
-      `**${enemy.getName()}** deals \`${enemyDamage.value}\`${
-        config.emojis.damage[enemyDamage.type]
-      } damage to **${message.author}** | ${config.emojis.health}\`${
-        playerData.health
-      }/${player.maxHealth}\`${healthWarning}`
-    );
+    // Format attack message
+    const attackMessage = enemy.attackMessage(enemyAttack, player);
+    const healthMessage = ` | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\`${healthWarning}`;
+
+    // Send if exists else send default
+    if (attackMessage) {
+      //message.channel.send(attackMessage + healthMessage);
+      game.reply(message, attackMessage + healthMessage);
+    } else {
+      message.channel.send(
+        `**${enemy.getName()}** deals \`${enemyAttack.damage}\`${
+          config.emojis.damage[enemyAttack.type]
+        } damage to **${message.author}**`
+      );
+    }
 
     await player.update({ canAttack: true });
 
     // check if player is dead
     if (playerData.health <= 0) {
-      message.channel.send(
+      message.reply(
         `:skull_crossbones: ${message.author} **you have died!** :skull_crossbones:\nYour character has been completely reset. Try not to die again.`
       );
 
@@ -197,5 +216,5 @@ async function performAttack(
         player.unlockedCommands
       );
     }
-  }, game.random(1000, 3000));
+  }, game.random(500, 2000));
 }

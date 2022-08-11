@@ -27,28 +27,36 @@ export default {
 
     let categories = {
       General: `
-**General**
+${config.emojis.bullet} **General:**
+
         `,
       Player: `
-**Player**
+${config.emojis.bullet} **Player**
+
         `,
       Location: `
-**Location**
+${config.emojis.bullet} **Location**
+
         `,
       Items: `
-**Items**
+${config.emojis.bullet} **Items**
+
         `,
       Crafting: `
-**Crafting**
+${config.emojis.bullet} **Crafting**
+
         `,
       Combat: `
-**Combat**
+${config.emojis.bullet} **Combat**
+
         `,
       Settings: `
-**Settings**
+${config.emojis.bullet} **Settings**
+
         `,
       Admin: `
-**Admin**
+${config.emojis.bullet} **Admin**
+
         `,
     };
 
@@ -78,7 +86,7 @@ export default {
     for (const [key, value] of Object.entries(categories)) {
       const lineBreaks = value.split(/\r\n|\r|\n/).length;
 
-      if (lineBreaks > 3) description += `${value}`;
+      if (lineBreaks > 4) description += `${value}`;
     }
 
     const embed = {

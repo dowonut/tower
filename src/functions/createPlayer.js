@@ -23,7 +23,7 @@ export default {
     const entries = {
       attack: ["punch", "slash", "headsmasher"],
       skill: ["unarmed combat"],
-      recipe: ["sword handle"],
+      //      recipe: ["sword handle"],
     };
 
     for (const [key, value] of Object.entries(entries)) {

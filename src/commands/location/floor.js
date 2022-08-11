@@ -16,11 +16,11 @@ export default {
     // Go through regions
     for (const region of floor.regions) {
       // Get region name
-      const regionName = game.titleCase(region.name);
+      const regionName = `\`${game.titleCase(region.name)}\``;
 
       // Check if player is at current region and update title
       if (player.region !== region.name) {
-        description += `\n${regionName}`;
+        description += `\n${config.emojis.blank}${regionName}`;
       } else {
         description += `\n:round_pushpin:**${regionName}**`;
       }
@@ -39,16 +39,15 @@ export default {
       }
     }
 
-    // Create embed
+    description += `\n\nTravel to a new region with \`${server.prefix}travel <region name>\``;
+
+    const title = `Floor ${player.floor} Regions`;
     const embed = {
-      title: `Floor \`${player.floor}\` Regions`,
-      thumbnail: { url: player.pfp },
-      color: config.botColor,
       description: description,
-      //fields: fields,
     };
 
-    game.sendEmbed(message, embed);
+    //game.sendEmbed(message, embed);
+    game.fastEmbed(message, player, embed, title);
 
     // Unlock the travel command
     player.unlockCommands(message, server, ["travel"]);

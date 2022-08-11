@@ -3,7 +3,7 @@ import { MessageActionRow, MessageButton } from "discord.js";
 export default {
   name: "erase",
   description: "Completely reset your character. **CANNOT BE UNDONE.**",
-  cooldown: "30",
+  cooldown: "60",
   category: "Player",
   async execute(message, args, prisma, config, player, game, server) {
     const button1 = new MessageButton()
@@ -17,9 +17,8 @@ export default {
 
     const row = new MessageActionRow().addComponents([button1, button2]);
 
-    const botMsg = await message.channel.send({
-      content:
-        "**Dowonut**, Are you sure you want to __**permanently**__ erase your character?",
+    const botMsg = await message.reply({
+      content: `**${message.author.username}**, are you sure you want to __**permanently**__ erase your character?`,
       components: [row],
     });
 

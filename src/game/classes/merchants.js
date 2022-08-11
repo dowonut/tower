@@ -27,6 +27,11 @@ export default [
         "sword handle recipe": { stock: 1, price: 5 },
       },
     }),
+    new Merchant({
+      category: "cartographer",
+      name: "azathoth",
+      items: {},
+    }),
   ],
   // floor 2
   [],

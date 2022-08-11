@@ -33,8 +33,8 @@ export default {
         icon_url: player.pfp,
       },
       description: `
-      
-What do you want to do?
+\`[ LVL ${enemyData.level} | HP ${enemyData.maxHealth} ]\`  
+
 \`${server.prefix}attack | ${server.prefix}flee | ${server.prefix}enemyinfo\`
             `,
     };
@@ -53,7 +53,13 @@ What do you want to do?
       },
     });
 
-    await player.addExplore("enemy", undefined, enemyData.name);
+    await player.addExplore(
+      message,
+      server,
+      "enemy",
+      undefined,
+      enemyData.name
+    );
 
     await player.unlockCommands(message, server, [
       "attack",

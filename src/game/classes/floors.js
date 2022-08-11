@@ -15,8 +15,8 @@ export default [
         description:
           "Lush rolling fields... with strange slimy creatures everywhere.",
         enemies: [
-          { name: "small slime", weight: 40 },
-          { name: "big slime", weight: 30 },
+          { name: "small slime", weight: 35 },
+          { name: "big slime", weight: 35 },
           { name: "wet slime", weight: 15 },
           { name: "burning slime", weight: 15 },
         ],

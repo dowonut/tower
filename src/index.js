@@ -95,7 +95,7 @@ client.on("messageCreate", async (message) => {
   const authorPerms = message.channel.permissionsFor(message.author);
   if (command.permissions) {
     if (!authorPerms || !authorPerms.has(command.permissions)) {
-      return message.channel.send(":x: You're not worthy of this command.");
+      return game.error("you're not worthy of this command.");
     }
   }
 
@@ -106,9 +106,7 @@ client.on("messageCreate", async (message) => {
 
   // Check if user has player character
   if (command.needChar !== false && !playerData) {
-    return message.channel.send(
-      `**${message.author.username}**, get started with \`-begin\``
-    );
+    return game.reply(message, `get started with \`${server.prefix}begin\``);
   }
 
   // Make object null if no player data

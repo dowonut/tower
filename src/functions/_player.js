@@ -45,6 +45,7 @@ export default {
 
       let newItem;
       if (playerItem[0]) {
+        // Update existing item
         newItem = await this.prisma.inventory.updateMany({
           where: {
             playerId: this.id,
@@ -64,13 +65,21 @@ export default {
           });
         }
       } else {
-        newItem = await this.prisma.inventory.create({
-          data: {
-            playerId: this.id,
-            name: item.name,
-            quantity: itemQuantity,
-          },
-        });
+        // Create new item
+
+        // Check if item is recipe
+        if (item.category == "recipe") {
+          await this.addRecipe(item.item);
+          newItem = item;
+        } else {
+          newItem = await this.prisma.inventory.create({
+            data: {
+              playerId: this.id,
+              name: item.name,
+              quantity: itemQuantity,
+            },
+          });
+        }
       }
 
       return newItem;
@@ -173,18 +182,9 @@ export default {
 
       let equipName = this[equipSlot];
 
-      const itemRef = await this.prisma.inventory.findMany({
-        where: {
-          playerId: this.id,
-          name: { equals: equipName, mode: "insensitive" },
-        },
-      });
+      const item = await this.getItem(equipName);
 
-      const itemData = items.find(
-        (x) => x.name == itemRef[0].name.toLowerCase()
-      );
-
-      return { ...itemData, ...itemRef[0] };
+      return item;
     },
 
     // Get specific attack
@@ -233,6 +233,9 @@ export default {
         const attackData = attacks.find(
           (x) => x.name == playerAttack.name.toLowerCase()
         );
+
+        if (!attackData) continue;
+
         const attack = { ...playerAttack, ...attackData };
 
         attackArray.push(attack);
@@ -242,9 +245,11 @@ export default {
 
       if (this.hand) {
         const item = await this.getItem(this.hand);
-        finalArray = attackArray.filter((x) => x.type === item.weaponType);
+        finalArray = attackArray.filter((x) =>
+          x.type.includes(item.weaponType)
+        );
       } else {
-        finalArray = attackArray.filter((x) => x.type === "unarmed");
+        finalArray = attackArray.filter((x) => x.type.includes("unarmed"));
       }
 
       return finalArray;
@@ -286,7 +291,7 @@ export default {
       return skillArray;
     },
 
-    // Get all recipes
+    // Get all recipes or a specific recipe
     getRecipes: async function (input) {
       let recipeArr = [];
       let playerRecipes;
@@ -314,6 +319,22 @@ export default {
       }
 
       return recipeArr;
+    },
+
+    addRecipe: async function (recipeName) {
+      const recipe = recipes.find((x) => x.name == recipeName.toLowerCase());
+
+      if (!recipe) return undefined;
+
+      const playerRecipe = await this.fetch("recipe", recipeName);
+
+      if (playerRecipe) return;
+
+      await this.prisma.recipe.create({
+        data: { playerId: this.id, name: recipe.name },
+      });
+
+      player.unlockCommands(message, server, ["recipes"]);
     },
 
     // Get thing from player
@@ -348,20 +369,24 @@ export default {
     },
 
     // Deal damage to player
-    getDamageTaken: async function (damageInput) {
+    getDamageTaken: async function (attack, game) {
       // Calculate defence
       const defenceMultiplier = 1 - this.defence / 100;
 
-      // Calculate final damage
-      const damage = Math.ceil(damageInput.value * defenceMultiplier);
+      let total = 0;
+      for (let attackDamage of attack.damages) {
+        // Choose base damage randomly
+        const baseDamage = game.random(attackDamage.min, attackDamage.max);
 
-      // Log damage
-      console.log(
-        `${this.username} takes damage: ${damageInput.value} x ${defenceMultiplier} = ${damage} ${damageInput.type}`
-      );
-      console.log("----------------------------");
+        // Calculate final damage
+        const damage = Math.ceil(baseDamage * defenceMultiplier);
 
-      return { value: damage, type: damageInput.type };
+        attackDamage.final = damage;
+        total += damage;
+      }
+      attack.total = total;
+
+      return attack;
     },
 
     // Enter combat
@@ -378,9 +403,14 @@ export default {
 
     // Get the current enemy
     getCurrentEnemy: async function () {
+      if (!this.fighting) return undefined;
+
       const enemyInfo = await this.prisma.enemy.findUnique({
         where: { id: this.fighting },
       });
+
+      if (!enemyInfo) return undefined;
+
       const enemyType = enemies.find(
         (x) => x.name == enemyInfo.name.toLowerCase()
       );
@@ -409,13 +439,13 @@ export default {
     enemyLoot: async function (enemy, game, server, message) {
       const loots = [];
 
-      for (const [loot, lootInfo] of Object.entries(enemy.loot)) {
+      for (const loot of enemy.loot) {
         const chance = Math.random() * 100;
-        if (chance <= lootInfo.dropChance) {
-          const quantity = game.random(lootInfo.dropMin, lootInfo.dropMax);
+        if (chance <= loot.dropChance) {
+          const quantity = game.random(loot.min, loot.max);
 
-          this.giveItem(lootInfo.name, quantity);
-          const item = items.find((x) => x.name == lootInfo.name.toLowerCase());
+          this.giveItem(loot.name, quantity);
+          const item = items.find((x) => x.name == loot.name);
           loots.push({ ...item, quantity });
         }
       }
@@ -425,9 +455,10 @@ export default {
 
       let lootList = ``;
       for (const item of loots) {
+        console.log(item.quantity);
         //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
         if (item.quantity > 1) {
-          lootList += `\n+ **${item.getName()}** | \`x${item.quantity}\``;
+          lootList += `\n+ **${item.getName()}** \`x${item.quantity}\``;
         } else {
           lootList += `\n+ **${item.getName()}**`;
         }
@@ -462,7 +493,7 @@ export default {
     },
 
     // Give the player some random loot from their current region
-    giveRandomLoot: async function (message, game) {
+    giveRandomLoot: async function (message, server, game) {
       // Fetch region and format region name
       const region = this.getRegion();
       const regionName = game.titleCase(region.name);
@@ -477,17 +508,17 @@ export default {
       // Give item to player
       await this.giveItem(item.name, itemQuantity);
 
-      // Unlock region loot
-      await this.addExplore("loot", undefined, item.name);
-
       // Format quantity text
       let quantityText = itemQuantity > 1 ? `\`${itemQuantity}x\` ` : ``;
 
       // Send message to player
-      return game.reply(
+      await game.reply(
         message,
         `you explore the **${regionName}** and find ${quantityText}**${itemName}**`
       );
+
+      // Unlock region loot
+      await this.addExplore(message, server, "loot", undefined, item.name);
     },
 
     // Give xp to player
@@ -624,7 +655,7 @@ export default {
     },
 
     // Unlock new exploration
-    addExplore: async function (type, category, name) {
+    addExplore: async function (message, server, type, category, name) {
       const floor = this.floor;
 
       const existing = await this.prisma.exploration.findMany({
@@ -647,24 +678,40 @@ export default {
           category: category ? category : undefined,
         },
       });
+
+      message.channel.send(
+        `*New ${type} discovered! See your discoveries with \`${server.prefix}region\`*`
+      );
     },
 
     // Unlock a random merchant on the current floor
-    unlockRandomMerchant: async function (game) {
+    unlockRandomMerchant: async function (message, server, game) {
       const region = this.getRegion();
+      const regionName = game.titleCase(region.name);
 
       const foundMerchant = await this.getExplored("merchant");
 
       const foundMerchants = foundMerchant.map((x) => x.category);
 
-      const merchants = region.merchants.map((x) => x.category);
+      const merchantCategories = region.merchants.map((x) => x.category);
 
-      let merchant;
-      while (!merchant || foundMerchants.includes(merchant)) {
-        merchant = game.getRandom(merchants);
+      let merchantC;
+      while (!merchantC || foundMerchants.includes(merchantC)) {
+        merchantC = game.getRandom(merchantCategories);
       }
 
-      await this.addExplore("merchant", merchant);
+      const merchant = merchants[this.floor - 1].find(
+        (x) => x.category == merchantC
+      );
+
+      const mName = game.titleCase(merchant.name);
+      const mCategory = game.titleCase(merchant.category + " merchant");
+
+      await game.reply(
+        message,
+        `you explore the **${regionName}** and come across **${mName}**, the local \`${mCategory}\``
+      );
+      await this.addExplore(message, server, "merchant", merchantC);
     },
   },
 };

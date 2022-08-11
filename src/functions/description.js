@@ -24,7 +24,9 @@ export default {
             name = "XP: ";
             emoji = config.emojis.xp;
           } else if (item == "HEALTH") {
-            variable = player.health + " / " + player.maxHealth;
+            const healthWarning =
+              (player.health / player.maxHealth) * 100 < 33 ? " :warning:" : "";
+            variable = `\`${player.health} / ${player.maxHealth}\`${healthWarning}`;
             name = "Health: ";
             emoji = config.emojis.health;
           } else if (item == "MARKS") {
@@ -69,6 +71,9 @@ export default {
 
         // if progress bar
         if (item == "PROGRESS") {
+          variableText = variable;
+        }
+        if (item.split(" ").includes("HEALTH")) {
           variableText = variable;
         }
 

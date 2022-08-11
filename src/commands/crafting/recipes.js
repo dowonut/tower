@@ -7,6 +7,10 @@ export default {
   async execute(message, args, prisma, config, player, game, server) {
     const recipes = await player.getRecipes();
 
+    // Check if player has any recipes
+    if (!recipes[0])
+      return game.error(message, `you haven't learned any recipes yet.`);
+
     let description = ``;
     for (const recipe of recipes) {
       description += `\n\n**${game.titleCase(recipe.name)}**`;
@@ -33,5 +37,7 @@ export default {
     };
 
     game.fastEmbed(message, player, embed, title);
+
+    player.unlockCommands(message, server, ["craft"]);
   },
 };

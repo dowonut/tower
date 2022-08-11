@@ -11,8 +11,6 @@ class Skill {
     };
 
     this.levelInfo = (level) => {
-      console.log(this.levels);
-
       if (!this.levels[level - 1]) return undefined;
 
       return this.levels[level - 1].info;

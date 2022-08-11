@@ -9,6 +9,7 @@ export const botBanner = "https://i.imgur.com/RwqxsiL.png";
 export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
 export const emojis = {
+  bullet: "<:bullet:1007341922479771648>",
   blank: "<:blank:1002523614345703424>",
   mark: "<:mark:1004049049525174352>",
   silver_mark: "<:silver_mark:986634284355969026>",

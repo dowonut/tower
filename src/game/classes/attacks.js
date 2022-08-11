@@ -1,7 +1,10 @@
 import randomFunction from "../../functions/random.js";
+import randomFunction2 from "../../functions/getRandom.js";
 import game from "../../functions/titleCase.js";
 import { emojis } from "../../config.js";
+import { loadFiles } from "./_loadFiles.js";
 const random = randomFunction.random;
+const getRandom = randomFunction2.getRandom;
 
 class Attack {
   constructor(object) {
@@ -16,7 +19,16 @@ class Attack {
 
     // Calculate base attack damage
     this.baseDamage = async () => {
-      return random(this.damage.min, this.damage.max);
+      let damage = { damages: [] };
+      for (const damageInfo of this.damage) {
+        damage.damages.push({
+          type: damageInfo.type,
+          min: damageInfo.min,
+          max: damageInfo.max,
+          total: random(damageInfo.min, damageInfo.max),
+        });
+      }
+      return damage;
     };
 
     // Calculate all damage bonuses
@@ -33,9 +45,10 @@ class Attack {
       return player.strength / 100 + 1;
     };
 
-    this.getDamage = async (player) => {
+    // Get total damage
+    this.getDamage = async (player, enemy) => {
       // Base damage
-      const baseDamage = await this.baseDamage();
+      let damage = await this.baseDamage();
 
       // Damage bonus
       const damageBonus = await this.damageBonus(player);
@@ -43,68 +56,72 @@ class Attack {
       // Damage multiplier
       const damageMultiplier = await this.damageMultiplier(player);
 
-      // Final damage
-      const damage = Math.floor((baseDamage + damageBonus) * damageMultiplier);
+      // Count total damage
+      let totalDamage = 0;
 
-      // Log damage
-      console.log(
-        `${player.username} deals damage: (${baseDamage} + ${damageBonus}) x ${damageMultiplier} = ${damage}`
-      );
+      // Damage function
+      function getDamage(damage, type) {
+        let finalDamage = Math.floor((damage + damageBonus) * damageMultiplier);
+
+        if (!enemy) return finalDamage;
+
+        // Calculate enemy strengths and weaknesses
+        if (enemy.strong.includes(type))
+          finalDamage = Math.floor(finalDamage - finalDamage * 0.25);
+        if (enemy.weak.includes(type))
+          finalDamage = Math.floor(finalDamage + finalDamage * 0.25);
+
+        return finalDamage;
+      }
+
+      // Calculate all types of damage
+      for (let dmg of damage.damages) {
+        const damage = getDamage(dmg.total, dmg.type);
+        const damageMin = getDamage(dmg.min, dmg.type);
+        const damageMax = getDamage(dmg.max, dmg.type);
+        dmg.total = damage;
+        dmg.min = damageMin;
+        dmg.max = damageMax;
+        totalDamage += damage;
+      }
+      // Set total damage
+      damage.total = totalDamage;
+
       return damage;
     };
 
-    this.damageInfo = async (player) => {
-      // Damage multiplier
-      const damageMultiplier = await this.damageMultiplier(player);
+    // Formats text for damage info
+    this.damageInfo = async (player, enemy) => {
+      let text = [];
+      const damage = await this.getDamage(player, enemy);
+      for (const dmg of damage.damages) {
+        let damageText = `${dmg.min} - ${dmg.max}`;
+        if (dmg.min == dmg.max) damageText = `${dmg.max}`;
 
-      // Damage bonus
-      const damageBonus = await this.damageBonus(player);
+        text.push(`\`${damageText}\`${emojis.damage[dmg.type]}`);
+      }
+      return text.join(" ");
+    };
 
-      const damageMin = Math.floor(
-        (this.damage.min + damageBonus) * damageMultiplier
+    // Format attack message
+    this.attackMessage = (attack, enemy) => {
+      if (!this.messages) return undefined;
+
+      let message = getRandom(this.messages);
+
+      const damages = attack.damages.map(
+        (x) => `\`${x.total}\`${emojis.damage[x.type]}`
       );
-      const damageMax = Math.floor(
-        (this.damage.max + damageBonus) * damageMultiplier
-      );
-      const emoji = emojis.damage[this.damage.type];
+      const damageText = damages.join(" ");
 
-      // Send damage info
-      return `\`${damageMin} - ${damageMax}\`${emoji}`;
+      message = message.replace("ENEMY", `**${enemy.getName()}**`);
+      message = message.replace("DAMAGE", damageText + " damage");
+
+      return message;
     };
   }
 }
 
-export default [
-  new Attack({
-    name: "punch",
-    type: "unarmed",
-    description: "A simple punch using your fist.",
-    damage: { min: 1, max: 3, type: "bludgeoning" },
-  }),
-  // uppercut: new Attack({
-  //   name: "Uppercut",
-  //   type: "Unarmed",
-  //   description: "A nasty uppercut using your fist.",
-  //   cooldown: 3,
-  //   damage: { min: 3, max: 6, type: "bludgeoning" },
-  // }),
-  // "fire breath": new Attack({
-  //   name: "Fire Breath",
-  //   type: "Magic",
-  //   description: "Literally breathing fire.",
-  //   //cooldown: 10,
-  //   damage: { min: 15, max: 20, type: "fire" },
-  // }),
-  new Attack({
-    name: "slash",
-    type: "sword",
-    description: "A simple swing of your sword.",
-    damage: { min: 2, max: 4, type: "slashing" },
-  }),
-  new Attack({
-    name: "headsmasher",
-    type: "rock",
-    description: "Brutally smash a rock against your enemy's head.",
-    damage: { min: 10, max: 15, type: "bludgeoning" },
-  }),
-];
+const attacks = await loadFiles("attacks", Attack);
+
+export default attacks;

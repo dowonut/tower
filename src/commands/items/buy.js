@@ -16,20 +16,20 @@ export default {
 
     // Check if item name provided
     if (!itemNameInput)
-      return game.reply(message, "provide the name of an item.");
+      return game.error(message, "provide the name of an item.");
 
     // Fetch item data
     const item = game.getItem(itemNameInput);
 
     // Return if no item
-    if (!item) return game.reply(message, "not a valid item.");
+    if (!item) return game.error(message, "not a valid item.");
 
     // Get item from merchant
     const merchantItem = await game.getMerchantItem(itemNameInput, player);
 
     // Check if can purchase item
     if (!merchantItem)
-      return game.reply(
+      return game.error(
         message,
         "this item can't be purchased from merchants."
       );
@@ -41,12 +41,12 @@ export default {
 
     // Check if item is in stock
     if (merchantItem.stock < 1) {
-      return game.reply(message, "this item is out of stock.");
+      return game.error(message, "this item is out of stock.");
     }
 
     // Check if the player can afford
     if (merchantItem.price * quantity > player.marks) {
-      return game.reply(
+      return game.error(
         message,
         `you don't have enough ${config.emojis.mark} to buy this.`
       );
@@ -54,7 +54,7 @@ export default {
 
     // Check if buying more than stock
     if (quantity > merchantItem.stock) {
-      return game.reply(
+      return game.error(
         message,
         "the merchant doesn't have enough of this item in stock."
       );
@@ -101,6 +101,16 @@ export default {
     // Unlock equipment
     if (["weapon"].includes(item.category)) {
       player.unlockCommands(message, server, ["equipment"]);
+    }
+
+    // Unlock recipe
+    if (item.category == "recipe") {
+      game.reply(
+        message,
+        `you unlocked a new recipe: **${game.titleCase(
+          item.item
+        )}**\nSee all your recipes with \`${server.prefix}recipes\``
+      );
     }
   },
 };

@@ -16,22 +16,25 @@ export default {
 
     // Check if item name provided
     if (!itemNameInput)
-      return game.reply(message, "provide the name of an item.");
+      return game.error(message, "provide the name of an item.");
 
     // Fetch item data
     const item = await player.getItem(itemNameInput);
 
     // Return if no item
-    if (!item) return game.reply(message, "not a valid item.");
+    if (!item) return game.error(message, "not a valid item.");
 
-    if (!item.value) return game.reply(message, "you can't sell this item.");
+    if (!item.value) return game.error(message, "you can't sell this item.");
+
+    if (item.equipped)
+      return game.error(message, "you can't sell an item while it's equipped.");
 
     if (quantity == "all") {
       quantity = item.quantity;
     }
 
     if (quantity > item.quantity)
-      return game.reply(message, "you don't have enough items to do that.");
+      return game.error(message, "you don't have enough items to do that.");
 
     await player.giveItem(itemNameInput, -quantity);
 

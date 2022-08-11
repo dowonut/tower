@@ -10,16 +10,18 @@ export default {
     let embed;
     let title;
 
+    // Fetch unlocked merchants
+    const merchants = await player.getUnlockedMerchants();
+
+    // Check if player has unlocked any merchants
+    if (!merchants)
+      return game.error(
+        message,
+        `you haven't met any merchants yet. Try exploring the village...`
+      );
+
     if (!input) {
       let description = ``;
-
-      const merchants = await player.getUnlockedMerchants();
-
-      if (!merchants)
-        return game.reply(
-          message,
-          `you haven't met any merchants yet. Try exploring the village...`
-        );
 
       // Grab all merchants
       for (const merchant of merchants) {
@@ -28,8 +30,6 @@ export default {
         const mCategory = game.titleCase(merchant.category);
         const mName = game.titleCase(merchant.name);
         description += `\n**${mName}** | \`${mCategory} Merchant\``;
-        // description += `\n**${game.titleCase(merchant.category)} Merchant**`;
-        // description += `\nName: \`${game.titleCase(merchant.name)}\``;
       }
 
       description += `\n\nSee what a merchant is selling with \`${server.prefix}merchant <name/category>\``;
@@ -40,10 +40,9 @@ export default {
       };
     } else {
       // Grab specific merchant
-      const merchants = await player.getUnlockedMerchants();
-
       const merchant = merchants.find(
-        (x) => x.name == input || x.category == input
+        (x) =>
+          x.name == input.toLowerCase() || x.category == input.toLowerCase()
       );
       if (!merchant) return game.reply(message, "not a valid merchant.");
 
