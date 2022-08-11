@@ -20,27 +20,17 @@ export default {
       },
     });
 
-    await prisma.attack.createMany({
-      data: [
-        { playerId: playerData.id, name: "punch" },
-        { playerId: playerData.id, name: "slash" },
-        { playerId: playerData.id, name: "headsmasher" },
-      ],
-    });
+    const entries = {
+      attack: ["punch", "slash", "headsmasher"],
+      skill: ["unarmed combat"],
+      recipe: ["sword handle"],
+    };
 
-    await prisma.skill.createMany({
-      data: [
-        { playerId: playerData.id, name: "unarmed combat" },
-        { playerId: playerData.id, name: "sword combat" },
-        { playerId: playerData.id, name: "axe combat" },
-        { playerId: playerData.id, name: "spear combat" },
-        { playerId: playerData.id, name: "ranged combat" },
-        //{ playerId: playerData.id, name: "magic" },
-        // { playerId: playerData.id, name: "mining" },
-        // { playerId: playerData.id, name: "fishing" },
-        // { playerId: playerData.id, name: "woodcutting" },
-      ],
-    });
+    for (const [key, value] of Object.entries(entries)) {
+      const entryArr = value.map((x) => ({ playerId: playerData.id, name: x }));
+
+      await prisma[key].createMany({ data: entryArr });
+    }
 
     const player = { ...playerData, ...game.player, prisma };
 

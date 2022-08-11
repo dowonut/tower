@@ -1,4 +1,4 @@
-import items from "../../game/items.js";
+import items from "../../game/classes/items.js";
 
 export default {
   name: "equipment",
@@ -17,13 +17,14 @@ export default {
         const item = game.getItem(player[eqSlot]);
         const key = game.titleCase(eqSlot);
         const value = player[eqSlot] ? item.getName() : " ";
-        description += `\n**${key}:** \`${value}\``;
+        description += `\n${key}: \`${value}\``;
 
         if (player[eqSlot]) {
           const item = await player.getItem(player[eqSlot]);
+
           if (item.damage)
-            description += ` | \`${item.damage.value}\`${
-              config.emojis.damage[item.damage.type]
+            description += ` | \`${item.damage}\`${
+              config.emojis.damage[item.damageType]
             }`;
           description += ` | *${item.description}*`;
         }

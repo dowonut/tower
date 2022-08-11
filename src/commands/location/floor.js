@@ -1,4 +1,4 @@
-import floors from "../../game/floors.js";
+import floors from "../../game/classes/floors.js";
 
 export default {
   name: "floor",

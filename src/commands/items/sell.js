@@ -41,7 +41,7 @@ export default {
 
     game.reply(
       message,
-      `you sold \`${quantity}x\` **${item.name}** for \`${
+      `you sold \`${quantity}x\` **${item.getName()}** for \`${
         item.value * quantity
       }\` ${config.emojis.mark} (Total: \`${playerData.marks}\` ${
         config.emojis.mark

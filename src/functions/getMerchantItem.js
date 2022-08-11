@@ -1,5 +1,5 @@
-import merchants from "../game/merchants.js";
-import itemInfo from "../game/items.js";
+import merchants from "../game/classes/merchants.js";
+import itemInfo from "../game/classes/items.js";
 
 export default {
   getMerchantItem: async (itemName, player) => {

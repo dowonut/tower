@@ -1,5 +1,4 @@
-import enemies from "../game/enemies.js";
-import floors from "../game/floors.js";
+import enemies from "../game/classes/enemies.js";
 
 export default {
   startEnemyEncounter: async (
@@ -53,6 +52,8 @@ What do you want to do?
         fighting: player.discordId,
       },
     });
+
+    await player.addExplore("enemy", undefined, enemyData.name);
 
     await player.unlockCommands(message, server, [
       "attack",

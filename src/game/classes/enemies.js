@@ -1,6 +1,6 @@
-import randomFunction from "../functions/random.js";
-import game from "../functions/titleCase.js";
-import { emojis } from "../config.js";
+import randomFunction from "../../functions/random.js";
+import game from "../../functions/titleCase.js";
+import { emojis } from "../../config.js";
 import fs from "fs";
 const random = randomFunction.random;
 
@@ -239,6 +239,32 @@ export default [
     xp: {
       min: 70,
       max: 80,
+    },
+  }),
+  // rock
+  new Enemy({
+    name: "the rock",
+    description: "Rock.",
+    maxHealth: 30,
+    strength: 5,
+    defence: 1,
+    damage: {
+      min: 5,
+      max: 8,
+      type: "bludgeoning",
+    },
+    image: "https://imgur.com/Fte78Qa.png",
+    loot: [
+      {
+        name: "rock",
+        dropChance: 100,
+        min: 5,
+        max: 10,
+      },
+    ],
+    xp: {
+      min: 200,
+      max: 300,
     },
   }),
 ];

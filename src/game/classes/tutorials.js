@@ -1,5 +1,4 @@
-import game from "../functions/titleCase.js";
-import * as config from "../config.js";
+import game from "../../functions/titleCase.js";
 
 class Tutorial {
   constructor(object) {

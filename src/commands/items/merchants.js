@@ -1,6 +1,3 @@
-import merchants from "../../game/merchants.js";
-import items from "../../game/items.js";
-
 export default {
   name: "merchants",
   aliases: ["m", "merchant"],
@@ -16,10 +13,26 @@ export default {
     if (!input) {
       let description = ``;
 
+      const merchants = await player.getUnlockedMerchants();
+
+      if (!merchants)
+        return game.reply(
+          message,
+          `you haven't met any merchants yet. Try exploring the village...`
+        );
+
       // Grab all merchants
-      for (const [key, value] of Object.entries(merchants[player.floor - 1])) {
-        description += `\n\\> \`${value.category} Merchant\``;
+      for (const merchant of merchants) {
+        if (!merchant) continue;
+
+        const mCategory = game.titleCase(merchant.category);
+        const mName = game.titleCase(merchant.name);
+        description += `\n**${mName}** | \`${mCategory} Merchant\``;
+        // description += `\n**${game.titleCase(merchant.category)} Merchant**`;
+        // description += `\nName: \`${game.titleCase(merchant.name)}\``;
       }
+
+      description += `\n\nSee what a merchant is selling with \`${server.prefix}merchant <name/category>\``;
 
       title = `Merchants on Floor ${player.floor}`;
       embed = {
@@ -27,7 +40,11 @@ export default {
       };
     } else {
       // Grab specific merchant
-      const merchant = merchants[player.floor - 1][input.toLowerCase()];
+      const merchants = await player.getUnlockedMerchants();
+
+      const merchant = merchants.find(
+        (x) => x.name == input || x.category == input
+      );
       if (!merchant) return game.reply(message, "not a valid merchant.");
 
       let description = ``;
@@ -48,10 +65,13 @@ export default {
           itemName = `${item.getName()}`;
         }
 
-        description += `${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
+        description += `\n${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
       }
 
-      title = `${merchant.category} Merchant`;
+      const mCategory = game.titleCase(merchant.category);
+      const mName = game.titleCase(merchant.name);
+
+      title = `${mName} - ${mCategory} Merchant`;
       embed = {
         description: description,
         footer: { text: `You have ${player.marks} marks` },

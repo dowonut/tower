@@ -31,8 +31,11 @@ model Player {
   // Inventory and character
   inventory     Inventory[]
   attacks       Attack[]
-  merchantStock merchantStock[]
+  merchantStock MerchantStock[]
   skills        Skill[]
+  recipes       Recipe[]
+  crafts        Craft[]
+  exploration   Exploration[]
   level         Int      @default(0)
   xp            Int      @default(0)
   marks         Int      @default(0) 
@@ -54,9 +57,28 @@ model Player {
   canAttack     Boolean  @default(true)
   fighting      Int?
   unlockedCommands String[]
-  statpoints   Int       @default(0)
+  statpoints    Int      @default(0)
 }
 
+// Unlock player crafting recipes
+model Recipe {
+  id            Int @id @default(autoincrement())
+  player        Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId      Int
+  name          String
+}
+
+// Ongoing player crafts
+model Craft {
+  id Int @id @default(autoincrement())
+  player        Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId      Int
+  name String
+  started DateTime
+  time          Int
+}
+
+// Player skills and their progression
 model Skill {
   id            Int       @id @default(autoincrement())
   player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
@@ -66,6 +88,7 @@ model Skill {
   xp            Int       @default(0)
 }
 
+// Player item inventory
 model Inventory {
   id            Int       @id @default(autoincrement())
   player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
@@ -74,9 +97,24 @@ model Inventory {
   quantity      Int
 //  equipSlot     String?
   equipped      Boolean   @default(false)
+  crafted       Boolean   @default(false)
+  nickname      String?
+  damage        Int?
+  damageType    Int?
+  enhancements  Enhancement[]
 }
 
-model merchantStock {
+// Item enhancements 
+model Enhancement {
+  id            Int @id @default(autoincrement())
+  item          Inventory @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId        Int
+  name          String
+  level         Int @default(1)
+}
+
+// Player merchant stocks
+model MerchantStock {
   id            Int       @id @default(autoincrement())
   player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId      Int
@@ -85,6 +123,18 @@ model merchantStock {
   floor         Int
 }
 
+// Player exploration tracking
+model Exploration {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId      Int
+  floor         Int
+  type          String
+  name          String?
+  category      String?
+}
+
+// Player attacks
 model Attack {
   id            Int       @id @default(autoincrement())
   player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
@@ -93,14 +143,7 @@ model Attack {
   remCooldown   Int       @default(0)
 }
 
-model Item {
-  id            Int       @id @default(autoincrement())
-  name          String
-  category      String
-  description   String
-  price         Int?
-}
-
+// Enemy tracking
 model Enemy {
   id            Int       @id @default(autoincrement())
   name          String
@@ -108,15 +151,25 @@ model Enemy {
   fighting      String?
 }
 
-model enemyType {
-  id            Int     @id @default(autoincrement())
-  name          String
-  health        Int     @default(1)
-  strength      Int     @default(1)
-  defense       Int     @default(1)
-  attribute     String[]
-  weak          String[]
-}
+// OUTDATED 
+// model Item {
+//   id            Int       @id @default(autoincrement())
+//   name          String
+//   category      String
+//   description   String
+//   price         Int?
+// }
+
+// OUTDATED
+// model enemyType {
+//   id            Int     @id @default(autoincrement())
+//   name          String
+//   health        Int     @default(1)
+//   strength      Int     @default(1)
+//   defense       Int     @default(1)
+//   attribute     String[]
+//   weak          String[]
+// }
 
 //model Region {
 //  id            Int       @id @default(autoincrement())

@@ -1,4 +1,4 @@
-import game from "../functions/titleCase.js";
+import game from "../../functions/titleCase.js";
 
 class Skill {
   constructor(object) {
@@ -41,7 +41,7 @@ export default [
     levels: [],
   }),
   new Skill({
-    name: "ranged combat",
+    name: "bow combat",
     levels: [],
   }),
   new Skill({

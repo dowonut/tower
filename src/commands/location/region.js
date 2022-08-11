@@ -17,21 +17,34 @@ export default {
 
     // Go through keys
     for (const key in region) {
-      if (["enemies", "activities"].includes(key)) {
+      if (["enemies", "activities", "merchants", "loot"].includes(key)) {
         let field = {
           name: `**${game.titleCase(key)}:**\n`,
           value: ``,
           inline: true,
         };
 
+        const explored = await player.getExplored();
+        const exploredArr = explored.map((x) => (x.name ? x.name : x.category));
+
         // Add key values
         for (const value of region[key]) {
+          let name = value.name ? value.name : value.category;
+
           let emoji =
-            config.emojis[key] && config.emojis[key][value.name.toLowerCase()]
-              ? config.emojis[key][value.name.toLowerCase()]
+            config.emojis[key] && config.emojis[key][name]
+              ? config.emojis[key][name]
               : ``;
 
-          field.value += `${emoji} \`${game.titleCase(value.name)}\`\n`;
+          if (exploredArr.includes(name) || key == "activities") {
+            if (key == "merchants") {
+              name += ` merchant`;
+            }
+
+            field.value += `${emoji} \`${game.titleCase(name)}\`\n`;
+          } else {
+            field.value += `\`????\`\n`;
+          }
         }
 
         fields.push(field);

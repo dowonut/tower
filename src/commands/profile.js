@@ -22,7 +22,7 @@ export default {
           where: { discordId: user.id },
         });
 
-        if (playerInfo) player = playerInfo;
+        if (playerInfo) player = { ...playerInfo, ...game.player, prisma };
         else return message.channel.send(":x: This user has no character.");
       }
     }

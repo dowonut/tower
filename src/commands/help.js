@@ -38,6 +38,9 @@ export default {
       Items: `
 **Items**
         `,
+      Crafting: `
+**Crafting**
+        `,
       Combat: `
 **Combat**
         `,

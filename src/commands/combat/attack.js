@@ -7,7 +7,7 @@ export default {
   arguments: "<attack name>",
   category: "Combat",
   useInCombat: true,
-  cooldown: "1",
+  cooldown: "2",
   async execute(message, args, prisma, config, player, game, server) {
     // Format imput
     const input = args.join(" ").toLowerCase();
@@ -95,19 +95,24 @@ async function performAttack(
   });
 
   // Send damage message
-  await message.channel.send(
-    `**${player.username}** used **${attack.getName()}** dealing \`${damage}\`${
+  await game.reply(
+    message,
+    `used **${attack.getName()}** dealing \`${damage}\`${
       config.emojis.damage[attack.damage.type]
     } damage to **${enemy.getName()}** | ${
       config.emojis.health
     }\`${remainingHealth}/${enemy.maxHealth}\``
   );
 
-  // Give skill xp
-  if (attack.type == "unarmed") {
-    const skillXp = game.random(5, 10);
+  const combatSkills = ["unarmed", "sword", "axe", "spear", "bow"];
 
-    await player.giveSkillXp(skillXp, "unarmed combat", message, game);
+  // Give skill xp
+  for (const skill of combatSkills) {
+    if (attack.type == skill) {
+      const skillXp = game.random(5, 10);
+
+      await player.giveSkillXp(skillXp, skill + " combat", message, game);
+    }
   }
 
   // Send typing indicator
@@ -171,7 +176,7 @@ async function performAttack(
     message.channel.send(
       `**${enemy.getName()}** deals \`${enemyDamage.value}\`${
         config.emojis.damage[enemyDamage.type]
-      } damage to **${player.username}** | ${config.emojis.health}\`${
+      } damage to **${message.author}** | ${config.emojis.health}\`${
         playerData.health
       }/${player.maxHealth}\`${healthWarning}`
     );

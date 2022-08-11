@@ -1,9 +1,11 @@
-import enemies from "../game/enemies.js";
-import items from "../game/items.js";
-import attacks from "../game/attacks.js";
-import floors from "../game/floors.js";
-import skills from "../game/skills.js";
-import tutorials from "../game/tutorials.js";
+import enemies from "../game/classes/enemies.js";
+import items from "../game/classes/items.js";
+import attacks from "../game/classes/attacks.js";
+import floors from "../game/classes/floors.js";
+import skills from "../game/classes/skills.js";
+import tutorials from "../game/classes/tutorials.js";
+import recipes from "../game/classes/recipes.js";
+import merchants from "../game/classes/merchants.js";
 
 import * as config from "../config.js";
 
@@ -65,7 +67,7 @@ export default {
         newItem = await this.prisma.inventory.create({
           data: {
             playerId: this.id,
-            name: item.getName(),
+            name: item.name,
             quantity: itemQuantity,
           },
         });
@@ -142,7 +144,7 @@ export default {
         (x) => x.name == itemRef[0].name.toLowerCase()
       );
 
-      return { ...itemData, ...itemRef[0] };
+      return { ...itemRef[0], ...itemData };
     },
 
     // Get all items
@@ -284,13 +286,74 @@ export default {
       return skillArray;
     },
 
+    // Get all recipes
+    getRecipes: async function (input) {
+      let recipeArr = [];
+      let playerRecipes;
+      if (input) {
+        playerRecipes = await this.prisma.recipe.findMany({
+          //orderBy: [{ level: "desc" }, { xp: "desc" }],
+          where: {
+            playerId: this.id,
+            name: { equals: input, mode: "insensitive" },
+          },
+        });
+
+        if (!playerRecipes[0]) return undefined;
+      } else {
+        playerRecipes = await this.prisma.recipe.findMany({
+          //orderBy: [{ level: "desc" }, { xp: "desc" }],
+          where: { playerId: this.id },
+        });
+      }
+      for (const playerRecipe of playerRecipes) {
+        const recipeData = recipes.find((x) => x.name == playerRecipe.name);
+        const recipe = { ...playerRecipe, ...recipeData };
+
+        recipeArr.push(recipe);
+      }
+
+      return recipeArr;
+    },
+
+    // Get thing from player
+    fetch: async function (key, input) {
+      let array = [];
+      let items;
+      if (input) {
+        items = await this.prisma[key].findMany({
+          //orderBy: [{ level: "desc" }, { xp: "desc" }],
+          where: {
+            playerId: this.id,
+            name: { equals: input, mode: "insensitive" },
+          },
+        });
+
+        if (!items[0]) return undefined;
+      } else {
+        items = await this.prisma[key].findMany({
+          //orderBy: [{ level: "desc" }, { xp: "desc" }],
+          where: { playerId: this.id },
+        });
+      }
+      for (const item of items) {
+        const itemData = eval(key + "s").find((x) => x.name == item.name);
+        const finalItem = { ...item, ...itemData };
+
+        array.push(finalItem);
+      }
+
+      if (array.length > 1) return array;
+      else return array[0];
+    },
+
     // Deal damage to player
     getDamageTaken: async function (damageInput) {
       // Calculate defence
       const defenceMultiplier = 1 - this.defence / 100;
 
       // Calculate final damage
-      const damage = Math.floor(damageInput.value * defenceMultiplier);
+      const damage = Math.ceil(damageInput.value * defenceMultiplier);
 
       // Log damage
       console.log(
@@ -391,9 +454,7 @@ export default {
 
       // Send death message
       //game.reply(message, `you killed **${enemy.name}**.`);
-      message.channel.send(
-        `**${message.author.username}** killed **${enemy.getName()}** :skull:`
-      );
+      game.reply(message, `you killed **${enemy.getName()}** :skull:`);
       game.fastEmbed(message, this, embed, `Loot from ${enemy.getName()}`);
 
       // Give xp to player
@@ -415,6 +476,9 @@ export default {
 
       // Give item to player
       await this.giveItem(item.name, itemQuantity);
+
+      // Unlock region loot
+      await this.addExplore("loot", undefined, item.name);
 
       // Format quantity text
       let quantityText = itemQuantity > 1 ? `\`${itemQuantity}x\` ` : ``;
@@ -519,6 +583,88 @@ export default {
           }\` :tada:`
         );
       }
+    },
+
+    // Get a player's unlocked merchants
+    getUnlockedMerchants: async function () {
+      const merchantsRef = await this.prisma.exploration.findMany({
+        where: { playerId: this.id, floor: this.floor, type: "merchant" },
+      });
+
+      if (!merchantsRef[0]) return undefined;
+
+      let merchantArr = [];
+      for (const merchantRef of merchantsRef) {
+        const merchant = merchants[this.floor - 1].find(
+          (x) => x.category == merchantRef.category
+        );
+        if (!merchant) continue;
+        merchantArr.push(merchant);
+      }
+      return merchantArr;
+    },
+
+    // Get explored by type
+    getExplored: async function (type) {
+      let explored;
+      if (type) {
+        explored = await this.prisma.exploration.findMany({
+          where: {
+            playerId: this.id,
+            floor: this.floor,
+            type: type.toLowerCase(),
+          },
+        });
+      } else {
+        explored = await this.prisma.exploration.findMany({
+          where: { playerId: this.id, floor: this.floor },
+        });
+      }
+      return explored;
+    },
+
+    // Unlock new exploration
+    addExplore: async function (type, category, name) {
+      const floor = this.floor;
+
+      const existing = await this.prisma.exploration.findMany({
+        where: {
+          playerId: this.id,
+          floor: floor,
+          type: type.toLowerCase(),
+          name: name ? name : undefined,
+          category: category ? category : undefined,
+        },
+      });
+      if (existing[0]) return;
+
+      await this.prisma.exploration.create({
+        data: {
+          playerId: this.id,
+          floor: floor,
+          type: type.toLowerCase(),
+          name: name ? name : undefined,
+          category: category ? category : undefined,
+        },
+      });
+    },
+
+    // Unlock a random merchant on the current floor
+    unlockRandomMerchant: async function (game) {
+      const region = this.getRegion();
+
+      const foundMerchant = await this.getExplored("merchant");
+
+      const foundMerchants = foundMerchant.map((x) => x.category);
+
+      const merchants = region.merchants.map((x) => x.category);
+
+      let merchant;
+      while (!merchant || foundMerchants.includes(merchant)) {
+        merchant = game.getRandom(merchants);
+      }
+
+      await this.addExplore("merchant", merchant);
     },
   },
 };

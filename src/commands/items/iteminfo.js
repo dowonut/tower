@@ -25,8 +25,8 @@ Category: \`${game.titleCase(item.category)}\``;
 
     if (item.category == "weapon") {
       description += `\nWeapon Type: \`${game.titleCase(item.weaponType)}\``;
-      description += `\nDamage: \`${item.damage.value}\`${
-        config.emojis.damage[item.damage.type]
+      description += `\nDamage: \`${item.damage}\`${
+        config.emojis.damage[item.damageType]
       }`;
     }
 

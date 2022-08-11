@@ -30,6 +30,7 @@ export default [
           { name: "baby goblin", weight: 40 },
           { name: "hungry goblin", weight: 40 },
           { name: "hobgoblin", weight: 20 },
+          { name: "the rock", weight: 10 },
         ],
         loot: [{ name: "rock", weight: 100 }],
       },
@@ -48,9 +49,9 @@ export default [
         description:
           "A cozy village with kind people. Might they know something of the floor dungeons?",
         merchants: [
-          { name: "weapon" },
-          { name: "food" },
-          { name: "cartographer" },
+          { category: "general" },
+          { category: "weapons" },
+          { category: "cartographer" },
         ],
         loot: [
           { name: "fabric", weight: 50 },

@@ -1,6 +1,6 @@
-import randomFunction from "../functions/random.js";
-import game from "../functions/titleCase.js";
-import { emojis } from "../config.js";
+import randomFunction from "../../functions/random.js";
+import game from "../../functions/titleCase.js";
+import { emojis } from "../../config.js";
 const random = randomFunction.random;
 
 class Attack {
@@ -25,7 +25,7 @@ class Attack {
 
       if (!item) return 0;
 
-      return item.damage.value;
+      return item.damage;
     };
 
     // Calculate damage multipliers

@@ -7,12 +7,23 @@ export default {
     // Get current region
     const region = player.getRegion();
 
+    // Get players found merchants
+    const foundMerchants = await player.getExplored("merchant");
+
     // Create possible outcomes
-    const outcomes = [
+    let outcomes = [
       { name: "enemies", weight: 80 },
       { name: "loot", weight: 20 },
-      { name: "merchants", weight: 10 },
+      { name: "merchants", weight: 20 },
     ];
+
+    // If player has found all merchants
+    if (region.merchants && foundMerchants.length >= region.merchants.length) {
+      outcomes = [
+        { name: "enemies", weight: 80 },
+        { name: "loot", weight: 20 },
+      ];
+    }
 
     // Map outcomenames
     const outcomeNames = outcomes.map((outcome) => outcome.name);
@@ -58,8 +69,7 @@ export default {
         break;
       case "merchants":
         // Unlock a new random merchant from that region
-        return console.log("find merchant");
-        await player.unlockRandomMerchant();
+        await player.unlockRandomMerchant(game);
         break;
     }
   },
