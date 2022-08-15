@@ -47,8 +47,8 @@ export default {
       if (!merchant) return game.reply(message, "not a valid merchant.");
 
       let description = ``;
-      for (const [key, value] of Object.entries(merchant.items)) {
-        const item = await game.getMerchantItem(key, player);
+      for (const itemRef of merchant.items) {
+        const item = await game.getMerchantItem(itemRef.name, player);
 
         let emoji = config.emojis.items[item.name]
           ? config.emojis.items[item.name]

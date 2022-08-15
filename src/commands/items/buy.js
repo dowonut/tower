@@ -29,10 +29,7 @@ export default {
 
     // Check if can purchase item
     if (!merchantItem)
-      return game.error(
-        message,
-        "this item can't be purchased from merchants."
-      );
+      return game.error(message, "you can't purchase this item.");
 
     // Set quantity to all
     if (quantity == "all") {

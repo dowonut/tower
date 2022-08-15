@@ -3,7 +3,7 @@ export default {
   description: "Explore your current floor.",
   aliases: ["e"],
   cooldown: "0",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, prisma, config, player, game, server, client) {
     // Get current region
     const region = player.getRegion();
 
@@ -56,7 +56,8 @@ export default {
           config,
           player,
           game,
-          server
+          server,
+          client
         );
         break;
       case "loot":

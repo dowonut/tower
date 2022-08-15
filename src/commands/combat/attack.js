@@ -19,21 +19,29 @@ export default {
         return game.error(message, "you can only use an attack during combat.");
 
       if (!isNaN(args[0]))
-        return game.reply(
+        return game.error(
           message,
           "provide the name of the attack you want to use."
         );
 
       const attack = await player.getAttack(input);
 
-      if (!attack) return game.reply(message, "not a valid attack.");
+      if (!attack) return game.error(message, "not a valid attack.");
 
       if (attack.remCooldown > 0)
-        return game.reply(message, "this attack is still on cooldown.");
+        return game.error(message, "this attack is still on cooldown.");
 
-      performAttack(message, config, player, game, server, attack, prisma);
+      return await performAttack(
+        message,
+        config,
+        player,
+        game,
+        server,
+        attack,
+        prisma
+      );
     } else {
-      listAttacks(message, config, player, game, server);
+      return await listAttacks(message, config, player, game, server);
     }
   },
 };
@@ -50,16 +58,20 @@ async function listAttacks(message, config, player, game, server) {
   for (const attack of attacks) {
     const damageInfo = await attack.damageInfo(player, enemy);
     if (attack.remCooldown < 1) {
-      description += `\n**${attack.getName()}** | ${attack.description}`;
+      description += `\n\n**${attack.getName()}** | ${attack.description}`;
       description += `\nDamage: ${damageInfo}`;
 
       if (attack.cooldown)
-        description += `Cooldown: \`${attack.cooldown} rounds\`\n`;
+        description += `\nCooldown: \`${attack.cooldown} rounds\``;
     } else {
       description += `
-:hourglass: *${attack.name} | ${attack.description}*
-*Cooldown: \`${attack.remCooldown} rounds\`*\n`;
+\n:hourglass: ${attack.getName()} | Cooldown: \`${attack.remCooldown} rounds\``;
     }
+  }
+
+  // Add tutorial if in combat
+  if (player.inCombat) {
+    description += `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`;
   }
 
   const embed = {
@@ -68,9 +80,7 @@ async function listAttacks(message, config, player, game, server) {
       icon_url: player.pfp,
       name: "Available Attacks",
     },
-    description:
-      description +
-      `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`,
+    description: description,
   };
 
   game.sendEmbed(message, embed);
@@ -105,7 +115,7 @@ async function performAttack(
   // Format enemy health text
   const healthText = ` | ${config.emojis.health}\`${remainingHealth}/${enemy.maxHealth}\``;
   if (attackMessage) {
-    await message.reply(attackMessage + healthText);
+    await game.reply(message, attackMessage + healthText, false);
   } else {
     await game.reply(
       message,
@@ -116,15 +126,6 @@ async function performAttack(
   }
 
   const combatSkills = ["unarmed", "sword", "axe", "spear", "bow"];
-
-  // Give skill xp
-  for (const skill of combatSkills) {
-    if (attack.type == skill) {
-      const skillXp = game.random(5, 10);
-
-      await player.giveSkillXp(skillXp, skill + " combat", message, game);
-    }
-  }
 
   // Send typing indicator
   await message.channel.sendTyping();
@@ -152,6 +153,15 @@ async function performAttack(
     data: { remCooldown: cooldown },
   });
 
+  // Give skill xp
+  for (const skill of combatSkills) {
+    if (attack.type == skill) {
+      const skillXp = game.random(5, 10);
+
+      await player.giveSkillXp(skillXp, skill + " combat", message, game);
+    }
+  }
+
   // Run when enemy is dead
   if (enemyData.health <= 0) {
     // Remove enemy from database
@@ -164,7 +174,9 @@ async function performAttack(
     player.unlockCommands(message, server, ["inventory", "skills"]);
 
     // Exit out of combat
-    return player.exitCombat();
+    player.exitCombat();
+
+    return "KILLED_ENEMY";
   }
 
   // Get player damage
@@ -191,7 +203,7 @@ async function performAttack(
     // Send if exists else send default
     if (attackMessage) {
       //message.channel.send(attackMessage + healthMessage);
-      game.reply(message, attackMessage + healthMessage);
+      game.reply(message, attackMessage + healthMessage, false);
     } else {
       message.channel.send(
         `**${enemy.getName()}** deals \`${enemyAttack.damage}\`${
@@ -209,12 +221,14 @@ async function performAttack(
       );
 
       await player.erase();
-      return game.createPlayer(
+      await game.createPlayer(
         message.author,
         prisma,
         game,
         player.unlockedCommands
       );
+
+      return "KILLED_PLAYER";
     }
   }, game.random(500, 2000));
 }

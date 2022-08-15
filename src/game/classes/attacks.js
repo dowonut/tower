@@ -1,6 +1,6 @@
-import randomFunction from "../../functions/random.js";
-import randomFunction2 from "../../functions/getRandom.js";
-import game from "../../functions/titleCase.js";
+import randomFunction from "../../functions/math/random.js";
+import randomFunction2 from "../../functions/math/getRandom.js";
+import game from "../../functions/formatting/titleCase.js";
 import { emojis } from "../../config.js";
 import { loadFiles } from "./_loadFiles.js";
 const random = randomFunction.random;
@@ -42,7 +42,20 @@ class Attack {
 
     // Calculate damage multipliers
     this.damageMultiplier = async (player) => {
-      return player.strength / 100 + 1;
+      const passives = await player.getPassives("DAMAGE");
+
+      let passiveValue = 0;
+      for (const passive of passives) {
+        passiveValue += passive.value;
+      }
+
+      const passiveMultiplier = passiveValue / 100;
+
+      const strength = player.strength / 100;
+
+      const damageMultiplier = passiveMultiplier + strength + 1;
+
+      return damageMultiplier;
     };
 
     // Get total damage

@@ -1,4 +1,4 @@
-import game from "../../functions/titleCase.js";
+import game from "../../functions/formatting/titleCase.js";
 import { loadFiles } from "./_loadFiles.js";
 import fs from "fs";
 

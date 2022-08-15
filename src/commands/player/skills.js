@@ -64,7 +64,7 @@ ${progress}\n`;
       for (let i = 1; i < 4 && skill.levelInfo(skill.level + i); i++)
         description += `
 \`Level ${skill.level + i}\`
-${skill.levelInfo(skill.level + i)}`;
+${skill.levelInfo(skill.level + i, game)}`;
 
       embed = {
         description: description,

@@ -30,6 +30,13 @@ export default {
       });
     },
 
+    // Refesh player object
+    refresh: async function (message, game) {
+      const playerData = await game.getPlayer(message, this.prisma);
+
+      return { ...playerData, ...game.player, prisma: this.prisma };
+    },
+
     // Give item
     giveItem: async function (itemName, quantity) {
       const item = items.find((x) => x.name == itemName.toLowerCase());
@@ -187,6 +194,79 @@ export default {
       return item;
     },
 
+    // Get the type of weapon player is currently doing
+    getWeaponType: async function () {
+      const eqItem = await this.getEquipped("hand");
+
+      if (!eqItem) return "unarmed";
+
+      let weaponType = eqItem.weaponType;
+
+      return weaponType;
+    },
+
+    // Get all passive effects that currently apply
+    getPassives: async function (type) {
+      // Get all player passives
+      const passives = await this.prisma.passive.findMany({
+        where: { playerId: this.id, type: type ? type : undefined },
+      });
+
+      // Get player weapon type
+      const weaponType = await this.getWeaponType();
+
+      // Iterate through all passives
+      let passiveArray = [];
+      for (const passive of passives) {
+        // Check if passive applies to equipped weapon or all
+        if (passive.name !== "all" && passive.name !== weaponType) continue;
+
+        passiveArray.push(passive);
+      }
+
+      return passiveArray;
+    },
+
+    // Get all passives
+    getAllPassives: async function (type) {
+      // Get all player passives
+      const passives = await this.prisma.passive.findMany({
+        where: { playerId: this.id, type: type ? type : undefined },
+      });
+
+      return passives;
+    },
+
+    // Add a passive stat to a player
+    addPassive: async function (name, type, value) {
+      // Get all player passives
+      const filteredPassive = await this.prisma.passive.findMany({
+        where: { playerId: this.id, name: name, type: type },
+      });
+
+      // If passive doesn't exist, create a new entry
+      if (!filteredPassive[0]) {
+        // Create new passive
+        await this.prisma.passive.create({
+          data: { playerId: this.id, name: name, type: type, value: value },
+        });
+      }
+      // If passive already exists, then update
+      else {
+        // Update the passive value
+        await this.prisma.passive.updateMany({
+          where: {
+            playerId: this.id,
+            name: name,
+            type: type,
+          },
+          data: {
+            value: { increment: value },
+          },
+        });
+      }
+    },
+
     // Get specific attack
     getAttack: async function (attackName) {
       const attackRef = await this.prisma.attack.findMany({
@@ -255,6 +335,13 @@ export default {
       return finalArray;
     },
 
+    // Add new attack
+    addAttack: async function (attackName) {
+      await this.prisma.attack.create({
+        data: { playerId: this.id, name: attackName.toLowerCase() },
+      });
+    },
+
     // Get specific skill
     getSkill: async function (skillName) {
       const skillRef = await this.prisma.skill.findMany({
@@ -321,6 +408,7 @@ export default {
       return recipeArr;
     },
 
+    // Add new recipe
     addRecipe: async function (recipeName) {
       const recipe = recipes.find((x) => x.name == recipeName.toLowerCase());
 
@@ -392,7 +480,7 @@ export default {
     // Enter combat
     enterCombat: async function (enemy) {
       // Update player to be in combat
-      this.update({ inCombat: true, fighting: enemy.id });
+      return await this.update({ inCombat: true, fighting: enemy.id });
     },
 
     // Exit combat
@@ -601,18 +689,30 @@ export default {
         });
         skill = skillRef[0];
 
+        // Send level up message
+        const skillNameCase = game.titleCase(skill.name);
+        let levelMsg = `your skill **${skillNameCase}** has reached level \`${skill.level}\` :tada:`;
+        let skillLevelMsg = ``;
+
+        // Fetch data about skill and check if next level exists
+        const skillData = await this.getSkill(skill.name);
+        const skillLevel = skillData.levels[skill.level - 1];
+
+        // Level up skill
+        if (skillLevel) {
+          skillLevelMsg = await skillData.levelUp(
+            this,
+            skillLevel,
+            message,
+            game
+          );
+        }
+
+        game.reply(message, `${levelMsg}\n\n${skillLevelMsg}`);
+
         // Get required xp for next level
         nextLevelXp = config.nextLevelXpSkill(skill.level);
         levelUp++;
-      }
-
-      if (levelUp > 0) {
-        game.reply(
-          message,
-          `your skill **${game.titleCase(skill.name)}** has reached level \`${
-            skill.level + levelUp
-          }\` :tada:`
-        );
       }
     },
 
@@ -626,8 +726,8 @@ export default {
 
       let merchantArr = [];
       for (const merchantRef of merchantsRef) {
-        const merchant = merchants[this.floor - 1].find(
-          (x) => x.category == merchantRef.category
+        const merchant = merchants.find(
+          (x) => x.category == merchantRef.category && x.floor == this.floor
         );
         if (!merchant) continue;
         merchantArr.push(merchant);
@@ -700,8 +800,8 @@ export default {
         merchantC = game.getRandom(merchantCategories);
       }
 
-      const merchant = merchants[this.floor - 1].find(
-        (x) => x.category == merchantC
+      const merchant = merchants.find(
+        (x) => x.category == merchantC && x.floor == this.floor
       );
 
       const mName = game.titleCase(merchant.name);

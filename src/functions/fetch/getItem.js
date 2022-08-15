@@ -1,4 +1,4 @@
-import items from "../game/classes/items.js";
+import items from "../../game/classes/items.js";
 
 export default {
   getItem: (itemName) => {

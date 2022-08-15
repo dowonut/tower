@@ -1,5 +1,4 @@
 import { createCanvas, loadImage } from "canvas";
-import { MessageAttachment } from "discord.js";
 
 export default {
   name: "imageprofile",
@@ -76,7 +75,7 @@ export default {
 
     const image = canvas.toBuffer();
 
-    const attachment = new MessageAttachment(image, "test.png");
+    //const attachment = new MessageAttachment(image, "test.png");
 
     // const embed = {
     //   image: { url: "attachment://test.png" },

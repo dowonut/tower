@@ -1,9 +1,16 @@
 export default {
   createPlayer: async (auth, prisma, game, commands) => {
+    const defaultCommands = [
+      "erase",
+      "begin",
+      "profile",
+      "explore",
+      "help",
+      "unlockallcommands",
+    ];
+
     // Check if unlocked commands
-    const unlockedCommands = commands
-      ? commands
-      : ["erase", "begin", "profile", "explore", "help"];
+    const unlockedCommands = commands ? commands : defaultCommands;
 
     // Create new user in database
     const playerData = await prisma.player.create({

@@ -1,5 +1,10 @@
 import Discord from "discord.js";
-import { Client, Intents } from "discord.js";
+import {
+  Client,
+  GatewayIntentBits,
+  IntentsBitField,
+  Partials,
+} from "discord.js";
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
 import fs from "fs";
@@ -10,16 +15,18 @@ import * as config from "./config.js";
 
 const prisma = new PrismaClient();
 
-const client = new Client({
-  intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_MESSAGE_TYPING,
-  ],
-});
+// const client = new Client({
+//   intents: [
+//     GatewayIntentBits.Guilds,
+//     GatewayIntentBits.GuildMessages,
+//     GatewayIntentBits.GuildMessageReactions,
+//     GatewayIntentBits.GuildMembers,
+//     GatewayIntentBits.GuildEmojisAndStickers,
+//     GatewayIntentBits.GuildMessageTyping,
+//   ],
+// });
+
+const client = new Client({ intents: new IntentsBitField(36363) });
 
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
@@ -66,108 +73,122 @@ client.on("messageCreate", async (message) => {
     });
   }
 
+  // Check for prefix or bot
   if (!message.content.startsWith(server.prefix) || message.author.bot) return;
 
   // Create command and arguments
   const args = message.content.slice(server.prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 
-  // Check for aliases
-  const command =
-    client.commands.get(commandName) ||
-    client.commands.find(
-      (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
-    );
+  await game.runCommand(
+    commandName,
+    client,
+    message,
+    args,
+    prisma,
+    game,
+    server
+  );
 
-  if (!command) return;
+  // // Check for aliases
+  // const command =
+  //   client.commands.get(commandName) ||
+  //   client.commands.find(
+  //     (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+  //   );
 
-  const { cooldowns } = client;
+  // if (!command) return;
 
-  if (!cooldowns.has(command.name)) {
-    cooldowns.set(command.name, new Discord.Collection());
-  }
+  // const { cooldowns } = client;
 
-  const now = Date.now();
-  const timestamps = cooldowns.get(command.name);
-  const cooldownAmount = (command.cooldown || 0) * 1000;
+  // if (!cooldowns.has(command.name)) {
+  //   cooldowns.set(command.name, new Discord.Collection());
+  // }
 
-  // Check if user has permission to run the command
-  const authorPerms = message.channel.permissionsFor(message.author);
-  if (command.permissions) {
-    if (!authorPerms || !authorPerms.has(command.permissions)) {
-      return game.error("you're not worthy of this command.");
-    }
-  }
+  // const now = Date.now();
+  // const timestamps = cooldowns.get(command.name);
+  // const cooldownAmount = (command.cooldown || 0) * 1000;
 
-  let playerData = await prisma.player.findUnique({
-    where: { discordId: message.author.id },
-    include: { inventory: true, attacks: true, merchantStock: true },
-  });
+  // // Check if user has permission to run the command
+  // const authorPerms = message.channel.permissionsFor(message.author);
+  // if (command.permissions) {
+  //   if (!authorPerms || !authorPerms.has(command.permissions)) {
+  //     return game.error("you're not worthy of this command.");
+  //   }
+  // }
 
-  // Check if user has player character
-  if (command.needChar !== false && !playerData) {
-    return game.reply(message, `get started with \`${server.prefix}begin\``);
-  }
+  // let playerData = await game.getPlayer(message, prisma);
 
-  // Make object null if no player data
-  if (playerData) {
-    var player = { ...playerData, ...game.player, prisma };
+  // // Check if user has player character
+  // if (command.needChar !== false && !playerData) {
+  //   return game.reply(message, `get started with \`${server.prefix}begin\``);
+  // }
 
-    //console.log(player);
+  // // Make object null if no player data
+  // if (playerData) {
+  //   var player = { ...playerData, ...game.player, prisma };
 
-    // Check if user is admin
-    if (command.category == "Admin" && !authorPerms.has(["ADMINISTRATOR"])) {
-      return game.error(message, `this command requires admin permissions.`);
-    }
+  //   //console.log(player);
 
-    // Check if command is unlocked
-    if (
-      !player.unlockedCommands.includes(command.name) &&
-      !authorPerms.has(["ADMINISTRATOR"])
-    ) {
-      return game.error(message, `you haven't unlocked this command yet.`);
-    }
+  //   // Check if user is admin
+  //   if (command.category == "Admin" && !authorPerms.has(["ADMINISTRATOR"])) {
+  //     return game.error(message, `this command requires admin permissions.`);
+  //   }
 
-    // Check if user is in combat
-    if (player.inCombat == false && command.useInCombatOnly == true) {
-      return game.error(message, `this command can only be used in combat.`);
-    }
+  //   // Check if command is unlocked
+  //   if (
+  //     !player.unlockedCommands.includes(command.name) &&
+  //     !authorPerms.has(["ADMINISTRATOR"])
+  //   ) {
+  //     return game.error(message, `you haven't unlocked this command yet.`);
+  //   }
 
-    // check if user is allowed to attack in combat
-    if (player.canAttack == false && command.useInCombatOnly == true) {
-      return game.error(message, `you can't do this right now.`);
-    }
+  //   // Check if user is in combat
+  //   if (player.inCombat == false && command.useInCombatOnly == true) {
+  //     return game.error(message, `this command can only be used in combat.`);
+  //   }
 
-    if (
-      player.inCombat == true &&
-      command.useInCombat !== true &&
-      command.useInCombatOnly !== true
-    ) {
-      return game.error(message, `this command can't be used while in combat.`);
-    }
-  } else {
-    var player = null;
-  }
+  //   // check if user is allowed to attack in combat
+  //   if (player.canAttack == false && command.useInCombatOnly == true) {
+  //     return game.error(message, `you can't do this right now.`);
+  //   }
 
-  // Check if the user is on cooldown for that command
-  if (timestamps.has(message.author.id)) {
-    const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-    if (now < expirationTime) {
-      return message.channel.send(
-        `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`
-      );
-    }
-  }
+  //   if (
+  //     player.inCombat == true &&
+  //     command.useInCombat !== true &&
+  //     command.useInCombatOnly !== true &&
+  //     command.category !== "Admin"
+  //   ) {
+  //     return game.error(message, `this command can't be used while in combat.`);
+  //   }
+  // } else {
+  //   var player = null;
+  // }
 
-  timestamps.set(message.author.id, now);
-  setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+  // // Check if the user is on cooldown for that command
+  // if (timestamps.has(message.author.id)) {
+  //   const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+  //   if (now < expirationTime) {
+  //     return message.channel.send(
+  //       `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`
+  //     );
+  //   }
+  // }
 
-  // Try to run the command
-  try {
-    await command.execute(message, args, prisma, config, player, game, server);
-  } catch (error) {
-    console.error(error);
-  }
+  // timestamps.set(message.author.id, now);
+  // setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+
+  // // Try to run the command
+  // try {
+  //   const beforeCommand = Date.now();
+  //   await command.execute(message, args, prisma, config, player, game, server);
+  //   const afterCommand = Date.now();
+  //   console.log(
+  //     `command ${command.name} executed in ${afterCommand - beforeCommand}ms`
+  //   );
+  // } catch (error) {
+  //   console.error(error);
+  // }
 });
 
 client.on("ready", () => {

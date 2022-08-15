@@ -1,4 +1,4 @@
-import floors from "../game/classes/floors.js";
+import floors from "../../game/classes/floors.js";
 
 export default {
   getRegion: (player, regionName) => {

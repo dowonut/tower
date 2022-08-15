@@ -4,6 +4,7 @@ export default {
   arguments: "",
   description: "See your unlocked crafting recipes.",
   category: "Crafting",
+  useInCombat: true,
   async execute(message, args, prisma, config, player, game, server) {
     const recipes = await player.getRecipes();
 

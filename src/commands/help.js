@@ -54,6 +54,10 @@ ${config.emojis.bullet} **Combat**
 ${config.emojis.bullet} **Settings**
 
         `,
+      Other: `
+${config.emojis.bullet} **Other**
+
+        `,
       Admin: `
 ${config.emojis.bullet} **Admin**
 

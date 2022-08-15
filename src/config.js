@@ -1,10 +1,10 @@
 export const prefix = "-";
 export const status = prefix + "help";
-//export const botColor = "#dbbbff";
-export const botColor = "#2f3136"; //"#191919";
-export const green = "#C0EDA6";
-export const red = "#FD5D5D";
-export const purple = "#9600ff";
+//export const botColor = 0xdbbbff;
+export const botColor = 0x2f3136; //0x191919;
+export const green = 0xc0eda6;
+export const red = 0xfd5d5d;
+export const purple = 0x9600ff;
 export const botBanner = "https://i.imgur.com/RwqxsiL.png";
 export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
@@ -48,6 +48,8 @@ export const emojis = {
   },
   enemies: {},
 };
+
+export const stats = ["strength", "defence", "arcane", "vitality"];
 
 export const statInfo = {
   strength: "Increases physical damage output by `1%`",

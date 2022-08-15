@@ -36,6 +36,7 @@ model Player {
   recipes       Recipe[]
   crafts        Craft[]
   exploration   Exploration[]
+  passives      Passive[]
   level         Int      @default(0)
   xp            Int      @default(0)
   marks         Int      @default(0) 
@@ -100,7 +101,7 @@ model Inventory {
   crafted       Boolean   @default(false)
   nickname      String?
   damage        Int?
-  damageType    Int?
+  damageType    String?
   enhancements  Enhancement[]
 }
 
@@ -141,6 +142,16 @@ model Attack {
   playerId      Int
   name          String
   remCooldown   Int       @default(0)
+}
+
+// Player passive stat modifiers
+model Passive {
+  id            Int       @id @default(autoincrement())
+  player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId      Int
+  name          String
+  type          String
+  value         Int
 }
 
 // Enemy tracking
