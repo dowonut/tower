@@ -9,7 +9,7 @@ export default {
 
       const collector = message.channel.createMessageComponentCollector({
         filter,
-        time: 120 * 1000,
+        time: 5 * 60 * 1000,
       });
 
       collector.on("collect", async (i) => {
@@ -17,8 +17,10 @@ export default {
 
         if (!component) return;
 
+        await i.deferUpdate();
+
         if (component.function) {
-          const selection = i.values[0] ? i.values[0] : undefined;
+          const selection = i.values ? i.values[0] : undefined;
           const response = await component.function(reply, i, selection);
           resolve(response);
         }
@@ -28,7 +30,10 @@ export default {
           resolve(response);
         }
 
-        if (component.stop) collector.stop();
+        if (component.stop) {
+          //console.log("collector stopped.");
+          await collector.stop();
+        }
       });
 
       // collector.on("end", async () => {

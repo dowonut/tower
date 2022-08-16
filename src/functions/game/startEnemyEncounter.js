@@ -51,7 +51,7 @@ export default {
         label: "Attack",
         style: "secondary",
         function: async (reply, i) => {
-          await attack(i);
+          await attack();
         },
       },
       {
@@ -59,7 +59,7 @@ export default {
         label: "Flee",
         style: "secondary",
         function: async (reply, i) => {
-          await i.update({ components: [] });
+          await reply.edit({ components: [] });
           flee();
         },
       },
@@ -70,7 +70,6 @@ export default {
         style: "secondary",
         function: async (reply, i) => {
           await enemyInfo();
-          i.deferUpdate();
         },
       },
     ];
@@ -131,14 +130,14 @@ export default {
     }
 
     // Attack component
-    async function attack(i) {
+    async function attack() {
       const attackButtons = await createAttackButtons();
 
       // Create row of attack buttons
       const attackRow = game.actionRow("buttons", attackButtons);
 
       // Update message
-      await i.update({ components: [attackRow] });
+      await reply.edit({ components: [attackRow] });
 
       // Create new component collector
       await game.componentCollector(message, reply, attackButtons);
@@ -157,6 +156,7 @@ export default {
         );
       }
 
+      // Update attack buttons
       async function updateAttacks() {
         // Update attacks and cooldowns
         const attackButtons = await createAttackButtons();
@@ -183,18 +183,27 @@ export default {
             function: async (reply, i) => {
               // Perform attack when button is pressed
               const results = await performAttack(attack);
-              console.log(results);
+
               // Check if enemy or player idead and update components
               if (results == "KILLED_ENEMY" || results == "KILLED_PLAYER") {
-                await i.update({ components: [] });
+                await reply.edit({ components: [] });
               } else {
-                await i.deferUpdate();
-                // Update attack buttons
                 await updateAttacks();
               }
             },
           });
         }
+
+        // Create back button
+        attackButtons.push({
+          id: "listattacks",
+          emoji: "ℹ",
+          style: "secondary",
+          function: async (reply, i) => {
+            await updateAttacks();
+            return await listAttacks();
+          },
+        });
 
         // Create back button
         attackButtons.push({
@@ -204,13 +213,24 @@ export default {
           function: async (reply, i) => {
             // Load original row
             await reply.edit({ components: [row] });
-            if (!i.deferred) await i.deferUpdate();
             return;
           },
           stop: true,
         });
 
         return attackButtons;
+      }
+
+      async function listAttacks() {
+        return await game.runCommand(
+          "attack",
+          client,
+          message,
+          [],
+          prisma,
+          game,
+          server
+        );
       }
     }
   },

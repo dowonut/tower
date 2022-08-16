@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import { PermissionsBitField } from "discord.js";
+const ADMIN = PermissionsBitField.Flags.Administrator;
 
 export default {
   name: "help",
@@ -65,23 +67,30 @@ ${config.emojis.bullet} **Admin**
     };
 
     for (const command of commands) {
+      // if (
+      //   command.ignoreInHelp !== true &&
+      //   (player.unlockedCommands.includes(command.name) ||
+      //     command.category == "Settings" ||
+      //     (command.category == "Admin" && authorPerms.has(["ADMINISTRATOR"])))
+      // )
+      if (command.ignoreInHelp) continue;
       if (
-        command.ignoreInHelp !== true &&
-        (player.unlockedCommands.includes(command.name) ||
-          command.category == "Settings" ||
-          (command.category == "Admin" && authorPerms.has(["ADMINISTRATOR"])))
-      ) {
-        let commandName = command.name;
-        if (command.arguments)
-          commandName = `${command.name} ${command.arguments}`;
+        command.category !== "Settings" &&
+        !player.unlockedCommands.includes(command.name)
+      )
+        continue;
+      if (command.category == "Admin" && !authorPerms.has(ADMIN)) continue;
 
-        const template = `\`${server.prefix}${commandName}\` | ${command.description}\n`;
+      let commandName = command.name;
+      if (command.arguments)
+        commandName = `${command.name} ${command.arguments}`;
 
-        if (!command.category) {
-          categories.General += template;
-        } else {
-          categories[command.category] += template;
-        }
+      const template = `\`${server.prefix}${commandName}\` | ${command.description}\n`;
+
+      if (!command.category) {
+        categories.General += template;
+      } else {
+        categories[command.category] += template;
       }
     }
 

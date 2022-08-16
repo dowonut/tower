@@ -1,6 +1,6 @@
 import randomFunction from "../../functions/math/getRandom.js";
 import randomFunction2 from "../../functions/math/random.js";
-import game from "../../functions/formatting/titleCase.js";
+import game from "../../functions/format/titleCase.js";
 import { loadFiles } from "./_loadFiles.js";
 import fs from "fs";
 import util from "util";

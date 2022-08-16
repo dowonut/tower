@@ -1,6 +1,6 @@
 export default {
   name: "erase",
-  description: "Completely reset your character.\nCANNOT BE UNDONE.",
+  description: "Completely reset your character.",
   cooldown: "60",
   category: "Other",
   useInCombat: true,

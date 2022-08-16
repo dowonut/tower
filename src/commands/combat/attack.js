@@ -110,12 +110,19 @@ async function performAttack(
     health: { increment: -damage.total },
   });
 
+  // Format line
+  const line = "\n───────────────";
+
   // Fetch damage message
-  const attackMessage = await attack.attackMessage(damage, enemy);
+  let attackMessage = await attack.attackMessage(damage, enemy);
   // Format enemy health text
-  const healthText = ` | ${config.emojis.health}\`${remainingHealth}/${enemy.maxHealth}\``;
+  const healthText = `\n${config.emojis.health} Enemy Health: \`${remainingHealth}/${enemy.maxHealth}\``;
+
+  attackMessage += line;
+  attackMessage += healthText;
+
   if (attackMessage) {
-    await game.reply(message, attackMessage + healthText, false);
+    await game.reply(message, attackMessage, false);
   } else {
     await game.reply(
       message,
@@ -189,46 +196,57 @@ async function performAttack(
   });
 
   // Deal damage to player
-  setTimeout(async () => {
-    // Warn low health
-    let healthWarning =
-      (playerData.health / player.maxHealth) * 100 < 33
-        ? ` | :warning: **Low Health!**`
-        : ``;
+  return new Promise((resolve) => {
+    setTimeout(async () => {
+      // Warn low health
+      let healthWarning =
+        (playerData.health / player.maxHealth) * 100 < 33
+          ? ` | :warning: **Low Health!**`
+          : ``;
 
-    // Format attack message
-    const attackMessage = enemy.attackMessage(enemyAttack, player);
-    const healthMessage = ` | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\`${healthWarning}`;
+      // Format attack message
+      let attackMessage = enemy.attackMessage(enemyAttack, player);
+      // const healthMessage = ` | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\`${healthWarning}`;
+      const healthMessage = `\n${config.emojis.health} Your Health: \`${playerData.health}/${player.maxHealth}\`${healthWarning}`;
 
-    // Send if exists else send default
-    if (attackMessage) {
-      //message.channel.send(attackMessage + healthMessage);
-      game.reply(message, attackMessage + healthMessage, false);
-    } else {
-      message.channel.send(
-        `**${enemy.getName()}** deals \`${enemyAttack.damage}\`${
-          config.emojis.damage[enemyAttack.type]
-        } damage to **${message.author}**`
-      );
-    }
+      attackMessage += line;
+      attackMessage += healthMessage;
 
-    await player.update({ canAttack: true });
+      // Send if exists else send default
+      if (attackMessage) {
+        //message.channel.send(attackMessage + healthMessage);
+        game.reply(message, attackMessage, false);
+      } else {
+        message.channel.send(
+          `**${enemy.getName()}** deals \`${enemyAttack.damage}\`${
+            config.emojis.damage[enemyAttack.type]
+          } damage to **${message.author}**`
+        );
+      }
 
-    // check if player is dead
-    if (playerData.health <= 0) {
-      message.reply(
-        `:skull_crossbones: ${message.author} **you have died!** :skull_crossbones:\nYour character has been completely reset. Try not to die again.`
-      );
+      await player.update({ canAttack: true });
 
-      await player.erase();
-      await game.createPlayer(
-        message.author,
-        prisma,
-        game,
-        player.unlockedCommands
-      );
+      // check if player is dead
+      if (playerData.health <= 0) {
+        const deathMessage = `:skull_crossbones: **\`You died!\`** :skull_crossbones:`;
 
-      return "KILLED_PLAYER";
-    }
-  }, game.random(500, 2000));
+        await game.reply(message, deathMessage, true, config.red, "");
+        // game.reply(
+        //   message,
+        //   `Your character has been completely reset. Try not to die again.`
+        // );
+
+        await player.erase();
+        await game.createPlayer(
+          message.author,
+          prisma,
+          game,
+          player.unlockedCommands
+        );
+
+        resolve("KILLED_PLAYER");
+      }
+      resolve(undefined);
+    }, game.random(500, 2000));
+  });
 }

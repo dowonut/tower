@@ -84,7 +84,6 @@ export default {
         placeholder: "Choose a region to travel to...",
         options: options,
         function: async (reply, i, selection) => {
-          await i.deferUpdate();
           await travel(selection);
         },
       };

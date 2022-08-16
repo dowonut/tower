@@ -1,9 +1,10 @@
 export const prefix = "-";
 export const status = prefix + "help";
-//export const botColor = 0xdbbbff;
+export const towerColor = 0xdbbbff;
 export const botColor = 0x2f3136; //0x191919;
-export const green = 0xc0eda6;
-export const red = 0xfd5d5d;
+//export const botColor = 0x191919;
+export const green = 0x99ff5e;
+export const red = 0xff3838;
 export const purple = 0x9600ff;
 export const botBanner = "https://i.imgur.com/RwqxsiL.png";
 export const botIcon = "https://i.imgur.com/S9LRuXa.png";

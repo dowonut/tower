@@ -92,12 +92,11 @@ export default {
           emoji: config.emojis.stats[stat],
           disable: disable,
           async function(reply, i) {
-            await i.deferUpdate();
             selectedStat = i.customId;
             if (player.statpoints > 1) {
               return await assignMenu();
             } else {
-              return await statUp(selectedStat);
+              return await statUp(selectedStat, 1);
             }
           },
         });

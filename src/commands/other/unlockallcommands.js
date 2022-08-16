@@ -5,7 +5,7 @@ export default {
   name: "unlockallcommands",
   aliases: ["uac"],
   arguments: "",
-  description: "Unlock all commands in the game.\nNOT RECOMMENDED.",
+  description: "Unlock all commands in the game.",
   category: "Other",
   async execute(message, args, prisma, config, player, game, server) {
     const buttons = [

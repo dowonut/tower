@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import Discord from "discord.js";
+import { PermissionsBitField } from "discord.js";
+const ADMIN = PermissionsBitField.Flags.Administrator;
 
 import * as config from "../../config.js";
 
@@ -53,16 +55,14 @@ export default {
       }
 
       // Make object null if no player data
-      if (playerData) {
+      if (!playerData) {
+        var player = null;
+      } else {
         var player = { ...playerData, ...game.player, prisma };
-
         //console.log(player);
 
         // Check if user is admin
-        if (
-          command.category == "Admin" &&
-          !authorPerms.has(["ADMINISTRATOR"])
-        ) {
+        if (command.category == "Admin" && !authorPerms.has(ADMIN)) {
           return game.error(
             message,
             `this command requires admin permissions.`
@@ -72,7 +72,7 @@ export default {
         // Check if command is unlocked
         if (
           !player.unlockedCommands.includes(command.name) &&
-          !authorPerms.has(["ADMINISTRATOR"])
+          !authorPerms.has(ADMIN)
         ) {
           return game.error(message, `you haven't unlocked this command yet.`);
         }
@@ -101,8 +101,6 @@ export default {
             `this command can't be used while in combat.`
           );
         }
-      } else {
-        var player = null;
       }
 
       // Check if the user is on cooldown for that command

@@ -3,6 +3,7 @@ import { createCanvas, loadImage } from "canvas";
 export default {
   name: "imageprofile",
   description: "Work in progress!",
+  category: "Admin",
   aliases: ["ip", "ipr"],
   //  category: "General",
   useInCombat: true,

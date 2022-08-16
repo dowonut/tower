@@ -72,13 +72,12 @@ export default {
           });
         }
       } else {
-        // Create new item
-
         // Check if item is recipe
         if (item.category == "recipe") {
           await this.addRecipe(item.item);
           newItem = item;
         } else {
+          // Create new item
           newItem = await this.prisma.inventory.create({
             data: {
               playerId: this.id,
@@ -176,6 +175,9 @@ export default {
           (x) => x.name == playerItem.name.toLowerCase()
         );
         const item = { ...playerItem, ...itemData };
+
+        // Set value if undefined
+        if (!item.value) item.value = 0;
 
         itemArray.push(item);
       }
@@ -543,10 +545,9 @@ export default {
 
       let lootList = ``;
       for (const item of loots) {
-        console.log(item.quantity);
         //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
         if (item.quantity > 1) {
-          lootList += `\n+ **${item.getName()}** \`x${item.quantity}\``;
+          lootList += `\n+ **${item.getName()}** | \`x${item.quantity}\``;
         } else {
           lootList += `\n+ **${item.getName()}**`;
         }

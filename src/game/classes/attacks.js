@@ -1,6 +1,6 @@
 import randomFunction from "../../functions/math/random.js";
 import randomFunction2 from "../../functions/math/getRandom.js";
-import game from "../../functions/formatting/titleCase.js";
+import game from "../../functions/format/titleCase.js";
 import { emojis } from "../../config.js";
 import { loadFiles } from "./_loadFiles.js";
 const random = randomFunction.random;

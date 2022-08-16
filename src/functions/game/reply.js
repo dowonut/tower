@@ -1,7 +1,13 @@
 import * as config from "../../config.js";
 
 export default {
-  reply: (message, content, boolean) => {
+  reply: (
+    message,
+    content,
+    boolean,
+    color = config.towerColor,
+    emoji = config.emojis.bullet
+  ) => {
     // Determine whether to send message as embed
     let useEmbed = true;
     if (boolean !== undefined) useEmbed = boolean;
@@ -14,8 +20,8 @@ export default {
       message.reply(`${uContent}`);
     } else {
       const embed = {
-        description: config.emojis.bullet + " " + uContent,
-        color: config.botColor,
+        description: emoji + " " + uContent,
+        color: color,
       };
       message.reply({ embeds: [embed] });
     }
