@@ -46,11 +46,13 @@ export default {
       message,
       `you sold \`${quantity}x\` **${item.getName()}** for \`${
         item.value * quantity
-      }\` ${config.emojis.mark} (Total: \`${playerData.marks}\` ${
+      }\` ${config.emojis.mark} | Total: \`${playerData.marks}\` ${
         config.emojis.mark
-      })`
+      }`
     );
 
     player.unlockCommands(message, server, ["merchants"]);
+
+    return;
   },
 };

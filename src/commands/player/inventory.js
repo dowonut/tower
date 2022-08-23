@@ -6,7 +6,7 @@ export default {
   category: "Player",
   useInCombat: true,
   async execute(message, args, prisma, config, player, game, server, client) {
-    const items = await player.getItems();
+    let items = await player.getItems();
 
     // Create variables for modifying page
     let page = 1;
@@ -16,8 +16,14 @@ export default {
     // Boolean for showing list
     let showingList = false;
 
-    const sortOptions = ["name", "value"];
-    const filterOptions = ["all", "equipment", "crafting", "food", "other"];
+    const sortOptions = ["name", "quantity", "value", "damage"];
+    const filterOptions = [
+      "all",
+      "equipment",
+      "crafting",
+      "consumables",
+      "other",
+    ];
 
     // Get total pages
     let totalPages = Math.ceil(items.length / 10);
@@ -39,7 +45,6 @@ export default {
       undefined,
       [row, row2]
     );
-
     await game.componentCollector(message, reply, [...buttons, ...buttons2]);
 
     // Unlock new commands
@@ -50,6 +55,9 @@ export default {
       let description = ``;
 
       const items = filterItems(sort, filter);
+
+      // Boolean to check if player has any items
+      const itemDisable = items.length < 1;
 
       // Update total pages
       totalPages = Math.ceil(items.length / 10);
@@ -64,21 +72,35 @@ export default {
           item.quantity > 1 ? `\`x${item.quantity}\`` : undefined;
         // Get item equip status
         const equipped = item.equipped ? `\`Equipped\`` : undefined;
+        // Get item value
+        const value = item.value
+          ? `\`${item.value}\`${config.emojis.mark}`
+          : undefined;
+        // Get damage value
+        const damage = item.damage
+          ? `\`${item.damage}\`${config.emojis.damage[item.damageType]}`
+          : undefined;
 
         // Get item emoji
-        let emoji = config.emojis.items[item.name]
-          ? config.emojis.items[item.name]
-          : config.emojis.blank;
+        let emoji = item.getEmoji();
 
         // Set item name
         description += `\n${emoji} **${item.getName()}**`;
 
         if (quantity) description += " | " + quantity;
         if (equipped) description += " | " + equipped;
+        if (sort == "value") {
+          if (value) description += " | " + value;
+        }
+        if (sort == "damage") {
+          if (damage) description += " | " + damage;
+        }
         //if (item.description) description += " | " + `*${item.description}*`;
       }
 
-      const title = `${player.username}'s Inventory`;
+      if (itemDisable) description += `You don't have any items yet...`;
+
+      const title = `Inventory`;
       const embed = {
         description: description,
       };
@@ -94,8 +116,13 @@ export default {
       // Sort items
       if (sort == "name") {
         var sortedItems = [...items].sort((a, b) => (a.name > b.name ? 1 : -1));
-      } else if (sort == "value") {
-        var sortedItems = [...items].sort((a, b) => b.value - a.value);
+      } else if (sort == "damage" || sort == "value" || sort == "quantity") {
+        var sortedItems = [...items].sort((a, b) => {
+          const bValue = b[sort] ? b[sort] : 0;
+          const aValue = a[sort] ? a[sort] : 0;
+
+          return bValue - aValue;
+        });
       }
 
       // Set filter keys
@@ -104,6 +131,8 @@ export default {
         filterKeys = ["weapon", "armor"];
       } else if (filter == "other") {
         filterKeys = ["map", "enhancement", "recipe"];
+      } else if (filter == "consumables") {
+        filterKeys = ["food", "potion"];
       }
 
       // Filter items by category
@@ -116,15 +145,18 @@ export default {
       }
 
       // Reset to first page
-      page = 1;
+      //page = 1;
 
       return filteredItems;
     }
-
     // Function for getting first row
     function rowOne() {
       const backDisable = page == 1 || showingList ? true : false;
       const nextDisable = page >= totalPages || showingList ? true : false;
+
+      // Boolean to check if player has any items
+      const items = filterItems(sort, filter);
+      const itemDisable = items.length < 1;
 
       const buttons = [
         {
@@ -152,6 +184,7 @@ export default {
           id: "iteminfo",
           emoji: "ℹ",
           stop: true,
+          disable: itemDisable,
           function: async (reply, i) => {
             toggleItemList(i);
             return;
@@ -179,11 +212,16 @@ export default {
       const sortTitle = game.titleCase(sort);
       const filterTitle = game.titleCase(filter);
 
+      // Boolean to check if player has any items
+      const itemDisable = items.length < 1;
+
       const buttons2 = [
         {
           id: "sort",
           label: "Sort: " + sortTitle,
+          disable: itemDisable,
           function: async (reply, i) => {
+            page = 1;
             sort = game.cycleArray(sort, sortOptions);
             return await updateEmbed();
           },
@@ -191,7 +229,9 @@ export default {
         {
           id: "filter",
           label: "Filter: " + filterTitle,
+          disable: itemDisable,
           function: async (reply, i) => {
+            page = 1;
             filter = game.cycleArray(filter, filterOptions);
             return await updateEmbed();
           },
@@ -229,6 +269,9 @@ export default {
 
     // Update the embed
     async function updateEmbed() {
+      // Get new items
+      items = await player.getItems();
+
       // Get new embed
       const { embed, title } = getEmbed(page, sort, filter);
 
@@ -255,6 +298,10 @@ export default {
     async function toggleItemList() {
       showingList = showingList ? false : true;
 
+      // Update items and embed
+      items = await player.getItems();
+
+      // Switch to dropdown
       if (showingList) {
         const { row, buttons } = rowOne();
 
@@ -263,13 +310,30 @@ export default {
         await reply.edit({ components: [row, row3] });
 
         await game.componentCollector(message, reply, [menu, ...buttons]);
-      } else {
+      }
+      // Switch back to inventory menu
+      else {
+        // Get new embed
+        const { embed, title } = getEmbed(page, sort, filter);
+
         const { row, buttons } = rowOne();
 
         const { row2, buttons2 } = rowTwo();
 
-        await reply.edit({ components: [row, row2] });
+        // Update original message
+        const messageRef = await game.fastEmbed(
+          message,
+          player,
+          embed,
+          title,
+          undefined,
+          [row, row2],
+          false
+        );
 
+        await reply.edit(messageRef);
+
+        // Create a new collector
         await game.componentCollector(message, reply, [
           ...buttons,
           ...buttons2,

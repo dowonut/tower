@@ -24,7 +24,7 @@ export default {
         label: "+1",
         stop: true,
         function: async (reply, i) => {
-          await i.update({ components: [row] });
+          await reply.edit({ components: [row] });
           return await statUp(selectedStat, 1);
         },
       },
@@ -34,7 +34,7 @@ export default {
         label: "All",
         stop: true,
         function: async (reply, i) => {
-          await i.update({ components: [row] });
+          await reply.edit({ components: [row] });
           return await statUp(selectedStat, player.statpoints);
         },
       },

@@ -6,30 +6,30 @@ export default {
   category: "Items",
   async execute(message, args, prisma, config, player, game, server) {
     if (!args[0])
-      return game.reply(message, "provide the name of a food item.");
+      return game.error(message, "provide the name of a food item.");
 
     const item = await player.getItem(args.join(" "));
 
     if (!item)
-      return game.reply(
+      return game.error(
         message,
-        `not a valid item. Check your items with \`${server.prefix}inventory\``
+        `not a valid item.\nCheck your items with \`${server.prefix}inventory\``
       );
 
     if (item.category !== "food")
-      return game.reply(message, `this isn't food idiot.`);
+      return game.error(message, `this isn't food idiot.`);
 
     let heal = item.health;
 
     if (player.health == player.maxHealth)
-      return game.reply(message, `you are already at max health!`);
+      return game.error(message, `you are already at max health!`);
 
     if (player.health + heal > player.maxHealth)
       heal = player.maxHealth - player.health;
 
     const playerData = await player.update({ health: { increment: heal } });
 
-    player.giveItem(item.name, -1);
+    await player.giveItem(item.name, -1);
 
     game.reply(
       message,
@@ -37,5 +37,7 @@ export default {
         config.emojis.health
       }\`${playerData.health}/${player.maxHealth}\``
     );
+
+    return;
   },
 };

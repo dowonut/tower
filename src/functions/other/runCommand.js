@@ -45,6 +45,7 @@ export default {
       }
 
       let playerData = await game.getPlayer(message, prisma);
+      let userData = await game.getUser(message, prisma);
 
       // Check if user has player character
       if (command.needChar !== false && !playerData) {
@@ -58,7 +59,7 @@ export default {
       if (!playerData) {
         var player = null;
       } else {
-        var player = { ...playerData, ...game.player, prisma };
+        var player = { ...playerData, ...game.player, prisma, user: userData };
         //console.log(player);
 
         // Check if user is admin
@@ -140,7 +141,7 @@ export default {
         //   }ms`
         // );
       } catch (error) {
-        resolve(console.error(error));
+        resolve(console.error("Something went wrong: ", error));
       }
     });
   },

@@ -1,8 +1,12 @@
 import modalF from "./modal.js";
 const { modal } = modalF;
+import rowF from "./actionRow.js";
+const { actionRow } = rowF;
 
 export default {
   componentCollector: async (message, reply, components) => {
+    if (!components || !components[0]) return undefined;
+
     return new Promise((resolve, reject) => {
       const filter = (i) =>
         i.user.id == message.author.id && i.message.id == reply.id;
@@ -13,25 +17,33 @@ export default {
       });
 
       collector.on("collect", async (i) => {
-        const component = components.find((x) => x.id == i.customId);
+        const index = components.findIndex((x) => x.id == i.customId);
+        const component = components[index];
 
+        // Return if no component provided
         if (!component) return;
 
+        // Defer interaction update
         await i.deferUpdate();
 
+        // If component has a function then run it
         if (component.function) {
+          // Get selection as function ID
           const selection = i.values ? i.values[0] : undefined;
+          // Get response as return from component function
           const response = await component.function(reply, i, selection);
+          // Resolve the promise
           resolve(response);
         }
+        // If component is a modal then open it and delete message
         if (component.modal) {
           const response = await modal(component.modal, i);
           await reply.delete();
           resolve(response);
         }
 
+        // If component stops collector
         if (component.stop) {
-          //console.log("collector stopped.");
           await collector.stop();
         }
       });

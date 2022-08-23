@@ -4,12 +4,23 @@ export default {
   description: "Attempt to flee from the enemy you're fighting.",
   category: "Combat",
   useInCombatOnly: true,
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, prisma, config, player, game, server, client) {
     const enemy = await player.getCurrentEnemy();
 
     player.exitCombat();
     player.killEnemy(enemy);
 
-    game.reply(message, "you ran away!");
+    const reply = await game.reply(message, "you ran away!");
+
+    // Add explore button
+    return game.cmdButton(message, reply, game, [
+      "explore",
+      client,
+      message,
+      [],
+      prisma,
+      game,
+      server,
+    ]);
   },
 };

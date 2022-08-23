@@ -7,10 +7,16 @@ export default {
       "explore",
       "help",
       "unlockallcommands",
+      "settings",
     ];
 
     // Check if unlocked commands
     const unlockedCommands = commands ? commands : defaultCommands;
+
+    let user = await prisma.user.findUnique({ where: { discordId: auth.id } });
+    if (!user) {
+      user = await prisma.user.create({ data: { discordId: auth.id } });
+    }
 
     // Create new user in database
     const playerData = await prisma.player.create({
@@ -39,7 +45,7 @@ export default {
       await prisma[key].createMany({ data: entryArr });
     }
 
-    const player = { ...playerData, ...game.player, prisma };
+    const player = { ...playerData, ...game.player, prisma, user: user };
 
     // Give apple
     await prisma.inventory.createMany({

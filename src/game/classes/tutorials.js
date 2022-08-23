@@ -23,9 +23,7 @@ List all your available attacks and how much damage they do.
 The symbol next to the damage indicates the "damage type". 
 
 \`attack <attack name>\`
-Use a specific attack during combat.
-
-New attacks are unlocked through skill progression or weapons.`,
+Use a specific attack during combat.`,
   }),
   new Tutorial({
     name: "enemyinfo",
@@ -54,40 +52,32 @@ Also shows whether item is equipped.`,
   new Tutorial({
     name: "iteminfo",
     info: `
-\`iteminfo <item name>\`
 Get information about a specific item.
 Shows image, description, category, and more.
-Useful for seeing resell value and food effects.`,
+Useful for seeing resell value and food effects.
+
+\`iteminfo <item name>\``,
   }),
   new Tutorial({
     name: "sell",
     info: `
-\`sell <item name>\`
-Sell an item you have in your inventory.
+Sell an item in your inventory.
 
-\`sell <item name> $ <quantity>\`
-Sell several of an item.
-
-\`sell <item name> $ all\`
-Sell all of an item.`,
+\`sell <item name> $ [quantity]\``,
   }),
   new Tutorial({
     name: "buy",
     info: `
-\`buy <item name>\`
 Buy an item from a merchant.
 
-\`buy <item name> $ <quantity>\`
-Buy several of an item from a merchant.
-
-\`buy <item name> $ all\`
-Buy all of an item from a merchant.`,
+\`buy <item name> $ [quantity]\``,
   }),
   new Tutorial({
     name: "eat",
     info: `
-\`eat <food name>\`
-Eat a piece of food in your inventory.`,
+Eat a piece of food from your inventory.
+
+\`eat <food name>\``,
   }),
   new Tutorial({
     name: "merchants",
@@ -96,10 +86,7 @@ Merchants are unique characters on each floor who sell things.
 You can usually encounter them by exploring in towns and villages.
 
 \`merchants\`
-Get a list of all merchants you've found on your current floor.
-
-\`merchant <merchant type>\`
-Get a list of items sold by a specific merchant.`,
+Get a list of all merchants you've found on your current floor.`,
   }),
   new Tutorial({
     name: "floor",
@@ -109,22 +96,20 @@ Each floor has several regions you can travel between for different enemies, loo
 
 \`floor\`
 Shows all regions on your current floor.
-Symbols next to regions indicate activities.
-:fish: = fishing
-:evergreen_tree: = woodcutting
-:pick: = mining`,
+Symbols next to regions indicate available activities.`,
   }),
   new Tutorial({
     name: "region",
     info: `
 Get information about your current region.
-Shows all enemies and activities.`,
+Shows all discovered enemies, items, merchants, etc.`,
   }),
   new Tutorial({
     name: "travel",
     info: `
-\`travel <region name>\`
-Travel to a specific region on your current floor.`,
+Travel to a region on your current floor.
+
+\`travel <region name>\``,
   }),
   new Tutorial({
     name: "equipment",
@@ -149,14 +134,8 @@ These are essential for unlocking new abilities and growing stronger.`,
 Put stat points into one of your core stats. 
 Can't be undone, so choose wisely.
 
-\`statup <stat name>\`
-Put 1 point into a stat.
-
-\`statup <stat name> $ <quantity>\`
-Put several points into a stat.
-
-\`statup <stat name> $ all\`
-Put all available points into a stat.`,
+\`statup <stat name> $ [quantity]\`
+Assign points to a stat.`,
   }),
   new Tutorial({
     name: "skills",
@@ -171,5 +150,26 @@ See all your skills and their levels.
 \`skill <skill name>\`
 Get detailed information about one of your skills.
 Shows next level rewards and more.`,
+  }),
+  new Tutorial({
+    name: "breakdown",
+    info: `
+Get a detailed breakdown of your player statistics.
+Shows passive/active modifiers, equipment bonuses, stat bonuses, and more.`,
+  }),
+  new Tutorial({
+    name: "leaderboard",
+    info: `
+Show the global leaderboard for player levels.
+
+\`leaderboard <marks/health/strength/...>\`
+Shows the global leaderboard for a specific category.`,
+  }),
+  new Tutorial({
+    name: "drink",
+    info: `
+Drink a potion from your inventory.
+
+\`drink <potion name>\``,
   }),
 ];

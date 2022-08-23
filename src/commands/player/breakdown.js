@@ -23,7 +23,7 @@ export default {
     // If no input provided list all
     if (!input) {
       // Damage title
-      description += `\n${bullet} **Damage**`;
+      // description += `\n${bullet} **Damage**`;
 
       // Get equipped weapon
       const weapon = await player.getEquipped("hand");
@@ -33,12 +33,12 @@ export default {
         const weaponDamage = weapon.damage;
         const emoji = damage[weapon.damageType];
 
-        description += `\n\n\`+${weaponDamage}\`${emoji} Weapon Bonus`;
+        description += `\n\n+ \`${weaponDamage}\`${emoji} Weapon Bonus`;
         description += `\n**Total Damage Bonus:** \`+${weapon.damage}\`${emoji}`;
       }
 
       // Add strength to description
-      description += `\n\n\`+${strength}%\` Strength Bonus`;
+      description += `\n\n+ \`${strength}%\` Strength Bonus ${config.emojis.stats.strength}`;
 
       // Iterate through passive modifiers
       let passiveValue = 0;
@@ -46,22 +46,33 @@ export default {
         passiveValue += passive.value;
         const passiveName = game.titleCase(passive.name);
         // Add passive modifier to description
-        description += `\n\`+${passive.value}%\` ${passiveName} Combat Bonus`;
+        description += `\n+ \`${passive.value}%\` `;
+        if (passive.source == "potion") {
+          description += `Potion Bonus`;
+          description += ` ${config.emojis.items.potion}`;
+        } else if (passive.source == "skill") {
+          description += `${passiveName} Skill Bonus`;
+        }
+        if (passive.duration) {
+          description += ` | \`${passive.duration} rounds remaining\``;
+        }
       }
-      const totalDmgMult = (strength + passiveValue) / 100 + 1;
+      const totalDmgMult = ((strength + passiveValue) / 100 + 1)
+        .toString()
+        .slice(0, 4);
 
       // Total damage multiplier
       description += `\n**Total Damage Multiplier:** \`x${totalDmgMult}\``;
 
-      // Defence title
-      description += `\n\n${bullet} **Defence**`;
+      // // Defence title
+      // description += `\n\n${bullet} **Defence**`;
 
-      // Add defence to description
-      description += `\n\n\`+${defence}%\` Defence Bonus`;
+      // // Add defence to description
+      // description += `\n\n\`+${defence}%\` Defence Bonus`;
 
-      // Total defence multiplier
-      const totalDefMult = defence / 100 + 1;
-      description += `\n**Total Defence Multiplier:** \`x${totalDefMult}\``;
+      // // Total defence multiplier
+      // const totalDefMult = (defence / 100 + 1).toString().slice(0, 4);
+      // description += `\n**Total Defence Multiplier:** \`x${totalDefMult}\``;
 
       var title = `Stat Breakdown`;
       var embed = { description: description };

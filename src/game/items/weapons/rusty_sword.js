@@ -8,7 +8,7 @@ export default {
   // Item description. Short and shown in lists.
   description: "Not the sharpest tool in the shed.",
   // Item info. Long and shown in "iteminfo".
-  info: "An old rusty sword. Use it wisely before it falls aprt.",
+  info: "An old rusty sword. Use it wisely before it falls apart.",
   // Health regained if food item.
   health: undefined,
   // Resell value.

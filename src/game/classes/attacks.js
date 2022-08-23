@@ -3,6 +3,7 @@ import randomFunction2 from "../../functions/math/getRandom.js";
 import game from "../../functions/format/titleCase.js";
 import { emojis } from "../../config.js";
 import { loadFiles } from "./_loadFiles.js";
+import * as config from "../../config.js";
 const random = randomFunction.random;
 const getRandom = randomFunction2.getRandom;
 
@@ -42,7 +43,7 @@ class Attack {
 
     // Calculate damage multipliers
     this.damageMultiplier = async (player) => {
-      const passives = await player.getPassives("DAMAGE");
+      const passives = await player.getPassives("damage");
 
       let passiveValue = 0;
       for (const passive of passives) {
@@ -80,9 +81,11 @@ class Attack {
 
         // Calculate enemy strengths and weaknesses
         if (enemy.strong.includes(type))
-          finalDamage = Math.floor(finalDamage - finalDamage * 0.25);
+          finalDamage = Math.floor(
+            finalDamage - finalDamage * config.strongRate
+          );
         if (enemy.weak.includes(type))
-          finalDamage = Math.floor(finalDamage + finalDamage * 0.25);
+          finalDamage = Math.floor(finalDamage + finalDamage * config.weakRate);
 
         return finalDamage;
       }

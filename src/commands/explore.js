@@ -43,8 +43,8 @@ export default {
     // Get random output from weights
     let { item } = game.weightedRandom(options, weights);
 
-    // Unlock region command
-    player.unlockCommands(message, server, ["region"]);
+    // // Unlock region command
+    // player.unlockCommands(message, server, ["region"]);
 
     // Log output
     switch (item) {
@@ -62,9 +62,19 @@ export default {
         break;
       case "loot":
         // Give the player some random loot from that region
-        await player.giveRandomLoot(message, server, game);
+        const reply = await player.giveRandomLoot(message, server, game);
         // Unlock new commands
         player.unlockCommands(message, server, ["inventory"]);
+        // Add an explore button
+        game.cmdButton(message, reply, game, [
+          "explore",
+          client,
+          message,
+          [],
+          prisma,
+          game,
+          server,
+        ]);
         break;
       case "merchants":
         // Unlock a new random merchant from that region

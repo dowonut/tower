@@ -3,7 +3,7 @@ export const status = prefix + "help";
 export const towerColor = 0xdbbbff;
 export const botColor = 0x2f3136; //0x191919;
 //export const botColor = 0x191919;
-export const green = 0x99ff5e;
+export const green = 0x60ef00;
 export const red = 0xff3838;
 export const purple = 0x9600ff;
 export const botBanner = "https://i.imgur.com/RwqxsiL.png";
@@ -11,11 +11,13 @@ export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 
 export const emojis = {
   bullet: "<:bullet:1007341922479771648>",
+  green_bullet: "<:green_bullet:1010124816516382800>",
+  level_up: "<:level_up:1011353610610806865>",
   blank: "<:blank:1002523614345703424>",
   mark: "<:mark:1004049049525174352>",
   silver_mark: "<:silver_mark:986634284355969026>",
   xp: "<:xp:987750164481597480>",
-  staircase: "<:staircase:987744955067949126>",
+  floor: "<:floor:1011667156380950558>",
   plus: "<:plus:987810098183303208>",
   health: "<:health:1002667456684359721>",
   stats: {
@@ -43,21 +45,47 @@ export const emojis = {
   items: {
     apple: "<:apple:1004006381927547060>",
     slimeball: "<:slimeball:1004006395487723600>",
-    "grey shard": "<:grey_shard:1001631127980748800>",
-    "rusty sword": "<:rusty_sword:1004051535749197925>",
-    "goblin skin": "<:goblin_skin:1004067309792538655>",
+    grey_shard: "<:grey_shard:1001631127980748800>",
+    rusty_sword: "<:rusty_sword:1004051535749197925>",
+    goblin_skin: "<:goblin_skin:1004067309792538655>",
+    rock: "<:rock:1011001689752481852>",
+    stick: "<:stick:1011002983846252604>",
+    map: ":scroll:",
+    sword_handle: "<:sword_handle:1011008126864072704>",
+    iron_sword: "<:iron_sword:1011009395901091870>",
+    potion: "<:potion:1011596709589168168>",
   },
   enemies: {},
+  bars: {
+    health: {
+      left: "<:health_left:1011322025639411782>",
+      middle: "<:health_middle:1011322026721550449>",
+      right: "<:health_right:1011322028390887484>",
+    },
+    xp: {
+      left: "<:xp_left:1011340860929097769>",
+      middle: "<:xp_middle:1011340862514548877>",
+      right: "<:xp_right:1011340863886077982>",
+    },
+    empty: {
+      left: "<:empty_left:1011322021235408916>",
+      middle: "<:empty_middle:1011322022682439821>",
+      right: "<:empty_right:1011322024204963860>",
+    },
+  },
 };
 
 export const stats = ["strength", "defence", "arcane", "vitality"];
 
 export const statInfo = {
-  strength: "Increases physical damage output by `1%`",
-  defence: "Decreases physical damage taken by `1%`",
-  arcane: "Increases magical damage output by `1%`",
-  vitality: "Increase max health by `1`",
+  strength: "Physical damage dealt `+1%`",
+  defence: "Physical damage taken `-1%`",
+  arcane: "Magical damage dealt `+1%`",
+  vitality: "Max health `+1`",
 };
+
+export const strongRate = 0.2;
+export const weakRate = 0.2;
 
 // Player level formula
 export const nextLevelXp = (lvl) => {

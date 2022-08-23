@@ -4,7 +4,7 @@ export default {
   arguments: "<region name>",
   description: "Travel to a different region on your floor.",
   category: "Location",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, prisma, config, player, game, server, client) {
     const input = args.join(" ");
 
     // Check if input
@@ -32,6 +32,20 @@ See available regions with \`${server.prefix}floor\``
     await player.update({ region: region.name });
 
     // Send message
-    game.reply(message, `you traveled to **${regionName}** :map:`);
+    const reply = await game.reply(
+      message,
+      `you traveled to **${regionName}** :map:`
+    );
+
+    // Add explore button
+    return game.cmdButton(message, reply, game, [
+      "explore",
+      client,
+      message,
+      [],
+      prisma,
+      game,
+      server,
+    ]);
   },
 };

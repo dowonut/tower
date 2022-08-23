@@ -34,9 +34,10 @@ export default {
             name = "Marks: ";
             emoji = config.emojis.mark;
           } else if (item == "FLOOR") {
-            variable = player.floor;
+            variable =
+              player.floor + " | " + game.titleCase(player.getRegion().name);
             name = "Floor: ";
-            emoji = config.emojis.staircase;
+            emoji = config.emojis.floor;
           } else if (item == "LEVEL") {
             variable = player.level;
             name = "Level: ";

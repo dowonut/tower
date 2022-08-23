@@ -7,6 +7,8 @@ import {
 
 export default {
   actionRow: (type, components) => {
+    if (!components || components.length < 1) return undefined;
+
     if (type == "buttons") {
       const row = new ActionRowBuilder();
 

@@ -27,11 +27,11 @@ export default {
       [row]
     );
 
-    // Create collector
-    await game.componentCollector(message, reply, [menu]);
-
     // Unlock the travel command
     player.unlockCommands(message, server, ["travel"]);
+
+    // Create collector
+    await game.componentCollector(message, reply, [menu]);
 
     // Embed function
     function getEmbed(player) {

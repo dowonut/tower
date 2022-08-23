@@ -65,7 +65,7 @@ export default {
       });
 
       // Send message when finished crafting and give item
-      setTimeout(async () => {
+      return setTimeout(async () => {
         await player.giveItem(recipe.name);
         await prisma.craft.deleteMany({
           where: { playerId: player.id, name: recipe.name, started: date },

@@ -18,6 +18,12 @@ model Server {
   prefix        String    @default("-")
 }
 
+model User {
+  id            Int       @id @default(autoincrement())
+  discordId     String    @unique
+  embed_color   String    @default("2f3136")  
+}
+
 model Player {
   // Info things
   id            Int       @id @default(autoincrement())
@@ -96,7 +102,7 @@ model Inventory {
   playerId      Int
   name          String
   quantity      Int
-//  equipSlot     String?
+  added         DateTime?
   equipped      Boolean   @default(false)
   crafted       Boolean   @default(false)
   nickname      String?
@@ -122,6 +128,7 @@ model MerchantStock {
   itemName      String
   stock         Int
   floor         Int
+  restocked     Int?
 }
 
 // Player exploration tracking
@@ -149,9 +156,12 @@ model Passive {
   id            Int       @id @default(autoincrement())
   player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId      Int
+  source        String    @default("skill")
   name          String
   type          String
+  modifier      String    @default("multiply")
   value         Int
+  duration      Int?
 }
 
 // Enemy tracking

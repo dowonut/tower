@@ -47,24 +47,25 @@ export default {
       if (!merchant) return game.reply(message, "not a valid merchant.");
 
       let description = ``;
-      for (const itemRef of merchant.items) {
-        const item = await game.getMerchantItem(itemRef.name, player);
+      const merchantItems = await game.getMerchantItems(merchant.name, player);
 
-        let emoji = config.emojis.items[item.name]
-          ? config.emojis.items[item.name]
-          : config.emojis.blank;
+      for (const item of merchantItems) {
+        let emoji = item.getEmoji();
 
-        let itemStock = ``;
-        let itemName = ``;
         if (item.stock > 0) {
-          itemStock = `x${item.stock}`;
-          itemName = `**${item.getName()}**`;
+          const itemStock = `x${item.stock}`;
+          const itemName = `**${item.getName()}**`;
+          description += `\n${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
         } else {
-          itemStock = `Out of Stock`;
-          itemName = `${item.getName()}`;
+          let itemStock = `out of stock`;
+          if (item.restock) {
+            const restocked = item.restocked;
+            const date = new Date().getDate();
+            itemStock = `restocks in ${item.restock - (date - restocked)} days`;
+          }
+          const itemName = `${item.getName()}`;
+          description += `\n${emoji} ${itemName} | \`${itemStock}\``;
         }
-
-        description += `\n${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
       }
 
       const mCategory = game.titleCase(merchant.category);

@@ -8,5 +8,5 @@ export default {
   weak: ["fire"],
   attacks: ["swallow", "bounce", "drown"],
   loot: [{ name: "slimeball", dropChance: 100, min: 1, max: 2 }],
-  xp: 20,
+  xp: 30,
 };

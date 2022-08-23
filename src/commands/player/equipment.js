@@ -26,7 +26,7 @@ export default {
             description += ` | \`${item.damage}\`${
               config.emojis.damage[item.damageType]
             }`;
-          description += ` | *${item.description}*`;
+          //description += ` | *${item.description}*`;
         }
       }
 
@@ -35,9 +35,7 @@ export default {
         thumbnail: { url: player.pfp },
         title: `Equipment`,
         //fields: fields,
-        description:
-          description +
-          `\n\nEquip an item with \`${server.prefix}equip <item name>\``,
+        description: description,
       };
 
       game.sendEmbed(message, embed);
@@ -46,17 +44,20 @@ export default {
 
       // Check if item exists
       if (!game.getItem(input))
-        return game.reply(message, "this item doesn't exist.");
+        return game.error(message, "this item doesn't exist.");
 
       // Fetch item from inventory
       let item = await player.getItem(input);
 
       // Check if player has item
-      if (!item) return game.reply(message, "you don't have this item.");
+      if (!item) return game.error(message, "you don't have this item.");
 
       // Check if item is equippable
       if (!item.equipSlot)
-        return game.reply(message, "you can't equip this silly.");
+        return game.error(message, "you can't equip this silly.");
+
+      // Get currently equipped item
+      const equippedItem = await player.getEquipped(item.equipSlot);
 
       // Unequip item
       if (item.equipped) {
@@ -81,6 +82,23 @@ export default {
         },
         data: { equipped: true },
       });
+
+      // Unequip existing item
+      if (equippedItem) {
+        await prisma.inventory.updateMany({
+          where: {
+            playerId: player.id,
+            name: { equals: equippedItem.name, mode: "insensitive" },
+          },
+          data: { equipped: false },
+        });
+
+        return game.reply(
+          message,
+          `equipped **${item.getName()}** and unequipped **${equippedItem.getName()}**`
+        );
+      }
+
       return game.reply(message, `equipped **${item.getName()}**`);
     }
   },

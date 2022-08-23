@@ -114,7 +114,7 @@ export default {
     async function enemyInfo() {
       player = await player.refresh(message, game);
       const { embed, image } = await game.enemyInfo(config, player, game);
-      await reply.edit({ embeds: [embed], files: [image] });
+      await reply.edit({ embeds: [embed] });
 
       const index = buttons.findIndex((obj) => obj.id == "enemyinfo");
       buttons[index].disable = true;
@@ -178,7 +178,7 @@ export default {
           attackButtons.push({
             id: attack.name,
             label: game.titleCase(attack.name),
-            style: "secondary",
+            style: "success",
             disable: disable,
             function: async (reply, i) => {
               // Perform attack when button is pressed

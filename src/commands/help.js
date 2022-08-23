@@ -29,7 +29,7 @@ export default {
 
     let categories = {
       General: `
-${config.emojis.bullet} **General:**
+${config.emojis.bullet} **General**
 
         `,
       Player: `
@@ -85,7 +85,7 @@ ${config.emojis.bullet} **Admin**
       if (command.arguments)
         commandName = `${command.name} ${command.arguments}`;
 
-      const template = `\`${server.prefix}${commandName}\` | ${command.description}\n`;
+      const template = `**${server.prefix}${commandName}** | ${command.description}\n`;
 
       if (!command.category) {
         categories.General += template;
@@ -103,7 +103,7 @@ ${config.emojis.bullet} **Admin**
     }
 
     const embed = {
-      color: config.botColor,
+      color: config.towerColor,
       title: "Game Commands",
       thumbnail: {
         url: config.botIcon,

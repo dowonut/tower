@@ -7,8 +7,8 @@ export default {
   arguments: "<attack name>",
   category: "Combat",
   useInCombat: true,
-  cooldown: "2",
-  async execute(message, args, prisma, config, player, game, server) {
+  cooldown: "1",
+  async execute(message, args, prisma, config, player, game, server, client) {
     // Format imput
     const input = args.join(" ").toLowerCase();
 
@@ -38,7 +38,8 @@ export default {
         game,
         server,
         attack,
-        prisma
+        prisma,
+        client
       );
     } else {
       return await listAttacks(message, config, player, game, server);
@@ -65,13 +66,15 @@ async function listAttacks(message, config, player, game, server) {
         description += `\nCooldown: \`${attack.cooldown} rounds\``;
     } else {
       description += `
-\n:hourglass: ${attack.getName()} | Cooldown: \`${attack.remCooldown} rounds\``;
+\n:hourglass: *${attack.getName()} | Cooldown: \`${
+        attack.remCooldown
+      } rounds\`*`;
     }
   }
 
   // Add tutorial if in combat
   if (player.inCombat) {
-    description += `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`;
+    //description += `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`;
   }
 
   const embed = {
@@ -95,47 +98,38 @@ async function performAttack(
   game,
   server,
   attack,
-  prisma
+  prisma,
+  client
 ) {
+  await player.update({ canAttack: false });
+
+  // Get current enemy
   let enemy = await player.getCurrentEnemy();
 
+  // Get damage from attack
   const damage = await attack.getDamage(player, enemy);
 
-  const remainingHealth =
-    enemy.health - damage.total < 0 ? 0 : enemy.health - damage.total;
+  // Get chosen attack from enemy
   let enemyAttack = enemy.chooseAttack(player);
 
   // Deal damage to enemy
   const enemyData = await player.updateEnemy({
     health: { increment: -damage.total },
   });
+  enemy.health = enemyData.health;
 
-  // Format line
-  const line = "\n───────────────";
+  // Get attack message
+  const attackMessage = getAttackMessage({
+    source: "player",
+    damage: damage,
+    enemy: enemy,
+    attack: attack,
+  });
 
-  // Fetch damage message
-  let attackMessage = await attack.attackMessage(damage, enemy);
-  // Format enemy health text
-  const healthText = `\n${config.emojis.health} Enemy Health: \`${remainingHealth}/${enemy.maxHealth}\``;
-
-  attackMessage += line;
-  attackMessage += healthText;
-
-  if (attackMessage) {
-    await game.reply(message, attackMessage, false);
-  } else {
-    await game.reply(
-      message,
-      `You used **${attack.getName()}** dealing \`${damage}\`${
-        config.emojis.damage[attack.damage.type]
-      } damage to **${enemy.getName()}**${healthText}`
-    );
-  }
+  // Send attack message
+  await game.reply(message, attackMessage, false);
 
   const combatSkills = ["unarmed", "sword", "axe", "spear", "bow"];
-
-  // Send typing indicator
-  await message.channel.sendTyping();
 
   // Update all cooldowns
   await player.prisma.attack.updateMany({
@@ -160,10 +154,13 @@ async function performAttack(
     data: { remCooldown: cooldown },
   });
 
+  // Update passive modifiers
+  await player.updatePassives();
+
   // Give skill xp
   for (const skill of combatSkills) {
     if (attack.type == skill) {
-      const skillXp = game.random(5, 10);
+      const skillXp = game.random(10, 20);
 
       await player.giveSkillXp(skillXp, skill + " combat", message, game);
     }
@@ -175,7 +172,36 @@ async function performAttack(
     player.killEnemy();
 
     // Give loot to player
-    player.enemyLoot(enemy, game, server, message);
+    const { reply, levelReply } = await player.enemyLoot(
+      enemy,
+      game,
+      server,
+      message
+    );
+
+    // Add explore button
+    game.cmdButton(message, reply, game, [
+      "explore",
+      client,
+      message,
+      [],
+      prisma,
+      game,
+      server,
+    ]);
+
+    // Add stats button
+    if (levelReply) {
+      game.cmdButton(message, levelReply, game, [
+        "stats",
+        client,
+        message,
+        [],
+        prisma,
+        game,
+        server,
+      ]);
+    }
 
     // Unlock new commands
     player.unlockCommands(message, server, ["inventory", "skills"]);
@@ -192,49 +218,33 @@ async function performAttack(
   // Update player health
   const playerData = await player.update({
     health: { increment: -enemyAttack.damage.total },
-    canAttack: false,
   });
+  player.health = playerData.health;
+
+  // Send typing indicator
+  await message.channel.sendTyping();
 
   // Deal damage to player
   return new Promise((resolve) => {
     setTimeout(async () => {
-      // Warn low health
-      let healthWarning =
-        (playerData.health / player.maxHealth) * 100 < 33
-          ? ` | :warning: **Low Health!**`
-          : ``;
+      // Get attack message
+      const attackMessage = getAttackMessage({
+        source: "enemy",
+        attack: enemyAttack,
+        player: player,
+        enemy: enemy,
+      });
 
-      // Format attack message
-      let attackMessage = enemy.attackMessage(enemyAttack, player);
-      // const healthMessage = ` | ${config.emojis.health}\`${playerData.health}/${player.maxHealth}\`${healthWarning}`;
-      const healthMessage = `\n${config.emojis.health} Your Health: \`${playerData.health}/${player.maxHealth}\`${healthWarning}`;
-
-      attackMessage += line;
-      attackMessage += healthMessage;
-
-      // Send if exists else send default
-      if (attackMessage) {
-        //message.channel.send(attackMessage + healthMessage);
-        game.reply(message, attackMessage, false);
-      } else {
-        message.channel.send(
-          `**${enemy.getName()}** deals \`${enemyAttack.damage}\`${
-            config.emojis.damage[enemyAttack.type]
-          } damage to **${message.author}**`
-        );
-      }
+      // Send attack message
+      game.reply(message, attackMessage, false);
 
       await player.update({ canAttack: true });
 
-      // check if player is dead
+      // Check if player is dead
       if (playerData.health <= 0) {
         const deathMessage = `:skull_crossbones: **\`You died!\`** :skull_crossbones:`;
 
         await game.reply(message, deathMessage, true, config.red, "");
-        // game.reply(
-        //   message,
-        //   `Your character has been completely reset. Try not to die again.`
-        // );
 
         await player.erase();
         await game.createPlayer(
@@ -249,4 +259,55 @@ async function performAttack(
       resolve(undefined);
     }, game.random(500, 2000));
   });
+
+  // Function to get attack message
+  function getAttackMessage(object) {
+    const { enemy, damage, player, attack } = object;
+    let attackMsg;
+    let healthText;
+    let statTitle;
+    const healthE = config.emojis.health;
+    // If player is attacking
+    if (object.source == "player") {
+      // Fetch base attack message
+      attackMsg = attack.attackMessage(damage, enemy);
+
+      // Format enemy health text
+      const healthBar = game.progressBar(
+        enemy.health,
+        enemy.maxHealth,
+        "health"
+      );
+      statTitle = `**${enemy.getName()}'s Health**`;
+      healthText = `${healthE} ${healthBar} \`${enemy.health}/${enemy.maxHealth}\``;
+    }
+    // If enemy is attacking
+    else if (object.source == "enemy") {
+      // Fetch base attack message
+      attackMsg = enemy.attackMessage(attack, player);
+      // Define health warning
+      const healthWarning =
+        (player.health / player.maxHealth) * 100 < 33
+          ? `:warning: **Low Health!**`
+          : ``;
+      // Format player health text
+      const healthBar = game.progressBar(
+        player.health,
+        player.maxHealth,
+        "health"
+      );
+      statTitle = `**${player.username}'s Health** ${healthWarning}`;
+      healthText = `${healthE} ${healthBar} \`${player.health}/${player.maxHealth}\``;
+      healthText += `\n${healthWarning}`;
+    }
+    // Start building final message
+    let message = attackMsg;
+    // Add seperator
+    message += "\n───────────────";
+    //message += `\n${statTitle}`;
+    message += `\n${healthText}`;
+
+    // Return with message
+    return message;
+  }
 }

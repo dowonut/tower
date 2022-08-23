@@ -10,16 +10,17 @@ export default {
 
     const title = enemy.getName() + ` (fighting ` + player.username + `)`;
     let description = `
-    *${enemy.description}*
+*${enemy.description}*
         
-    Level: \`${enemy.level}\`
+Level: \`${enemy.level}\`
+
+${game.progressBar(enemy.health, enemy.maxHealth, "health")}
+${config.emojis.health} \`${enemy.health} / ${enemy.maxHealth}\`
         
-    ${config.emojis.health} Health: \`${enemy.health} / ${enemy.maxHealth}\`
-        
-    Strengths: ${strong}
-    Weaknesses: ${weak}
+Strengths: ${strong}
+Weaknesses: ${weak}
     
-    **Attacks:**`;
+**Attacks:**`;
 
     // Format attacks
     const attacks = enemy.getAttacks();

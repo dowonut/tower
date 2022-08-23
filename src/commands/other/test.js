@@ -46,8 +46,6 @@ export default {
     //   menu,
     // ]);
 
-    const log = message.channel;
-
-    return console.log(log);
+    return;
   },
 };

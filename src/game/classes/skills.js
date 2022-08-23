@@ -24,7 +24,9 @@ class Skill {
 
       if (skill.passive) {
         const { passive } = skill;
-        return `Increase ${passive.name} \`${passive.type}\` by \`+${passive.value}%\``;
+        return `Increase ${passive.name} ${passive.type.toLowerCase()} by \`+${
+          passive.value
+        }%\``;
       }
     };
 
@@ -44,7 +46,13 @@ class Skill {
       if (level.passive) {
         const { passive } = level;
         // Add new passive stat to player
-        await player.addPassive(passive.name, passive.type, passive.value);
+        await player.addPassive({
+          name: passive.name,
+          type: passive.type,
+          value: passive.value,
+          modifier: "multiply",
+          source: "skill",
+        });
         const combatName = game.titleCase(`${passive.name} combat`);
         levelMsg = `Passive \`${passive.type}\` for **${combatName}** increased by \`+${passive.value}%\``;
       }

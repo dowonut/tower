@@ -33,8 +33,9 @@ export default {
     // Refesh player object
     refresh: async function (message, game) {
       const playerData = await game.getPlayer(message, this.prisma);
+      const user = await game.getUser(message, this.prisma);
 
-      return { ...playerData, ...game.player, prisma: this.prisma };
+      return { ...playerData, ...game.player, prisma: this.prisma, user: user };
     },
 
     // Give item
@@ -93,6 +94,7 @@ export default {
 
     // Unlock several commands
     unlockCommands: async function (message, server, commandNames) {
+      let tutorialRefs = [];
       for (const commandName of commandNames) {
         if (!this.unlockedCommands.includes(commandName)) {
           await this.prisma.player.update({
@@ -105,34 +107,40 @@ export default {
           continue;
         }
 
-        let embed;
-
         const tutorial = tutorials.find(
           (x) => x.name == commandName.toLowerCase()
         );
 
         if (tutorial) {
-          const tutorialName = tutorial.name;
-
-          embed = {
-            title: `New Command Unlocked: \`${server.prefix}${tutorialName}\``,
-            description: tutorial.info,
-          };
-
-          if (tutorial.image) embed.image = { url: tutorial.image };
+          tutorialRefs.push(tutorial);
         } else {
-          embed = {
-            title: `New Command Unlocked: \`${server.prefix}${commandName}\``,
-          };
+          tutorialRefs.push({ name: commandName });
         }
-
-        embed.color = config.botColor;
-        embed.footer = {
-          text: `See all your unlocked commands with ${server.prefix}help`,
-        };
-
-        message.author.send({ embeds: [embed] });
       }
+
+      if (tutorialRefs.length < 1) return;
+
+      const infos = tutorialRefs.map((x) => {
+        let info = ``;
+        info += `\n\n${config.emojis.bullet} **${x.name.toUpperCase()}**`;
+        if (x.info) {
+          info += `${x.info}`;
+        } else {
+          info += ``;
+        }
+        return info;
+      });
+
+      const nameText = `New Commands Unlocked!`;
+      const description = infos.join("");
+
+      const embed = {
+        title: nameText,
+        color: config.towerColor,
+        description: description,
+      };
+
+      return message.author.send({ embeds: [embed] });
     },
 
     // Get current regin
@@ -176,9 +184,6 @@ export default {
         );
         const item = { ...playerItem, ...itemData };
 
-        // Set value if undefined
-        if (!item.value) item.value = 0;
-
         itemArray.push(item);
       }
 
@@ -209,9 +214,14 @@ export default {
 
     // Get all passive effects that currently apply
     getPassives: async function (type) {
+      if (type) {
+        type = type.toLowerCase();
+      } else {
+        type = undefined;
+      }
       // Get all player passives
       const passives = await this.prisma.passive.findMany({
-        where: { playerId: this.id, type: type ? type : undefined },
+        where: { playerId: this.id, type: type },
       });
 
       // Get player weapon type
@@ -233,24 +243,45 @@ export default {
     getAllPassives: async function (type) {
       // Get all player passives
       const passives = await this.prisma.passive.findMany({
-        where: { playerId: this.id, type: type ? type : undefined },
+        where: {
+          playerId: this.id,
+          type: type ? type.toLowerCase() : undefined,
+        },
       });
 
       return passives;
     },
 
     // Add a passive stat to a player
-    addPassive: async function (name, type, value) {
+    addPassive: async function (object) {
+      let { source, name, target, value, modifier, duration } = object;
+      duration = duration ? duration : undefined;
+      source = source ? source : undefined;
       // Get all player passives
       const filteredPassive = await this.prisma.passive.findMany({
-        where: { playerId: this.id, name: name, type: type },
+        where: {
+          playerId: this.id,
+          name: name,
+          type: target,
+          modifier: modifier,
+          source: source,
+          duration: duration,
+        },
       });
 
       // If passive doesn't exist, create a new entry
       if (!filteredPassive[0]) {
         // Create new passive
         await this.prisma.passive.create({
-          data: { playerId: this.id, name: name, type: type, value: value },
+          data: {
+            playerId: this.id,
+            name: name,
+            type: target,
+            value: value,
+            source: source,
+            modifier: modifier,
+            duration: duration,
+          },
         });
       }
       // If passive already exists, then update
@@ -260,13 +291,45 @@ export default {
           where: {
             playerId: this.id,
             name: name,
-            type: type,
+            type: target,
+            source: source,
+            modifier: modifier,
+            duration: duration,
           },
           data: {
             value: { increment: value },
           },
         });
       }
+    },
+
+    // Update all passive effects
+    updatePassives: async function () {
+      const passives = await this.getAllPassives();
+
+      for (let passive of passives) {
+        const { duration } = passive;
+        if (duration !== null) {
+          passive = await this.prisma.passive.update({
+            where: {
+              id: passive.id,
+            },
+            data: {
+              duration: {
+                increment: -1,
+              },
+            },
+          });
+
+          if (passive.duration < 1) {
+            passive = await this.prisma.passive.delete({
+              where: { id: passive.id },
+            });
+          }
+        }
+      }
+
+      return passives;
     },
 
     // Get specific attack
@@ -396,16 +459,20 @@ export default {
         if (!playerRecipes[0]) return undefined;
       } else {
         playerRecipes = await this.prisma.recipe.findMany({
-          //orderBy: [{ level: "desc" }, { xp: "desc" }],
           where: { playerId: this.id },
         });
       }
       for (const playerRecipe of playerRecipes) {
         const recipeData = recipes.find((x) => x.name == playerRecipe.name);
-        const recipe = { ...playerRecipe, ...recipeData };
+        let recipe = { ...playerRecipe, ...recipeData };
+
+        recipe.available = await recipe.canCraft(this);
 
         recipeArr.push(recipe);
       }
+
+      // Sort by whether the player can craft the recipe
+      recipeArr = recipeArr.sort((a, b) => (a.canCraft < b.canCraft ? 1 : -1));
 
       return recipeArr;
     },
@@ -423,8 +490,6 @@ export default {
       await this.prisma.recipe.create({
         data: { playerId: this.id, name: recipe.name },
       });
-
-      player.unlockCommands(message, server, ["recipes"]);
     },
 
     // Get thing from player
@@ -488,7 +553,7 @@ export default {
     // Exit combat
     exitCombat: async function () {
       // Update player to be in combat
-      this.update({ fighting: null, inCombat: false });
+      this.update({ fighting: null, inCombat: false, canAttack: true });
     },
 
     // Get the current enemy
@@ -545,12 +610,8 @@ export default {
 
       let lootList = ``;
       for (const item of loots) {
-        //lootList += `${config.emojis.plus} **${item.quantity}x** **${item.name}**`;
-        if (item.quantity > 1) {
-          lootList += `\n+ **${item.getName()}** | \`x${item.quantity}\``;
-        } else {
-          lootList += `\n+ **${item.getName()}**`;
-        }
+        lootList += `\n+ ${item.getEmoji()} **${item.getName()}**`;
+        if (item.quantity > 1) lootList += ` | \`x${item.quantity}\``;
       }
 
       // Check if enemy dropped shard
@@ -558,27 +619,33 @@ export default {
         const chance = Math.random() * 100;
         if (chance <= enemy.shard.dropChance) {
           const shardName = `${enemy.shard.type} shard`;
+          const shard = game.getItem(shardName);
 
           this.giveItem(shardName);
-          lootList += `\n+ **${game.titleCase(shardName)}**${
-            config.emojis.items[shardName]
-          }`;
+          lootList += `\n+ ${shard.getEmoji()} **${shard.getName()}**`;
         }
       }
 
       lootList += `\n\n\`+${xp} XP\``;
+      lootList += `\n${game.levelProgress(this, game, xp)}`;
 
       const embed = {
         description: lootList,
       };
 
       // Send death message
-      //game.reply(message, `you killed **${enemy.name}**.`);
-      game.reply(message, `you killed **${enemy.getName()}** :skull:`);
-      game.fastEmbed(message, this, embed, `Loot from ${enemy.getName()}`);
+      await game.reply(message, `you killed **${enemy.getName()}** :skull:`);
+      const reply = await game.fastEmbed(
+        message,
+        this,
+        embed,
+        `Loot from ${enemy.getName()}`
+      );
 
       // Give xp to player
-      await this.giveXp(xp, message, server, game);
+      const levelReply = await this.giveXp(xp, message, server, game);
+
+      return { reply, levelReply };
     },
 
     // Give the player some random loot from their current region
@@ -588,8 +655,10 @@ export default {
       const regionName = game.titleCase(region.name);
 
       // Fetch item from weights
-      const item = game.getWeightedArray(region.loot);
+      let item = game.getWeightedArray(region.loot);
       const itemName = game.titleCase(item.name);
+      item = game.getItem(item.name);
+      const itemEmoji = item.getEmoji();
 
       // Determine item quantity
       const itemQuantity = item.min ? game.random(item.min, item.max) : 1;
@@ -600,14 +669,14 @@ export default {
       // Format quantity text
       let quantityText = itemQuantity > 1 ? `\`${itemQuantity}x\` ` : ``;
 
-      // Send message to player
-      await game.reply(
-        message,
-        `you explore the **${regionName}** and find ${quantityText}**${itemName}**`
-      );
-
       // Unlock region loot
-      await this.addExplore(message, server, "loot", undefined, item.name);
+      this.addExplore(message, server, "loot", undefined, item.name);
+
+      // Send message to player
+      return await game.reply(
+        message,
+        `you explore the **${regionName}** and find ${quantityText}**${itemName}** ${itemEmoji}`
+      );
     },
 
     // Give xp to player
@@ -634,22 +703,30 @@ export default {
         // Get required xp for next level
         nextLevelXp = config.nextLevelXp(player.level);
         levelUp++;
-
-        // Unlock new commands
-        this.unlockCommands(message, server, [
-          "stats",
-          "statup",
-          "floor",
-          "region",
-        ]);
       }
+
+      // Unlock new commands
+      this.unlockCommands(message, server, [
+        "stats",
+        "statup",
+        "floor",
+        "region",
+        "breakdown",
+        "leaderboard",
+      ]);
 
       if (levelUp > 0) {
-        game.reply(
+        return await game.reply(
           message,
-          `you leveled up! New level: \`${player.level}\` :tada:\n:low_brightness: You have \`${levelUp}\` new stat points. Check your stats with \`${server.prefix}stats\``
+          `**Level Up!**
+
+:tada: You are now level \`${player.level}\`
+:low_brightness: You have \`${levelUp}\` new stat points`,
+          true,
+          config.green,
+          config.emojis.level_up
         );
-      }
+      } else return undefined;
     },
 
     // Give xp to player skill
@@ -672,9 +749,9 @@ export default {
 
       // Calculate xp required for next level
       let nextLevelXp = config.nextLevelXpSkill(skill.level);
-      let levelUp = 0;
 
       // Once level up reached
+      let reply;
       for (let i = 0; skill.xp >= nextLevelXp; i++) {
         // Calculate remaining xp
         let newXp = skill.xp - nextLevelXp;
@@ -709,12 +786,13 @@ export default {
           );
         }
 
-        game.reply(message, `${levelMsg}\n\n${skillLevelMsg}`);
+        // Send message to player
+        reply = await game.success(message, `${levelMsg}\n\n${skillLevelMsg}`);
 
         // Get required xp for next level
         nextLevelXp = config.nextLevelXpSkill(skill.level);
-        levelUp++;
       }
+      return reply;
     },
 
     // Get a player's unlocked merchants
@@ -734,6 +812,21 @@ export default {
         merchantArr.push(merchant);
       }
       return merchantArr;
+    },
+
+    // Get a players merchant stock for a specific item
+    getMerchantStock: async function (itemName) {
+      const items = await this.prisma.merchantStock.findMany({
+        where: {
+          playerId: this.id,
+          floor: this.floor,
+          itemName: itemName.toLowerCase(),
+        },
+      });
+
+      if (items.length < 1) return undefined;
+
+      return items[0];
     },
 
     // Get explored by type

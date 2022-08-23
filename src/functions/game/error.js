@@ -18,6 +18,8 @@ export default {
       };
     }
 
-    message.reply(messageRef);
+    if (!message.replied) return message.reply(messageRef);
+
+    return message.followUp(messageRef);
   },
 };

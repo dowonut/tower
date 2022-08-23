@@ -6,7 +6,7 @@ export default {
   // Attack description shown in attack command
   description: "A simple swing of your sword.",
   // Attack damages
-  damage: [{ type: "slashing", min: 3, max: 5 }],
+  damage: [{ type: "slashing", min: 2, max: 3 }],
   // Attack message to send in chat. Multiple strings will choose a random one.
   // You can input variables in the string:
   // ENEMY = enemy name

@@ -10,18 +10,20 @@ export default {
     components,
     send = true
   ) => {
+    const color = player.user.embed_color;
+
     const embedInfo = {
       author: {
         name: title,
         icon_url: player.pfp,
       },
-      color: config.botColor,
+      color: parseInt("0x" + color),
     };
     const finalEmbed = { ...embed, ...embedInfo };
 
     const messageRef = { embeds: [finalEmbed] };
     if (file) messageRef.files = [file];
-    if (components) messageRef.components = components;
+    if (components && components[0]) messageRef.components = components;
 
     if (!send) {
       return messageRef;

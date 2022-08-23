@@ -9,7 +9,7 @@ export default {
     emoji = config.emojis.bullet
   ) => {
     // Determine whether to send message as embed
-    let useEmbed = true;
+    let useEmbed = false;
     if (boolean !== undefined) useEmbed = boolean;
 
     // Format reply contents
@@ -17,13 +17,17 @@ export default {
 
     // Send reply
     if (!useEmbed) {
-      message.reply(`${uContent}`);
+      var ref = { content: `${uContent}` };
     } else {
       const embed = {
         description: emoji + " " + uContent,
         color: color,
       };
-      message.reply({ embeds: [embed] });
+      var ref = { embeds: [embed] };
     }
+
+    if (!message.replied) return message.reply(ref);
+
+    return message.followUp(ref);
   },
 };

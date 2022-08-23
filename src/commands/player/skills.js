@@ -8,7 +8,7 @@ export default {
   async execute(message, args, prisma, config, player, game, server) {
     const input = args.join(" ");
 
-    let embed;
+    let embed, title;
     // If no search provided
     if (!input) {
       // Get all player skills
@@ -23,23 +23,19 @@ export default {
         // Calculate skill xp and progress bar
         const xp = skill.xp;
         const nextXp = config.nextLevelXpSkill(skill.level);
-        const progress = game.progressBar(xp, nextXp);
+        const progress = game.progressBar(xp, nextXp, "xp");
 
         // Create description
-        description += `\n**${skillName}** \`Lvl. ${skill.level}\``;
-        description += `\n${progress} \`${xp} / ${nextXp}\`\n`;
+        description += `\n\n**${skillName}**`;
+        description += `\n\`Lvl. ${skill.level}\` | \`${xp} / ${nextXp} XP\``;
+        description += `\n${progress}`;
       }
 
-      const title = `Skills`;
+      title = `Skills`;
 
       // Create embed
       embed = {
         description: description,
-        title: title,
-        color: config.botColor,
-        thumbnail: {
-          url: player.pfp,
-        },
       };
     } else {
       // Get specific skill
@@ -51,31 +47,26 @@ export default {
       // Calculate skill xp and progress bar
       const xp = skill.xp;
       const nextXp = config.nextLevelXpSkill(skill.level);
-      const progress = game.progressBar(xp, nextXp);
+      const progress = game.progressBar(xp, nextXp, "xp");
 
       // Create title and description
-      const title = `${skill.getName()}`;
+      title = `${skill.getName()}`;
       let description = `
 Skill Level: \`${skill.level}\`
-XP: \`${xp} / ${nextXp}\`
-${progress}\n`;
+${progress}
+XP: \`${xp} / ${nextXp}\``;
 
       // Get info about next skill levels
-      for (let i = 1; i < 4 && skill.levelInfo(skill.level + i); i++)
+      for (let i = 1; i < 3 && skill.levelInfo(skill.level + i, game); i++)
         description += `
-\`Level ${skill.level + i}\`
+\n**Level ${skill.level + i}**
 ${skill.levelInfo(skill.level + i, game)}`;
 
       embed = {
         description: description,
-        title: title,
-        color: config.botColor,
-        thumbnail: {
-          url: player.pfp,
-        },
       };
     }
 
-    game.sendEmbed(message, embed);
+    game.fastEmbed(message, player, embed, title);
   },
 };

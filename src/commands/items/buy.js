@@ -7,7 +7,7 @@ export default {
   async execute(message, args, prisma, config, player, game, server) {
     const variables = args.join(" ").split("$");
 
-    const itemNameInput = variables[0].trim();
+    const itemNameInput = variables[0].trim().toLowerCase();
     const quantityInput = variables[1];
 
     // Check for valid quantity
@@ -26,6 +26,7 @@ export default {
 
     // Get item from merchant
     const merchantItem = await game.getMerchantItem(itemNameInput, player);
+    //console.log(merchantItem);
 
     // Check if can purchase item
     if (!merchantItem)
@@ -33,7 +34,8 @@ export default {
 
     // Set quantity to all
     if (quantity == "all") {
-      quantity = merchantItem.stock;
+      quantity = Math.floor(player.marks / merchantItem.price);
+      if (quantity > merchantItem.stock) quantity = merchantItem.stock;
     }
 
     // Check if item is in stock
@@ -64,6 +66,9 @@ export default {
     // Give item to player
     await player.giveItem(merchantItem.name, quantity);
 
+    // Get day of the month
+    const date = new Date().getDate();
+
     // Check if already tracking stock
     if (merchantItem.trackingStock) {
       // Decrease stock for item
@@ -83,6 +88,7 @@ export default {
           itemName: merchantItem.name.toLowerCase(),
           floor: player.floor,
           stock: merchantItem.stock - quantity,
+          restocked: date,
         },
       });
     }
@@ -96,7 +102,7 @@ export default {
     );
 
     // Unlock equipment
-    if (["weapon"].includes(item.category)) {
+    if (["weapon", "armor"].includes(item.category)) {
       player.unlockCommands(message, server, ["equipment"]);
     }
 
@@ -108,6 +114,8 @@ export default {
           item.item
         )}**\nSee all your recipes with \`${server.prefix}recipes\``
       );
+
+      player.unlockCommands(message, server, ["recipes"]);
     }
   },
 };

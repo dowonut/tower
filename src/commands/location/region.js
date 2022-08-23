@@ -60,6 +60,6 @@ export default {
     game.fastEmbed(message, player, embed, title);
 
     // Unlock floor command
-    player.unlockCommands(message, server, ["floor"]);
+    player.unlockCommands(message, server, ["floor", "travel"]);
   },
 };

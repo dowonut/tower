@@ -1,6 +1,7 @@
 import game from "../../functions/format/titleCase.js";
 import { loadFiles } from "./_loadFiles.js";
 import fs from "fs";
+import * as config from "../../config.js";
 
 class Item {
   constructor(object) {
@@ -17,7 +18,7 @@ class Item {
 
     this.getImage = () => {
       // Format item name
-      const itemName = this.name.split(" ").join("_").toLowerCase();
+      const itemName = this.getImageName();
 
       // Create path and check if item image exists
       const path = `./assets/items/${itemName}.png`;
@@ -33,6 +34,24 @@ class Item {
       }
 
       return file;
+    };
+
+    this.getEmoji = () => {
+      const emojiName = this.getImageName();
+
+      let emoji = config.emojis.items[emojiName];
+      if (!emoji) emoji = config.emojis.blank;
+
+      return emoji;
+    };
+
+    this.getImageName = () => {
+      let imageName = this.name.split(" ").join("_").toLowerCase();
+
+      if (this.category == "map") imageName = "map";
+      else if (this.category == "potion") imageName = "potion";
+
+      return imageName;
     };
   }
 }

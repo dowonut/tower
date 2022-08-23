@@ -6,7 +6,6 @@ export default {
       function: async (reply, i) => {
         // Load original row
         await reply.edit({ components: [row] });
-        if (!i.deferred) await i.deferUpdate();
         return;
       },
       stop: true,
