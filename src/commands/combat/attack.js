@@ -8,7 +8,7 @@ export default {
   category: "Combat",
   useInCombat: true,
   cooldown: "1",
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     // Format imput
     const input = args.join(" ").toLowerCase();
 
@@ -17,6 +17,9 @@ export default {
       // Check if player is in combat
       if (!player.inCombat)
         return game.error(message, "you can only use an attack during combat.");
+
+      if (!player.canAttack)
+        return game.error(message, "you can't attack right now.");
 
       if (!isNaN(args[0]))
         return game.error(
@@ -31,25 +34,16 @@ export default {
       if (attack.remCooldown > 0)
         return game.error(message, "this attack is still on cooldown.");
 
-      return await performAttack(
-        message,
-        config,
-        player,
-        game,
-        server,
-        attack,
-        prisma,
-        client
-      );
+      return await performAttack(message, config, player, server, attack);
     } else {
-      return await listAttacks(message, config, player, game, server);
+      return await listAttacks(message, config, player);
     }
   },
 };
 
 // List all attacks when no name is provided
 
-async function listAttacks(message, config, player, game, server) {
+async function listAttacks(message, config, player) {
   let description = ``;
   const attacks = await player.getAttacks();
 
@@ -91,16 +85,7 @@ async function listAttacks(message, config, player, game, server) {
 
 // Perform attack after name is provided
 
-async function performAttack(
-  message,
-  config,
-  player,
-  game,
-  server,
-  attack,
-  prisma,
-  client
-) {
+async function performAttack(message, config, player, server, attack) {
   await player.update({ canAttack: false });
 
   // Get current enemy
@@ -132,7 +117,7 @@ async function performAttack(
   const combatSkills = ["unarmed", "sword", "axe", "spear", "bow"];
 
   // Update all cooldowns
-  await player.prisma.attack.updateMany({
+  await prisma.attack.updateMany({
     where: {
       playerId: player.id,
       remCooldown: { gt: 0 },
@@ -149,7 +134,7 @@ async function performAttack(
   }
 
   // Put attack on cooldown
-  await player.prisma.attack.updateMany({
+  await prisma.attack.updateMany({
     where: { playerId: player.id, name: attack.name },
     data: { remCooldown: cooldown },
   });
@@ -158,13 +143,7 @@ async function performAttack(
   await player.updatePassives();
 
   // Give skill xp
-  for (const skill of combatSkills) {
-    if (attack.type == skill) {
-      const skillXp = game.random(10, 20);
-
-      await player.giveSkillXp(skillXp, skill + " combat", message, game);
-    }
-  }
+  game.events.emit("attackUse", { attack: attack, player: player });
 
   // Run when enemy is dead
   if (enemyData.health <= 0) {
@@ -174,33 +153,16 @@ async function performAttack(
     // Give loot to player
     const { reply, levelReply } = await player.enemyLoot(
       enemy,
-      game,
       server,
       message
     );
 
     // Add explore button
-    game.cmdButton(message, reply, game, [
-      "explore",
-      client,
-      message,
-      [],
-      prisma,
-      game,
-      server,
-    ]);
+    game.cmdButton(message, reply, ["explore", message, [], server]);
 
     // Add stats button
     if (levelReply) {
-      game.cmdButton(message, levelReply, game, [
-        "stats",
-        client,
-        message,
-        [],
-        prisma,
-        game,
-        server,
-      ]);
+      game.cmdButton(message, levelReply, ["stats", message, [], server]);
     }
 
     // Unlock new commands
@@ -213,7 +175,7 @@ async function performAttack(
   }
 
   // Get player damage
-  enemyAttack.damage = await player.getDamageTaken(enemyAttack.damage, game);
+  enemyAttack.damage = await player.getDamageTaken(enemyAttack.damage);
 
   // Update player health
   const playerData = await player.update({
@@ -247,12 +209,7 @@ async function performAttack(
         await game.reply(message, deathMessage, true, config.red, "");
 
         await player.erase();
-        await game.createPlayer(
-          message.author,
-          prisma,
-          game,
-          player.unlockedCommands
-        );
+        await game.createPlayer(message.author, player.unlockedCommands);
 
         resolve("KILLED_PLAYER");
       }

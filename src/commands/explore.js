@@ -3,7 +3,7 @@ export default {
   description: "Explore your current floor.",
   aliases: ["e"],
   cooldown: "0",
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     // Get current region
     const region = player.getRegion();
 
@@ -50,35 +50,19 @@ export default {
     switch (item) {
       case "enemies":
         // Start random enemy encounter in region
-        await game.startEnemyEncounter(
-          message,
-          prisma,
-          config,
-          player,
-          game,
-          server,
-          client
-        );
+        await game.startEnemyEncounter(message, player, server);
         break;
       case "loot":
         // Give the player some random loot from that region
-        const reply = await player.giveRandomLoot(message, server, game);
+        const reply = await player.giveRandomLoot(message, server);
         // Unlock new commands
         player.unlockCommands(message, server, ["inventory"]);
         // Add an explore button
-        game.cmdButton(message, reply, game, [
-          "explore",
-          client,
-          message,
-          [],
-          prisma,
-          game,
-          server,
-        ]);
+        game.cmdButton(message, reply, ["explore", message, [], server]);
         break;
       case "merchants":
         // Unlock a new random merchant from that region
-        await player.unlockRandomMerchant(message, server, game);
+        await player.unlockRandomMerchant(message, server);
         break;
     }
   },

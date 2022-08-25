@@ -5,7 +5,7 @@ export default {
   description: "Drink a potion.",
   category: "Items",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     if (!args[0]) return game.error(message, "provide the name of a potion.");
 
     const item = await player.getItem(args.join(" "));

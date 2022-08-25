@@ -1,11 +1,6 @@
-import randomFunction from "../../functions/math/random.js";
-import randomFunction2 from "../../functions/math/getRandom.js";
-import game from "../../functions/format/titleCase.js";
 import { emojis } from "../../config.js";
 import { loadFiles } from "./_loadFiles.js";
 import * as config from "../../config.js";
-const random = randomFunction.random;
-const getRandom = randomFunction2.getRandom;
 
 class Attack {
   constructor(object) {
@@ -26,7 +21,7 @@ class Attack {
           type: damageInfo.type,
           min: damageInfo.min,
           max: damageInfo.max,
-          total: random(damageInfo.min, damageInfo.max),
+          total: game.random(damageInfo.min, damageInfo.max),
         });
       }
       return damage;
@@ -45,16 +40,28 @@ class Attack {
     this.damageMultiplier = async (player) => {
       const passives = await player.getPassives("damage");
 
-      let passiveValue = 0;
+      let skillValue = 0;
+      let potionValue = 0;
       for (const passive of passives) {
-        passiveValue += passive.value;
+        if (passive.source == "skill") skillValue += passive.value;
+        if (passive.source == "potion") potionValue += passive.value;
       }
 
-      const passiveMultiplier = passiveValue / 100;
+      const skillMult = skillValue / 100 + 1;
 
-      const strength = player.strength / 100;
+      const strengthMult = player.strength / 100 + 1;
 
-      const damageMultiplier = passiveMultiplier + strength + 1;
+      const potionMult = potionValue / 100 + 1;
+
+      const damageMultiplier =
+        Math.round(skillMult * strengthMult * potionMult * 10) / 10;
+
+      // console.log(`${player.username} ${this.name} damage:`);
+      // console.log("skill multiplier: ", skillMult);
+      // console.log("strength multiplier: ", strengthMult);
+      // console.log("potion multiplier: ", potionMult);
+      // console.log("total multiplier: ", damageMultiplier);
+      // console.log("----------------------------");
 
       return damageMultiplier;
     };
@@ -123,7 +130,7 @@ class Attack {
     this.attackMessage = (attack, enemy) => {
       if (!this.messages) return undefined;
 
-      let message = getRandom(this.messages);
+      let message = game.getRandom(this.messages);
 
       const damages = attack.damages.map(
         (x) => `\`${x.total}\`${emojis.damage[x.type]}`

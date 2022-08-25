@@ -1,5 +1,3 @@
-import game from "../../functions/titleCase.js";
-import fs from "fs";
 import { loadFiles } from "./_loadFiles.js";
 import { emojis } from "../../config.js";
 

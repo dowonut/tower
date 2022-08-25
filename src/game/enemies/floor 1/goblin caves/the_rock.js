@@ -12,7 +12,7 @@ export default {
   // All anime attacks. Available attacks can be seen in enemy class.
   attacks: ["smash"],
   // Enemy loot table. Item names and drops.
-  loot: [{ name: "rock", dropChance: 100, min: 10, max: 20 }],
+  loot: [{ name: "rock", dropChance: 100, min: 30, max: 50 }],
   // How much xp the enemy gives when killed.
-  xp: 0,
+  xp: 500,
 };

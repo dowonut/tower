@@ -1,4 +1,3 @@
-import game from "../../functions/format/titleCase.js";
 import { loadFiles } from "./_loadFiles.js";
 
 class Skill {
@@ -12,7 +11,7 @@ class Skill {
     };
 
     // Format level info for skill
-    this.levelInfo = (level, game) => {
+    this.levelInfo = (level) => {
       const skill = this.levels[level - 1];
 
       if (!skill) return undefined;
@@ -24,14 +23,14 @@ class Skill {
 
       if (skill.passive) {
         const { passive } = skill;
-        return `Increase ${passive.name} ${passive.type.toLowerCase()} by \`+${
-          passive.value
-        }%\``;
+        return `Increase ${
+          passive.name
+        } ${passive.target.toLowerCase()} by \`+${passive.value}%\``;
       }
     };
 
     // Level up player skill
-    this.levelUp = async (player, level, message, game) => {
+    this.levelUp = async (player, level) => {
       let levelMsg;
 
       // If level unlocks add
@@ -39,7 +38,7 @@ class Skill {
         // Add new attack to player
         await player.addAttack(level.attack.name);
         const attackName = game.titleCase(level.attack.name);
-        levelMsg = `New attack unlocked: \`${attackName}\``;
+        levelMsg = `New attack unlocked: **${attackName}**`;
       }
 
       // If level unlocks passive stat
@@ -48,13 +47,13 @@ class Skill {
         // Add new passive stat to player
         await player.addPassive({
           name: passive.name,
-          type: passive.type,
+          target: passive.target,
           value: passive.value,
           modifier: "multiply",
           source: "skill",
         });
-        const combatName = game.titleCase(`${passive.name} combat`);
-        levelMsg = `Passive \`${passive.type}\` for **${combatName}** increased by \`+${passive.value}%\``;
+        const combatName = game.titleCase(`${passive.name}`);
+        levelMsg = `${combatName} ${passive.target} increased by \`+${passive.value}%\``;
       }
 
       // Send level message

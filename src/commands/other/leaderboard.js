@@ -4,7 +4,7 @@ export default {
   arguments: "<category>",
   description: "Get top 10 leaderboard for any category.",
   category: "Other",
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     // Define categories
     const categories = [
       { name: "level", alias: "l" },

@@ -4,14 +4,16 @@ export default {
   arguments: "<player> <quantity> <name of item>",
   description: "Give an item to a player.",
   category: "Admin",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     if (!args[0]) return invalidArguments(message, game);
     if (!args[1]) return invalidArguments(message, game);
     if (!args[2]) return invalidArguments(message, game);
 
     const user = message.mentions.users.first();
-    const userData = await prisma.player.findUnique({
-      where: { discordId: user.id },
+    player = await game.getPlayer({
+      id: user.id,
+      message: message,
+      server: server,
     });
     const quantity = parseInt(args[1]);
 
@@ -20,7 +22,7 @@ export default {
 
     const itemName = args.join(" ");
 
-    const newItem = await game.giveItem(userData, prisma, itemName, quantity);
+    const newItem = await game.giveItem(player, itemName, quantity);
 
     message.channel.send(
       `Gave **${quantity}x ${newItem.name}** to **${user.username}**`

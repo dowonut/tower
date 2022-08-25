@@ -1,5 +1,3 @@
-import game from "./weightedRandom.js";
-
 export default {
   getWeightedArray: (array) => {
     // Create options and weights

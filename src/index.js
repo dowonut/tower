@@ -1,3 +1,4 @@
+// Discord packages
 import Discord from "discord.js";
 import { REST } from "@discordjs/rest";
 import {
@@ -6,28 +7,21 @@ import {
   ContextMenuCommandBuilder,
   ApplicationCommandType,
   Routes,
-  SlashCommandBuilder,
 } from "discord.js";
+// Prisma packages
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
+// File handling
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
+// Config
 import * as config from "./config.js";
+// Game files
+import allEvents from "./game/classes/events.js";
 
 const prisma = new PrismaClient();
-
-// const client = new Client({
-//   intents: [
-//     GatewayIntentBits.Guilds,
-//     GatewayIntentBits.GuildMessages,
-//     GatewayIntentBits.GuildMessageReactions,
-//     GatewayIntentBits.GuildMembers,
-//     GatewayIntentBits.GuildEmojisAndStickers,
-//     GatewayIntentBits.GuildMessageTyping,
-//   ],
-// });
 
 const client = new Client({ intents: new IntentsBitField(36363) });
 
@@ -62,6 +56,12 @@ for (const file of functionFiles) {
   const { default: gameFunction } = await import(`../${file}`);
   game = { ...game, ...gameFunction };
 }
+// Define global variable with all functions
+global.game = game;
+global.prisma = prisma;
+global.client = client;
+// Get events
+const events = game.events;
 
 // On message sent
 client.on("messageCreate", async (message) => {
@@ -84,17 +84,10 @@ client.on("messageCreate", async (message) => {
   const commandName = args.shift().toLowerCase();
 
   // Run the command
-  await game.runCommand(
-    commandName,
-    client,
-    message,
-    args,
-    prisma,
-    game,
-    server
-  );
+  await game.runCommand(commandName, message, args, server, client);
 });
 
+// On bot ready
 client.on("ready", () => {
   // Set user activity
   client.user.setActivity(config.status, {
@@ -104,10 +97,12 @@ client.on("ready", () => {
   console.log(`> ${client.user.username} has logged in.`);
 });
 
+// Login bot
 client.login(process.env.BOT_TOKEN);
 
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
 
+// Create slash commands
 const commands = [
   new ContextMenuCommandBuilder()
     .setName("Explore")
@@ -154,9 +149,17 @@ client.on("interactionCreate", async (interaction) => {
   message.author = interaction.user;
 
   // Run the command
-  await game.runCommand(commandName, client, message, [], prisma, game, server);
+  await game.runCommand(commandName, message, [], server, client);
 });
 
-process.on("uncaughtException", function (exception) {
-  console.log("Something went wrong: ", exception);
-});
+// Initialise all events
+for (const event of allEvents) {
+  events.on(event.name, async (obj) => {
+    try {
+      // Run event function
+      await event.function(obj);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+}

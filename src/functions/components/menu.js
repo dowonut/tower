@@ -1,6 +1,6 @@
 export default {
   menu: class Menu {
-    constructor(buttons, game, type = "buttons") {
+    constructor(buttons, type = "buttons") {
       this.buttons = buttons();
 
       this.row = game.actionRow(type, this.buttons);

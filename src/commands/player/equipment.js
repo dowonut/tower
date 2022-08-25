@@ -1,12 +1,10 @@
-import items from "../../game/classes/items.js";
-
 export default {
   name: "equipment",
   aliases: ["eq", "equip"],
   arguments: "<item name>",
   description: "Check your current equipment or equip a new item.",
   category: "Player",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const input = args.join(" ");
 
     if (!input) {
@@ -16,8 +14,9 @@ export default {
       for (const eqSlot of ["hand", "head", "torso", "legs", "feet"]) {
         const item = game.getItem(player[eqSlot]);
         const key = game.titleCase(eqSlot);
-        const value = player[eqSlot] ? item.getName() : " ";
-        description += `\n${key}: \`${value}\``;
+        const value = item ? `**${item.getName()}**` : "`         `";
+        const emoji = item ? item.getEmoji() : " ";
+        description += `\n${key}: ${emoji} ${value}`;
 
         if (player[eqSlot]) {
           const item = await player.getItem(player[eqSlot]);

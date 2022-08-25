@@ -1,15 +1,8 @@
 import enemies from "../../game/classes/enemies.js";
+import * as config from "../../config.js";
 
 export default {
-  startEnemyEncounter: async (
-    message,
-    prisma,
-    config,
-    player,
-    game,
-    server,
-    client
-  ) => {
+  startEnemyEncounter: async (message, player, server) => {
     // Get player region
     const region = player.getRegion();
 
@@ -114,6 +107,8 @@ export default {
     async function enemyInfo() {
       player = await player.refresh(message, game);
       const { embed, image } = await game.enemyInfo(config, player, game);
+      if (!embed) return;
+
       await reply.edit({ embeds: [embed] });
 
       const index = buttons.findIndex((obj) => obj.id == "enemyinfo");
@@ -126,7 +121,7 @@ export default {
 
     // Run flee command
     function flee() {
-      game.runCommand("flee", client, message, [], prisma, game, server);
+      game.runCommand("flee", message, [], server);
     }
 
     // Attack component
@@ -145,15 +140,7 @@ export default {
       // Function to perform attack
       async function performAttack(attack) {
         // Perform attack command
-        return await game.runCommand(
-          "attack",
-          client,
-          message,
-          [attack.name],
-          prisma,
-          game,
-          server
-        );
+        return await game.runCommand("attack", message, [attack.name], server);
       }
 
       // Update attack buttons
@@ -222,15 +209,7 @@ export default {
       }
 
       async function listAttacks() {
-        return await game.runCommand(
-          "attack",
-          client,
-          message,
-          [],
-          prisma,
-          game,
-          server
-        );
+        return await game.runCommand("attack", message, [], server);
       }
     }
   },

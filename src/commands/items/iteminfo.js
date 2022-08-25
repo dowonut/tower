@@ -5,7 +5,7 @@ export default {
   description: "Get detailed information about an item.",
   category: "Items",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     if (!args[0]) return game.error(message, "provide the name of an item.");
 
     // Get player item
@@ -110,7 +110,7 @@ export default {
       // Create eat button
       if (item.health) {
         // Refresh player data
-        const { health, maxHealth } = await game.getPlayer(message, prisma);
+        const { health, maxHealth } = await player.refresh();
         const disable = disableCheck || health == maxHealth ? true : false;
         buttons.push({
           id: "eat",
@@ -193,15 +193,7 @@ export default {
 
     // Eat item
     async function eat() {
-      await game.runCommand(
-        "eat",
-        client,
-        message,
-        [item.name],
-        prisma,
-        game,
-        server
-      );
+      await game.runCommand("eat", message, [item.name], server);
 
       const newItem = await player.getItem(args.join(" "));
       item.quantity = newItem ? newItem.quantity : 0;
@@ -213,11 +205,8 @@ export default {
     async function sell(quantity = 1) {
       await game.runCommand(
         "sell",
-        client,
         message,
         [item.name, "$", quantity],
-        prisma,
-        game,
         server
       );
 
@@ -296,32 +285,16 @@ export default {
 
     // Equip the item
     async function equip() {
-      await game.runCommand(
-        "equipment",
-        client,
-        message,
-        [item.name],
-        prisma,
-        game,
-        server
-      );
+      await game.runCommand("equipment", message, [item.name], server);
 
-      player = await player.refresh(message, game);
+      player = await player.refresh();
       await updateEmbed();
       await updateButtonRow();
     }
 
     // Drink potion
     async function drink() {
-      await game.runCommand(
-        "drink",
-        client,
-        message,
-        [item.name],
-        prisma,
-        game,
-        server
-      );
+      await game.runCommand("drink", message, [item.name], server);
 
       const newItem = await player.getItem(args.join(" "));
       item.quantity = newItem ? newItem.quantity : 0;

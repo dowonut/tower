@@ -3,7 +3,7 @@ export default {
   arguments: "",
   description: "See bot latency.",
   category: "Admin",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const now = Date.now();
 
     game.reply(

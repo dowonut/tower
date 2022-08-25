@@ -8,7 +8,7 @@ export default {
   aliases: ["h"],
   useInCombat: true,
   ignoreInHelp: true,
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     let commands = [];
     let commandFiles = [];
     const authorPerms = message.channel.permissionsFor(message.author);

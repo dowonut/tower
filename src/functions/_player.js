@@ -11,31 +11,32 @@ import * as config from "../config.js";
 
 export default {
   player: {
+    // Test
+    test: function () {
+      console.log("test");
+    },
     // Delete player
     erase: async function () {
-      await this.prisma.inventory.deleteMany({
+      await prisma.inventory.deleteMany({
         where: { playerId: this.id },
       });
 
-      await this.prisma.player.delete({
+      await prisma.player.delete({
         where: { id: this.id },
       });
     },
 
     // Update player
     update: async function (update) {
-      return await this.prisma.player.update({
+      return await prisma.player.update({
         where: { id: this.id },
         data: update,
       });
     },
 
     // Refesh player object
-    refresh: async function (message, game) {
-      const playerData = await game.getPlayer(message, this.prisma);
-      const user = await game.getUser(message, this.prisma);
-
-      return { ...playerData, ...game.player, prisma: this.prisma, user: user };
+    refresh: async function () {
+      return await game.getPlayer({ id: this.discordId, server: this.server });
     },
 
     // Give item
@@ -44,17 +45,20 @@ export default {
 
       const itemQuantity = quantity ? quantity : 1;
 
-      const playerItem = await this.prisma.inventory.findMany({
+      const playerItem = await prisma.inventory.findMany({
         where: {
           playerId: this.id,
           name: { equals: itemName, mode: "insensitive" },
         },
       });
 
+      // Emit event for item received
+      game.events.emit("itemReceive", { item: item, player: this });
+
       let newItem;
       if (playerItem[0]) {
         // Update existing item
-        newItem = await this.prisma.inventory.updateMany({
+        newItem = await prisma.inventory.updateMany({
           where: {
             playerId: this.id,
             name: { equals: itemName, mode: "insensitive" },
@@ -63,9 +67,9 @@ export default {
             quantity: { increment: itemQuantity },
           },
         });
-
+        // Delete item from database if quantity is 0
         if (playerItem[0].quantity + itemQuantity <= 0) {
-          return await this.prisma.inventory.deleteMany({
+          return await prisma.inventory.deleteMany({
             where: {
               playerId: this.id,
               name: { equals: itemName, mode: "insensitive" },
@@ -79,7 +83,7 @@ export default {
           newItem = item;
         } else {
           // Create new item
-          newItem = await this.prisma.inventory.create({
+          newItem = await prisma.inventory.create({
             data: {
               playerId: this.id,
               name: item.name,
@@ -97,7 +101,7 @@ export default {
       let tutorialRefs = [];
       for (const commandName of commandNames) {
         if (!this.unlockedCommands.includes(commandName)) {
-          await this.prisma.player.update({
+          await prisma.player.update({
             where: { id: this.id },
             data: {
               unlockedCommands: { push: commandName },
@@ -155,7 +159,7 @@ export default {
 
     // Get item info
     getItem: async function (itemName) {
-      const itemRef = await this.prisma.inventory.findMany({
+      const itemRef = await prisma.inventory.findMany({
         where: {
           playerId: this.id,
           name: { equals: itemName, mode: "insensitive" },
@@ -172,7 +176,7 @@ export default {
 
     // Get all items
     getItems: async function () {
-      const playerItems = await this.prisma.inventory.findMany({
+      const playerItems = await prisma.inventory.findMany({
         orderBy: [{ quantity: "asc" }],
         where: { playerId: this.id },
       });
@@ -213,15 +217,11 @@ export default {
     },
 
     // Get all passive effects that currently apply
-    getPassives: async function (type) {
-      if (type) {
-        type = type.toLowerCase();
-      } else {
-        type = undefined;
-      }
+    getPassives: async function (target) {
+      target = target ? target.toLowerCase() : undefined;
       // Get all player passives
-      const passives = await this.prisma.passive.findMany({
-        where: { playerId: this.id, type: type },
+      const passives = await prisma.passive.findMany({
+        where: { playerId: this.id, target: target },
       });
 
       // Get player weapon type
@@ -242,7 +242,7 @@ export default {
     // Get all passives
     getAllPassives: async function (type) {
       // Get all player passives
-      const passives = await this.prisma.passive.findMany({
+      const passives = await prisma.passive.findMany({
         where: {
           playerId: this.id,
           type: type ? type.toLowerCase() : undefined,
@@ -256,45 +256,36 @@ export default {
     addPassive: async function (object) {
       let { source, name, target, value, modifier, duration } = object;
       duration = duration ? duration : undefined;
-      source = source ? source : undefined;
-      // Get all player passives
-      const filteredPassive = await this.prisma.passive.findMany({
-        where: {
-          playerId: this.id,
-          name: name,
-          type: target,
-          modifier: modifier,
-          source: source,
-          duration: duration,
-        },
+      source = source ? source : "skill";
+      name = name ? name : "all";
+      target = target ? target : "damage";
+
+      const dataObject = {
+        playerId: this.id,
+        source: source,
+        name: name,
+        target: target,
+        modifier: modifier,
+        duration: duration,
+      };
+
+      const filteredPassive = await prisma.passive.findMany({
+        where: dataObject,
       });
 
       // If passive doesn't exist, create a new entry
       if (!filteredPassive[0]) {
         // Create new passive
-        await this.prisma.passive.create({
-          data: {
-            playerId: this.id,
-            name: name,
-            type: target,
-            value: value,
-            source: source,
-            modifier: modifier,
-            duration: duration,
-          },
+        await prisma.passive.create({
+          data: { ...dataObject, value: value },
         });
       }
       // If passive already exists, then update
       else {
         // Update the passive value
-        await this.prisma.passive.updateMany({
+        await prisma.passive.updateMany({
           where: {
-            playerId: this.id,
-            name: name,
-            type: target,
-            source: source,
-            modifier: modifier,
-            duration: duration,
+            id: filteredPassive[0].id,
           },
           data: {
             value: { increment: value },
@@ -310,7 +301,7 @@ export default {
       for (let passive of passives) {
         const { duration } = passive;
         if (duration !== null) {
-          passive = await this.prisma.passive.update({
+          passive = await prisma.passive.update({
             where: {
               id: passive.id,
             },
@@ -322,7 +313,7 @@ export default {
           });
 
           if (passive.duration < 1) {
-            passive = await this.prisma.passive.delete({
+            passive = await prisma.passive.delete({
               where: { id: passive.id },
             });
           }
@@ -334,7 +325,7 @@ export default {
 
     // Get specific attack
     getAttack: async function (attackName) {
-      const attackRef = await this.prisma.attack.findMany({
+      const attackRef = await prisma.attack.findMany({
         where: {
           playerId: this.id,
           name: { equals: attackName, mode: "insensitive" },
@@ -367,7 +358,7 @@ export default {
 
     // Get all available attacks
     getAttacks: async function () {
-      const playerAttacks = await this.prisma.attack.findMany({
+      const playerAttacks = await prisma.attack.findMany({
         orderBy: [{ remCooldown: "asc" }],
         where: { playerId: this.id },
       });
@@ -402,14 +393,14 @@ export default {
 
     // Add new attack
     addAttack: async function (attackName) {
-      await this.prisma.attack.create({
+      await prisma.attack.create({
         data: { playerId: this.id, name: attackName.toLowerCase() },
       });
     },
 
     // Get specific skill
     getSkill: async function (skillName) {
-      const skillRef = await this.prisma.skill.findMany({
+      const skillRef = await prisma.skill.findMany({
         where: {
           playerId: this.id,
           name: { equals: skillName, mode: "insensitive" },
@@ -426,7 +417,7 @@ export default {
 
     // Get all player skills
     getSkills: async function () {
-      const playerSkills = await this.prisma.skill.findMany({
+      const playerSkills = await prisma.skill.findMany({
         orderBy: [{ level: "desc" }, { xp: "desc" }],
         where: { playerId: this.id },
       });
@@ -443,12 +434,39 @@ export default {
       return skillArray;
     },
 
+    // Add new skill
+    addSkill: async function (skillName) {
+      // Check if player has skill
+      const skillRef = prisma.skill.findMany({
+        where: {
+          playerId: this.id,
+          name: skillName.toLowerCase(),
+        },
+      });
+
+      // Return if player already has skill
+      if (skillRef[0]) return;
+
+      // Create new skill
+      await prisma.skill.create({
+        data: {
+          playerId: this.id,
+          name: skillName.toLowerCase(),
+        },
+      });
+
+      return await game.reply(
+        this.message,
+        `New skill unlocked: **${game.titleCase(skillName)}**`
+      );
+    },
+
     // Get all recipes or a specific recipe
     getRecipes: async function (input) {
       let recipeArr = [];
       let playerRecipes;
       if (input) {
-        playerRecipes = await this.prisma.recipe.findMany({
+        playerRecipes = await prisma.recipe.findMany({
           //orderBy: [{ level: "desc" }, { xp: "desc" }],
           where: {
             playerId: this.id,
@@ -458,7 +476,7 @@ export default {
 
         if (!playerRecipes[0]) return undefined;
       } else {
-        playerRecipes = await this.prisma.recipe.findMany({
+        playerRecipes = await prisma.recipe.findMany({
           where: { playerId: this.id },
         });
       }
@@ -487,7 +505,7 @@ export default {
 
       if (playerRecipe) return;
 
-      await this.prisma.recipe.create({
+      await prisma.recipe.create({
         data: { playerId: this.id, name: recipe.name },
       });
     },
@@ -497,7 +515,7 @@ export default {
       let array = [];
       let items;
       if (input) {
-        items = await this.prisma[key].findMany({
+        items = await prisma[key].findMany({
           //orderBy: [{ level: "desc" }, { xp: "desc" }],
           where: {
             playerId: this.id,
@@ -507,7 +525,7 @@ export default {
 
         if (!items[0]) return undefined;
       } else {
-        items = await this.prisma[key].findMany({
+        items = await prisma[key].findMany({
           //orderBy: [{ level: "desc" }, { xp: "desc" }],
           where: { playerId: this.id },
         });
@@ -524,7 +542,7 @@ export default {
     },
 
     // Deal damage to player
-    getDamageTaken: async function (attack, game) {
+    getDamageTaken: async function (attack) {
       // Calculate defence
       const defenceMultiplier = 1 - this.defence / 100;
 
@@ -560,7 +578,7 @@ export default {
     getCurrentEnemy: async function () {
       if (!this.fighting) return undefined;
 
-      const enemyInfo = await this.prisma.enemy.findUnique({
+      const enemyInfo = await prisma.enemy.findUnique({
         where: { id: this.fighting },
       });
 
@@ -577,7 +595,7 @@ export default {
 
     // Update enemy data
     updateEnemy: async function (update) {
-      return await this.prisma.enemy.update({
+      return await prisma.enemy.update({
         where: { id: this.fighting },
         data: update,
       });
@@ -585,13 +603,13 @@ export default {
 
     // Remove current enemy from the database
     killEnemy: async function () {
-      await this.prisma.enemy.delete({
+      await prisma.enemy.delete({
         where: { id: this.fighting },
       });
     },
 
     // Give loot from enemy
-    enemyLoot: async function (enemy, game, server, message) {
+    enemyLoot: async function (enemy, server, message) {
       const loots = [];
 
       for (const loot of enemy.loot) {
@@ -649,7 +667,7 @@ export default {
     },
 
     // Give the player some random loot from their current region
-    giveRandomLoot: async function (message, server, game) {
+    giveRandomLoot: async function (message, server) {
       // Fetch region and format region name
       const region = this.getRegion();
       const regionName = game.titleCase(region.name);
@@ -657,7 +675,7 @@ export default {
       // Fetch item from weights
       let item = game.getWeightedArray(region.loot);
       const itemName = game.titleCase(item.name);
-      item = game.getItem(item.name);
+      item = { ...item, ...game.getItem(item.name) };
       const itemEmoji = item.getEmoji();
 
       // Determine item quantity
@@ -680,7 +698,7 @@ export default {
     },
 
     // Give xp to player
-    giveXp: async function (xp, message, server, game) {
+    giveXp: async function (xp, message, server) {
       // Add xp to player
       let player = await this.update({ xp: { increment: xp } });
 
@@ -730,14 +748,15 @@ export default {
     },
 
     // Give xp to player skill
-    giveSkillXp: async function (xp, skillName, message, game) {
+    giveSkillXp: async function (xp, skillName) {
+      const message = this.message;
       // Add xp to player skill
-      await this.prisma.skill.updateMany({
+      await prisma.skill.updateMany({
         where: { playerId: this.id, name: skillName },
         data: { xp: { increment: xp } },
       });
 
-      let skillRef = await this.prisma.skill.findMany({
+      let skillRef = await prisma.skill.findMany({
         where: { playerId: this.id, name: skillName },
       });
 
@@ -757,12 +776,12 @@ export default {
         let newXp = skill.xp - nextLevelXp;
 
         // Update player data
-        await this.prisma.skill.updateMany({
+        await prisma.skill.updateMany({
           where: { playerId: this.id, name: skillName },
           data: { xp: newXp, level: { increment: 1 } },
         });
 
-        skillRef = await this.prisma.skill.findMany({
+        skillRef = await prisma.skill.findMany({
           where: { playerId: this.id, name: skillName },
         });
         skill = skillRef[0];
@@ -778,12 +797,7 @@ export default {
 
         // Level up skill
         if (skillLevel) {
-          skillLevelMsg = await skillData.levelUp(
-            this,
-            skillLevel,
-            message,
-            game
-          );
+          skillLevelMsg = await skillData.levelUp(this, skillLevel);
         }
 
         // Send message to player
@@ -797,7 +811,7 @@ export default {
 
     // Get a player's unlocked merchants
     getUnlockedMerchants: async function () {
-      const merchantsRef = await this.prisma.exploration.findMany({
+      const merchantsRef = await prisma.exploration.findMany({
         where: { playerId: this.id, floor: this.floor, type: "merchant" },
       });
 
@@ -816,7 +830,7 @@ export default {
 
     // Get a players merchant stock for a specific item
     getMerchantStock: async function (itemName) {
-      const items = await this.prisma.merchantStock.findMany({
+      const items = await prisma.merchantStock.findMany({
         where: {
           playerId: this.id,
           floor: this.floor,
@@ -833,7 +847,7 @@ export default {
     getExplored: async function (type) {
       let explored;
       if (type) {
-        explored = await this.prisma.exploration.findMany({
+        explored = await prisma.exploration.findMany({
           where: {
             playerId: this.id,
             floor: this.floor,
@@ -841,7 +855,7 @@ export default {
           },
         });
       } else {
-        explored = await this.prisma.exploration.findMany({
+        explored = await prisma.exploration.findMany({
           where: { playerId: this.id, floor: this.floor },
         });
       }
@@ -852,7 +866,7 @@ export default {
     addExplore: async function (message, server, type, category, name) {
       const floor = this.floor;
 
-      const existing = await this.prisma.exploration.findMany({
+      const existing = await prisma.exploration.findMany({
         where: {
           playerId: this.id,
           floor: floor,
@@ -863,7 +877,7 @@ export default {
       });
       if (existing[0]) return;
 
-      await this.prisma.exploration.create({
+      await prisma.exploration.create({
         data: {
           playerId: this.id,
           floor: floor,
@@ -874,12 +888,12 @@ export default {
       });
 
       message.channel.send(
-        `*New ${type} discovered! See your discoveries with \`${server.prefix}region\`*`
+        `*New ${type} discovered!\nSee your discoveries with \`${server.prefix}region\`*`
       );
     },
 
     // Unlock a random merchant on the current floor
-    unlockRandomMerchant: async function (message, server, game) {
+    unlockRandomMerchant: async function (message, server) {
       const region = this.getRegion();
       const regionName = game.titleCase(region.name);
 
@@ -901,10 +915,11 @@ export default {
       const mName = game.titleCase(merchant.name);
       const mCategory = game.titleCase(merchant.category + " merchant");
 
-      await game.reply(
+      const reply = await game.reply(
         message,
         `you explore the **${regionName}** and come across **${mName}**, the local \`${mCategory}\``
       );
+      game.cmdButton(message, reply, ["explore", message, [], server]);
       await this.addExplore(message, server, "merchant", merchantC);
     },
   },

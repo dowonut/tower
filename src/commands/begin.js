@@ -3,12 +3,12 @@ export default {
   description: "Start the game by creating a character.",
   needChar: false,
   ignoreInHelp: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     const auth = message.author;
 
     if (player) return game.error(message, "you already have a character.");
 
-    player = await game.createPlayer(auth, prisma, game);
+    player = await game.createPlayer(auth);
 
     const embed = {
       thumbnail: { url: player.pfp },
@@ -21,7 +21,7 @@ export default {
     let usedExplore = false;
 
     // Create button menu
-    const menu = new game.menu(getButtons, game);
+    const menu = new game.menu(getButtons);
 
     // Send reply
     const reply = await message.reply({
@@ -42,15 +42,7 @@ export default {
           function: async () => {
             usedProfile = true;
             await menu.updateButtons(reply);
-            return game.runCommand(
-              "profile",
-              client,
-              message,
-              [],
-              prisma,
-              game,
-              server
-            );
+            return game.runCommand("profile", message, [], server);
           },
         },
         {
@@ -60,15 +52,7 @@ export default {
           function: async () => {
             usedExplore = true;
             await menu.updateButtons(reply);
-            return game.runCommand(
-              "explore",
-              client,
-              message,
-              [],
-              prisma,
-              game,
-              server
-            );
+            return game.runCommand("explore", message, [], server);
           },
         },
       ];

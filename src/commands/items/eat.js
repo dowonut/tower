@@ -4,7 +4,7 @@ export default {
   arguments: "<item name>",
   description: "Eat food you have in your inventory.",
   category: "Items",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     if (!args[0])
       return game.error(message, "provide the name of a food item.");
 

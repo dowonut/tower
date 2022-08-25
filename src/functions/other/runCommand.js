@@ -7,15 +7,7 @@ const ADMIN = PermissionsBitField.Flags.Administrator;
 import * as config from "../../config.js";
 
 export default {
-  runCommand: async (
-    commandName,
-    client,
-    message,
-    args,
-    prisma,
-    game,
-    server
-  ) => {
+  runCommand: async (commandName, message, args, server) => {
     return new Promise(async (resolve) => {
       // Get command by name
       const command =
@@ -44,11 +36,10 @@ export default {
         }
       }
 
-      let playerData = await game.getPlayer(message, prisma);
-      let userData = await game.getUser(message, prisma);
+      let player = await game.getPlayer({ message: message, server: server });
 
       // Check if user has player character
-      if (command.needChar !== false && !playerData) {
+      if (command.needChar !== false && !player) {
         return game.reply(
           message,
           `get started with \`${server.prefix}begin\``
@@ -56,12 +47,7 @@ export default {
       }
 
       // Make object null if no player data
-      if (!playerData) {
-        var player = null;
-      } else {
-        var player = { ...playerData, ...game.player, prisma, user: userData };
-        //console.log(player);
-
+      if (player) {
         // Check if user is admin
         if (command.category == "Admin" && !authorPerms.has(ADMIN)) {
           return game.error(
@@ -119,16 +105,7 @@ export default {
       setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
       // Set arguments
-      const commandsArgs = [
-        message,
-        args,
-        prisma,
-        config,
-        player,
-        game,
-        server,
-        client,
-      ];
+      const commandsArgs = [message, args, config, player, server, client];
 
       // Try to run the command
       try {

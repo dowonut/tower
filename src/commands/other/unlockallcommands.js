@@ -7,7 +7,7 @@ export default {
   arguments: "",
   description: "Unlock all commands in the game.",
   category: "Other",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const buttons = [
       {
         id: "yes",

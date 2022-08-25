@@ -1,5 +1,5 @@
 export default {
-  cmdButton: async (message, reply, game, commandArgs) => {
+  cmdButton: async (message, reply, commandArgs) => {
     const commandName = commandArgs[0];
 
     const menu = new game.menu(() => {
@@ -14,7 +14,7 @@ export default {
           },
         },
       ];
-    }, game);
+    });
 
     menu.updateButtons(reply);
 

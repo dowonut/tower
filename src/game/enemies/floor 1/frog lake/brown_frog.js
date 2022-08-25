@@ -12,7 +12,7 @@ export default {
   // All anime attacks. Available attacks can be seen in enemy class.
   attacks: ["lick"],
   // Enemy loot table. Item names and drops.
-  loot: [{ name: "frog tongue", dropChance: 100, min: 1, max: 1 }],
+  loot: [{ name: "frog tongue", dropChance: 100, min: 1, max: 2 }],
   // How much xp the enemy gives when killed.
   xp: 50,
 };

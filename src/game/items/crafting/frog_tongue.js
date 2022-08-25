@@ -3,5 +3,5 @@ export default {
   category: "crafting",
   description: "A tongue from a frog",
   info: "You've heard that frog tongues are a delicacy around these parts.",
-  value: 4,
+  value: 10,
 };

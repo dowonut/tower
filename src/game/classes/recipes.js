@@ -18,7 +18,7 @@ class Recipe {
     };
 
     // Get item text for recipe
-    this.itemText = async (player, game, available) => {
+    this.itemText = async (player, available) => {
       let items = [];
       // If can craft recipe, get all items
       if (available) {

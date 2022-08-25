@@ -7,7 +7,7 @@ export default {
   aliases: ["ip", "ipr"],
   //  category: "General",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     // update user info if outdated
     if (
       player.username !== message.author.username ||

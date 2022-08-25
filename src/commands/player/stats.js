@@ -5,7 +5,7 @@ export default {
   description: "Check your current stats.",
   category: "Player",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     // Get stats embed
     const embed = getEmbed(player);
 
@@ -51,17 +51,9 @@ export default {
     // Level up stat
     async function statUp(stat, quantity) {
       // Run stat up command
-      await game.runCommand(
-        "statup",
-        client,
-        message,
-        [stat, "$", quantity],
-        prisma,
-        game,
-        server
-      );
+      await game.runCommand("statup", message, [stat, "$", quantity], server);
       // Refresh player data
-      player = await player.refresh(message, game);
+      player = await player.refresh();
 
       // Refresh embed data
       const embed = getEmbed(player);

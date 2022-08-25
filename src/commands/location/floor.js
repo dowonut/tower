@@ -6,7 +6,7 @@ export default {
   category: "Location",
   description: "Show information about your current floor.",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     // Get player floor information
     let floor = floors[player.floor - 1];
 
@@ -17,7 +17,6 @@ export default {
     const menu = dropDown(player);
     const row = game.actionRow("menu", menu);
 
-    //game.sendEmbed(message, embed);
     const reply = await game.fastEmbed(
       message,
       player,
@@ -94,18 +93,10 @@ export default {
     // Travel to region
     async function travel(regionName) {
       // Run commmand
-      await game.runCommand(
-        "travel",
-        client,
-        message,
-        [regionName],
-        prisma,
-        game,
-        server
-      );
+      await game.runCommand("travel", message, [regionName], server);
 
       // Refresh player info
-      player = await player.refresh(message, game);
+      player = await player.refresh();
 
       // Get new dropdown menu
       const menu = dropDown(player);

@@ -4,7 +4,7 @@ export default {
   arguments: "<merchant type>",
   description: "See all merchants on this floor and the items they sell.",
   category: "Items",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const input = args.join(" ");
 
     let embed;
@@ -55,7 +55,8 @@ export default {
         if (item.stock > 0) {
           const itemStock = `x${item.stock}`;
           const itemName = `**${item.getName()}**`;
-          description += `\n${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark} | *${item.description}*`;
+          description += `\n${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark}`;
+          //description += `\n*${item.description}*`;
         } else {
           let itemStock = `out of stock`;
           if (item.restock) {

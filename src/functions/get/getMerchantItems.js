@@ -18,7 +18,7 @@ export default {
       const date = new Date().getDate();
 
       // Get player merchant stock
-      const merchantStock = await player.prisma.merchantStock.findMany({
+      const merchantStock = await prisma.merchantStock.findMany({
         where: {
           playerId: player.id,
           itemName: item.name,
@@ -32,7 +32,7 @@ export default {
         // If merchant item needs to be restocked
         if (item.restock && date - merchantStock[0].restocked >= item.restock) {
           // Update restocked date
-          await player.prisma.merchantStock.updateMany({
+          await prisma.merchantStock.updateMany({
             where: {
               playerId: player.id,
               itemName: item.name,

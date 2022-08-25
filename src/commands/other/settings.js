@@ -7,7 +7,7 @@ export default {
   description: "See your user settings and change.",
   category: "Other",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     let description = ``;
     for (const [key, value] of Object.entries(player.user)) {
       if (["id", "discordId"].includes(key)) continue;

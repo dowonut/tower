@@ -1,4 +1,3 @@
-import game from "../../functions/format/titleCase.js";
 import { loadFiles } from "./_loadFiles.js";
 import fs from "fs";
 import * as config from "../../config.js";
@@ -8,9 +7,6 @@ class Item {
     for (const [key, value] of Object.entries(object)) {
       this[key] = value;
     }
-
-    if (this.category == "Food")
-      this.description += ` Heals ${this.health} HP.`;
 
     this.getName = () => {
       return game.titleCase(this.name);
@@ -50,6 +46,7 @@ class Item {
 
       if (this.category == "map") imageName = "map";
       else if (this.category == "potion") imageName = "potion";
+      else if (this.category == "recipe") imageName = "recipe";
 
       return imageName;
     };

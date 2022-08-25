@@ -5,7 +5,7 @@ export default {
   description: "Get information about your current region.",
   category: "Location",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const region = player.getRegion();
     const regionName = game.titleCase(region.name);
 

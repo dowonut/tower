@@ -4,7 +4,7 @@ export default {
   cooldown: "60",
   category: "Other",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const buttons = [
       {
         id: "yes",
@@ -40,12 +40,7 @@ export default {
       await player.erase();
 
       // Create new player with unlocked commands
-      await game.createPlayer(
-        message.author,
-        prisma,
-        game,
-        player.unlockedCommands
-      );
+      await game.createPlayer(message.author, player.unlockedCommands);
       return await reply.edit({
         content: "**`Reset complete`**",
         components: [],

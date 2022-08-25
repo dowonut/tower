@@ -4,8 +4,8 @@ export default {
   description: "Get information about an enemy during combat.",
   category: "Combat",
   useInCombatOnly: true,
-  async execute(message, args, prisma, config, player, game, server) {
-    const { embed, image } = await game.enemyInfo(config, player, game);
+  async execute(message, args, config, player, server) {
+    const { embed, image } = await game.enemyInfo(config, player);
 
     game.fastEmbed(message, player, embed, embed.author.name, image);
   },

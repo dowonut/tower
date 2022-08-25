@@ -1,6 +1,8 @@
 export default {
-  enemyInfo: async (config, player, game) => {
+  enemyInfo: async (config, player) => {
     const enemy = await player.getCurrentEnemy();
+
+    if (!enemy) return { embed: undefined, image: undefined };
 
     const emojis = config.emojis.damage;
     const image = enemy.getImage();

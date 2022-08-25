@@ -4,7 +4,7 @@ export default {
   description: "Show your current status during combat.",
   category: "Combat",
   useInCombatOnly: true,
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const enemy = await player.getCurrentEnemy();
 
     const embed = {

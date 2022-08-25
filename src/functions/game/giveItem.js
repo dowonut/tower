@@ -1,7 +1,7 @@
 import items from "../../game/classes/items.js";
 
 export default {
-  giveItem: async (user, prisma, itemName, quantity) => {
+  giveItem: async (user, itemName, quantity) => {
     const item = items.find((x) => x.name == itemName.toLowerCase());
     const itemQuantity = quantity ? quantity : 1;
 
@@ -32,6 +32,11 @@ export default {
         },
       });
     }
+
+    game.events.emit("itemReceive", {
+      player: { ...user, ...game.player },
+      item: item,
+    });
 
     return { ...playerItem[0], ...newItem };
   },

@@ -1,12 +1,6 @@
-import randomFunction from "../../functions/math/getRandom.js";
-import randomFunction2 from "../../functions/math/random.js";
-import game from "../../functions/format/titleCase.js";
 import { loadFiles } from "./_loadFiles.js";
 import fs from "fs";
-import util from "util";
 import * as config from "../../config.js";
-const getRandom = randomFunction.getRandom;
-const random = randomFunction2.random;
 
 class Enemy {
   constructor(object) {
@@ -120,7 +114,7 @@ class Enemy {
     this.attackMessage = (attack, player) => {
       if (!attack.messages) return undefined;
 
-      let message = getRandom(attack.messages);
+      let message = game.getRandom(attack.messages);
 
       const damages = attack.damage.damages.map(
         (x) => `\`${x.final}\`${config.emojis.damage[x.type]}`

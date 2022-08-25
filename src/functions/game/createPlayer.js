@@ -1,5 +1,5 @@
 export default {
-  createPlayer: async (auth, prisma, game, commands) => {
+  createPlayer: async (auth, commands) => {
     const defaultCommands = [
       "erase",
       "begin",
@@ -45,7 +45,7 @@ export default {
       await prisma[key].createMany({ data: entryArr });
     }
 
-    const player = { ...playerData, ...game.player, prisma, user: user };
+    const player = await game.getPlayer({ id: auth.id });
 
     // Give apple
     await prisma.inventory.createMany({

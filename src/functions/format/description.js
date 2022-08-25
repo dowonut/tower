@@ -1,5 +1,5 @@
 export default {
-  description: (rawText, player, config, game) => {
+  description: (rawText, player, config) => {
     const textArray = rawText.split("\n");
     let description = ``;
 

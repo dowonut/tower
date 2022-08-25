@@ -4,7 +4,7 @@ export default {
   arguments: "",
   description: "For testing purposes.",
   category: "Admin",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     // const button = [
     //   {
     //     id: "test",

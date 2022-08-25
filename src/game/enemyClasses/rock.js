@@ -25,8 +25,8 @@ export default {
       damage: [
         {
           type: "bludgeoning",
-          min: 1,
-          max: 3,
+          min: 2,
+          max: 4,
           modifier: "+LEVEL",
         },
       ],

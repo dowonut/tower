@@ -4,7 +4,7 @@ export default {
   aliases: ["pr", "p"],
   //  category: "General",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     // update user info if outdated
     if (
       player.username !== message.author.username ||
@@ -18,12 +18,13 @@ export default {
 
       // fetch player data when pinging
       if (user) {
-        const playerInfo = await game.getPlayer(message, prisma, user.id);
-        const userInfo = await game.getUser(message, prisma, user.id);
+        player = await game.getPlayer({
+          id: user.id,
+          server: server,
+          message: message,
+        });
 
-        if (playerInfo)
-          player = { ...playerInfo, ...game.player, prisma, user: userInfo };
-        else return game.error(message, "this user has no character.");
+        if (!player) return game.error(message, "this user has no character.");
       }
     }
 
@@ -137,15 +138,7 @@ export default {
           function: () => {
             sentInventory = true;
             updateButtons();
-            return game.runCommand(
-              "inventory",
-              client,
-              message,
-              [],
-              prisma,
-              game,
-              server
-            );
+            return game.runCommand("inventory", message, [], server);
           },
         },
         {
@@ -156,15 +149,7 @@ export default {
           function: () => {
             sentEquipment = true;
             updateButtons();
-            return game.runCommand(
-              "equipment",
-              client,
-              message,
-              [],
-              prisma,
-              game,
-              server
-            );
+            return game.runCommand("equipment", message, [], server);
           },
         },
       ];

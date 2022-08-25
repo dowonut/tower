@@ -7,7 +7,7 @@ export default {
   arguments: "",
   description: "Check unlocked commands.",
   category: "Admin",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     let commands = [];
     let commandFiles = [];
     function throughDirectory(directory, array) {

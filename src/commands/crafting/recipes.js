@@ -5,7 +5,7 @@ export default {
   description: "See your unlocked crafting recipes.",
   category: "Crafting",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     let recipes = await player.getRecipes();
 
     // Check if player has any recipes
@@ -14,7 +14,7 @@ export default {
 
     const { embed, title } = await getEmbed();
 
-    const menu = new game.menu(getList, game, "menu");
+    const menu = new game.menu(getList, "menu");
 
     const reply = await game.fastEmbed(
       message,
@@ -41,7 +41,7 @@ export default {
         } else {
           description += `\n\n*${game.titleCase(recipe.name)}*`;
         }
-        const itemText = await recipe.itemText(player, game, available);
+        const itemText = await recipe.itemText(player, available);
 
         if (available) {
           description += `\nItems: ${itemText}`;
@@ -68,15 +68,7 @@ export default {
         options: [],
         function: async (reply, i, selection) => {
           // Run the craft command
-          await game.runCommand(
-            "craft",
-            client,
-            message,
-            [selection],
-            prisma,
-            game,
-            server
-          );
+          await game.runCommand("craft", message, [selection], server);
           // Get new recipes
           recipes = await player.getRecipes();
           // Update list

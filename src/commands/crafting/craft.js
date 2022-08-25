@@ -4,7 +4,7 @@ export default {
   arguments: "<item name>",
   description: "Craft a specific item if you have the recipe.",
   category: "Crafting",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const input = args.join(" ");
 
     // Check if input for crafting item

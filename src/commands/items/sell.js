@@ -4,14 +4,14 @@ export default {
   arguments: "<item name> $ <quantity>|all",
   description: "Sell items in your inventory.",
   category: "Items",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const variables = args.join(" ").split("$");
 
     const itemNameInput = variables[0].trim();
     const quantityInput = variables[1];
 
     // Check for valid quantity
-    let quantity = game.checkQuantity(quantityInput, game, message);
+    let quantity = game.checkQuantity(quantityInput, message);
     if (!quantity) return;
 
     // Check if item name provided

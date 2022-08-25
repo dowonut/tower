@@ -4,7 +4,7 @@ export default {
   arguments: "<player> <quantity> <skill>",
   description: "Give xp to a player.",
   category: "Admin",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     if (!args[0]) return invalidArguments(message, game);
     if (!args[1]) return invalidArguments(message, game);
     if (!args[2]) return invalidArguments(message, game);

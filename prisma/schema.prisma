@@ -140,6 +140,8 @@ model Exploration {
   type          String
   name          String?
   category      String?
+  remaining     Int?
+  restocked     Int?
 }
 
 // Player attacks
@@ -158,10 +160,12 @@ model Passive {
   playerId      Int
   source        String    @default("skill")
   name          String
-  type          String
+  target        String
   modifier      String    @default("multiply")
   value         Int
   duration      Int?
+
+  @@unique([playerId,source,name,target,modifier,value,duration])
 }
 
 // Enemy tracking
@@ -170,6 +174,15 @@ model Enemy {
   name          String
   health        Int
   fighting      String?
+  attacks       enemyAttack[]
+}
+
+model enemyAttack {
+  id            Int       @id @default(autoincrement())
+  enemy         Enemy     @relation(fields: [enemyId], references: [id], onDelete: Cascade)
+  enemyId       Int
+  name          String
+  remCooldown   Int       @default(0)
 }
 
 // OUTDATED 

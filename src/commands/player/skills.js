@@ -5,7 +5,7 @@ export default {
   description: "See all your skills or one specific skill.",
   category: "Player",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const input = args.join(" ");
 
     let embed, title;
@@ -57,10 +57,10 @@ ${progress}
 XP: \`${xp} / ${nextXp}\``;
 
       // Get info about next skill levels
-      for (let i = 1; i < 3 && skill.levelInfo(skill.level + i, game); i++)
+      for (let i = 1; i < 3 && skill.levelInfo(skill.level + i); i++)
         description += `
 \n**Level ${skill.level + i}**
-${skill.levelInfo(skill.level + i, game)}`;
+${skill.levelInfo(skill.level + i)}`;
 
       embed = {
         description: description,

@@ -7,7 +7,7 @@ export default {
   arguments: "",
   description: "Forget all commands in the game.",
   category: "Admin",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     await player.update({ unlockedCommands: [] });
 
     return game.reply(message, "forgot all commands :white_check_mark:");

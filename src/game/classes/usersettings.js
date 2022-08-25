@@ -1,5 +1,3 @@
-import game from "../../functions/format/titleCase.js";
-
 class Setting {
   constructor(object) {
     for (const [key, value] of Object.entries(object)) {

@@ -5,7 +5,7 @@ export default {
   description: "List all your items.",
   category: "Player",
   useInCombat: true,
-  async execute(message, args, prisma, config, player, game, server, client) {
+  async execute(message, args, config, player, server) {
     let items = await player.getItems();
 
     // Create variables for modifying page
@@ -343,15 +343,7 @@ export default {
 
     // Run iteminfo command
     async function itemInfo(selection) {
-      return await game.runCommand(
-        "iteminfo",
-        client,
-        message,
-        [selection],
-        prisma,
-        game,
-        server
-      );
+      return await game.runCommand("iteminfo", message, [selection], server);
     }
   },
 };

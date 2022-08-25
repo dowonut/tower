@@ -4,14 +4,14 @@ export default {
   arguments: "<stat> $ <quantity>|all",
   description: "Level up a stat using stat points.",
   category: "Player",
-  async execute(message, args, prisma, config, player, game, server) {
+  async execute(message, args, config, player, server) {
     const variables = args.join(" ").split("$");
 
     const statInput = variables[0].trim().toLowerCase();
     const quantityInput = variables[1];
 
     // Check for valid quantity
-    let quantity = game.checkQuantity(quantityInput, game, message);
+    let quantity = game.checkQuantity(quantityInput, message);
     if (!quantity) return;
 
     // Check if item name provided
