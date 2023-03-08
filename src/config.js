@@ -1,3 +1,4 @@
+// This is the config file!
 export const prefix = "-";
 export const status = prefix + "help";
 export const towerColor = 0xdbbbff;
