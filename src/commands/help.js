@@ -85,7 +85,7 @@ ${config.emojis.bullet} **Admin**
       if (command.arguments)
         commandName = `${command.name} ${command.arguments}`;
 
-      const template = `**${server.prefix}${commandName}** | ${command.description}\n`;
+      const template = `**\`${server.prefix}${commandName}\`** | ${command.description}\n`;
 
       if (!command.category) {
         categories.General += template;
