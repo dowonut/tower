@@ -19,9 +19,7 @@
     "nodemon": "^2.0.19",
     "npm": "^8.17.0",
     "npm-check-updates": "^16.0.5",
+    "prisma": "^4.6.1",
     "reflect-metadata": "^0.1.13"
-  },
-  "devDependencies": {
-    "prisma": "^4.2.1"
   }
 }
