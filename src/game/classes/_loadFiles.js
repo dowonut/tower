@@ -16,6 +16,8 @@ export async function loadFiles(folder, Class) {
 
   let items = [];
   for (const file of files) {
+    // Check if file is valid before continuing
+    if (!file.endsWith(".js")) continue;
     // Import file
     const { default: item } = await import(`../../../${file}`);
     // Check if file contains data
