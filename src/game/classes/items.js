@@ -1,6 +1,7 @@
 import { loadFiles } from "./_loadFiles.js";
 import fs from "fs";
 import * as config from "../../config.js";
+import * as game from "../../functions/index.js";
 
 class Item {
   constructor(object) {

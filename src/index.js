@@ -1,3 +1,4 @@
+// @ts-check
 // Discord packages
 import Discord from "discord.js";
 import { REST } from "@discordjs/rest";
@@ -20,9 +21,17 @@ dotenv.config();
 import * as config from "./config.js";
 // Game files
 import allEvents from "./game/classes/events.js";
+// Functions
+import * as functions from "./functions/index.js";
 
+// functions.runCommand({});
+// functions.actionRow("buttons", [{ style: "primary" }]);
+
+// Initialise clients
 const prisma = new PrismaClient();
-
+/**
+ * @property {Array} commands - Yeah
+ */
 const client = new Client({ intents: new IntentsBitField(36363) });
 
 client.commands = new Discord.Collection();
@@ -33,6 +42,11 @@ let game = new Object();
 
 // Collect commands
 let commandFiles = [];
+/**
+ * Import files through directory
+ * @param {string} directory
+ * @param {Array} array
+ */
 function throughDirectory(directory, array) {
   fs.readdirSync(directory).forEach((file) => {
     const absolute = path.join(directory, file);
@@ -65,11 +79,16 @@ const events = game.events;
 
 // On message sent
 client.on("messageCreate", async (message) => {
+  // Check if message has a guild attached
+  if (!message.guild)
+    return console.log("ERROR: Message did not contain a guild.");
+
   // Create or fetch server in database
   let server = await prisma.server.findUnique({
     where: { serverId: message.guild.id },
   });
 
+  // Create new server in database if doesn't exist
   if (!server) {
     server = await prisma.server.create({
       data: { serverId: message.guild.id },
