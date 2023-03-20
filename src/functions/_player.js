@@ -7,10 +7,13 @@ import tutorials from "../game/classes/tutorials.js";
 import recipes from "../game/classes/recipes.js";
 import merchants from "../game/classes/merchants.js";
 
-import { game, config } from "../tower.js";
+import { game, config, client, prisma } from "../tower.js";
 
-export default {
-  // Test
+const player = {
+  /**
+   * Test function!
+   * @return Nothing
+   */
   test: function () {
     console.log("test");
   },
@@ -918,3 +921,5 @@ export default {
     await this.addExplore(message, server, "merchant", merchantC);
   },
 };
+
+export default player;

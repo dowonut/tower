@@ -3,12 +3,14 @@ import path from "path";
 import { PermissionsBitField } from "discord.js";
 const ADMIN = PermissionsBitField.Flags.Administrator;
 
+/** @type {Command} */
 export default {
   name: "help",
+  description: "Get help!",
   aliases: ["h"],
   useInCombat: true,
   ignoreInHelp: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     let commands = [];
     let commandFiles = [];
     const authorPerms = message.channel.permissionsFor(message.author);

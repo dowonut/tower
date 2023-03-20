@@ -8,4 +8,5 @@ import * as configOptions from "./config.js";
 export const game = functions;
 export const config = configOptions;
 export const prisma = new PrismaClient();
+/** @type {*} */
 export const client = new Client({ intents: new IntentsBitField(36363) });

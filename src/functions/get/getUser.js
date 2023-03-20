@@ -1,46 +1,20 @@
-// export default {
-//   /** This is a cool function
-//    * @global
-//    * @constructor
-//    * @param {object} object - Settings object.
-//    * @param {string} [object.id] - User Discord id.
-//    * @param {object} [object.message] - User Discord message.
-//    *
-//    * @return {object} User object.
-//    */
-//   getUser: async (object) => {
-//     // Check if id provided
-//     if (!object.message && !object.id)
-//       return console.log("Must provide either message or id.");
+import { prisma } from "../../tower.js";
 
-//     const playerId = object.id ? object.id : object.message.author.id;
-
-//     const user = await prisma.user.findUnique({
-//       where: { discordId: playerId },
-//     });
-//     if (!user) return undefined;
-
-//     return user;
-//   },
-// };
-
-/** This is a cool function
- * @global
- * @param {object} object - Settings object.
- * @param {string} [object.id] - User Discord id.
- * @param {object} [object.message] - User Discord message.
- * @param {*} object.prisma - Prisma client.
+/** Get a user.
+ * @param {object} args - Parameters.
+ * @param {string} [args.discordId] - User Discord id.
+ * @param {object} [args.message] - User Discord message.
  *
- * @return {Promise<object>} User object.
+ * @return {Promise<object>} User args.
  */
-export default async function getUser(object) {
+export default async function getUser(args) {
   // Check if id provided
-  if (!object.message && !object.id)
+  if (!args.message && !args.discordId)
     return console.log("Must provide either message or id.");
 
-  const playerId = object.id ? object.id : object.message.author.id;
+  const playerId = args.discordId ? args.discordId : args.message.author.id;
 
-  const user = await object.prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { discordId: playerId },
   });
   if (!user) return undefined;

@@ -1,50 +1,33 @@
 import { game, config } from "../tower.js";
 
+/** @type {Command} */
 export default {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
   //  category: "General",
   useInCombat: true,
-  async execute(message, args, player, object) {
+  async execute(message, args, player, server) {
     if (args[0] && args[0].startsWith("<@")) {
       const user = message.mentions.users.first();
 
       // fetch player data when pinging
       if (user) {
         player = await game.getPlayer({
-          id: user.id,
-          server: object.server,
+          discordId: user.id,
+          server: server,
           message: message,
         });
 
-        if (!player) return game.error(message, "this user has no character.");
+        if (!player)
+          return game.error({
+            message,
+            content: "this user has no character.",
+          });
       }
     }
 
     const { embedVariable: format } = game;
-
-    //     // format profile embed
-    //     let rawText = `
-    // NAME LEVEL
-    // NAME XP
-    // PROGRESS
-
-    // EMOJI HEALTH
-
-    // EMOJI MARKS
-
-    // EMOJI FLOOR`;
-
-    //     if (player.level > 0)
-    //       rawText += `\n
-    // EMOJI STRENGTH
-    // EMOJI DEFENCE
-    // EMOJI ARCANE
-    // EMOJI VITALITY`;
-
-    //     // Create description
-    //     let description = game.description(rawText, player, config, game);
 
     // define all variables
     const { level, xp, health, maxHealth, floor, marks } = player;
@@ -101,7 +84,7 @@ export default {
     };
 
     // Unlock new commands
-    player.unlockCommands(message, object.server, [
+    player.unlockCommands(message, server, [
       "inventory",
       "equipment",
       "region",
@@ -117,7 +100,11 @@ export default {
     const row = game.actionRow("buttons", buttons);
 
     // Send embed
-    const reply = await game.sendEmbed(message, embed, undefined, [row]);
+    const reply = await game.send({
+      message,
+      embeds: [embed],
+      components: [row],
+    });
 
     // Create collector
     game.componentCollector(message, reply, buttons);
@@ -132,7 +119,7 @@ export default {
           function: () => {
             sentInventory = true;
             updateButtons();
-            return game.runCommand("inventory", message, [], object.server);
+            return game.runCommand("inventory", { message, server });
           },
         },
         {
@@ -143,7 +130,7 @@ export default {
           function: () => {
             sentEquipment = true;
             updateButtons();
-            return game.runCommand("equipment", message, [], object.server);
+            return game.runCommand("inventory", { message, server });
           },
         },
       ];

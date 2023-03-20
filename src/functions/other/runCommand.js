@@ -7,18 +7,16 @@ import { game, config, client, prisma } from "../../tower.js";
 
 /**
  * Execute a command on behalf of a user.
- * @param {object} object
- * @param {string} object.commandName - Name of command.
- * @param {Array<string>} object.args - Command arguments.
+ * @param {string} commandName - Name of command.
+ * @param {object} object - More settings.
+ * @param {Array<string>} [object.args] - Command arguments.
  * @param {Discord.Message} object.message - User message object.
  * @param {object} object.server - Current server object.
- * @param {Discord.Collection} object.commands - Commands collection.
- * @param {Discord.Collection} object.cooldowns - Cooldowns collection.
  * @returns Nothing
  */
-export default async function runCommand(object) {
+export default async function runCommand(commandName, object) {
   // Extract variables
-  const { commandName, message, server, commands, cooldowns, args } = object;
+  const { message, server, args = [] } = object;
 
   return new Promise(async (resolve) => {
     // Return if command isn't sent in guild text channel
@@ -26,19 +24,21 @@ export default async function runCommand(object) {
 
     // Get command by name
     const command =
-      commands.get(commandName) ||
-      commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
+      client.commands.get(commandName) ||
+      client.commands.find(
+        (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+      );
 
     // Return if no command found
     if (!command) return;
 
     // Create new collection if no cooldown found
-    if (!cooldowns.has(command.name)) {
-      cooldowns.set(command.name, new Discord.Collection());
+    if (!client.cooldowns.has(command.name)) {
+      client.cooldowns.set(command.name, new Discord.Collection());
     }
 
     const now = Date.now();
-    const timestamps = cooldowns.get(command.name);
+    const timestamps = client.cooldowns.get(command.name);
     const cooldownAmount = (command.cooldown || 0) * 1000;
 
     // Check if user has permission to run the command
@@ -46,23 +46,33 @@ export default async function runCommand(object) {
       message.channel.permissionsFor(message.author) || new Map();
     if (command.permissions) {
       if (!authorPerms || !authorPerms.has(command.permissions)) {
-        return game.error("you're not worthy of this command.");
+        return game.error({
+          message,
+          content: "you're not worthy of this command.",
+        });
       }
     }
 
     // Fetch player object
-    let player = await game.getPlayer({ message, server, prisma });
+    let player = await game.getPlayer({ message, server });
 
     // Check if user has player character
     if (command.needChar !== false && !player) {
-      return game.reply(message, `get started with \`${server.prefix}begin\``);
+      return game.send({
+        message,
+        ping: true,
+        content: `get started with \`${server.prefix}begin\``,
+      });
     }
 
     // Make object null if no player data
     if (player) {
       // Check if user is admin
       if (command.category == "Admin" && !authorPerms.has(ADMIN)) {
-        return game.error(message, `this command requires admin permissions.`);
+        return game.error({
+          message,
+          content: `this command requires admin permissions.`,
+        });
       }
 
       // Check if command is unlocked
@@ -70,17 +80,23 @@ export default async function runCommand(object) {
         !player.unlockedCommands.includes(command.name) &&
         !authorPerms.has(ADMIN)
       ) {
-        return game.error(message, `you haven't unlocked this command yet.`);
+        return game.error({
+          message,
+          content: `you haven't unlocked this command yet.`,
+        });
       }
 
       // Check if user is in combat
       if (player.inCombat == false && command.useInCombatOnly == true) {
-        return game.error(message, `this command can only be used in combat.`);
+        return game.error({
+          message,
+          content: `this command can only be used in combat.`,
+        });
       }
 
       // Check if user is allowed to attack in combat
       if (player.canAttack == false && command.useInCombatOnly == true) {
-        return game.error(message, `you can't do this right now.`);
+        return game.error({ message, content: `you can't do this right now.` });
       }
 
       if (
@@ -89,10 +105,10 @@ export default async function runCommand(object) {
         command.useInCombatOnly !== true &&
         command.category !== "Admin"
       ) {
-        return game.error(
+        return game.error({
           message,
-          `this command can't be used while in combat.`
-        );
+          content: `this command can't be used while in combat.`,
+        });
       }
     }
 
@@ -100,9 +116,10 @@ export default async function runCommand(object) {
     if (timestamps.has(message.author.id)) {
       const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
       if (now < expirationTime) {
-        return message.channel.send(
-          `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`
-        );
+        return game.send({
+          message,
+          content: `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`,
+        });
       }
     }
 
@@ -111,7 +128,7 @@ export default async function runCommand(object) {
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
     // Set arguments
-    const commandsArgs = [message, args, player, { server, client, prisma }];
+    const commandsArgs = [message, args, player, server];
 
     // Try to run the command
     try {

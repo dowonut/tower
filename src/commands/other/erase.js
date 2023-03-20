@@ -1,10 +1,14 @@
+import { game, prisma, config } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "erase",
   description: "Completely reset your character.",
   cooldown: "60",
-  category: "Other",
+  category: "other",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
+    /** @type {ComponentButton[]} */
     const buttons = [
       {
         id: "yes",
@@ -26,10 +30,12 @@ export default {
 
     const row = game.actionRow("buttons", buttons);
 
-    const reply = await message.reply({
+    const reply = await game.send({
+      message,
       content:
         "**`Are you sure you want to permanently erase your character?`**",
       components: [row],
+      reply: true,
     });
 
     const result = await game.componentCollector(message, reply, buttons);
@@ -40,7 +46,7 @@ export default {
       await player.erase();
 
       // Create new player with unlocked commands
-      await game.createPlayer(message.author, player.unlockedCommands);
+      await game.createPlayer(message.author, player.unlockedCommands, server);
       return await reply.edit({
         content: "**`Reset complete`**",
         components: [],

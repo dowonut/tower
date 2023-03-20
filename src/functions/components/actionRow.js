@@ -2,27 +2,19 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
 } from "discord.js";
 
 /**
- * A component button.
- * @typedef {object} Button
- * @property {string} id - Button id.
- * @property {string} label - Button label.
- * @property {"primary"|"secondary"|"success"|"danger"|"link"} style - Button style.
- */
-
-/**
- *
+ * Create Discord action row for components.
  * @param {"buttons"|"menu"} type
- * @param {Array.<Button>} components
- * @returns
+ * @param {Array<ComponentButton>|SelectMenu} components
+ * @returns Row.
  */
 export default function actionRow(type, components) {
-  if (!components || components.length < 1) return undefined;
+  if (!components) return undefined;
 
-  if (type == "buttons") {
+  if (type == "buttons" && Array.isArray(components)) {
     const row = new ActionRowBuilder();
 
     for (const component of components) {
@@ -50,7 +42,8 @@ export default function actionRow(type, components) {
 
       const button = new ButtonBuilder();
 
-      if (!component.id) return console.error("Must provide an id.");
+      if (!component.id && component.style !== "link")
+        return console.error("Must provide an id.");
 
       if (!component.label && !component.emoji)
         return console.error("Must provide either label or emoji.");
@@ -60,16 +53,22 @@ export default function actionRow(type, components) {
 
       if (component.label) button.setLabel(component.label);
       if (component.emoji) button.setEmoji(component.emoji);
-      button.setCustomId(component.id);
+      if (component.style !== "link") {
+        button.setCustomId(component.id);
+      } else {
+        if (!component.url)
+          return console.error("Must provide URL for link button.");
+        button.setURL(component.url);
+      }
       button.setStyle(buttonStyle);
 
       row.addComponents(button);
     }
 
     return row;
-  } else if (type == "menu") {
+  } else if (type == "menu" && !Array.isArray(components)) {
     const row = new ActionRowBuilder().addComponents(
-      new SelectMenuBuilder()
+      new StringSelectMenuBuilder()
         .setCustomId(components.id)
         .setPlaceholder(components.placeholder)
         .addOptions(...components.options)

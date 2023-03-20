@@ -1,25 +1,24 @@
 import { game, prisma } from "../../tower.js";
 
 /**
- * Get player from database.
- * @param {object} object
- * @param {*} [object.message] - Message object.
- * @param {string} [object.id] - User Discord id.
- * @param {*} object.server - Server object.
- * @returns Player object.
+ * Get player.
+ * @param {object} args
+ * @param {*} [args.message] - Message args.
+ * @param {string} [args.discordId] - User Discord id.
+ * @param {*} args.server - Server args.
+ * @returns {Promise<typeof game._player>} Player args.
  */
-export default async function getPlayer(object) {
-  const { message, id, server } = object;
+export default async function getPlayer(args) {
+  const { message, discordId, server } = args;
 
   // Check if id provided
-  if (!object.message && !object.id)
-    return console.log("Must provide either message or id.");
+  if (!args.message && !args.discordId) return;
 
   // Set player id
-  const playerId = id ? id : message.author.id;
+  const playerId = discordId ? discordId : message.author.id;
 
   // Get user
-  const user = await game.getUser({ id: playerId, prisma });
+  const user = await game.getUser({ discordId: playerId });
 
   // Get player from database
   let playerData = await prisma.player.findUnique({
@@ -30,10 +29,9 @@ export default async function getPlayer(object) {
 
   let player = { ...playerData, ...game._player };
 
-  if (object.message) player.message = object.message;
-  if (object.server) player.server = object.server;
+  if (message) player.message = message;
+  if (server) player.server = server;
   if (user) player.user = user;
-  -console.log(player);
 
   return player;
 }
