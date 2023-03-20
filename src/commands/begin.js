@@ -1,14 +1,18 @@
+import { game, config, client, prisma } from "../tower.js";
+
+/** @type {Command} */
 export default {
   name: "begin",
   description: "Start the game by creating a character.",
   needChar: false,
   ignoreInHelp: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     const auth = message.author;
 
-    if (player) return game.error(message, "you already have a character.");
+    if (player)
+      return game.error({ message, content: "you already have a character." });
 
-    player = await game.createPlayer(auth);
+    player = await game.createPlayer(auth, server);
 
     const embed = {
       thumbnail: { url: player.pfp },
@@ -21,16 +25,19 @@ export default {
     let usedExplore = false;
 
     // Create button menu
-    const menu = new game.menu(getButtons);
+    const buttons = getButtons();
+    const row = game.actionRow("buttons", buttons);
 
     // Send reply
-    const reply = await message.reply({
+    const botMsg = await game.send({
+      message,
       embeds: [embed],
-      components: [menu.row],
+      components: [row],
+      reply: true,
     });
 
     // Create collector
-    await menu.collector(message, reply);
+    await game.componentCollector(message, botMsg, buttons);
 
     // Function for getting buttons
     function getButtons() {
@@ -41,8 +48,7 @@ export default {
           disable: usedProfile ? true : false,
           function: async () => {
             usedProfile = true;
-            await menu.updateButtons(reply);
-            return game.runCommand("profile", message, [], server);
+            return game.runCommand("profile", { message, server });
           },
         },
         {
@@ -51,8 +57,7 @@ export default {
           disable: usedExplore ? true : false,
           function: async () => {
             usedExplore = true;
-            await menu.updateButtons(reply);
-            return game.runCommand("explore", message, [], server);
+            return game.runCommand("explore", { message, server });
           },
         },
       ];

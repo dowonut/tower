@@ -2,16 +2,11 @@
 import Discord from "discord.js";
 import { REST } from "@discordjs/rest";
 import {
-  Client,
-  IntentsBitField,
   ContextMenuCommandBuilder,
   ApplicationCommandType,
   Routes,
   ActivityType,
 } from "discord.js";
-// Prisma packages
-// import pkg from "@prisma/client";
-// const { PrismaClient } = pkg;
 // File handling
 import fs from "fs";
 import path from "path";
@@ -21,8 +16,8 @@ dotenv.config();
 import allEvents from "./game/classes/events.js";
 import { game, config, prisma, client } from "./tower.js";
 
-const commands = new Discord.Collection();
-const cooldowns = new Discord.Collection();
+client.commands = new Discord.Collection();
+client.cooldowns = new Discord.Collection();
 
 // Define main variables
 const events = game.events;
@@ -48,7 +43,7 @@ for (const file of commandFiles) {
   // Check if file is valid before continuing
   if (!file.endsWith(".js")) continue;
   const { default: command } = await import(`../${file}`);
-  commands.set(command.name, command);
+  client.commands.set(command.name, command);
 }
 
 // On message sent
@@ -79,14 +74,7 @@ client.on("messageCreate", async (message) => {
     const commandName = args.shift().toLowerCase();
 
     // Run the command
-    await game.runCommand({
-      commandName,
-      args,
-      message,
-      server,
-      commands,
-      cooldowns,
-    });
+    await game.runCommand(commandName, { args, message, server });
   }
 });
 
@@ -156,17 +144,7 @@ client.on("interactionCreate", async (interaction) => {
   message.author = interaction.user;
 
   // Run the command
-  await game.runCommand({
-    client,
-    commandName,
-    args: [],
-    message,
-    game,
-    server,
-    prisma,
-    commands,
-    cooldowns,
-  });
+  await game.runCommand(commandName, { message, server });
 });
 
 // Initialise all events
