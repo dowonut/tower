@@ -26,12 +26,12 @@
 
 /** This is a cool function
  * @global
- * @constructor
  * @param {object} object - Settings object.
  * @param {string} [object.id] - User Discord id.
  * @param {object} [object.message] - User Discord message.
+ * @param {*} object.prisma - Prisma client.
  *
- * @return {object} User object.
+ * @return {Promise<object>} User object.
  */
 export default async function getUser(object) {
   // Check if id provided
@@ -40,7 +40,7 @@ export default async function getUser(object) {
 
   const playerId = object.id ? object.id : object.message.author.id;
 
-  const user = await prisma.user.findUnique({
+  const user = await object.prisma.user.findUnique({
     where: { discordId: playerId },
   });
   if (!user) return undefined;

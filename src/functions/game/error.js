@@ -1,25 +1,36 @@
 import * as config from "../../config.js";
 
-export default {
-  error: (message, content, boolean = true) => {
-    // Format reply contents
-    const uContent = content.charAt(0).toUpperCase() + content.slice(1);
+/**
+ * Send error message to Discord.
+ * @param {object} object
+ * @param {object} object.message - Discord user message.
+ * @param {string} object.content - Error message content.
+ */
+export default async function error(object) {
+  if (!object.content || !object.message) return;
 
-    const embed = {
-      description: `:x: ${uContent}`,
-      color: config.red,
-    };
+  const { content, message } = object;
 
-    if (boolean) {
-      var messageRef = { embeds: [embed] };
-    } else {
-      var messageRef = {
-        content: `:x: **${message.author.username}**, ${content}`,
-      };
-    }
+  // Format reply contents
+  const uContent = content.charAt(0).toUpperCase() + content.slice(1);
 
-    if (!message.replied) return message.reply(messageRef);
+  const embed = {
+    description: `:x: ${uContent}`,
+    color: config.red,
+  };
 
-    return message.followUp(messageRef);
-  },
-};
+  const messageObject = {};
+  messageObject.embeds = [embed];
+
+  // if (boolean) {
+  //   var messageRef = { embeds: [embed] };
+  // } else {
+  //   var messageRef = {
+  //     content: `:x: **${message.author.username}**, ${content}`,
+  //   };
+  // }
+
+  if (!message.replied) return await message.reply(messageObject);
+
+  return await message.followUp(messageObject);
+}

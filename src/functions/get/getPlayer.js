@@ -1,34 +1,39 @@
-export default {
-  /** This is a function to get a player. */
-  getPlayer: async function (object) {
-    // Check if id provided
-    if (!object.message && !object.id)
-      return console.log("Must provide either message or id.");
+import { game, prisma } from "../../tower.js";
 
-    // Set player id
-    const playerId = object.id ? object.id : object.message.author.id;
+/**
+ * Get player from database.
+ * @param {object} object
+ * @param {*} [object.message] - Message object.
+ * @param {string} [object.id] - User Discord id.
+ * @param {*} object.server - Server object.
+ * @returns Player object.
+ */
+export default async function getPlayer(object) {
+  const { message, id, server } = object;
 
-    // Get user
-    const user = await game.getUser({ id: playerId });
+  // Check if id provided
+  if (!object.message && !object.id)
+    return console.log("Must provide either message or id.");
 
-    // Get player from database
-    let playerData = await prisma.player.findUnique({
-      where: { discordId: playerId },
-    });
-    // Check if player has entry in database
-    if (!playerData) return undefined;
+  // Set player id
+  const playerId = id ? id : message.author.id;
 
-    let player = { ...playerData, ...game.player };
+  // Get user
+  const user = await game.getUser({ id: playerId, prisma });
 
-    if (object.message) player.message = object.message;
-    if (object.server) player.server = object.server;
-    if (user) player.user = user;
+  // Get player from database
+  let playerData = await prisma.player.findUnique({
+    where: { discordId: playerId },
+  });
+  // Check if player has entry in database-
+  if (!playerData) return undefined;
 
-    return player;
-  },
-};
+  let player = { ...playerData, ...game._player };
 
-// Possible parameters:
-// id: player id
-// message: message that triggered function
-// server: server model from database
+  if (object.message) player.message = object.message;
+  if (object.server) player.server = object.server;
+  if (user) player.user = user;
+  -console.log(player);
+
+  return player;
+}

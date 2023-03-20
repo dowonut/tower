@@ -38,3 +38,4 @@ export { default as weightedRandom } from "./math/weightedRandom.js";
 export { default as events } from "./other/events.js";
 export { default as runCommand } from "./other/runCommand.js";
 export { default as test } from "./other/test.js";
+export { default as send } from "./send.js";
