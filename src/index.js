@@ -1,4 +1,3 @@
-// @ts-check
 // Discord packages
 import Discord from "discord.js";
 import { REST } from "@discordjs/rest";
@@ -8,37 +7,25 @@ import {
   ContextMenuCommandBuilder,
   ApplicationCommandType,
   Routes,
+  ActivityType,
 } from "discord.js";
 // Prisma packages
-import pkg from "@prisma/client";
-const { PrismaClient } = pkg;
+// import pkg from "@prisma/client";
+// const { PrismaClient } = pkg;
 // File handling
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
-// Config
-import * as config from "./config.js";
 // Game files
 import allEvents from "./game/classes/events.js";
-// Functions
-import * as functions from "./functions/index.js";
+import { game, config, prisma, client } from "./tower.js";
 
-// functions.runCommand({});
-// functions.actionRow("buttons", [{ style: "primary" }]);
+const commands = new Discord.Collection();
+const cooldowns = new Discord.Collection();
 
-// Initialise clients
-const prisma = new PrismaClient();
-/**
- * @property {Array} commands - Yeah
- */
-const client = new Client({ intents: new IntentsBitField(36363) });
-
-client.commands = new Discord.Collection();
-client.cooldowns = new Discord.Collection();
-
-// Main game object
-let game = new Object();
+// Define main variables
+const events = game.events;
 
 // Collect commands
 let commandFiles = [];
@@ -58,24 +45,11 @@ function throughDirectory(directory, array) {
 throughDirectory("./src/commands", commandFiles);
 
 for (const file of commandFiles) {
+  // Check if file is valid before continuing
+  if (!file.endsWith(".js")) continue;
   const { default: command } = await import(`../${file}`);
-  client.commands.set(command.name, command);
+  commands.set(command.name, command);
 }
-
-// Collect functions
-let functionFiles = [];
-throughDirectory("./src/functions", functionFiles);
-
-for (const file of functionFiles) {
-  const { default: gameFunction } = await import(`../${file}`);
-  game = { ...game, ...gameFunction };
-}
-// Define global variable with all functions
-global.game = game;
-global.prisma = prisma;
-global.client = client;
-// Get events
-const events = game.events;
 
 // On message sent
 client.on("messageCreate", async (message) => {
@@ -99,30 +73,42 @@ client.on("messageCreate", async (message) => {
   if (!message.content.startsWith(server.prefix) || message.author.bot) return;
 
   // Create command and arguments
+  /** @type {*} */
   const args = message.content.slice(server.prefix.length).trim().split(/ +/);
-  const commandName = args.shift().toLowerCase();
+  if (args.length > 0) {
+    const commandName = args.shift().toLowerCase();
 
-  // Run the command
-  await game.runCommand(commandName, message, args, server, client);
+    // Run the command
+    await game.runCommand({
+      commandName,
+      args,
+      message,
+      server,
+      commands,
+      cooldowns,
+    });
+  }
 });
 
 // On bot ready
 client.on("ready", () => {
-  // Set user activity
-  client.user.setActivity(config.status, {
-    type: "WATCHING",
-  });
+  if (client.user) {
+    // Set user activity
+    client.user.setActivity(config.status, {
+      type: ActivityType.Watching,
+    });
 
-  console.log(`> ${client.user.username} has logged in.`);
+    console.log(`> ${client.user.username} has logged in.`);
+  }
 });
 
 // Login bot
 client.login(process.env.BOT_TOKEN);
 
-const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN);
+const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN || "");
 
 // Create slash commands
-const commands = [
+const slashCommands = [
   new ContextMenuCommandBuilder()
     .setName("Explore")
     .setType(ApplicationCommandType.Message),
@@ -132,7 +118,7 @@ const commands = [
 (async () => {
   try {
     await rest.put(Routes.applicationCommands("855569016810373140"), {
-      body: commands,
+      body: slashCommands,
     });
     console.log("> Loaded application commands.");
   } catch (error) {
@@ -144,6 +130,7 @@ const commands = [
 client.on("interactionCreate", async (interaction) => {
   // Check if interaction is a context menu
   if (!interaction.isMessageContextMenuCommand()) return;
+  if (!interaction.guildId) return;
 
   // Create or fetch server in database
   let server = await prisma.server.findUnique({
@@ -164,11 +151,22 @@ client.on("interactionCreate", async (interaction) => {
     ephemeral: true,
   });
 
+  /** @type {*} */
   const message = interaction;
   message.author = interaction.user;
 
   // Run the command
-  await game.runCommand(commandName, message, [], server, client);
+  await game.runCommand({
+    client,
+    commandName,
+    args: [],
+    message,
+    game,
+    server,
+    prisma,
+    commands,
+    cooldowns,
+  });
 });
 
 // Initialise all events
@@ -182,3 +180,4 @@ for (const event of allEvents) {
     }
   });
 }
+export * from "./tower.js";

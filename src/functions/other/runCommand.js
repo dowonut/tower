@@ -1,29 +1,38 @@
 import Discord from "discord.js";
+import pkg from "@prisma/client";
 import { PermissionsBitField } from "discord.js";
 const ADMIN = PermissionsBitField.Flags.Administrator;
 
-import * as config from "../../config.js";
+import { game, config, client, prisma } from "../../tower.js";
 
 /**
  * Execute a command on behalf of a user.
- * @param {object} args
- * @param {object} args.client - Discord client object.
- * @param {string} args.commandName - Name of command.
+ * @param {object} object
+ * @param {string} object.commandName - Name of command.
+ * @param {Array<string>} object.args - Command arguments.
+ * @param {Discord.Message} object.message - User message object.
+ * @param {object} object.server - Current server object.
+ * @param {Discord.Collection} object.commands - Commands collection.
+ * @param {Discord.Collection} object.cooldowns - Cooldowns collection.
  * @returns Nothing
  */
-export default async function runCommand(args) {
+export default async function runCommand(object) {
+  // Extract variables
+  const { commandName, message, server, commands, cooldowns, args } = object;
+
   return new Promise(async (resolve) => {
+    // Return if command isn't sent in guild text channel
+    if (message.channel.type !== Discord.ChannelType.GuildText) return;
+
     // Get command by name
     const command =
-      client.commands.get(commandName) ||
-      client.commands.find(
-        (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
-      );
+      commands.get(commandName) ||
+      commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
 
+    // Return if no command found
     if (!command) return;
 
-    const { cooldowns } = client;
-
+    // Create new collection if no cooldown found
     if (!cooldowns.has(command.name)) {
       cooldowns.set(command.name, new Discord.Collection());
     }
@@ -33,14 +42,16 @@ export default async function runCommand(args) {
     const cooldownAmount = (command.cooldown || 0) * 1000;
 
     // Check if user has permission to run the command
-    const authorPerms = message.channel.permissionsFor(message.author);
+    const authorPerms =
+      message.channel.permissionsFor(message.author) || new Map();
     if (command.permissions) {
       if (!authorPerms || !authorPerms.has(command.permissions)) {
         return game.error("you're not worthy of this command.");
       }
     }
 
-    let player = await game.getPlayer({ message: message, server: server });
+    // Fetch player object
+    let player = await game.getPlayer({ message, server, prisma });
 
     // Check if user has player character
     if (command.needChar !== false && !player) {
@@ -67,7 +78,7 @@ export default async function runCommand(args) {
         return game.error(message, `this command can only be used in combat.`);
       }
 
-      // check if user is allowed to attack in combat
+      // Check if user is allowed to attack in combat
       if (player.canAttack == false && command.useInCombatOnly == true) {
         return game.error(message, `you can't do this right now.`);
       }
@@ -95,11 +106,12 @@ export default async function runCommand(args) {
       }
     }
 
+    // Update command cooldown for user
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
     // Set arguments
-    const commandsArgs = [message, args, config, player, server, client];
+    const commandsArgs = [message, args, player, { server, client, prisma }];
 
     // Try to run the command
     try {

@@ -1,18 +1,12 @@
+import { game, config } from "../tower.js";
+
 export default {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
   //  category: "General",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
-    // update user info if outdated
-    if (
-      player.username !== message.author.username ||
-      player.discriminator !== message.author.discriminator
-    ) {
-      await game.updateInfo(message.author, player);
-    }
-
+  async execute(message, args, player, object) {
     if (args[0] && args[0].startsWith("<@")) {
       const user = message.mentions.users.first();
 
@@ -20,7 +14,7 @@ export default {
       if (user) {
         player = await game.getPlayer({
           id: user.id,
-          server: server,
+          server: object.server,
           message: message,
         });
 
@@ -107,7 +101,7 @@ export default {
     };
 
     // Unlock new commands
-    player.unlockCommands(message, server, [
+    player.unlockCommands(message, object.server, [
       "inventory",
       "equipment",
       "region",
@@ -126,7 +120,7 @@ export default {
     const reply = await game.sendEmbed(message, embed, undefined, [row]);
 
     // Create collector
-    return game.componentCollector(message, reply, buttons);
+    game.componentCollector(message, reply, buttons);
 
     // Function to get buttons
     function getButtons() {
@@ -138,7 +132,7 @@ export default {
           function: () => {
             sentInventory = true;
             updateButtons();
-            return game.runCommand("inventory", message, [], server);
+            return game.runCommand("inventory", message, [], object.server);
           },
         },
         {
@@ -149,7 +143,7 @@ export default {
           function: () => {
             sentEquipment = true;
             updateButtons();
-            return game.runCommand("equipment", message, [], server);
+            return game.runCommand("equipment", message, [], object.server);
           },
         },
       ];
