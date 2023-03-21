@@ -3,6 +3,8 @@ import path from "path";
 import { PermissionsBitField } from "discord.js";
 const ADMIN = PermissionsBitField.Flags.Administrator;
 
+import { game, config, client, prisma } from "../tower.js";
+
 /** @type {Command} */
 export default {
   name: "help",

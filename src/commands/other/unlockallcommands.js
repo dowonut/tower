@@ -1,13 +1,17 @@
 import fs from "fs";
 import path from "path";
 
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "unlockallcommands",
   aliases: ["uac"],
   arguments: "",
   description: "Unlock all commands in the game.",
-  category: "Other",
-  async execute(message, args, config, player, server) {
+  category: "other",
+  async execute(message, args, player, server) {
+    /** @type {ComponentButton[]} */
     const buttons = [
       {
         id: "yes",
@@ -29,7 +33,9 @@ export default {
 
     const row = game.actionRow("buttons", buttons);
 
-    const reply = await message.reply({
+    const reply = await game.send({
+      message,
+      reply: true,
       content: `
 Are you sure you want to unlock all commands?
 This will skip all tutorials, so it's **only recommended for experienced players.**`,

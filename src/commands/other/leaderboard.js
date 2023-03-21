@@ -1,10 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "leaderboard",
   aliases: ["top", "lb"],
   arguments: "<category>",
   description: "Get top 10 leaderboard for any category.",
-  category: "Other",
-  async execute(message, args, config, player, server) {
+  category: "other",
+  async execute(message, args, player, server) {
     // Define categories
     const categories = [
       { name: "level", alias: "l" },
@@ -59,7 +62,8 @@ export default {
     }
 
     // Check if category exists
-    if (!category) return game.error(message, `not a valid category.`);
+    if (!category)
+      return game.error({ message, content: `not a valid category.` });
 
     // Get all players
     const list = await prisma.player.findMany();
@@ -105,6 +109,6 @@ export default {
     };
 
     // Return and send embed
-    return await game.sendEmbed(message, embed);
+    return await game.send({ message, embeds: [embed] });
   },
 };

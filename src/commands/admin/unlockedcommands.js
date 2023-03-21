@@ -1,13 +1,15 @@
 import fs from "fs";
 import path from "path";
 
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "unlockedcommands",
   aliases: ["uc"],
-  arguments: "",
   description: "Check unlocked commands.",
-  category: "Admin",
-  async execute(message, args, config, player, server) {
+  category: "admin",
+  async execute(message, args, player, server) {
     let commands = [];
     let commandFiles = [];
     function throughDirectory(directory, array) {
@@ -36,6 +38,6 @@ export default {
 
     let embed = { description: description, title: `Unlocked Commands` };
 
-    game.sendEmbed(message, embed);
+    game.send({ message, embeds: [embed] });
   },
 };

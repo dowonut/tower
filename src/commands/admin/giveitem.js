@@ -1,17 +1,20 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "giveitem",
   aliases: ["gi"],
   arguments: "<player> <quantity> <name of item>",
   description: "Give an item to a player.",
-  category: "Admin",
-  async execute(message, args, config, player, server) {
+  category: "admin",
+  async execute(message, args, player, server) {
     if (!args[0]) return invalidArguments(message, game);
     if (!args[1]) return invalidArguments(message, game);
     if (!args[2]) return invalidArguments(message, game);
 
     const user = message.mentions.users.first();
     player = await game.getPlayer({
-      id: user.id,
+      discordId: user.id,
       message: message,
       server: server,
     });

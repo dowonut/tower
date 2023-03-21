@@ -1,15 +1,17 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "ping",
   arguments: "",
   description: "See bot latency.",
-  category: "Admin",
-  async execute(message, args, config, player, server) {
+  category: "admin",
+  async execute(message, args, player, server) {
     const now = Date.now();
 
-    game.reply(
+    game.send({
       message,
-      `Latency is \`${now - message.createdTimestamp}ms\``,
-      false
-    );
+      content: `Latency is \`${now - message.createdTimestamp}ms\``,
+    });
   },
 };

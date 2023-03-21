@@ -1,11 +1,14 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "skills",
   aliases: ["sk", "skill"],
   arguments: "<skill name>",
   description: "See all your skills or one specific skill.",
-  category: "Player",
+  category: "player",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     const input = args.join(" ");
 
     let embed, title;
@@ -42,7 +45,7 @@ export default {
       const skill = await player.getSkill(input);
 
       // Check if skill exists
-      if (!skill) return game.error(message, `not a valid skill.`);
+      if (!skill) return game.error({ message, content: `not a valid skill.` });
 
       // Calculate skill xp and progress bar
       const xp = skill.xp;

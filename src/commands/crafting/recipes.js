@@ -1,16 +1,21 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "recipes",
   aliases: ["re", "recipe"],
-  arguments: "",
   description: "See your unlocked crafting recipes.",
-  category: "Crafting",
+  category: "crafting",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     let recipes = await player.getRecipes();
 
     // Check if player has any recipes
-    if (!recipes[0])
-      return game.error(message, `you haven't learned any recipes yet.`);
+    if (!recipes)
+      return game.error({
+        message,
+        content: `you haven't learned any recipes yet.`,
+      });
 
     const { embed, title } = await getEmbed();
 
@@ -62,13 +67,18 @@ export default {
     }
 
     function getList() {
+      /** @type {SelectMenu} */
       let list = {
         id: "recipemenu",
         placeholder: "Choose an item to craft...",
         options: [],
         function: async (reply, i, selection) => {
           // Run the craft command
-          await game.runCommand("craft", message, [selection], server);
+          await game.runCommand("craft", {
+            message,
+            args: [selection],
+            server,
+          });
           // Get new recipes
           recipes = await player.getRecipes();
           // Update list

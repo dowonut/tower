@@ -41,7 +41,8 @@ export default {
 
     // Function for getting buttons
     function getButtons() {
-      return [
+      /** @type {ComponentButton[]} */
+      const buttons = [
         {
           id: "profile",
           label: "Profile",
@@ -61,6 +62,7 @@ export default {
           },
         },
       ];
+      return buttons;
     }
   },
 };

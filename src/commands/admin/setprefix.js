@@ -1,11 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "setprefix",
   description: "Change the command prefix for your server.",
-  category: "Admin",
+  category: "admin",
   arguments: "<new prefix>",
   aliases: ["sp"],
-  //  permissions: ["ADMINISTRATOR"],
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     const prefix = args[0];
 
     if (!prefix)
@@ -23,6 +25,10 @@ export default {
       data: { prefix: prefix },
     });
 
-    message.channel.send(`Server prefix changed to \`${prefix}\``);
+    game.send({
+      message,
+      content: `Server prefix changed to \`${prefix}\``,
+      reply: true,
+    });
   },
 };

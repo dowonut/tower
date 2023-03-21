@@ -1,11 +1,14 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "stats",
   aliases: ["s"],
   arguments: "",
   description: "Check your current stats.",
-  category: "Player",
+  category: "player",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     // Get stats embed
     const embed = getEmbed(player);
 
@@ -17,6 +20,7 @@ export default {
     const row = game.actionRow("buttons", statButtons);
 
     // Create stat point assignment buttons
+    /** @type {ComponentButton[]} */
     const assignButtons = [
       {
         id: "one",
@@ -43,7 +47,11 @@ export default {
     const assignRow = game.actionRow("buttons", assignButtons);
 
     // Send embed
-    const reply = await game.sendEmbed(message, embed, undefined, [row]);
+    const reply = await game.send({
+      message,
+      embeds: [embed],
+      components: [row],
+    });
 
     // Create collector
     await game.componentCollector(message, reply, statButtons);
@@ -51,7 +59,11 @@ export default {
     // Level up stat
     async function statUp(stat, quantity) {
       // Run stat up command
-      await game.runCommand("statup", message, [stat, "$", quantity], server);
+      await game.runCommand("statup", {
+        message,
+        args: [stat, "$", quantity],
+        server,
+      });
       // Refresh player data
       player = await player.refresh();
 
@@ -77,6 +89,7 @@ export default {
       // Check stat points
       const disable = player.statpoints > 0 ? false : true;
       // Create stat buttons
+      /** @type {ComponentButton[]} */
       let statButtons = [];
       for (const stat of config.stats) {
         statButtons.push({

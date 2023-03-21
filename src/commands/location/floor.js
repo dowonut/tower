@@ -1,12 +1,14 @@
 import floors from "../../game/classes/floors.js";
+import { game, config, client, prisma } from "../../tower.js";
 
+/** @type {Command} */
 export default {
   name: "floor",
   aliases: ["f"],
-  category: "Location",
+  category: "location",
   description: "Show information about your current floor.",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     // Get player floor information
     let floor = floors[player.floor - 1];
 
@@ -78,6 +80,7 @@ export default {
           description: region.description,
         });
       }
+      /** @type {SelectMenu} */
       const menu = {
         id: "menu",
         placeholder: "Choose a region to travel to...",
@@ -93,7 +96,7 @@ export default {
     // Travel to region
     async function travel(regionName) {
       // Run commmand
-      await game.runCommand("travel", message, [regionName], server);
+      await game.runCommand("travel", { message, args: [regionName], server });
 
       // Refresh player info
       player = await player.refresh();

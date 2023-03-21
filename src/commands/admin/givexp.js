@@ -1,10 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "givexp",
   aliases: ["gx"],
   arguments: "<player> <quantity>",
   description: "Give xp to a player.",
-  category: "Admin",
-  async execute(message, args, config, player, server) {
+  category: "admin",
+  async execute(message, args, player, server) {
     if (!args[0]) return invalidArguments(message, game);
     if (!args[1]) return invalidArguments(message, game);
 
@@ -16,7 +19,10 @@ export default {
 
     await player.giveXp(quantity, message, server, game);
 
-    message.channel.send(`Gave **${quantity} XP** to **${user.username}**`);
+    game.send({
+      message,
+      content: `Gave **${quantity} XP** to **${user.username}**`,
+    });
   },
 };
 

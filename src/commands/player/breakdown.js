@@ -1,11 +1,14 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "breakdown",
   aliases: ["br", "bd"],
   arguments: "",
   description: "See a detailed breakdown of all your player stats.",
-  category: "Player",
+  category: "player",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     const input = args.join(" ").toLowerCase();
     let description = ``;
     const bullet = config.emojis.bullet;
@@ -78,7 +81,7 @@ export default {
     // If input provided show specific attack
     else {
       const attack = await player.getAttack(input);
-      if (!attack) return game.error(message, "invalid attack.");
+      if (!attack) return game.error({ message, content: "invalid attack." });
 
       description = await formatDescription({ attack: attack });
 

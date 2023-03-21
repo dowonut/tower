@@ -1,12 +1,16 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "ascend",
   aliases: ["as"],
   description: "Advance to the next floor. Requires 4 key fragments.",
-  category: "Location",
-  async execute(message, args, config, player, server) {
-    game.reply(
+  category: "location",
+  async execute(message, args, player, server) {
+    game.send({
       message,
-      "you don't have all the key fragments to open the door..."
-    );
+      reply: true,
+      content: "you don't have all the key fragments to open the door...",
+    });
   },
 };

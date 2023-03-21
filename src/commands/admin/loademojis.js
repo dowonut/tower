@@ -1,10 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "loademojis",
   aliases: ["le"],
   arguments: "",
   description: "Load all emojis.",
-  category: "Admin",
-  async execute(message, args, config, player, server) {
+  category: "admin",
+  async execute(message, args, player, server) {
     const guilds = client.guilds.cache.map((x) => {
       return { id: x.id, name: x.name, emojis: x.emojis };
     });
@@ -36,6 +39,6 @@ export default {
       description: emojiList,
     };
 
-    game.sendEmbed(message, embed);
+    game.send({ message, embeds: [embed] });
   },
 };

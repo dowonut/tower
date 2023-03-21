@@ -1,10 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "merchants",
   aliases: ["m", "merchant"],
   arguments: "<merchant type>",
   description: "See all merchants on this floor and the items they sell.",
-  category: "Items",
-  async execute(message, args, config, player, server) {
+  category: "items",
+  async execute(message, args, player, server) {
     const input = args.join(" ");
 
     let embed;
@@ -15,10 +18,10 @@ export default {
 
     // Check if player has unlocked any merchants
     if (!merchants)
-      return game.error(
+      return game.error({
         message,
-        `you haven't met any merchants yet. Try exploring the village...`
-      );
+        content: `you haven't met any merchants yet. Try exploring the village...`,
+      });
 
     if (!input) {
       let description = ``;
@@ -44,7 +47,8 @@ export default {
         (x) =>
           x.name == input.toLowerCase() || x.category == input.toLowerCase()
       );
-      if (!merchant) return game.reply(message, "not a valid merchant.");
+      if (!merchant)
+        return game.error({ message, content: "not a valid merchant." });
 
       let description = ``;
       const merchantItems = await game.getMerchantItems(merchant.name, player);

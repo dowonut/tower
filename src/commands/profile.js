@@ -1,4 +1,4 @@
-import { game, config } from "../tower.js";
+import { game, config, prisma, client } from "../tower.js";
 
 /** @type {Command} */
 export default {
@@ -111,7 +111,8 @@ export default {
 
     // Function to get buttons
     function getButtons() {
-      return [
+      /** @type {ComponentButton[]} */
+      const buttons = [
         {
           id: "inventory",
           label: "Inventory",
@@ -125,7 +126,6 @@ export default {
         {
           id: "equipment",
           label: "Equipment",
-          useOnce: true,
           disable: !playerIsAuthor || sentEquipment ? true : false,
           function: () => {
             sentEquipment = true;
@@ -134,6 +134,7 @@ export default {
           },
         },
       ];
+      return buttons;
     }
 
     // Function to update buttons

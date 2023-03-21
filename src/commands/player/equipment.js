@@ -1,10 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "equipment",
   aliases: ["eq", "equip"],
   arguments: "<item name>",
   description: "Check your current equipment or equip a new item.",
-  category: "Player",
-  async execute(message, args, config, player, server) {
+  category: "player",
+  async execute(message, args, player, server) {
     const input = args.join(" ");
 
     if (!input) {
@@ -37,23 +40,24 @@ export default {
         description: description,
       };
 
-      game.sendEmbed(message, embed);
+      game.send({ message, embeds: [embed] });
     } else {
       // If provided arguments for equipping
 
       // Check if item exists
       if (!game.getItem(input))
-        return game.error(message, "this item doesn't exist.");
+        return game.error({ message, content: "this item doesn't exist." });
 
       // Fetch item from inventory
       let item = await player.getItem(input);
 
       // Check if player has item
-      if (!item) return game.error(message, "you don't have this item.");
+      if (!item)
+        return game.error({ message, content: "you don't have this item." });
 
       // Check if item is equippable
       if (!item.equipSlot)
-        return game.error(message, "you can't equip this silly.");
+        return game.error({ message, content: "you can't equip this silly." });
 
       // Get currently equipped item
       const equippedItem = await player.getEquipped(item.equipSlot);
@@ -69,7 +73,11 @@ export default {
           data: { equipped: false },
         });
 
-        return game.reply(message, `unequipped **${item.getName()}**`);
+        return game.send({
+          message,
+          reply: true,
+          content: `unequipped **${item.getName()}**`,
+        });
       }
 
       // Equip item
@@ -92,13 +100,18 @@ export default {
           data: { equipped: false },
         });
 
-        return game.reply(
+        return game.send({
           message,
-          `equipped **${item.getName()}** and unequipped **${equippedItem.getName()}**`
-        );
+          reply: true,
+          content: `equipped **${item.getName()}** and unequipped **${equippedItem.getName()}**`,
+        });
       }
 
-      return game.reply(message, `equipped **${item.getName()}**`);
+      return game.send({
+        message,
+        reply: true,
+        content: `equipped **${item.getName()}**`,
+      });
     }
   },
 };
