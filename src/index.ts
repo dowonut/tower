@@ -70,8 +70,10 @@ client.on("messageCreate", async (message) => {
   if (!message.content.startsWith(server.prefix) || message.author.bot) return;
 
   // Create command and arguments
-  /** @type {*} */
-  const args = message.content.slice(server.prefix.length).trim().split(/ +/);
+  const args: any = message.content
+    .slice(server.prefix.length)
+    .trim()
+    .split(/ +/);
   if (args.length > 0) {
     const commandName = args.shift().toLowerCase();
 
@@ -141,8 +143,7 @@ client.on("interactionCreate", async (interaction) => {
     ephemeral: true,
   });
 
-  /** @type {*} */
-  const message = interaction;
+  const message: any = interaction;
   message.author = interaction.user;
 
   // Run the command
