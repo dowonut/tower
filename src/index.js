@@ -1,3 +1,5 @@
+// auto-barrel-ignore
+
 // Discord packages
 import Discord from "discord.js";
 import { REST } from "@discordjs/rest";
@@ -158,4 +160,3 @@ for (const event of allEvents) {
     }
   });
 }
-export * from "./tower.js";
