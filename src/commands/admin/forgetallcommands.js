@@ -1,15 +1,19 @@
-import fs from "fs";
-import path from "path";
+import { game, config, client, prisma } from "../../tower.js";
 
+/** @type {Command} */
 export default {
   name: "forgetallcommands",
   aliases: ["fac"],
   arguments: "",
   description: "Forget all commands in the game.",
-  category: "Admin",
-  async execute(message, args, config, player, server) {
+  category: "admin",
+  async execute(message, args, player, server) {
     await player.update({ unlockedCommands: [] });
 
-    return game.reply(message, "forgot all commands :white_check_mark:");
+    return game.send({
+      message,
+      content: "forgot all commands :white_check_mark:",
+      reply: true,
+    });
   },
 };

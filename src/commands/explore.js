@@ -1,9 +1,12 @@
+import { game, config, client, prisma } from "../tower.js";
+
+/** @type {Command} */
 export default {
   name: "explore",
   description: "Explore your current floor.",
   aliases: ["e"],
   cooldown: "0",
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     // Get current region
     const region = player.getRegion();
 

@@ -1,28 +1,34 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "eat",
   aliases: ["ea"],
   arguments: "<item name>",
   description: "Eat food you have in your inventory.",
-  category: "Items",
-  async execute(message, args, config, player, server) {
+  category: "items",
+  async execute(message, args, player, server) {
     if (!args[0])
-      return game.error(message, "provide the name of a food item.");
+      return game.error({
+        message,
+        content: "provide the name of a food item.",
+      });
 
     const item = await player.getItem(args.join(" "));
 
     if (!item)
-      return game.error(
+      return game.error({
         message,
-        `not a valid item.\nCheck your items with \`${server.prefix}inventory\``
-      );
+        content: `not a valid item.\nCheck your items with \`${server.prefix}inventory\``,
+      });
 
     if (item.category !== "food")
-      return game.error(message, `this isn't food idiot.`);
+      return game.error({ message, content: `this isn't food idiot.` });
 
     let heal = item.health;
 
     if (player.health == player.maxHealth)
-      return game.error(message, `you are already at max health!`);
+      return game.error({ message, content: `you are already at max health!` });
 
     if (player.health + heal > player.maxHealth)
       heal = player.maxHealth - player.health;
@@ -31,12 +37,13 @@ export default {
 
     await player.giveItem(item.name, -1);
 
-    game.reply(
+    game.send({
       message,
-      `you ate an **${item.getName()}** and healed \`${heal}\` points! | ${
+      reply: true,
+      content: `you ate an **${item.getName()}** and healed \`${heal}\` points! | ${
         config.emojis.health
-      }\`${playerData.health}/${player.maxHealth}\``
-    );
+      }\`${playerData.health}/${player.maxHealth}\``,
+    });
 
     return;
   },

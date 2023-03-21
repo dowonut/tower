@@ -1,11 +1,14 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "region",
   aliases: ["r"],
   arguments: "",
   description: "Get information about your current region.",
-  category: "Location",
+  category: "location",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     const region = player.getRegion();
     const regionName = game.titleCase(region.name);
 

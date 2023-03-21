@@ -1,10 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "craft",
   aliases: ["c"],
   arguments: "<item name>",
   description: "Craft a specific item if you have the recipe.",
-  category: "Crafting",
-  async execute(message, args, config, player, server) {
+  category: "crafting",
+  async execute(message, args, player, server) {
     const input = args.join(" ");
 
     // Check if input for crafting item
@@ -14,10 +17,10 @@ export default {
 
       // Check if recipe is unlocked
       if (!recipe)
-        return game.error(
+        return game.error({
           message,
-          `not a valid recipe.\nCheck your recipes with \`${server.prefix}recipes\``
-        );
+          content: `not a valid recipe.\nCheck your recipes with \`${server.prefix}recipes\``,
+        });
 
       // Check if player has all items required
       let missingItems = [];
@@ -38,20 +41,21 @@ export default {
 
       // Send missing items message
       if (missingItems[0])
-        return game.error(
+        return game.error({
           message,
-          `missing items: **${missingItems.join(", ")}**`
-        );
+          content: `missing items: **${missingItems.join(", ")}**`,
+        });
 
       // Send craft start message
-      game.reply(
+      game.send({
         message,
-        `started crafting \`1x\` **${game.titleCase(
+        reply: true,
+        content: `started crafting \`1x\` **${game.titleCase(
           recipe.name
         )}** | :hourglass_flowing_sand: \`${game.formatTime(
           recipe.time
-        )}\` remaining`
-      );
+        )}\` remaining`,
+      });
 
       // Track crafting in database
       const date = new Date();
@@ -71,10 +75,13 @@ export default {
           where: { playerId: player.id, name: recipe.name, started: date },
         });
 
-        return game.reply(
+        return game.send({
           message,
-          `finished crafting \`1x\` **${game.titleCase(recipe.name)}**`
-        );
+          reply: true,
+          content: `finished crafting \`1x\` **${game.titleCase(
+            recipe.name
+          )}**`,
+        });
       }, recipe.time * 1000);
     }
     // IF NO INPUT PROVIDED

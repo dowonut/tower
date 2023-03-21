@@ -1,12 +1,16 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "iteminfo",
   aliases: ["ii"],
   arguments: "<item name>",
   description: "Get detailed information about an item.",
-  category: "Items",
+  category: "items",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
-    if (!args[0]) return game.error(message, "provide the name of an item.");
+  async execute(message, args, player, server) {
+    if (!args[0])
+      return game.error({ message, content: "provide the name of an item." });
 
     // Get player item
     let item = await player.getItem(args.join(" "));
@@ -16,10 +20,10 @@ export default {
 
     // Check if item exists
     if (!item)
-      return game.error(
+      return game.error({
         message,
-        `not a valid item.\nCheck your items with \`${server.prefix}inventory\``
-      );
+        content: `not a valid item.\nCheck your items with \`${server.prefix}inventory\``,
+      });
 
     // Get item embed
     const { embed, title, file } = getEmbed();
@@ -88,6 +92,7 @@ export default {
       const disableCheck = player.inCombat || item.quantity < 1 ? true : false;
 
       // Create buttons
+      /** @type {ComponentButton[]} */
       let buttons = [];
 
       // Create sell button
@@ -156,7 +161,7 @@ export default {
       }
 
       // Check if any buttons have been created
-      if (buttons.length < 1) return { undefined, undefined };
+      if (buttons.length < 1) return;
 
       // Created and return action row
       const row = game.actionRow("buttons", buttons);
@@ -193,7 +198,7 @@ export default {
 
     // Eat item
     async function eat() {
-      await game.runCommand("eat", message, [item.name], server);
+      await game.runCommand("eat", { message, args: [item.name], server });
 
       const newItem = await player.getItem(args.join(" "));
       item.quantity = newItem ? newItem.quantity : 0;
@@ -203,12 +208,11 @@ export default {
 
     // Sell item
     async function sell(quantity = 1) {
-      await game.runCommand(
-        "sell",
+      await game.runCommand("sell", {
         message,
-        [item.name, "$", quantity],
-        server
-      );
+        args: [item.name, "$", quantity],
+        server,
+      });
 
       const newItem = await player.getItem(args.join(" "));
       item.quantity = newItem ? newItem.quantity : 0;
@@ -229,6 +233,7 @@ export default {
     // Get sell row and buttons
     function getSellRow() {
       const disable = item.quantity < 1 ? true : false;
+      /** @type {ComponentButton[]} */
       const sellButtons = [
         {
           id: "one",
@@ -285,7 +290,11 @@ export default {
 
     // Equip the item
     async function equip() {
-      await game.runCommand("equipment", message, [item.name], server);
+      await game.runCommand("equipment", {
+        message,
+        args: [item.name],
+        server,
+      });
 
       player = await player.refresh();
       await updateEmbed();
@@ -294,7 +303,7 @@ export default {
 
     // Drink potion
     async function drink() {
-      await game.runCommand("drink", message, [item.name], server);
+      await game.runCommand("drink", { message, args: [item.name], server });
 
       const newItem = await player.getItem(args.join(" "));
       item.quantity = newItem ? newItem.quantity : 0;

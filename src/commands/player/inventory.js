@@ -1,11 +1,14 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "inventory",
   aliases: ["i"],
   arguments: "",
   description: "List all your items.",
-  category: "Player",
+  category: "player",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     let items = await player.getItems();
 
     // Create variables for modifying page
@@ -158,6 +161,7 @@ export default {
       const items = filterItems(sort, filter);
       const itemDisable = items.length < 1;
 
+      /** @type {ComponentButton[]} */
       const buttons = [
         {
           id: "back",
@@ -246,6 +250,7 @@ export default {
     function rowThree() {
       const items = filterItems(sort, filter);
 
+      /** @type {SelectMenuOption[]} */
       let options = [];
       for (const item of items) {
         options.push({
@@ -255,6 +260,7 @@ export default {
         });
       }
 
+      /** @type {SelectMenu} */
       const menu = {
         id: "menu",
         placeholder: "Select an item for more information...",
@@ -343,7 +349,11 @@ export default {
 
     // Run iteminfo command
     async function itemInfo(selection) {
-      return await game.runCommand("iteminfo", message, [selection], server);
+      return await game.runCommand("iteminfo", {
+        message,
+        args: [selection],
+        server,
+      });
     }
   },
 };

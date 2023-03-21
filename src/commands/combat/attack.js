@@ -1,14 +1,15 @@
-//import attacks from "../../game/attacks.js";
+import { game, config, client, prisma } from "../../tower.js";
 
+/** @type {Command} */
 export default {
   name: "attack",
   aliases: ["a"],
   description: "Attack the enemy you're fighting.",
   arguments: "<attack name>",
-  category: "Combat",
+  category: "combat",
   useInCombat: true,
   cooldown: "1",
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     // Format imput
     const input = args.join(" ").toLowerCase();
 
@@ -16,23 +17,30 @@ export default {
     if (args[0]) {
       // Check if player is in combat
       if (!player.inCombat)
-        return game.error(message, "you can only use an attack during combat.");
+        return game.error({
+          message,
+          content: "you can only use an attack during combat.",
+        });
 
       if (!player.canAttack)
-        return game.error(message, "you can't attack right now.");
+        return game.error({ message, content: "you can't attack right now." });
 
       if (!isNaN(args[0]))
-        return game.error(
+        return game.error({
           message,
-          "provide the name of the attack you want to use."
-        );
+          content: "provide the name of the attack you want to use.",
+        });
 
       const attack = await player.getAttack(input);
 
-      if (!attack) return game.error(message, "not a valid attack.");
+      if (!attack)
+        return game.error({ message, content: "not a valid attack." });
 
       if (attack.remCooldown > 0)
-        return game.error(message, "this attack is still on cooldown.");
+        return game.error({
+          message,
+          content: "this attack is still on cooldown.",
+        });
 
       return await performAttack(message, config, player, server, attack);
     } else {
@@ -80,7 +88,7 @@ async function listAttacks(message, config, player) {
     description: description,
   };
 
-  game.sendEmbed(message, embed);
+  game.send({ message, embeds: [embed] });
 }
 
 // Perform attack after name is provided
@@ -112,7 +120,7 @@ async function performAttack(message, config, player, server, attack) {
   });
 
   // Send attack message
-  await game.reply(message, attackMessage, false);
+  await game.send({ message, content: attackMessage, reply: true });
 
   const combatSkills = ["unarmed", "sword", "axe", "spear", "bow"];
 

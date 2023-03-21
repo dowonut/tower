@@ -3,9 +3,9 @@ import { config } from "../tower.js";
 /**
  * Send a messsage to Discord.
  * @param {object} args
- * @param {object} [args.message] - Message args.
- * @param {object} [args.channel] - Channel args.
- * @param {string} [args.content] - Regular message content.
+ * @param {object} [args.message] - Message object.
+ * @param {object} [args.channel] - Channel object.
+ * @param {string} [args.content] - Message content.
  * @param {object[]} [args.embeds] - Message embeds.
  * @param {object[]} [args.components] - Message components.
  * @param {boolean} [args.ping=false] - Ping the user.

@@ -6,13 +6,14 @@ import { game, prisma } from "../../tower.js";
  * @param {*} [args.message] - Message args.
  * @param {string} [args.discordId] - User Discord id.
  * @param {*} args.server - Server args.
- * @returns {Promise<typeof game._player>} Player args.
+ * @returns {Promise<object>} Player args.
  */
 export default async function getPlayer(args) {
   const { message, discordId, server } = args;
 
   // Check if id provided
-  if (!args.message && !args.discordId) return;
+  if (!args.message && !args.discordId)
+    return console.log("Must provide either message or Discord id.");
 
   // Set player id
   const playerId = discordId ? discordId : message.author.id;
@@ -27,6 +28,9 @@ export default async function getPlayer(args) {
   // Check if player has entry in database-
   if (!playerData) return undefined;
 
+  /**
+   * @type {*}
+   */
   let player = { ...playerData, ...game._player };
 
   if (message) player.message = message;

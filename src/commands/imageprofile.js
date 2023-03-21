@@ -1,13 +1,16 @@
 import { createCanvas, loadImage } from "canvas";
 
+import { game, config, client, prisma } from "../tower.js";
+
+/** @type {Command} */
 export default {
   name: "imageprofile",
   description: "Work in progress!",
-  category: "Admin",
+  category: "admin",
   aliases: ["ip", "ipr"],
   //  category: "General",
   useInCombat: true,
-  async execute(message, args, config, player, server) {
+  async execute(message, args, player, server) {
     // update user info if outdated
     if (
       player.username !== message.author.username ||

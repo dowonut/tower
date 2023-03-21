@@ -1,10 +1,13 @@
+import { game, config, client, prisma } from "../../tower.js";
+
+/** @type {Command} */
 export default {
   name: "buy",
   aliases: ["b"],
   arguments: "<item name> $ <quantity>|all",
   description: "Purchase items from merchants.",
-  category: "Items",
-  async execute(message, args, config, player, server) {
+  category: "items",
+  async execute(message, args, player, server) {
     const variables = args.join(" ").split("$");
 
     const itemNameInput = variables[0].trim().toLowerCase();
@@ -16,13 +19,13 @@ export default {
 
     // Check if item name provided
     if (!itemNameInput)
-      return game.error(message, "provide the name of an item.");
+      return game.error({ message, content: "provide the name of an item." });
 
     // Fetch item data
     const item = game.getItem(itemNameInput);
 
     // Return if no item
-    if (!item) return game.error(message, "not a valid item.");
+    if (!item) return game.error({ message, content: "not a valid item." });
 
     // Get item from merchant
     const merchantItem = await game.getMerchantItem(itemNameInput, player);
@@ -30,7 +33,7 @@ export default {
 
     // Check if can purchase item
     if (!merchantItem)
-      return game.error(message, "you can't purchase this item.");
+      return game.error({ message, content: "you can't purchase this item." });
 
     // Set quantity to all
     if (quantity == "all") {
@@ -40,23 +43,23 @@ export default {
 
     // Check if item is in stock
     if (merchantItem.stock < 1) {
-      return game.error(message, "this item is out of stock.");
+      return game.error({ message, content: "this item is out of stock." });
     }
 
     // Check if the player can afford
     if (merchantItem.price * quantity > player.marks) {
-      return game.error(
+      return game.error({
         message,
-        `you don't have enough ${config.emojis.mark} to buy this.`
-      );
+        content: `you don't have enough ${config.emojis.mark} to buy this.`,
+      });
     }
 
     // Check if buying more than stock
     if (quantity > merchantItem.stock) {
-      return game.error(
+      return game.error({
         message,
-        "the merchant doesn't have enough of this item in stock."
-      );
+        content: "the merchant doesn't have enough of this item in stock.",
+      });
     }
 
     // Subtract marks from player
@@ -94,12 +97,13 @@ export default {
     }
 
     // Send buy message
-    game.reply(
+    game.send({
       message,
-      `you bought \`${quantity}x\` **${item.getName()}** for \`${
+      reply: true,
+      content: `you bought \`${quantity}x\` **${item.getName()}** for \`${
         merchantItem.price * quantity
-      }\` ${config.emojis.mark}`
-    );
+      }\` ${config.emojis.mark}`,
+    });
 
     // Unlock equipment
     if (["weapon", "armor"].includes(item.category)) {
@@ -108,12 +112,13 @@ export default {
 
     // Unlock recipe
     if (item.category == "recipe") {
-      game.reply(
+      game.send({
         message,
-        `you unlocked a new recipe: **${game.titleCase(
+        reply: true,
+        content: `you unlocked a new recipe: **${game.titleCase(
           item.item
-        )}**\nSee all your recipes with \`${server.prefix}recipes\``
-      );
+        )}**\nSee all your recipes with \`${server.prefix}recipes\``,
+      });
 
       player.unlockCommands(message, server, ["recipes"]);
     }

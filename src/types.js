@@ -19,7 +19,7 @@
  * Main function of a Discord command object.
  * @callback Execute
  * @param {object} message - Discord message object.
- * @param {string[]} args - Command arguments.
+ * @param {array} args - Command arguments.
  * @param {PlayerObject} player - Player object.
  * @param {object} server - Server object.
  * @returns Nothing
@@ -31,7 +31,7 @@
  */
 
 /**
- * A component button.
+ * Component button.
  * @typedef {object} ComponentButton
  * @property {string} id - Button id.
  * @property {string} [label] - Button label.
@@ -40,13 +40,22 @@
  * @property {string} [url] - URL for link button.
  * @property {boolean} [stop] - Pressing the button stops the collector.
  * @property {function} function - Function to run when the button is pressed.
- * @property {"primary"|"secondary"|"success"|"danger"|"link"|string} [style] - Button style.
+ * @property {"primary"|"secondary"|"success"|"danger"|"link"} [style] - Button style.
  */
 
 /**
- * A select menu object.
+ * Select menu object.
  * @typedef {object} SelectMenu
  * @property {string} id - Select menu id.
  * @property {string} placeholder - Default text to show.
- * @property {array} options - Select menu options.
+ * @property {SelectMenuOption[]} options - Select menu options.
+ * @property {function} function - Function to run when option is selected.
+ */
+
+/**
+ * Select menu option.
+ * @typedef {object} SelectMenuOption
+ * @property {string} label - Option label.
+ * @property {string} value - Option value.
+ * @property {string} description - Option description.
  */
