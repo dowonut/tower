@@ -1,6 +1,6 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
+/** @type {import('../../types.js').Command} */
 export default {
   name: "forgetallcommands",
   aliases: ["fac"],

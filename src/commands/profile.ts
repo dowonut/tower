@@ -1,6 +1,5 @@
 import { game, config, prisma, client } from "../tower.js";
 
-/** @type {Command} */
 export default {
   name: "profile",
   description: "Show all relevant information about your character.",

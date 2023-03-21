@@ -1,6 +1,6 @@
-import { game, config, client, prisma } from "../../tower.js";
+import { game, config, client, prisma, types } from "../../tower.js";
 
-/** @type {Command} */
+/** @type {types.Command} */
 export default {
   name: "inventory",
   aliases: ["i"],
@@ -161,7 +161,7 @@ export default {
       const items = filterItems(sort, filter);
       const itemDisable = items.length < 1;
 
-      /** @type {ComponentButton[]} */
+      /** @type {types.ComponentButton[]} */
       const buttons = [
         {
           id: "back",
@@ -250,7 +250,7 @@ export default {
     function rowThree() {
       const items = filterItems(sort, filter);
 
-      /** @type {SelectMenuOption[]} */
+      /** @type {types.SelectMenuOption[]} */
       let options = [];
       for (const item of items) {
         options.push({
@@ -260,7 +260,7 @@ export default {
         });
       }
 
-      /** @type {SelectMenu} */
+      /** @type {types.SelectMenu} */
       const menu = {
         id: "menu",
         placeholder: "Select an item for more information...",

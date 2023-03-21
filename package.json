@@ -1,10 +1,10 @@
 {
-  "name": "ascendant",
+  "name": "tower",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "nodemon --no-warnings ./src/index.js",
-    "dev": "nodemon ./src/index.js"
+    "start": "nodemon ./src/index.ts",
+    "dev": "nodemon ./src/index.ts"
   },
   "type": "module",
   "dependencies": {
@@ -16,11 +16,15 @@
     "fireorm": "^0.23.3",
     "fs": "^0.0.1-security",
     "loot-table": "github:jotson/LootTable.js",
-    "nodemon": "^2.0.19",
     "npm": "^8.17.0",
     "npm-check-updates": "^16.0.5",
     "prisma": "^4.6.1",
     "reflect-metadata": "^0.1.13",
     "require-dir": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.5",
+    "nodemon": "^2.0.21",
+    "ts-node": "^10.9.1"
   }
 }

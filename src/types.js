@@ -59,3 +59,5 @@
  * @property {string} value - Option value.
  * @property {string} description - Option description.
  */
+
+export default {};
