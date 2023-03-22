@@ -26,12 +26,7 @@ const events = game.events;
 
 // Collect commands
 let commandFiles = [];
-/**
- * Import files through directory
- * @param {string} directory
- * @param {Array} array
- */
-function throughDirectory(directory, array) {
+function throughDirectory(directory: string, array: any[]) {
   fs.readdirSync(directory).forEach((file) => {
     const absolute = path.join(directory, file);
     if (fs.statSync(absolute).isDirectory())
@@ -152,7 +147,7 @@ client.on("interactionCreate", async (interaction) => {
 
 // Initialise all events
 for (const event of allEvents) {
-  events.on(event.name, async (obj) => {
+  events.on(event.name, async (obj: any) => {
     try {
       // Run event function
       await event.function(obj);

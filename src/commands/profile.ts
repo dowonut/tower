@@ -1,6 +1,6 @@
 import { game, config, prisma, client } from "../tower.js";
 
-export default {
+export const command: Command = {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
@@ -10,19 +10,23 @@ export default {
     if (args[0] && args[0].startsWith("<@")) {
       const user = message.mentions.users.first();
 
+      game.send({ channel: message.channel });
+
       // fetch player data when pinging
       if (user) {
-        player = await game.getPlayer({
+        const playerData = await game.getPlayer({
           discordId: user.id,
           server: server,
           message: message,
         });
 
-        if (!player)
+        if (!playerData)
           return game.error({
             message,
             content: "this user has no character.",
           });
+
+        player = playerData;
       }
     }
 

@@ -2,13 +2,13 @@ import { config } from "../../tower.js";
 
 /**
  * Create a progress bar using text or emojis.
- * @param {number} min - Filled value.
- * @param {number} max - Total value.
- * @param {"health"|"xp"|"empty"} type - Type of progress bar to generate.
- * @param {number} [count] - How many characters to use for progress bar.
- * @returns {string}
  */
-export default function progressBar(min, max, type, count) {
+export default function progressBar(
+  min: number,
+  max: number,
+  type: "health" | "xp",
+  count?: number
+): string {
   // Set total boxes in progress bar
   const boxes = count || 10;
   // Get fill amount based on inputs

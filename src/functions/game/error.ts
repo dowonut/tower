@@ -2,11 +2,11 @@ import * as config from "../../config.js";
 
 /**
  * Send error message to Discord.
- * @param {object} object
- * @param {object} object.message - Discord user message.
- * @param {string} object.content - Error message content.
  */
-export default async function error(object) {
+export default async function error(object: {
+  content: string;
+  message: Message;
+}) {
   if (!object.content || !object.message) return;
 
   const { content, message } = object;
@@ -19,7 +19,7 @@ export default async function error(object) {
     color: config.red,
   };
 
-  const messageObject = {};
+  const messageObject: any = {};
   messageObject.embeds = [embed];
 
   // if (boolean) {
@@ -30,7 +30,9 @@ export default async function error(object) {
   //   };
   // }
 
-  if (!message.replied) return await message.reply(messageObject);
+  // if (!message.replied) return await message.reply(messageObject);
 
-  return await message.followUp(messageObject);
+  // return await message.followUp(messageObject);
+
+  return await message.reply(messageObject);
 }

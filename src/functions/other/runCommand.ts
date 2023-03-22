@@ -7,14 +7,12 @@ import { game, config, client, prisma } from "../../tower.js";
 
 /**
  * Execute a command on behalf of a user.
- * @param {string} commandName - Name of command.
- * @param {object} object - More settings.
- * @param {Array<string>} [object.args] - Command arguments.
- * @param {Discord.Message} object.message - User message object.
- * @param {object} object.server - Current server object.
- * @returns Nothing
+
  */
-export default async function runCommand(commandName, object) {
+export default async function runCommand(
+  commandName: string,
+  object: { message: Message; server: Server; args?: string[] }
+): Promise<void> {
   // Extract variables
   const { message, server, args = [] } = object;
 
@@ -26,7 +24,7 @@ export default async function runCommand(commandName, object) {
     const command =
       client.commands.get(commandName) ||
       client.commands.find(
-        (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+        (cmd: Command) => cmd.aliases && cmd.aliases.includes(commandName)
       );
 
     // Return if no command found
@@ -39,36 +37,39 @@ export default async function runCommand(commandName, object) {
 
     const now = Date.now();
     const timestamps = client.cooldowns.get(command.name);
-    const cooldownAmount = (command.cooldown || 0) * 1000;
+    const cooldownAmount = (parseInt(command.cooldown) || 0) * 1000;
 
     // Check if user has permission to run the command
     const authorPerms =
       message.channel.permissionsFor(message.author) || new Map();
-    if (command.permissions) {
-      if (!authorPerms || !authorPerms.has(command.permissions)) {
-        return game.error({
-          message,
-          content: "you're not worthy of this command.",
-        });
-      }
-    }
+    // if (command.permissions) {
+    //   if (!authorPerms || !authorPerms.has(command.permissions)) {
+    //     return game.error({
+    //       message,
+    //       content: "you're not worthy of this command.",
+    //     });
+    //   }
+    // }
 
     // Fetch player object
     let player = await game.getPlayer({ message, server });
 
+    // If command has no player requirement
+    if (command.needChar == false) {
+      return (command as CommandNoPlayer).execute(message, [], player, server);
+    }
     // Check if user has player character
-    if (command.needChar !== false && !player) {
+    else if (command.needChar && !player) {
       return game.send({
         message,
         ping: true,
         content: `get started with \`${server.prefix}begin\``,
       });
     }
-
     // Make object null if no player data
-    if (player) {
+    else if (player) {
       // Check if user is admin
-      if (command.category == "Admin" && !authorPerms.has(ADMIN)) {
+      if (command.category == "admin" && !authorPerms.has(ADMIN)) {
         return game.error({
           message,
           content: `this command requires admin permissions.`,
@@ -103,45 +104,43 @@ export default async function runCommand(commandName, object) {
         player.inCombat == true &&
         command.useInCombat !== true &&
         command.useInCombatOnly !== true &&
-        command.category !== "Admin"
+        command.category !== "admin"
       ) {
         return game.error({
           message,
           content: `this command can't be used while in combat.`,
         });
       }
-    }
 
-    // Check if the user is on cooldown for that command
-    if (timestamps.has(message.author.id)) {
-      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-      if (now < expirationTime) {
-        return game.send({
-          message,
-          content: `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`,
-        });
+      // Check if the user is on cooldown for that command
+      if (timestamps.has(message.author.id)) {
+        const expirationTime =
+          timestamps.get(message.author.id) + cooldownAmount;
+        if (now < expirationTime) {
+          return game.send({
+            message,
+            content: `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`,
+          });
+        }
       }
-    }
 
-    // Update command cooldown for user
-    timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+      // Update command cooldown for user
+      timestamps.set(message.author.id, now);
+      setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-    // Set arguments
-    const commandsArgs = [message, args, player, server];
-
-    // Try to run the command
-    try {
-      //const beforeCommand = Date.now();
-      resolve(await command.execute(...commandsArgs));
-      //const afterCommand = Date.now();
-      // console.log(
-      //   `command ${command.name} executed in ${
-      //     afterCommand - beforeCommand
-      //   }ms`
-      // );
-    } catch (error) {
-      resolve(console.error("Something went wrong: ", error));
+      // Try to run the command
+      try {
+        //const beforeCommand = Date.now();
+        resolve(command.execute(message, args, player, server));
+        //const afterCommand = Date.now();
+        // console.log(
+        //   `command ${command.name} executed in ${
+        //     afterCommand - beforeCommand
+        //   }ms`
+        // );
+      } catch (error) {
+        resolve(console.error("Something went wrong: ", error));
+      }
     }
   });
 }

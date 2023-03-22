@@ -1,7 +1,6 @@
 import { game, config, client, prisma } from "../tower.js";
 
-/** @type {Command} */
-export default {
+const command: CommandNoPlayer = {
   name: "begin",
   description: "Start the game by creating a character.",
   needChar: false,
@@ -66,3 +65,4 @@ export default {
     }
   },
 };
+export default command;

@@ -1,17 +1,28 @@
 import { config } from "../tower.js";
 
 /**
- * Send a messsage to Discord.
- * @param {object} args
- * @param {object} [args.message] - Message object.
- * @param {object} [args.channel] - Channel object.
- * @param {string} [args.content] - Message content.
- * @param {object[]} [args.embeds] - Message embeds.
- * @param {object[]} [args.components] - Message components.
- * @param {boolean} [args.ping=false] - Ping the user.
- * @param {boolean} [args.reply=false] - Reply to the user's message.
+ * Send a message to discord.
+ * @param args
+ * @param args.message Message object.
+ * @param args.channel Channel object.
+ * @param args.ping Ping the user.
+ * @param args.reply Reply to the user's message.
+ * @param args.content Message content.
+ * @param args.embeds Message embeds.
+ * @param args.components Message components.
+ * @param args.files Message files.
+ * @returns Message
  */
-export default async function send(args) {
+export default async function send(args: {
+  message?: any;
+  channel?: any;
+  ping?: any;
+  reply?: any;
+  content?: any;
+  embeds?: any;
+  components?: any;
+  files?: any;
+}): Promise<void> {
   const {
     ping = false,
     reply = false,
@@ -19,10 +30,11 @@ export default async function send(args) {
     content,
     embeds,
     components,
+    files,
   } = args;
   const channel = message ? message.channel : args.channel;
 
-  let messageObject = {
+  let messageObject: any = {
     content: "",
   };
 
@@ -42,6 +54,11 @@ export default async function send(args) {
         messageObject.embeds[i].color = config.botColor;
       }
     }
+  }
+
+  // Add files
+  if (files) {
+    messageObject.files = files;
   }
 
   // Ping user

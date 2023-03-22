@@ -1,14 +1,11 @@
 import { game, prisma } from "../../tower.js";
 
-/**
- * Get player.
- * @param {object} args
- * @param {*} [args.message] - Message args.
- * @param {string} [args.discordId] - User Discord id.
- * @param {*} args.server - Server args.
- * @returns {Promise<object>} Player args.
- */
-export default async function getPlayer(args) {
+/** Get player. */
+export default async function getPlayer(args: {
+  message: Message;
+  discordId?: string;
+  server?: Server;
+}): Promise<Player | void> {
   const { message, discordId, server } = args;
 
   // Check if id provided
@@ -28,10 +25,7 @@ export default async function getPlayer(args) {
   // Check if player has entry in database-
   if (!playerData) return undefined;
 
-  /**
-   * @type {*}
-   */
-  let player = { ...playerData, ...game._player };
+  let player: Player = { ...playerData, ...game._player };
 
   if (message) player.message = message;
   if (server) player.server = server;

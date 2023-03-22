@@ -1,9 +1,7 @@
 /**
  * Capitalize the first letter of each word of a string.
- * @param {string} str - String input to convert to uppercase.
- * @returns {string}
  */
-export default function titleCase(str) {
+export default function titleCase(str: string): string {
   var splitStr = str.toLowerCase().split(" ");
   for (var i = 0; i < splitStr.length; i++) {
     // You do not need to check if i is larger than splitStr length, as your for does that for you
