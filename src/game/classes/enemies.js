@@ -1,6 +1,5 @@
-import { loadFiles } from "./_loadFiles.js";
+import { game, config } from "../../tower.js";
 import fs from "fs";
-import * as config from "../../config.js";
 
 class Enemy {
   constructor(object) {
@@ -130,6 +129,6 @@ class Enemy {
   }
 }
 
-const enemies = await loadFiles("enemies", Enemy);
+const enemies = await game.loadFiles("enemies", Enemy);
 
 export default enemies;

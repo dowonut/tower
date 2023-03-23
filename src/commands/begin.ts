@@ -1,6 +1,6 @@
 import { game, config, client, prisma } from "../tower.js";
 
-const command: CommandNoPlayer = {
+export default {
   name: "begin",
   description: "Start the game by creating a character.",
   needChar: false,
@@ -28,20 +28,19 @@ const command: CommandNoPlayer = {
     const row = game.actionRow("buttons", buttons);
 
     // Send reply
-    const botMsg = await game.send({
+    const botMsg = (await game.send({
       message,
       embeds: [embed],
       components: [row],
       reply: true,
-    });
+    })) as Message;
 
     // Create collector
     await game.componentCollector(message, botMsg, buttons);
 
     // Function for getting buttons
     function getButtons() {
-      /** @type {ComponentButton[]} */
-      const buttons = [
+      const buttons: Button[] = [
         {
           id: "profile",
           label: "Profile",
@@ -64,5 +63,4 @@ const command: CommandNoPlayer = {
       return buttons;
     }
   },
-};
-export default command;
+} as CommandNoPlayer;

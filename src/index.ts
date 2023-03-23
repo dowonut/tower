@@ -8,6 +8,8 @@ import {
   ApplicationCommandType,
   Routes,
   ActivityType,
+  IntentsBitField,
+  Client,
 } from "discord.js";
 // File handling
 import fs from "fs";
@@ -15,14 +17,14 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 // Game files
-import allEvents from "./game/classes/events.js";
+// import allEvents from "./game/classes/events.js";
 import { game, config, prisma, client } from "./tower.js";
 
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 
 // Define main variables
-const events = game.events;
+// const events = game.events;
 
 // Collect commands
 let commandFiles = [];
@@ -38,7 +40,7 @@ throughDirectory("./src/commands", commandFiles);
 
 for (const file of commandFiles) {
   // Check if file is valid before continuing
-  if (!file.endsWith(".js")) continue;
+  if (!file.endsWith(".ts")) continue;
   const { default: command } = await import(`../${file}`);
   client.commands.set(command.name, command);
 }
@@ -146,13 +148,13 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 // Initialise all events
-for (const event of allEvents) {
-  events.on(event.name, async (obj: any) => {
-    try {
-      // Run event function
-      await event.function(obj);
-    } catch (error) {
-      console.log(error);
-    }
-  });
-}
+// for (const event of allEvents) {
+//   events.on(event.name, async (obj: any) => {
+//     try {
+//       // Run event function
+//       await event.function(obj);
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   });
+// }

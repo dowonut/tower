@@ -1,5 +1,5 @@
-import { loadFiles } from "./_loadFiles.js";
-import { emojis } from "../../config.js";
+import { game, config } from "../../tower.js";
+const { emojis } = config;
 
 class Enhancement {
   constructor(object) {
@@ -9,7 +9,7 @@ class Enhancement {
   }
 }
 
-const enhancements = await loadFiles("enhancements", Enhancement);
+const enhancements = await game.loadFiles("enhancements", Enhancement);
 
 export default enhancements;
 

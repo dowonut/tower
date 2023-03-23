@@ -1,6 +1,5 @@
 import { emojis } from "../../config.js";
-import { loadFiles } from "./_loadFiles.js";
-import * as config from "../../config.js";
+import { game, config } from "../../tower.js";
 
 class Attack {
   constructor(object) {
@@ -145,6 +144,6 @@ class Attack {
   }
 }
 
-const attacks = await loadFiles("attacks", Attack);
+const attacks = await game.loadFiles("attacks", Attack);
 
 export default attacks;

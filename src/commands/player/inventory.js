@@ -1,6 +1,5 @@
-import { game, config, client, prisma, types } from "../../tower.js";
+import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {types.Command} */
 export default {
   name: "inventory",
   aliases: ["i"],
@@ -40,21 +39,21 @@ export default {
     // Get second row for filtering and sorting
     const { row2, buttons2 } = rowTwo();
 
-    const reply = await game.fastEmbed(
+    const reply = (await game.fastEmbed({
       message,
       player,
       embed,
       title,
-      undefined,
-      [row, row2]
-    );
+      components: [row, row2],
+    })) as Message;
+
     await game.componentCollector(message, reply, [...buttons, ...buttons2]);
 
     // Unlock new commands
     player.unlockCommands(message, server, ["iteminfo"]);
 
     // Function for getting embed
-    function getEmbed(page = 1, sort, filter) {
+    function getEmbed(page: number = 1, sort?: string, filter?: string) {
       let description = ``;
 
       const items = filterItems(sort, filter);
@@ -104,7 +103,7 @@ export default {
       if (itemDisable) description += `You don't have any items yet...`;
 
       const title = `Inventory`;
-      const embed = {
+      const embed: any = {
         description: description,
       };
 
@@ -161,8 +160,7 @@ export default {
       const items = filterItems(sort, filter);
       const itemDisable = items.length < 1;
 
-      /** @type {types.ComponentButton[]} */
-      const buttons = [
+      const buttons: Button[] = [
         {
           id: "back",
           label: "◀",
@@ -190,7 +188,7 @@ export default {
           stop: true,
           disable: itemDisable,
           function: async (reply, i) => {
-            toggleItemList(i);
+            toggleItemList();
             return;
           },
         });
@@ -200,7 +198,7 @@ export default {
           emoji: "↩",
           stop: true,
           function: async (reply, i) => {
-            toggleItemList(i);
+            toggleItemList();
             return;
           },
         });
@@ -219,7 +217,7 @@ export default {
       // Boolean to check if player has any items
       const itemDisable = items.length < 1;
 
-      const buttons2 = [
+      const buttons2: Button[] = [
         {
           id: "sort",
           label: "Sort: " + sortTitle,
@@ -227,7 +225,7 @@ export default {
           function: async (reply, i) => {
             page = 1;
             sort = game.cycleArray(sort, sortOptions);
-            return await updateEmbed();
+            await updateEmbed();
           },
         },
         {
@@ -237,7 +235,7 @@ export default {
           function: async (reply, i) => {
             page = 1;
             filter = game.cycleArray(filter, filterOptions);
-            return await updateEmbed();
+            await updateEmbed();
           },
         },
       ];
@@ -250,8 +248,7 @@ export default {
     function rowThree() {
       const items = filterItems(sort, filter);
 
-      /** @type {types.SelectMenuOption[]} */
-      let options = [];
+      let options: SelectMenuOption[] = [];
       for (const item of items) {
         options.push({
           label: game.titleCase(item.name),
@@ -260,8 +257,7 @@ export default {
         });
       }
 
-      /** @type {types.SelectMenu} */
-      const menu = {
+      const menu: SelectMenu = {
         id: "menu",
         placeholder: "Select an item for more information...",
         options: options,
@@ -288,15 +284,14 @@ export default {
       const { row2 } = rowTwo();
 
       // Update original message
-      const messageRef = await game.fastEmbed(
+      const messageRef = (await game.fastEmbed({
         message,
         player,
         embed,
         title,
-        undefined,
-        [row, row2],
-        false
-      );
+        components: [row, row2],
+        send: false,
+      })) as MessageOptions;
       return await reply.edit(messageRef);
     }
 
@@ -313,6 +308,8 @@ export default {
 
         const { row3, menu } = rowThree();
 
+        if (!row || !row3) return;
+
         await reply.edit({ components: [row, row3] });
 
         await game.componentCollector(message, reply, [menu, ...buttons]);
@@ -327,15 +324,14 @@ export default {
         const { row2, buttons2 } = rowTwo();
 
         // Update original message
-        const messageRef = await game.fastEmbed(
+        const messageRef = (await game.fastEmbed({
           message,
           player,
           embed,
           title,
-          undefined,
-          [row, row2],
-          false
-        );
+          components: [row, row2],
+          send: false,
+        })) as MessageOptions;
 
         await reply.edit(messageRef);
 
@@ -348,7 +344,7 @@ export default {
     }
 
     // Run iteminfo command
-    async function itemInfo(selection) {
+    async function itemInfo(selection: string) {
       return await game.runCommand("iteminfo", {
         message,
         args: [selection],
@@ -356,4 +352,4 @@ export default {
       });
     }
   },
-};
+} as Command;

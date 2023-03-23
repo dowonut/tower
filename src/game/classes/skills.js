@@ -1,4 +1,4 @@
-import { loadFiles } from "./_loadFiles.js";
+import { game, config } from "../../tower.js";
 
 class Skill {
   constructor(object) {
@@ -64,7 +64,7 @@ class Skill {
   }
 }
 
-const skills = await loadFiles("skills", Skill);
+const skills = await game.loadFiles("skills", Skill);
 
 export default skills;
 

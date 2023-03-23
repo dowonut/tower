@@ -1,5 +1,7 @@
 import Discord from "discord.js";
-import { _player } from "../functions/index.js";
+
+import { playerFunctions } from "../tower.js";
+
 import * as Prisma from "@prisma/client";
 
 declare global {
@@ -80,9 +82,89 @@ declare global {
     message?: Discord.Message;
     server?: Server;
     user?: User;
-  } & typeof _player &
-    Prisma.Player;
+  } & Prisma.Player &
+    typeof playerFunctions;
+
+  export interface PlayerClass {
+    [key: string]: PlayerFunction;
+  }
+
+  export type PlayerFunction = (this: Player) => any;
 
   // Message
   export type Message = {} & Discord.Message;
+
+  // Message options
+  export type MessageOptions = {} & Discord.MessageCreateOptions;
+
+  // Discord component
+  export type Component = Button | SelectMenu;
+
+  // Discord button component
+  export interface Button {
+    id: string;
+    label?: string;
+    emoji?: string;
+    style?: "primary" | "secondary" | "success" | "danger" | "link";
+    disable?: boolean;
+    url?: string;
+    stop?: boolean;
+    modal?: Modal;
+    function?: ComponentFunction;
+  }
+
+  // Discord select menu component
+  export interface SelectMenu {
+    id: string;
+    placeholder: string;
+    options: SelectMenuOption[];
+    stop?: boolean;
+    modal?: Modal;
+    function: ComponentFunction;
+  }
+
+  // Discord modal component
+  export interface Modal {
+    id: string;
+    title: string;
+    components: { style: "short" | "paragraph"; id: string; label: string }[];
+  }
+
+  // Option for Discord select menu component
+  export interface SelectMenuOption {
+    label: string;
+    value: string;
+    description?: string;
+  }
+
+  // Function to run when component selected
+  interface ComponentFunction {
+    (
+      reply?: Discord.Message,
+      interaction?: Discord.Interaction,
+      selection?: string
+    ): Promise<void>;
+  }
+
+  // Items
+  export type Item = Prisma.Inventory & ItemData;
+
+  // Raw item data
+  export type ItemData = {
+    name: string;
+    category: ItemCategory;
+    weaponType?: WeaponType;
+    description?: string;
+    info: string;
+    /** Health regained if consumable. */
+    health?: number;
+    /** Resell value if sellable. */
+    value?: number;
+    equipSlot?: EquipSlot;
+    /** Base weapon damage. */
+    damage?: number;
+    /** Base tool sharpness. */
+    sharpness?: number;
+    damageType?: DamageType;
+  };
 }

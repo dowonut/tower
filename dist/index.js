@@ -9,19 +9,14 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 // Game files
-import allEvents from "./game/classes/events.js";
+// import allEvents from "./game/classes/events.js";
 import { game, config, prisma, client } from "./tower.js";
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 // Define main variables
-const events = game.events;
+// const events = game.events;
 // Collect commands
 let commandFiles = [];
-/**
- * Import files through directory
- * @param {string} directory
- * @param {Array} array
- */
 function throughDirectory(directory, array) {
     fs.readdirSync(directory).forEach((file) => {
         const absolute = path.join(directory, file);
@@ -34,7 +29,7 @@ function throughDirectory(directory, array) {
 throughDirectory("./src/commands", commandFiles);
 for (const file of commandFiles) {
     // Check if file is valid before continuing
-    if (!file.endsWith(".js"))
+    if (!file.endsWith(".ts"))
         continue;
     const { default: command } = await import(`../${file}`);
     client.commands.set(command.name, command);
@@ -58,8 +53,10 @@ client.on("messageCreate", async (message) => {
     if (!message.content.startsWith(server.prefix) || message.author.bot)
         return;
     // Create command and arguments
-    /** @type {*} */
-    const args = message.content.slice(server.prefix.length).trim().split(/ +/);
+    const args = message.content
+        .slice(server.prefix.length)
+        .trim()
+        .split(/ +/);
     if (args.length > 0) {
         const commandName = args.shift().toLowerCase();
         // Run the command
@@ -119,21 +116,19 @@ client.on("interactionCreate", async (interaction) => {
         content: `Executed command: \`${commandName}\``,
         ephemeral: true,
     });
-    /** @type {*} */
     const message = interaction;
     message.author = interaction.user;
     // Run the command
     await game.runCommand(commandName, { message, server });
 });
 // Initialise all events
-for (const event of allEvents) {
-    events.on(event.name, async (obj) => {
-        try {
-            // Run event function
-            await event.function(obj);
-        }
-        catch (error) {
-            console.log(error);
-        }
-    });
-}
+// for (const event of allEvents) {
+//   events.on(event.name, async (obj: any) => {
+//     try {
+//       // Run event function
+//       await event.function(obj);
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   });
+// }

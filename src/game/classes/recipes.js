@@ -1,4 +1,4 @@
-import { loadFiles } from "./_loadFiles.js";
+import { game, config } from "../../tower.js";
 
 class Recipe {
   constructor(object) {
@@ -52,7 +52,7 @@ class Recipe {
   }
 }
 
-const recipes = await loadFiles("recipes", Recipe);
+const recipes = await game.loadFiles("recipes", Recipe);
 
 export default recipes;
 

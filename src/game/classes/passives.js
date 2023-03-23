@@ -1,4 +1,4 @@
-import { loadFiles } from "./_loadFiles.js";
+import { game, config } from "../../tower.js";
 import fs from "fs";
 
 class Passive {

@@ -1,5 +1,4 @@
-import { loadFiles } from "./_loadFiles.js";
-
+import { game, config } from "../../tower.js";
 class Event {
   constructor(object) {
     for (const [key, value] of Object.entries(object)) {
@@ -8,6 +7,6 @@ class Event {
   }
 }
 
-const events = await loadFiles("events", Event);
+const events = await game.loadFiles("events", Event);
 
 export default events;

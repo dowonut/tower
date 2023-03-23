@@ -1,4 +1,4 @@
-import { loadFiles } from "./_loadFiles.js";
+import { game, config } from "../../tower.js";
 
 class Merchant {
   constructor(object) {
@@ -10,6 +10,6 @@ class Merchant {
   }
 }
 
-const merchants = await loadFiles("merchants", Merchant);
+const merchants = await game.loadFiles("merchants", Merchant);
 
 export default merchants;

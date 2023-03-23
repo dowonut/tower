@@ -1,6 +1,6 @@
 import { game, config, prisma, client } from "../tower.js";
 
-export const command: Command = {
+export default {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
@@ -41,7 +41,7 @@ export const command: Command = {
       mark: markE,
       blank,
     } = config.emojis;
-    const region = game.titleCase(player.getRegion().name);
+    const region = "placeholder"; //game.titleCase(player.getRegion().name);
     const { strength, defence, arcane, vitality } = config.emojis.stats;
     const { strength: ps, defence: pd, arcane: pa, vitality: pv } = player;
 
@@ -87,11 +87,11 @@ export const command: Command = {
     };
 
     // Unlock new commands
-    player.unlockCommands(message, server, [
-      "inventory",
-      "equipment",
-      "region",
-    ]);
+    // player.unlockCommands(message, server, [
+    //   "inventory",
+    //   "equipment",
+    //   "region",
+    // ]);
 
     // Check if player is same as the message author
     const playerIsAuthor = player.discordId == message.author.id;
@@ -103,19 +103,18 @@ export const command: Command = {
     const row = game.actionRow("buttons", buttons);
 
     // Send embed
-    const reply = await game.send({
+    const reply = (await game.send({
       message,
       embeds: [embed],
       components: [row],
-    });
+    })) as Message;
 
     // Create collector
     game.componentCollector(message, reply, buttons);
 
     // Function to get buttons
     function getButtons() {
-      /** @type {ComponentButton[]} */
-      const buttons = [
+      const buttons: Button[] = [
         {
           id: "inventory",
           label: "Inventory",
@@ -146,7 +145,9 @@ export const command: Command = {
 
       const row = game.actionRow("buttons", buttons);
 
+      if (!row || !reply) return;
+
       reply.edit({ components: [row] });
     }
   },
-};
+} as Command;
