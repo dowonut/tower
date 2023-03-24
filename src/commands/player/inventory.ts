@@ -50,7 +50,7 @@ export default {
     await game.componentCollector(message, reply, [...buttons, ...buttons2]);
 
     // Unlock new commands
-    player.unlockCommands(message, server, ["iteminfo"]);
+    player.unlockCommands(message, ["iteminfo"]);
 
     // Function for getting embed
     function getEmbed(page: number = 1, sort?: string, filter?: string) {

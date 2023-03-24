@@ -2,10 +2,10 @@ import fs from "fs";
 import { createClassFromType, loadFiles } from "../../functions/core/index.js";
 import { config } from "../../tower.js";
 
-const ItemBaseClass = createClassFromType<Item>();
+const ItemBaseClass = createClassFromType<ItemBase>();
 
 export class ItemClass extends ItemBaseClass {
-  constructor(item: Item) {
+  constructor(item: Generic<ItemBase>) {
     super(item);
   }
 

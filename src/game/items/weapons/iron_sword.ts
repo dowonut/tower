@@ -4,4 +4,6 @@ export default {
     weaponType: "sword",
     info: "A sturdy iron sword.",
     equipSlot: "hand",
-}
+    damageType: "slashing",
+    damage: 5
+} as ItemData;

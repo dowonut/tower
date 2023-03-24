@@ -2,11 +2,10 @@ import { prisma, config } from "../../tower.js";
 import tutorials from "../../game/classes/tutorials.js";
 
 /** Unlock commands. */
-export default async function unlockCommands(
-  this: Player,
+export default (async function (
   message: Message,
   commandNames: string[]
-) {
+  ) {
   let tutorialRefs = [];
   for (const commandName of commandNames) {
     if (!this.unlockedCommands.includes(commandName)) {
@@ -52,4 +51,4 @@ export default async function unlockCommands(
   };
 
   return message.author.send({ embeds: [embed] });
-}
+}) satisfies PlayerFunction;

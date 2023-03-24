@@ -1,17 +1,24 @@
 import Discord from "discord.js";
 
+import generic from "../game/classes/generic.ts";
+
+import { ItemClass } from "../game/classes/items.js";
 import { playerFunctions } from "../tower.js";
 
 import * as Prisma from "@prisma/client";
 
 declare global {
-  // Tower client extension of Discord client.
+  /**
+   * Tower client extension of Discord client.
+   */
   export interface TowerClient extends Discord.Client {
     commands?: Discord.Collection<string, Command>;
     cooldowns?: Discord.Collection<string, Discord.Collection<string, number>>;
   }
 
-  // Use command object.
+  /**
+   * User command object.
+   */
   export interface Command {
     /** Name of the command. */
     name: string;
@@ -48,11 +55,16 @@ declare global {
     execute: Execute;
   }
 
+  /**
+   * User command object without player requirement.
+   */
   export interface CommandNoPlayer extends Omit<Command, "execute"> {
     execute: ExecuteNoPlayer;
   }
 
-  // Main command function.
+  /**
+   * Main command function.
+   */
   export interface Execute {
     (
       message: Discord.Message,
@@ -62,6 +74,9 @@ declare global {
     ): void;
   }
 
+  /**
+   * Main command function without player requirement.
+   */
   interface ExecuteNoPlayer {
     (
       message: Discord.Message,
@@ -71,13 +86,19 @@ declare global {
     ): void;
   }
 
-  // Server
+  /**
+   * Server
+   */
   export type Server = {} & Prisma.Server;
 
-  // User
+  /**
+   * User
+   */
   export type User = {} & Prisma.User;
 
-  // Player
+  /**
+   * Player
+   */
   export type Player = {
     message?: Discord.Message;
     server?: Server;
@@ -85,22 +106,41 @@ declare global {
   } & Prisma.Player &
     typeof playerFunctions;
 
+  /**
+   * Player class.
+   */
   export interface PlayerClass {
     [key: string]: PlayerFunction;
   }
 
-  export type PlayerFunction = (this: Player) => any;
+  /**
+   * Player function.
+   */
+  export type PlayerFunction = (this: Player, ...args: any) => any;
 
-  // Message
+  /**
+   * Discord embed.
+   */
+  export type Embed = {} & Partial<Discord.Embed>;
+
+  /**
+   * Discord message.
+   */
   export type Message = {} & Discord.Message;
 
-  // Message options
+  /**
+   * Discord message options.
+   */
   export type MessageOptions = {} & Discord.MessageCreateOptions;
 
-  // Discord component
+  /**
+   * Discord component.
+   */
   export type Component = Button | SelectMenu;
 
-  // Discord button component
+  /**
+   * Discord button component.
+   */
   export interface Button {
     id: string;
     label?: string;
@@ -113,7 +153,9 @@ declare global {
     function?: ComponentFunction;
   }
 
-  // Discord select menu component
+  /**
+   * Discord select menu component.
+   */
   export interface SelectMenu {
     id: string;
     placeholder: string;
@@ -123,21 +165,27 @@ declare global {
     function: ComponentFunction;
   }
 
-  // Discord modal component
+  /**
+   * Discord modal component.
+   */
   export interface Modal {
     id: string;
     title: string;
     components: { style: "short" | "paragraph"; id: string; label: string }[];
   }
 
-  // Option for Discord select menu component
+  /**
+   * Discord select menu component option.
+   */
   export interface SelectMenuOption {
     label: string;
     value: string;
     description?: string;
   }
 
-  // Function to run when component selected
+  /**
+   * Function to run when component is selected.
+   */
   interface ComponentFunction {
     (
       reply?: Discord.Message,
@@ -146,10 +194,19 @@ declare global {
     ): Promise<void>;
   }
 
-  // Items
-  export type Item = Prisma.Inventory & ItemData;
+  /**
+   * Item class.
+   */
+  export type Item = ItemClass;
 
-  // Raw item data
+  /**
+   * Item base definition.
+   */
+  export type ItemBase = Prisma.Inventory & ItemData;
+
+  /**
+   * Item data.
+   */
   export type ItemData = {
     name: string;
     category: ItemCategory;
@@ -167,4 +224,9 @@ declare global {
     sharpness?: number;
     damageType?: DamageType;
   };
+
+  /**
+   * Generic class object with methods.
+   */
+  export type Generic<T> = T & typeof generic;
 }

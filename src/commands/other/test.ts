@@ -10,5 +10,7 @@ export default {
     const items = await player.getItems({
       sort: "quantity",
     });
+
+    // console.dir(items[0].getEmoji());
   },
 } as Command;

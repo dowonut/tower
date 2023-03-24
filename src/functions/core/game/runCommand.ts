@@ -27,7 +27,7 @@ export default async function runCommand(
       );
 
     // Return if no command found
-    if (!command) return;
+    if (!command) return; //console.error(`No command found by name: ${commandName}`);
 
     // Create new collection if no cooldown found
     if (!client.cooldowns.has(command.name)) {

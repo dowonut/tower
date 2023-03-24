@@ -1,8 +1,12 @@
 declare global {
-  // Weapon/armor equip slots
+  /**
+   * Weapon/armor equip slots
+   */
   export type EquipSlot = "head" | "torso" | "legs" | "feet" | "hand";
 
-  // Damage types
+  /**
+   * Damage types.
+   */
   export type DamageType =
     | "slashing"
     | "piercing"
@@ -12,10 +16,14 @@ declare global {
     | "fire"
     | "water";
 
-  // Weapon types
+  /**
+   * Weapon types.
+   */
   export type WeaponType = "sword" | "axe" | "bow" | "spear" | "other";
 
-  // Item categories
+  /**
+   * Item categories.
+   */
   export type ItemCategory =
     | "weapon"
     | "food"

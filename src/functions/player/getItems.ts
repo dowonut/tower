@@ -1,5 +1,4 @@
 import * as Prisma from "@prisma/client";
-import { ItemClass } from "../../game/classes/items.js";
 import { game, prisma } from "../../tower.js";
 import items from "../../game/classes/items.js";
 
@@ -36,12 +35,12 @@ export default (async function (
   for (const item of itemData) {
     const itemClass = items.find((x) => x.name == item.name.toLowerCase());
 
-    const finalItem = Object.assign(item, itemClass);
+    const finalItem = Object.assign(itemClass, item) satisfies Item;
 
     finalItems.push(finalItem);
   }
 
-  if (finalItems.length == 1) return finalItems[0];
+  if (finalItems.length == 1) return finalItems;
 
   return finalItems;
 } satisfies PlayerFunction);

@@ -37,7 +37,7 @@ export default async function fastEmbed(args: {
   message: Message;
   player: Player;
   title: string;
-  embed: any;
+  embed: Embed;
   components?: any[];
   files?: any[];
   send?: boolean;
@@ -46,7 +46,7 @@ export default async function fastEmbed(args: {
     message,
     player,
     title,
-    embed,
+    embed = {},
     components = [],
     files = [],
     send = true,
@@ -60,7 +60,7 @@ export default async function fastEmbed(args: {
     color: parseInt("0x" + player.user.embed_color),
   };
 
-  const finalEmbed = [...embed, ...embedInfo];
+  const finalEmbed: Embed = { ...embed, ...embedInfo };
 
   return await game.send({
     message,
