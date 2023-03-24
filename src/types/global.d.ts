@@ -129,6 +129,14 @@ declare global {
   export type Message = {} & Discord.Message;
 
   /**
+   * Text channel Discord message.
+   */
+  export type TextChannelMessage = {} & {
+    channel: Discord.TextChannel;
+    [key: string]: any;
+  };
+
+  /**
    * Discord message options.
    */
   export type MessageOptions = {} & Discord.MessageCreateOptions;

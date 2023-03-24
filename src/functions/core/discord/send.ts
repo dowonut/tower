@@ -1,20 +1,28 @@
-import { Channel, ChannelType, MessageCreateOptions } from "discord.js";
+import {
+  Channel,
+  ChannelType,
+  GuildTextBasedChannel,
+  GuildTextChannelType,
+  MessageCreateOptions,
+  PartialUser,
+  TextChannel,
+} from "discord.js";
 import { config } from "../../../tower.js";
 
 /**
  * Send a message to discord.
  */
-export default async function send(args: {
-  message?: Message;
-  channel?: Channel;
+export default async function send<B extends boolean = true>(args: {
+  message?: TextChannelMessage;
+  channel?: TextChannel;
   ping?: boolean;
   reply?: boolean;
   content?: string;
   embeds?: any[];
   components?: any[];
   files?: any[];
-  send?: boolean;
-}) {
+  send?: B;
+}): Promise<B extends true ? Message : MessageCreateOptions> {
   const {
     ping = false,
     reply = false,
@@ -27,8 +35,8 @@ export default async function send(args: {
   } = args;
   const channel = message ? message.channel : args.channel;
 
-  if (channel.type !== ChannelType.GuildText)
-    return console.error("Invalid channel type.");
+  // if (channel.type !== ChannelType.GuildText)
+  //   return console.error("Invalid channel type.");
 
   let messageObject: MessageCreateOptions = {
     content: "",
@@ -62,7 +70,7 @@ export default async function send(args: {
     messageObject.content = `<@${message.author.id}> ` + messageObject.content;
   }
 
-  if (!send) return messageObject;
+  if (!send) return messageObject as any;
 
   // Reply to message
   let botMsg: Message;
@@ -74,5 +82,5 @@ export default async function send(args: {
     botMsg = await channel.send(messageObject);
   }
 
-  return botMsg;
+  return botMsg as any;
 }

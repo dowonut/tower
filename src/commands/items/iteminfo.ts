@@ -1,6 +1,5 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "iteminfo",
   aliases: ["ii"],
@@ -32,17 +31,17 @@ export default {
     const { actionRow, actionButtons } = await getButtonRow();
 
     // Unlock commands
-    player.unlockCommands(message, server, ["sell", "eat", "drink"]);
+    player.unlockCommands(message, ["sell", "eat", "drink"]);
 
     // Get message
-    const reply = await game.fastEmbed(
+    const reply = (await game.fastEmbed({
       message,
       player,
       embed,
       title,
-      file ? file : undefined,
-      [actionRow]
-    );
+      files: file ? [file] : undefined,
+      components: [actionRow],
+    })) as Message;
 
     await game.componentCollector(message, reply, actionButtons);
 
@@ -311,4 +310,4 @@ export default {
       await updateButtonRow();
     }
   },
-};
+} as Command;

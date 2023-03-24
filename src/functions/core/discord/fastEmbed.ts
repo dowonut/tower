@@ -1,3 +1,4 @@
+import { TextChannel } from "discord.js";
 import { game, config } from "../../../tower.js";
 
 // export default {
@@ -34,14 +35,14 @@ import { game, config } from "../../../tower.js";
 // };
 
 export default async function fastEmbed(args: {
-  message: Message;
+  message: { channel: TextChannel; [key: string]: any };
   player: Player;
   title: string;
   embed: Embed;
   components?: any[];
   files?: any[];
   send?: boolean;
-}) {
+}): Promise<Message> {
   const {
     message,
     player,
@@ -67,6 +68,5 @@ export default async function fastEmbed(args: {
     embeds: [finalEmbed],
     components,
     files,
-    send,
   });
 }
