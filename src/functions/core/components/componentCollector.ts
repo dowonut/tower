@@ -16,7 +16,7 @@ export default async function componentCollector(
   reply: Message,
   components: Component[],
   args: { unique?: boolean; filter?: (i: any) => boolean; max?: number } = {}
-) {
+): Promise<unknown> {
   if (!components || !components[0]) return undefined;
   const unique = args.unique ? args.unique : true;
 
@@ -43,7 +43,7 @@ export default async function componentCollector(
     }
 
     // Return if stage channel
-    if (message.channel.type == ChannelType.GuildStageVoice) return;
+    // if (message.channel.type == ChannelType.GuildStageVoice) return;
 
     const collector =
       message.channel.createMessageComponentCollector(collectorSettings);

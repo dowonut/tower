@@ -66,12 +66,7 @@ declare global {
    * Main command function.
    */
   export interface Execute {
-    (
-      message: Discord.Message,
-      args: string[],
-      player: Player,
-      server: any
-    ): void;
+    (message: Message, args: string[], player: Player, server: any): void;
   }
 
   /**
@@ -79,7 +74,7 @@ declare global {
    */
   interface ExecuteNoPlayer {
     (
-      message: Discord.Message,
+      message: Message,
       args: string[],
       player: Player | void,
       server: any
@@ -100,7 +95,7 @@ declare global {
    * Player
    */
   export type Player = {
-    message?: Discord.Message;
+    message?: Message;
     server?: Server;
     user?: User;
   } & Prisma.Player &
@@ -126,15 +121,10 @@ declare global {
   /**
    * Discord message.
    */
-  export type Message = {} & Discord.Message;
-
-  /**
-   * Text channel Discord message.
-   */
-  export type TextChannelMessage = {} & {
-    channel: Discord.TextChannel;
-    [key: string]: any;
-  };
+  export type Message<T = Discord.TextChannel> = Modify<
+    Discord.Message,
+    { channel: T }
+  >;
 
   /**
    * Discord message options.
@@ -196,7 +186,7 @@ declare global {
    */
   interface ComponentFunction {
     (
-      reply?: Discord.Message,
+      reply?: Message,
       interaction?: Discord.Interaction,
       selection?: string
     ): Promise<void>;

@@ -8,8 +8,6 @@ import {
   ApplicationCommandType,
   Routes,
   ActivityType,
-  IntentsBitField,
-  Client,
 } from "discord.js";
 // File handling
 import fs from "fs";
@@ -47,9 +45,15 @@ for (const file of commandFiles) {
 
 // On message sent
 client.on("messageCreate", async (message) => {
+  // Check message channel instanceof
+  if (!(message.channel instanceof Discord.TextChannel)) return;
+
+  // Check message channel type
+  if (message.channel.type !== Discord.ChannelType.GuildText) return;
+
   // Check if message has a guild attached
   if (!message.guild)
-    return console.log("ERROR: Message did not contain a guild.");
+    return console.error("ERROR: Message did not contain a guild.");
 
   // Create or fetch server in database
   let server = await prisma.server.findUnique({
@@ -75,7 +79,11 @@ client.on("messageCreate", async (message) => {
     const commandName = args.shift().toLowerCase();
 
     // Run the command
-    await game.runCommand(commandName, { args, message, server });
+    await game.runCommand(commandName, {
+      args,
+      message: message as Message,
+      server,
+    });
   }
 });
 

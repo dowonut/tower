@@ -10,14 +10,14 @@ import { game, config, client, prisma } from "../../../tower.js";
  */
 export default async function runCommand(
   commandName: string,
-  object: { message: TextChannelMessage; server: Server; args?: string[] }
+  object: { message: Message; server: Server; args?: string[] }
 ): Promise<void> {
   // Extract variables
   const { message, server, args = [] } = object;
 
   return new Promise(async (resolve) => {
     // Return if command isn't sent in guild text channel
-    if (message.channel.type !== Discord.ChannelType.GuildText) return;
+    // if (message.channel.type !== Discord.ChannelType.GuildText) return;
 
     // Get command by name
     const command =

@@ -284,14 +284,15 @@ export default {
       const { row2 } = rowTwo();
 
       // Update original message
-      const messageRef = (await game.fastEmbed({
+      const messageRef = await game.fastEmbed({
         message,
         player,
         embed,
         title,
         components: [row, row2],
         send: false,
-      })) as MessageOptions;
+      });
+
       return await reply.edit(messageRef);
     }
 

@@ -1,19 +1,11 @@
-import {
-  Channel,
-  ChannelType,
-  GuildTextBasedChannel,
-  GuildTextChannelType,
-  MessageCreateOptions,
-  PartialUser,
-  TextChannel,
-} from "discord.js";
+import { MessageCreateOptions, TextChannel } from "discord.js";
 import { config } from "../../../tower.js";
 
 /**
- * Send a message to discord.
+ * Send a message to Discord.
  */
 export default async function send<B extends boolean = true>(args: {
-  message?: TextChannelMessage;
+  message?: Message;
   channel?: TextChannel;
   ping?: boolean;
   reply?: boolean;
@@ -73,7 +65,7 @@ export default async function send<B extends boolean = true>(args: {
   if (!send) return messageObject as any;
 
   // Reply to message
-  let botMsg: Message;
+  let botMsg: Message<any>;
   if (reply && message) {
     botMsg = await message.reply(messageObject);
   }
