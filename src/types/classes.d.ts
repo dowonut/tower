@@ -102,6 +102,8 @@ declare global {
     maxHealth: number;
     level: number;
     attacks: string[];
+    strong?: DamageType[];
+    weak?: DamageType[];
     loot?: {
       name: string;
       dropChance: number;
@@ -109,7 +111,7 @@ declare global {
       max: number;
     }[];
     shard?: { dropChance: number; type: string };
-    xp: number;
+    xp: number | { min: number; max: number };
   };
 
   /**

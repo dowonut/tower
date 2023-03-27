@@ -1,6 +1,5 @@
 import { game, config, client, prisma } from "../tower.js";
 
-/** @type {Command} */
 export default {
   name: "explore",
   description: "Explore your current floor.",
@@ -11,7 +10,7 @@ export default {
     const region = player.getRegion();
 
     // Get players found merchants
-    const foundMerchants = await player.getExplored("merchant");
+    const foundMerchants = await player.getExploration("merchant");
 
     // Create possible outcomes
     let outcomes = [
@@ -69,4 +68,4 @@ export default {
         break;
     }
   },
-};
+} as Command;

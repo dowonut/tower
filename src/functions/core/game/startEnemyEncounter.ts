@@ -1,8 +1,12 @@
 import enemies from "../../game/classes/enemies.js";
-import * as config from "../../config.js";
+import { game, config } from "../../../tower.js";
 
 export default {
-  startEnemyEncounter: async (message, player, server) => {
+  startEnemyEncounter: async (args: {
+    message: Message;
+    player: Player;
+    server: Server;
+  }) => {
     // Get player region
     const region = player.getRegion();
 

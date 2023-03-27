@@ -1,14 +1,21 @@
-import { game, config } from "../../tower.js";
+import {
+  createClassFromType,
+  loadFiles,
+  getRandom,
+} from "../../functions/core/index.js";
+import { config } from "../../tower.js";
 import fs from "fs";
 
-class Enemy {
-  constructor(object) {
-    for (const [key, value] of Object.entries(object)) {
-      this[key] = value;
-    }
+const EnemyBaseClass = createClassFromType<EnemyBase>();
+
+export class EnemyClass extends EnemyBaseClass {
+  constructor(enemy: Generic<EnemyBase>) {
+    super(enemy);
 
     // Check if enemy is part of a class
-    if (object.class) {
+    if (this.class) {
+      const object: any = this.class;
+
       // Set enemy xp based on class xp
       this.xp = {
         min: object.class.xp.min + this.xp,
@@ -22,113 +29,118 @@ class Enemy {
       if (object.strong) this.strong = this.strong.concat(object.strong);
       if (object.weak) this.weak = this.weak.concat(object.weak);
     }
+  }
 
-    // GET ENEMY IMAGE
-    this.getImage = () => {
-      // Format item name
-      const enemyName = this.name.split(" ").join("_").toLowerCase();
+  /**
+   * Get image.
+   */
+  getImage() {
+    // Format item name
+    const enemyName = this.name.split(" ").join("_").toLowerCase();
 
-      // Create path and check if item image exists
-      const path = `./assets/enemies/${enemyName}.png`;
-      let file = undefined;
+    // Create path and check if item image exists
+    const path = `./assets/enemies/${enemyName}.png`;
+    let file = undefined;
 
-      // Attach image
-      if (fs.existsSync(path)) {
-        // Get image file
-        file = {
-          attachment: path,
-          name: `${enemyName}.png`,
-        };
+    // Attach image
+    if (fs.existsSync(path)) {
+      // Get image file
+      file = {
+        attachment: path,
+        name: `${enemyName}.png`,
+      };
+    }
+
+    return file;
+  }
+
+  /**
+   * Get all attacks.
+   */
+  getAttacks() {
+    if (!this.class) return;
+    // Fetch all class attacks available to the enemy
+    let attacks = this.class.attacks.filter((x) =>
+      this.attacks.includes(x.name)
+    );
+
+    // Calculate and map damage of attacks
+    attacks = attacks.map((x) => ({
+      ...x,
+      damage: this.getDamage(x),
+    }));
+
+    return attacks;
+  }
+
+  /**
+   * Calculate best attack against player.
+   */
+  chooseAttack(player) {
+    const attacks = this.getAttacks();
+
+    // Sort by damage descending
+    attacks.sort((a, b) => (a.totalMax > b.totalMax ? 1 : -1));
+
+    // Define chosen attack
+    let chosenAttack = attacks[0];
+
+    return chosenAttack;
+  }
+
+  /**
+   * Get attack damage.
+   */
+  getDamage(input) {
+    let attack = { damages: [], totalMin: 0, totalMax: 0 };
+    for (const value of input.damage) {
+      // Sex values
+      let damageMin = value.min;
+      let damageMax = value.max;
+
+      // Apply modifiers if present
+      let modifier = ``;
+      if (value.modifier) {
+        modifier = value.modifier.replace("LEVEL", this.class.level);
       }
 
-      return file;
-    };
+      // Evaluate modifiers
+      damageMin = eval(damageMin + modifier);
+      damageMax = eval(damageMax + modifier);
 
-    // GET ENEMY NAME
-    this.getName = () => {
-      return game.titleCase(this.name);
-    };
+      // Push damages
+      attack.damages.push({
+        type: value.type,
+        min: damageMin,
+        max: damageMax,
+      });
+      attack.totalMin += damageMin;
+      attack.totalMax += damageMax;
+    }
+    return attack;
+  }
 
-    // GET ALL AVAILABLE ENEMY ATTACKS
-    this.getAttacks = () => {
-      if (!object.class) return;
-      // Fetch all class attacks available to the enemy
-      let attacks = object.class.attacks.filter((x) =>
-        object.attacks.includes(x.name)
-      );
+  /**
+   * Format attack message.
+   */
+  attackMessage(attack, player) {
+    if (!attack.messages) return undefined;
 
-      // Calculate and map damage of attacks
-      attacks = attacks.map((x) => ({
-        ...x,
-        damage: this.getDamage(x),
-      }));
+    let message = getRandom(attack.messages);
 
-      return attacks;
-    };
+    const damages = attack.damage.damages.map(
+      (x) => `\`${x.final}\`${config.emojis.damage[x.type]}`
+    );
+    const damageText = damages.join(" ");
 
-    // CHOOSE BEST ATTACK AND RETURN ATTACK DATA
-    this.chooseAttack = (player) => {
-      const attacks = this.getAttacks();
+    message = message.replace("PLAYER", `<@${player.discordId}>`);
+    message = message.replace("ENEMY", `**${this.getName()}**`);
+    message = message.replace("DAMAGE", damageText + " damage");
 
-      // Sort by damage descending
-      attacks.sort((a, b) => (a.totalMax > b.totalMax ? 1 : -1));
-
-      // Define chosen attack
-      let chosenAttack = attacks[0];
-
-      return chosenAttack;
-    };
-
-    // GET DAMAGE OF ATTACK
-    this.getDamage = (input) => {
-      let attack = { damages: [], totalMin: 0, totalMax: 0 };
-      for (const value of input.damage) {
-        // Sex values
-        let damageMin = value.min;
-        let damageMax = value.max;
-
-        // Apply modifiers if present
-        let modifier = ``;
-        if (value.modifier) {
-          modifier = value.modifier.replace("LEVEL", object.level);
-        }
-
-        // Evaluate modifiers
-        damageMin = eval(damageMin + modifier);
-        damageMax = eval(damageMax + modifier);
-
-        // Push damages
-        attack.damages.push({
-          type: value.type,
-          min: damageMin,
-          max: damageMax,
-        });
-        attack.totalMin += damageMin;
-        attack.totalMax += damageMax;
-      }
-      return attack;
-    };
-
-    // FORMAT ATTACK MESSAGE
-    this.attackMessage = (attack, player) => {
-      if (!attack.messages) return undefined;
-
-      let message = game.getRandom(attack.messages);
-
-      const damages = attack.damage.damages.map(
-        (x) => `\`${x.final}\`${config.emojis.damage[x.type]}`
-      );
-      const damageText = damages.join(" ");
-
-      message = message.replace("PLAYER", `<@${player.discordId}>`);
-      message = message.replace("ENEMY", `**${this.getName()}**`);
-      message = message.replace("DAMAGE", damageText + " damage");
-
-      return message;
-    };
+    return message;
   }
 }
 
-const enemies = await game.loadFiles("enemies", Enemy);
+const enemies = await loadFiles<EnemyClass>("enemies", EnemyClass);
 
 export default enemies;
