@@ -46,6 +46,16 @@ declare global {
     | "settings"
     | "other"
     | "admin";
+
+  /**
+   * Player stats.
+   */
+  export type PlayerStats =
+    | "health"
+    | "strength"
+    | "defence"
+    | "arcane"
+    | "vitality";
 }
 
 export {};

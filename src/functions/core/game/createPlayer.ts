@@ -56,8 +56,7 @@ export default async function createPlayer(
     await prisma[key].createMany({ data: entryArr });
   }
 
-  const player = await game.getPlayer({ discordId: user.id, server });
-  if (!player) return;
+  const player: Player = await game.getPlayer({ discordId: user.id, server });
 
   // Give apple
   await prisma.inventory.createMany({

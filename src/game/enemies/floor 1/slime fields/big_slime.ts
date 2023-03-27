@@ -7,4 +7,4 @@ export default {
   attacks: ["swallow", "bounce"],
   loot: [{ name: "slimeball", dropChance: 100, min: 2, max: 4 }],
   xp: 30,
-};
+} satisfies EnemyData;

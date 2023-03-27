@@ -16,3 +16,4 @@ export { default as getPlayer } from "./get/getPlayer.js";
 export { default as getRegion } from "./get/getRegion.js";
 export { default as getUser } from "./get/getUser.js";
 export { default as cycleArray } from "./math/cycleArray.js";
+export { default as weightedRandom } from "./math/weightedRandom.js";

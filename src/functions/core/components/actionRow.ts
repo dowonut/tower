@@ -1,17 +1,22 @@
 import {
   ActionRowBuilder,
+  ActionRowData,
   ButtonBuilder,
   ButtonStyle,
   StringSelectMenuBuilder,
 } from "discord.js";
 
+type RowType = "buttons" | "menu";
+
 /**
  * Create Discord row for components.
  */
-export default function actionRow(
-  type: "buttons" | "menu",
+export default function actionRow<T extends RowType>(
+  type: T,
   components: Button[] | SelectMenu
-) {
+): T extends "buttons"
+  ? ActionRowBuilder<ButtonBuilder>
+  : ActionRowBuilder<StringSelectMenuBuilder> {
   if (!components) return undefined;
 
   if (type == "buttons" && Array.isArray(components)) {
@@ -42,11 +47,11 @@ export default function actionRow(
 
       const button = new ButtonBuilder();
 
-      if (!component.id && component.style !== "link")
-        return console.error("Must provide an id.");
+      // if (!component.id && component.style !== "link")
+      //   return console.error("Must provide an id.");
 
-      if (!component.label && !component.emoji)
-        return console.error("Must provide either label or emoji.");
+      // if (!component.label && !component.emoji)
+      //   return console.error("Must provide either label or emoji.");
 
       if (component.disable && component.disable == true)
         button.setDisabled(true);
@@ -56,8 +61,8 @@ export default function actionRow(
       if (component.style !== "link") {
         button.setCustomId(component.id);
       } else {
-        if (!component.url)
-          return console.error("Must provide URL for link button.");
+        // if (!component.url)
+        //   return console.error("Must provide URL for link button.");
         button.setURL(component.url);
       }
       button.setStyle(buttonStyle);
@@ -65,7 +70,7 @@ export default function actionRow(
       row.addComponents(button);
     }
 
-    return row;
+    return row as any;
   } else if (type == "menu" && !Array.isArray(components)) {
     const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
       new StringSelectMenuBuilder()
@@ -74,6 +79,6 @@ export default function actionRow(
         .addOptions(...components.options)
     );
 
-    return row;
+    return row as any;
   }
 }

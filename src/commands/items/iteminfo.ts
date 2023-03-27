@@ -66,7 +66,7 @@ export default {
         });
       }
 
-      let embed = {
+      let embed: any = {
         description,
       };
       const title = `${item.getName()} ${
@@ -130,7 +130,7 @@ export default {
       // Create equip button
       if (item.equipSlot) {
         // Get current equipped item
-        let current = await player.getEquipped(item.equipSlot);
+        let current = await player.getEquipment(item.equipSlot);
 
         // Check if item is equipped
         const equipped = current && current.name == item.name;
@@ -171,15 +171,13 @@ export default {
     async function updateEmbed() {
       const { embed, title, file } = getEmbed();
 
-      const messageRef = await game.fastEmbed(
+      const messageRef = await game.fastEmbed({
         message,
         player,
         embed,
         title,
-        undefined,
-        undefined,
-        false
-      );
+        send: false,
+      });
 
       await reply.edit(messageRef);
     }
@@ -209,7 +207,7 @@ export default {
     async function sell(quantity = 1) {
       await game.runCommand("sell", {
         message,
-        args: [item.name, "$", quantity],
+        args: [item.name, "$", quantity.toString()],
         server,
       });
 
@@ -232,8 +230,7 @@ export default {
     // Get sell row and buttons
     function getSellRow() {
       const disable = item.quantity < 1 ? true : false;
-      /** @type {ComponentButton[]} */
-      const sellButtons = [
+      const sellButtons: Button[] = [
         {
           id: "one",
           label: "1",

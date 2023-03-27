@@ -10,4 +10,4 @@ export default {
       info: "Increase health by `10`",
     },
   ],
-};
+} as ItemData;
