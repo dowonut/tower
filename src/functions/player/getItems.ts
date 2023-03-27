@@ -1,6 +1,6 @@
 import * as Prisma from "@prisma/client";
 import { game, prisma } from "../../tower.js";
-import items from "../../game/classes/items.js";
+import items from "../../game/_classes/items.js";
 
 type SortOptions = "name" | "quantity" | "damage";
 

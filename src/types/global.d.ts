@@ -1,8 +1,7 @@
 import Discord from "discord.js";
 
-import generic from "../game/classes/generic.ts";
+import generic from "../game/_classes/generic.ts";
 
-import { ItemClass } from "../game/classes/items.js";
 import { playerFunctions } from "../tower.js";
 
 import * as Prisma from "@prisma/client";
@@ -103,16 +102,6 @@ declare global {
    * Player function.
    */
   export type PlayerFunction = (this: Player, ...args: any) => any;
-
-  /**
-   * Item class.
-   */
-  export type Item = ItemClass;
-
-  /**
-   * Item base definition.
-   */
-  export type ItemBase = Prisma.Inventory & ItemData;
 
   /**
    * Generic class object with methods.

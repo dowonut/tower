@@ -17,4 +17,4 @@ export default {
     "ENEMY didn't see your fist coming and takes DAMAGE",
     "ENEMY is struck hard by your iron fist and takes DAMAGE",
   ],
-};
+} satisfies AttackData;

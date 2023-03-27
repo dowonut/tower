@@ -1,25 +1,25 @@
+import { config } from "../tower.ts";
+
 declare global {
   /**
    * Weapon/armor equip slots
    */
-  export type EquipSlot = "head" | "torso" | "legs" | "feet" | "hand";
+  export type EquipSlot = typeof config.equipSlots[number];
 
   /**
    * Damage types.
    */
-  export type DamageType =
-    | "slashing"
-    | "piercing"
-    | "bludgeoning"
-    | "air"
-    | "earth"
-    | "fire"
-    | "water";
+  export type DamageType = typeof config.damageTypes[number];
 
   /**
    * Weapon types.
    */
-  export type WeaponType = "sword" | "axe" | "bow" | "spear" | "other";
+  export type WeaponType = typeof config.weaponTypes[number];
+
+  /**
+   * Player attack types.
+   */
+  export type AttackType = typeof config.attackTypes[number];
 
   /**
    * Item categories.
@@ -56,6 +56,8 @@ declare global {
     | "defence"
     | "arcane"
     | "vitality";
+
+  export type ShardType = typeof config.shardTypes[number];
 }
 
 export {};

@@ -2,7 +2,7 @@ export default {
   // Name of enemy (lowercase).
   name: "brown frog",
   // Class the enemy belongs to
-  class: "frog",
+  type: "frog",
   // Description shown in "enemyinfo".
   description: "He looks like a silly little guy... but is he?",
   // Max health.
@@ -15,4 +15,4 @@ export default {
   loot: [{ name: "frog tongue", dropChance: 100, min: 1, max: 2 }],
   // How much xp the enemy gives when killed.
   xp: 50,
-};
+} satisfies EnemyData;

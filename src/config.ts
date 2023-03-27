@@ -79,6 +79,27 @@ export const emojis = {
 
 export const stats = ["strength", "defence", "arcane", "vitality"];
 
+export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
+export const weaponTypes = ["sword", "axe", "bow", "spear", "other"] as const;
+export const damageTypes = [
+  "slashing",
+  "piercing",
+  "bludgeoning",
+  "air",
+  "earth",
+  "fire",
+  "water",
+] as const;
+export const shardTypes = [
+  "grey",
+  "green",
+  "blue",
+  "red",
+  "pink",
+  "legendary",
+] as const;
+export const attackTypes = ["unarmed", ...weaponTypes] as const;
+
 export const statInfo = {
   strength: "Physical damage dealt `+1%`",
   defence: "Physical damage taken `-1%`",

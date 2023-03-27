@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import generic from "../../../game/classes/generic.js";
+import generic from "../../../game/_classes/generic.js";
 
 export default async function loadFiles<Type>(
   folder: string,

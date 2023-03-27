@@ -1,11 +1,8 @@
 import { prisma, config } from "../../tower.js";
-import tutorials from "../../game/classes/tutorials.js";
+import tutorials from "../../game/_classes/tutorials.js";
 
 /** Unlock commands. */
-export default (async function (
-  message: Message,
-  commandNames: string[]
-  ) {
+export default (async function (message: Message, commandNames: string[]) {
   let tutorialRefs = [];
   for (const commandName of commandNames) {
     if (!this.unlockedCommands.includes(commandName)) {
@@ -51,4 +48,4 @@ export default (async function (
   };
 
   return message.author.send({ embeds: [embed] });
-}) satisfies PlayerFunction;
+} satisfies PlayerFunction);

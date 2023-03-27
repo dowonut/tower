@@ -10,7 +10,7 @@ export default async function getPlayer(args: {
 
   // Check if id provided
   if (!args.message && !args.discordId)
-    return console.error("Must provide either message or Discord id.");
+    throw new Error("Must provide either message or Discord id.");
 
   // Set player id
   const playerId = discordId ? discordId : message.author.id;

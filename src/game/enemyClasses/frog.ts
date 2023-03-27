@@ -36,8 +36,6 @@ export default {
       messages: [
         "ENEMY extends a tongue of blades and licks PLAYER dealing DAMAGE",
       ],
-      // Attack round cooldown
-      cooldown: 0,
     },
   ],
-};
+} satisfies EnemyType;
