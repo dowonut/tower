@@ -29,16 +29,7 @@ declare global {
     /** User arguments for the command. */
     arguments?: string;
     /** Category the command belongs to. */
-    category?:
-      | "general"
-      | "player"
-      | "location"
-      | "items"
-      | "crafting"
-      | "combat"
-      | "settings"
-      | "other"
-      | "admin";
+    category?: CommandCategory;
     /** Command cooldown. */
     cooldown?: string;
     /** The command is exclusive to admins. Default: false. */

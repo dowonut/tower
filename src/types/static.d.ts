@@ -32,6 +32,20 @@ declare global {
     | "potion"
     | "map"
     | "enhancement";
+
+  /**
+   * Categories for Discord commands.
+   */
+  export type CommandCategory =
+    | "general"
+    | "player"
+    | "location"
+    | "items"
+    | "crafting"
+    | "combat"
+    | "settings"
+    | "other"
+    | "admin";
 }
 
 export {};
