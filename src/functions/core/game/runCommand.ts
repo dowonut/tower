@@ -11,7 +11,7 @@ import { game, config, client, prisma } from "../../../tower.js";
 export default async function runCommand(
   commandName: string,
   object: { message: Message; server: Server; args?: string[] }
-): Promise<void> {
+) {
   // Extract variables
   const { message, server, args = [] } = object;
 

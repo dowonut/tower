@@ -1,4 +1,8 @@
+export { default as addExploration } from "./addExploration.js";
+export { default as enterCombat } from "./enterCombat.js";
 export { default as erase } from "./erase.js";
+export { default as getAttacks } from "./getAttacks.js";
+export { default as getEnemy } from "./getEnemy.js";
 export { default as getEquipment } from "./getEquipment.js";
 export { default as getExploration } from "./getExploration.js";
 export { default as getItem } from "./getItem.js";
@@ -7,3 +11,4 @@ export { default as getRegion } from "./getRegion.js";
 export { default as refresh } from "./refresh.js";
 export { default as test } from "./test.js";
 export { default as unlockCommands } from "./unlockCommands.js";
+export { default as update } from "./update.js";

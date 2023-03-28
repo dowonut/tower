@@ -5,7 +5,7 @@ declare global {
    * Discord embed.
    */
   export type Embed = {
-    color?: Discord.ColorResolvable;
+    color?: number;
     title?: string;
     url?: string;
     author?: {

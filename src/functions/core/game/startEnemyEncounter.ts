@@ -6,7 +6,7 @@ export default async function startEnemyEncounter(args: {
   player: Player;
   server: Server;
 }) {
-  const { player, message, server } = args;
+  let { player, message, server } = args;
 
   // Get player region
   const region = player.getRegion();
@@ -93,10 +93,15 @@ export default async function startEnemyEncounter(args: {
   });
 
   // Add new enemy to player explored
-  await player.addExplore(message, server, "enemy", undefined, enemyData.name);
+  await player.addExploration({
+    message,
+    server,
+    type: "enemy",
+    name: enemyData.name,
+  });
 
   // Unlock new commands
-  await player.unlockCommands(message, server, ["attack", "flee", "enemyinfo"]);
+  await player.unlockCommands(message, ["attack", "flee", "enemyinfo"]);
 
   // Enter combat
   await player.enterCombat(enemy);
@@ -106,8 +111,8 @@ export default async function startEnemyEncounter(args: {
 
   // Edit embed with enemyinfo
   async function enemyInfo() {
-    player = await player.refresh(message, game);
-    const { embed, image } = await game.enemyInfo(config, player, game);
+    player = await player.refresh();
+    const { embed, image } = await game.enemyInfo(player);
     if (!embed) return;
 
     await reply.edit({ embeds: [embed] });
@@ -122,7 +127,7 @@ export default async function startEnemyEncounter(args: {
 
   // Run flee command
   function flee() {
-    game.runCommand("flee", message, [], server);
+    game.runCommand("flee", { message, server });
   }
 
   // Attack component
@@ -141,7 +146,11 @@ export default async function startEnemyEncounter(args: {
     // Function to perform attack
     async function performAttack(attack) {
       // Perform attack command
-      return await game.runCommand("attack", message, [attack.name], server);
+      return await game.runCommand("attack", {
+        args: [attack.name],
+        message,
+        server,
+      });
     }
 
     // Update attack buttons
@@ -210,7 +219,7 @@ export default async function startEnemyEncounter(args: {
     }
 
     async function listAttacks() {
-      return await game.runCommand("attack", message, [], server);
+      return await game.runCommand("attack", { message, server });
     }
   }
 }

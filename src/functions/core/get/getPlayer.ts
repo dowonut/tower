@@ -23,7 +23,7 @@ export default async function getPlayer(args: {
     where: { discordId: playerId },
   });
   // Check if player has entry in database-
-  if (!playerData) return undefined;
+  if (!playerData) throw new Error("No player found.");
 
   let player: Player = { ...playerData, ...playerFunctions };
 

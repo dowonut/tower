@@ -13,8 +13,8 @@ export class EnemyClass extends EnemyBaseClass {
     super(enemy);
 
     // Check if enemy is part of a class
-    if (this.class) {
-      const object: any = this.class;
+    if (this.type) {
+      const object: any = this.type;
 
       // Set enemy xp based on class xp
       this.xp = {
@@ -40,27 +40,26 @@ export class EnemyClass extends EnemyBaseClass {
 
     // Create path and check if item image exists
     const path = `./assets/enemies/${enemyName}.png`;
-    let file = undefined;
 
     // Attach image
     if (fs.existsSync(path)) {
       // Get image file
-      file = {
+      let file = {
         attachment: path,
         name: `${enemyName}.png`,
       };
-    }
 
-    return file;
+      return file;
+    }
   }
 
   /**
    * Get all attacks.
    */
   getAttacks() {
-    if (!this.class) return;
+    if (!this.type) return;
     // Fetch all class attacks available to the enemy
-    let attacks = this.class.attacks.filter((x) =>
+    let attacks = this.type.attacks.filter((x) =>
       this.attacks.includes(x.name)
     );
 
@@ -101,7 +100,7 @@ export class EnemyClass extends EnemyBaseClass {
       // Apply modifiers if present
       let modifier = ``;
       if (value.modifier) {
-        modifier = value.modifier.replace("LEVEL", this.class.level);
+        modifier = value.modifier.replace("LEVEL", this.type.level);
       }
 
       // Evaluate modifiers

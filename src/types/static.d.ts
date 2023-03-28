@@ -57,7 +57,15 @@ declare global {
     | "arcane"
     | "vitality";
 
+  /**
+   * Enhancement shard types.
+   */
   export type ShardType = typeof config.shardTypes[number];
+
+  /**
+   * Player exploration types.
+   */
+  export type ExplorationType = "enemy" | "loot" | "merchant";
 }
 
 export {};
