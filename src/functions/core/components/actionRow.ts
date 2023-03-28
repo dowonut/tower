@@ -6,7 +6,7 @@ import {
   StringSelectMenuBuilder,
 } from "discord.js";
 
-type RowType = "buttons" | "menu";
+export type RowType = "buttons" | "menu";
 
 /**
  * Create Discord row for components.

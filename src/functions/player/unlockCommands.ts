@@ -1,7 +1,6 @@
 import { prisma, config } from "../../tower.js";
 import tutorials from "../../game/_classes/tutorials.js";
 
-/** Unlock commands. */
 export default (async function (message: Message, commandNames: string[]) {
   let tutorialRefs = [];
   for (const commandName of commandNames) {

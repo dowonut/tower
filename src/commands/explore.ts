@@ -52,15 +52,15 @@ export default {
     switch (item) {
       case "enemies":
         // Start random enemy encounter in region
-        await game.startEnemyEncounter({message, player, server});
+        await game.startEnemyEncounter({ message, player, server });
         break;
       case "loot":
         // Give the player some random loot from that region
         const reply = await player.giveRandomLoot(message, server);
         // Unlock new commands
-        player.unlockCommands(message, server, ["inventory"]);
+        player.unlockCommands(message, ["inventory"]);
         // Add an explore button
-        game.cmdButton(message, reply, ["explore", message, [], server]);
+        game.commandButton({ command: "explore", message, reply, server });
         break;
       case "merchants":
         // Unlock a new random merchant from that region
