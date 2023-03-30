@@ -7,7 +7,7 @@ declare global {
    */
   export type EnemyData = {
     name: string;
-    type: string;
+    type: string | EnemyType;
     description: string;
     maxHealth: number;
     level: number;
@@ -26,7 +26,9 @@ declare global {
     /** Potential shard droppable by the enemy. Subject to change! */
     shard?: { dropChance: number; type: ShardType };
     /** XP dropped by enemy. Value is added to XP from enemy type. */
-    xp: number | { min: number; max: number };
+    xp: number;
+    /** Do not assign. Determined by enemy type. */
+    totalXp: { min: number; max: number };
   };
 
   /**
@@ -48,17 +50,43 @@ declare global {
    */
   export type EnemyAttack = {
     name: string;
-    damage: {
-      type: DamageType;
-      min: number;
-      max: number;
-      /** Damage modifiers will be evaluated. Example: +LEVEL = add enemy level.*/
-      modifier: string;
-    }[];
+    damage: EnemyAttackDamageBase[];
     /** Message to send when attack is performed. Variables: ENEMY, PLAYER, DAMAGE. */
     messages: string[];
     /** How many combat rounds the attack takes to cooldown. */
     cooldown?: number;
+  };
+
+  /**
+   * Enemy attack.
+   */
+  export type EnemyAttackFinal = {
+    name: string;
+    damage: EnemyAttackDamageFinal;
+    /** Message to send when attack is performed. Variables: ENEMY, PLAYER, DAMAGE. */
+    messages: string[];
+    /** How many combat rounds the attack takes to cooldown. */
+    cooldown?: number;
+  };
+
+  /**
+   * Base attack damage before calculations.
+   */
+  type EnemyAttackDamageBase = {
+    type: DamageType;
+    min: number;
+    max: number;
+    /** Damage modifiers will be evaluated. Example: +LEVEL = add enemy level.*/
+    modifier: string;
+  };
+
+  /**
+   * Final attack damage after all calculations.
+   */
+  type EnemyAttackDamageFinal = {
+    damages: any[];
+    totalMin: number;
+    totalMax: number;
   };
 
   /**

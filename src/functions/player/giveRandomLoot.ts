@@ -6,13 +6,15 @@ export default (async function (message: Message, server: Server) {
   const regionName = game.titleCase(region.name);
 
   // Fetch item from weights
-  let item = game.getWeightedArray(region.loot);
-  const itemName = game.titleCase(item.name);
-  item = { ...item, ...game.getItem(item.name) };
+  let regionItem: RegionLoot = game.getWeightedArray(region.loot);
+  const itemName = game.titleCase(regionItem.name);
+  const item = game.getItem(itemName);
   const itemEmoji = item.getEmoji();
 
   // Determine item quantity
-  const itemQuantity = item.min ? game.random(item.min, item.max) : 1;
+  const itemQuantity = regionItem.min
+    ? game.random(regionItem.min, regionItem.max)
+    : 1;
 
   // Give item to player
   await this.giveItem(item.name, itemQuantity);
@@ -21,11 +23,12 @@ export default (async function (message: Message, server: Server) {
   let quantityText = itemQuantity > 1 ? `\`${itemQuantity}x\` ` : ``;
 
   // Unlock region loot
-  this.addExplore(message, server, "loot", undefined, item.name);
+  this.addExploration({ message, server, type: "loot", name: item.name });
 
   // Send message to player
-  return await game.reply(
+  return await game.send({
     message,
-    `you explore the **${regionName}** and find ${quantityText}**${itemName}** ${itemEmoji}`
-  );
+    reply: true,
+    content: `you explore the **${regionName}** and find ${quantityText}**${itemName}** ${itemEmoji}`,
+  });
 } satisfies PlayerFunction);

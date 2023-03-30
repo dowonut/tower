@@ -1,6 +1,6 @@
 export default {
   name: "stone axe recipe",
-  item: "stone axe",
+  recipeItem: "stone axe",
   category: "recipe",
   description: "Learn to craft Stone Axes",
-};
+} satisfies ItemData;

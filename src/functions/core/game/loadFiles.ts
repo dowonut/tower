@@ -29,12 +29,12 @@ export default async function loadFiles<Type>(
     // Check if file has a class
     let finalItem = { ...item, ...generic };
 
-    if (item.class) {
-      // Import class
-      const { default: itemClass } = await import(
-        `../enemyClasses/${item.class}.ts`
+    if (item.type) {
+      // Import type
+      const { default: itemType } = await import(
+        `../enemyClasses/${item.type}.ts`
       );
-      finalItem = { ...item, class: { ...itemClass } };
+      finalItem = { ...item, type: { ...itemType } };
     }
     // Create final class and return
     items.push(new Class(finalItem));

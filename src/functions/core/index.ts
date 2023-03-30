@@ -17,6 +17,7 @@ export { default as events } from "./game/events.js";
 export { default as loadFiles } from "./game/loadFiles.js";
 export { default as runCommand } from "./game/runCommand.js";
 export { default as startEnemyEncounter } from "./game/startEnemyEncounter.js";
+export { default as getItem } from "./get/getItem.js";
 export { default as getPlayer } from "./get/getPlayer.js";
 export { default as getRegion } from "./get/getRegion.js";
 export { default as getUser } from "./get/getUser.js";

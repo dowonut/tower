@@ -9,8 +9,12 @@ declare global {
     name: string;
     category: ItemCategory;
     weaponType?: WeaponType;
+    /** Short description shown next to item in inventory. */
     description?: string;
-    info: string;
+    /** Detailed description shown with iteminfo command. */
+    info?: string;
+    /** Item to unlock when given if category is recipe. */
+    recipeItem: string;
     /** Health regained if consumable. */
     health?: number;
     /** Resell value if sellable. */

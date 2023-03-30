@@ -20,14 +20,7 @@ declare global {
       weight: number;
     }[];
     /** Possible loot of the region. */
-    loot?: {
-      /** Item name. */
-      name: string;
-      /** Weight of finding item. */
-      weight: number;
-      min?: number;
-      max?: number;
-    }[];
+    loot?: RegionLoot[];
     /** Possible activities in the region. */
     activities?: {
       /** Activity name. */
@@ -38,6 +31,18 @@ declare global {
     merchants?: {
       category: string;
     }[];
+  };
+
+  /**
+   * Loot that can be found in a region.
+   */
+  export type RegionLoot = {
+    /** Item name. */
+    name: string;
+    /** Weight of finding item. */
+    weight: number;
+    min?: number;
+    max?: number;
   };
 }
 
