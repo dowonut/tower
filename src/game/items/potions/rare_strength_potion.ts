@@ -22,4 +22,4 @@ export default {
       info: "Increase damage by `+100%` for `5` rounds",
     },
   ],
-};
+} satisfies ItemData;

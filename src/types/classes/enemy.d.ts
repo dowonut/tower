@@ -3,11 +3,12 @@ import { EnemyClass } from "../../game/_classes/enemies.ts";
 
 declare global {
   /**
-   * Enemey data.
+   * Enemy data.
    */
   export type EnemyData = {
     name: string;
-    type: string | EnemyType;
+    /** Type the enemy belongs to. Must be the name of an existing enemy type. */
+    type: string;
     description: string;
     maxHealth: number;
     level: number;
@@ -28,8 +29,21 @@ declare global {
     /** XP dropped by enemy. Value is added to XP from enemy type. */
     xp: number;
     /** Do not assign. Determined by enemy type. */
-    totalXp: { min: number; max: number };
+    totalXp?: { min: number; max: number };
   };
+
+  /** Enemy data but with enemy type checked. */
+  export type EnemyDataWithType = Modify<EnemyData, { type: EnemyType }>;
+
+  /**
+   * Base enemy type.
+   */
+  export type EnemyBase = EnemyDataWithType & Prisma.Enemy;
+
+  /**
+   * Enemy class.
+   */
+  export type Enemy = EnemyClass;
 
   /**
    * General enemy class.
@@ -50,29 +64,18 @@ declare global {
    */
   export type EnemyAttack = {
     name: string;
-    damage: EnemyAttackDamageBase[];
-    /** Message to send when attack is performed. Variables: ENEMY, PLAYER, DAMAGE. */
-    messages: string[];
+    /** Message(s) to send when attack is performed. Variables: ENEMY, PLAYER, DAMAGE. */
+    messages?: string[];
     /** How many combat rounds the attack takes to cooldown. */
     cooldown?: number;
-  };
-
-  /**
-   * Enemy attack.
-   */
-  export type EnemyAttackFinal = {
-    name: string;
-    damage: EnemyAttackDamageFinal;
-    /** Message to send when attack is performed. Variables: ENEMY, PLAYER, DAMAGE. */
-    messages: string[];
-    /** How many combat rounds the attack takes to cooldown. */
-    cooldown?: number;
+    damage: EnemyAttackDamage[];
+    evaluatedDamage?: EnemyEvaluatedAttackDamage;
   };
 
   /**
    * Base attack damage before calculations.
    */
-  type EnemyAttackDamageBase = {
+  type EnemyAttackDamage = {
     type: DamageType;
     min: number;
     max: number;
@@ -83,21 +86,11 @@ declare global {
   /**
    * Final attack damage after all calculations.
    */
-  type EnemyAttackDamageFinal = {
+  type EnemyEvaluatedAttackDamage = {
     damages: any[];
-    totalMin: number;
-    totalMax: number;
+    min: number;
+    max: number;
   };
-
-  /**
-   * Base enemy type.
-   */
-  export type EnemyBase = EnemyData & Prisma.Enemy;
-
-  /**
-   * Enemy class.
-   */
-  export type Enemy = EnemyClass;
 }
 
 export {};

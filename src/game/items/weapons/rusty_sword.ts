@@ -1,22 +1,18 @@
 export default {
   // The name of the item (lowercase).
-  name: "apple",
+  name: "rusty sword",
   // The category of the item (weapon, food, etc).
-  category: "food",
+  category: "weapon",
   // Weapon type if weapon (sword, axe, etc).
-  weaponType: "",
+  weaponType: "sword",
   // Item description. Short and shown in lists.
-  description: "A tasty apple.",
+  description: "Not the sharpest tool in the shed.",
   // Item info. Long and shown in "iteminfo".
-  info: "A tasty apple you found lying on the ground somewhere...",
-  // Health regained if food item.
-  health: 5,
-  // Resell value.
-  value: undefined,
+  info: "An old rusty sword. Use it wisely before it falls apart.",
   // The equipment slot the item applies to.
-  equipSlot: "",
+  equipSlot: "hand",
   // Item base damage if weapon.
-  damage: "",
+  damage: 1,
   // Item damage type if weapon.
-  damageType: "",
-};
+  damageType: "slashing",
+} satisfies ItemData;

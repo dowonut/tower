@@ -46,7 +46,7 @@ export default {
     let { item } = game.weightedRandom(options, weights);
 
     // // Unlock region command
-    // player.unlockCommands(message, server, ["region"]);
+    player.unlockCommands(message, ["region"]);
 
     // Log output
     switch (item) {

@@ -1,3 +1,4 @@
+import { MessageEditOptions } from "discord.js";
 import { game, config, client, prisma } from "../../tower.js";
 
 export default {
@@ -179,7 +180,7 @@ export default {
         send: false,
       });
 
-      await reply.edit(messageRef);
+      await reply.edit(messageRef as MessageEditOptions);
     }
 
     // Update main button row

@@ -62,4 +62,4 @@ export default {
       cooldown: 0,
     },
   ],
-};
+} as EnemyType;

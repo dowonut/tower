@@ -4,4 +4,4 @@ export default {
   description: "Has a rough texture and an unpleasant smell.",
   info: "A rough hide of skin collected by killing Goblins.",
   value: 2,
-};
+} satisfies ItemData;

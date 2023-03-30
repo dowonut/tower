@@ -98,7 +98,7 @@ declare global {
       reply?: Message,
       interaction?: Discord.Interaction,
       selection?: string
-    ): Promise<void>;
+    ): Promise<any>;
   }
 }
 export {};

@@ -31,10 +31,14 @@ export default async function loadFiles<Type>(
 
     if (item.type) {
       // Import type
-      const { default: itemType } = await import(
-        `../enemyClasses/${item.type}.ts`
-      );
-      finalItem = { ...item, type: { ...itemType } };
+      try {
+        const { default: itemType } = await import(
+          `../../../game/enemyTypes/${item.type}.js`
+        );
+        finalItem = { ...item, type: { ...itemType } };
+      } catch (err) {
+        continue;
+      }
     }
     // Create final class and return
     items.push(new Class(finalItem));

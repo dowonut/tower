@@ -1,18 +1,18 @@
 export default {
   // Name of enemy (lowercase).
-  name: "hobgoblin",
+  name: "the rock",
   // Class the enemy belongs to
-  class: "goblin",
+  type: "rock",
   // Description shown in "enemyinfo".
-  description: "Do not enrage the hobgoblin. Bad idea.",
+  description: "Rock.",
   // Max health.
-  maxHealth: 10,
+  maxHealth: 30,
   // Enemy level. Used to scale attack power.
-  level: 4,
+  level: 8,
   // All anime attacks. Available attacks can be seen in enemy class.
-  attacks: ["scratch", "punch", "club"],
+  attacks: ["smash"],
   // Enemy loot table. Item names and drops.
-  loot: [{ name: "goblin skin", dropChance: 100, min: 2, max: 3 }],
+  loot: [{ name: "rock", dropChance: 100, min: 30, max: 50 }],
   // How much xp the enemy gives when killed.
-  xp: 30,
-};
+  xp: 500,
+} as EnemyData;

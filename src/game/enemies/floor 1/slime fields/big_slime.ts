@@ -1,6 +1,6 @@
 export default {
   name: "big slime",
-  class: "slime",
+  type: "slime",
   description: "How did a slime get this large? Try not to get swallowed.",
   maxHealth: 5,
   level: 3,

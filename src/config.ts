@@ -80,7 +80,7 @@ export const emojis = {
 export const stats = ["strength", "defence", "arcane", "vitality"];
 
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
-export const weaponTypes = ["sword", "axe", "bow", "spear", "other"] as const;
+export const weaponTypes = ["sword", "axe", "bow", "spear", "rock"] as const;
 export const damageTypes = [
   "slashing",
   "piercing",
@@ -99,6 +99,8 @@ export const shardTypes = [
   "legendary",
 ] as const;
 export const attackTypes = ["unarmed", ...weaponTypes] as const;
+
+export const defaultAttackMessage = "ENEMY attacks PLAYER and deals DAMAGE";
 
 export const statInfo = {
   strength: "Physical damage dealt `+1%`",

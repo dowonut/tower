@@ -47,7 +47,8 @@ export default {
           disable: usedProfile ? true : false,
           function: async () => {
             usedProfile = true;
-            return game.runCommand("profile", { message, server });
+            game.runCommand("profile", { message, server });
+            return;
           },
         },
         {
@@ -56,7 +57,8 @@ export default {
           disable: usedExplore ? true : false,
           function: async () => {
             usedExplore = true;
-            return game.runCommand("explore", { message, server });
+            game.runCommand("explore", { message, server });
+            return;
           },
         },
       ];

@@ -1,4 +1,4 @@
-import { config } from "../tower.ts";
+import { config } from "../tower.js";
 
 declare global {
   /**
@@ -24,14 +24,14 @@ declare global {
   /**
    * Item categories.
    */
-  export type ItemCategory =
-    | "weapon"
-    | "food"
-    | "crafting"
-    | "recipe"
-    | "potion"
-    | "map"
-    | "enhancement";
+  export type ItemCategory = keyof ItemTypes;
+  // | "weapon"
+  // | "food"
+  // | "crafting"
+  // | "recipe"
+  // | "potion"
+  // | "map"
+  // | "enhancement";
 
   /**
    * Categories for Discord commands.

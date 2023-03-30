@@ -1,4 +1,4 @@
 /** a little test */
-export default function test(this: Player) {
+export default (function test() {
   console.log("test");
-}
+} satisfies PlayerFunction);

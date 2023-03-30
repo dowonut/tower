@@ -12,7 +12,7 @@ export class EnemyClass extends EnemyBaseClass {
   constructor(enemy: Generic<EnemyBase>) {
     super(enemy);
 
-    // Check if enemy is part of a class
+    // Check if enemy belongs to an enemy type
     if (this.type && typeof this.type !== "string") {
       // Set enemy xp based on class xp
       this.totalXp = {
@@ -24,11 +24,16 @@ export class EnemyClass extends EnemyBaseClass {
       if (this.strong) this.strong = this.strong.concat(this.strong);
       if (this.weak) this.weak = this.weak.concat(this.weak);
     }
+    // Throw error if enemy doesn't belong to any type
+    else {
+      console.log(this);
+      throw new Error(
+        `Enemy must belong to an enemy type. No enemy type found by name ${this.type} on enemy ${this.name}`
+      );
+    }
   }
 
-  /**
-   * Get image.
-   */
+  /** Get enemy image attachment. */
   getImage() {
     // Format item name
     const enemyName = this.name.split(" ").join("_").toLowerCase();
@@ -48,12 +53,8 @@ export class EnemyClass extends EnemyBaseClass {
     }
   }
 
-  /**
-   * Get all attacks.
-   */
+  /** Get all attacks. */
   getAttacks() {
-    if (typeof this.type == "string")
-      throw new Error("No attacks available on enemy without type.");
     // Fetch all class attacks available to the enemy
     let attacks = this.type.attacks.filter((x) =>
       this.attacks.includes(x.name)
@@ -68,16 +69,12 @@ export class EnemyClass extends EnemyBaseClass {
     return finalAttacks;
   }
 
-  /**
-   * Calculate best attack against player.
-   */
+  /** Calculate best attack against player. */
   chooseAttack(player: Player) {
     const attacks = this.getAttacks();
 
-    if (Array.isArray(attacks[0].damage)) return;
-
     // Sort by damage descending
-    attacks.sort((a, b) => (a.damage.totalMax > b.damage.totalMax ? 1 : -1));
+    attacks.sort((a, b) => (a.damage.max > b.damage.max ? 1 : -1));
 
     // Define chosen attack
     let chosenAttack = attacks[0];
@@ -85,11 +82,9 @@ export class EnemyClass extends EnemyBaseClass {
     return chosenAttack;
   }
 
-  /**
-   * Get attack damage.
-   */
+  /** Get attack damage. */
   getDamage(input: EnemyAttack) {
-    let attack = { damages: [], totalMin: 0, totalMax: 0 };
+    let damage: EnemyEvaluatedAttackDamage = { damages: [], min: 0, max: 0 };
     for (const value of input.damage) {
       // Sex values
       let damageMin = value.min;
@@ -98,7 +93,7 @@ export class EnemyClass extends EnemyBaseClass {
       // Apply modifiers if present
       let modifier = ``;
       if (value.modifier) {
-        modifier = value.modifier.replace("LEVEL", this.type.level);
+        modifier = value.modifier.replace("LEVEL", this.level.toString());
       }
 
       // Evaluate modifiers
@@ -106,26 +101,28 @@ export class EnemyClass extends EnemyBaseClass {
       damageMax = eval(damageMax + modifier);
 
       // Push damages
-      attack.damages.push({
+      damage.damages.push({
         type: value.type,
         min: damageMin,
         max: damageMax,
       });
-      attack.totalMin += damageMin;
-      attack.totalMax += damageMax;
+      damage.min += damageMin;
+      damage.max += damageMax;
     }
-    return attack;
+    return damage;
   }
 
-  /**
-   * Format attack message.
-   */
-  attackMessage(attack, player) {
-    if (!attack.messages) return undefined;
+  /** Format attack message. */
+  attackMessage(attack: EnemyAttack, player: Player) {
+    let message: string;
 
-    let message = getRandom(attack.messages);
-
-    const damages = attack.damage.damages.map(
+    // Revert to default message if none found.
+    if (!attack.messages) {
+      message = config.defaultAttackMessage;
+    } else {
+      message = getRandom(attack.messages);
+    }
+    const damages = attack.evaluatedDamage.damages.map(
       (x) => `\`${x.final}\`${config.emojis.damage[x.type]}`
     );
     const damageText = damages.join(" ");
