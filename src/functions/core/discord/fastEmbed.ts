@@ -9,7 +9,7 @@ export default async function fastEmbed<T extends boolean>(args: {
   components?: any[];
   files?: any[];
   send?: T;
-}): Promise<T extends true ? Message : MessageCreateOptions> {
+}): Promise<T extends true ? Message : MessageOptions> {
   const {
     message,
     player,
@@ -20,7 +20,7 @@ export default async function fastEmbed<T extends boolean>(args: {
     send = true,
   } = args;
 
-  const embedInfo: any = {
+  const embedInfo: Embed = {
     author: {
       name: title,
       icon_url: player.pfp,

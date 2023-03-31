@@ -1,7 +1,9 @@
+import { game } from "../../tower.js";
+
 const generic = {
   /** Get the name of the object. */
   getName() {
-    return this.name;
+    return game.titleCase(this.name);
   },
 };
 

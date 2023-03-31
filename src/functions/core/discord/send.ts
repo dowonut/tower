@@ -1,5 +1,12 @@
-import { MessageCreateOptions, TextChannel } from "discord.js";
+import {
+  MessageCreateOptions,
+  MessageEditOptions,
+  MessagePayload,
+  TextChannel,
+} from "discord.js";
 import { config } from "../../../tower.js";
+import { MessagePayloadOption } from "discord.js";
+import { MessageReplyOptions } from "discord.js";
 
 /**
  * Send a message to Discord.
@@ -14,7 +21,7 @@ export default async function send<B extends boolean = true>(args: {
   components?: any[];
   files?: any[];
   send?: B;
-}): Promise<B extends true ? Message : MessageCreateOptions> {
+}): Promise<B extends true ? Message : MessageOptions> {
   const {
     ping = false,
     reply = false,
@@ -30,7 +37,7 @@ export default async function send<B extends boolean = true>(args: {
   // if (channel.type !== ChannelType.GuildText)
   //   return console.error("Invalid channel type.");
 
-  let messageObject: MessageCreateOptions = {
+  let messageObject: MessageOptions = {
     content: "",
   };
 

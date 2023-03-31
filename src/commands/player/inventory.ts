@@ -87,7 +87,7 @@ export default {
         let emoji = item.getEmoji();
 
         // Set item name
-        description += `\n${emoji} **${item.getName()}**`;
+        description += `\n**${item.getName()}**`;
 
         if (quantity) description += " | " + quantity;
         if (equipped) description += " | " + equipped;

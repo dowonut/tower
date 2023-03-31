@@ -27,7 +27,7 @@ export default async function runCommand(
       );
 
     // Return if no command found
-    if (!command) return; //console.error(`No command found by name: ${commandName}`);
+    if (!command) throw new Error(`No command found by name ${commandName}`);
 
     // Create new collection if no cooldown found
     if (!client.cooldowns.has(command.name)) {
@@ -129,16 +129,37 @@ export default async function runCommand(
 
       // Try to run the command
       try {
+        await game.parseCommandArguments({
+          playerArgs: args,
+          command,
+          player,
+          server,
+        });
         //const beforeCommand = Date.now();
-        resolve(command.execute(message, args, player, server));
+        command.execute(message, args, player, server);
         //const afterCommand = Date.now();
         // console.log(
         //   `command ${command.name} executed in ${
         //     afterCommand - beforeCommand
         //   }ms`
         // );
-      } catch (error) {
-        resolve(console.error("Something went wrong: ", error));
+      } catch (object) {
+        if (object instanceof game.cmdError) {
+          const errorMessage = object.message;
+          let errorTitle: string;
+          switch (object.type) {
+            case "argumentError":
+              errorTitle = `❌ **Invalid arguments:**`;
+              break;
+            case "internalError":
+              errorTitle = `⚠️ **Something went wrong...**`;
+              break;
+          }
+
+          const messageContent = `${errorTitle}\n${errorMessage}`; //`${errorTitle}\`\`\`\n${errorMessage}\n\`\`\``;
+
+          game.send({ reply: true, message, content: messageContent });
+        }
       }
     }
   });

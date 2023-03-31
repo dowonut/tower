@@ -38,7 +38,12 @@ declare global {
   /**
    * Discord message options.
    */
-  export type MessageOptions = {} & Discord.MessageCreateOptions;
+  export type MessageOptions = {
+    content?: string;
+    embeds?: Embed[];
+    components?: any[];
+    files?: any[];
+  }; //& Discord.MessageCreateOptions;
 
   /**
    * Discord component.

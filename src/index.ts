@@ -74,16 +74,21 @@ client.on("messageCreate", async (message) => {
   const args: any = message.content
     .slice(server.prefix.length)
     .trim()
-    .split(/ +/);
+    .match(/(?:[^\s"]+|"[^"]*")+/g)
+    .map((x) => x.replaceAll(`"`, ""));
   if (args.length > 0) {
     const commandName = args.shift().toLowerCase();
 
-    // Run the command
-    await game.runCommand(commandName, {
-      args,
-      message: message as Message,
-      server,
-    });
+    try {
+      // Run the command
+      const response = await game.runCommand(commandName, {
+        args,
+        message: message as Message,
+        server,
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 });
 
@@ -152,7 +157,7 @@ client.on("interactionCreate", async (interaction) => {
   message.author = interaction.user;
 
   // Run the command
-  await game.runCommand(commandName, { message, server });
+  //await game.runCommand(commandName, { message, server });
 });
 
 // Initialise all events

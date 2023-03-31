@@ -26,7 +26,7 @@ declare global {
     /** Aliases of the command. */
     aliases?: string[];
     /** User arguments for the command. */
-    arguments?: string;
+    arguments?: string; //CommandArguments[];
     /** Category the command belongs to. */
     category?: CommandCategory;
     /** Command cooldown. */
@@ -44,6 +44,29 @@ declare global {
     /** The main command function. */
     execute: Execute;
   }
+
+  /**
+   * Dynamic command arguments.
+   */
+  export interface CommandArgument {
+    name: string;
+    /** Make argument not-optional. */
+    required?: boolean;
+    /** Require argument to be specific type. */
+    type?: "number";
+    /** Check argument against filter. */
+    filter?: (
+      input: string,
+      player: Player,
+      args: string[]
+    ) => Promise<CommandArgumentFilterResult> | CommandArgumentFilterResult;
+  }
+
+  type CommandArgumentFilterResult =
+    | { success: true; message: never }
+    | { success: false; message: string };
+
+  export type CommandTemp = Modify<Command, { arguments: CommandArgument[] }>;
 
   /**
    * User command object without player requirement.
