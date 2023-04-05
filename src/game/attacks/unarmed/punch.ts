@@ -2,7 +2,7 @@ export default {
   // Name of attack (lowercase)
   name: "punch",
   // Type of attack (unarmed, sword, etc)
-  type: ["unarmed"],
+  weaponType: ["unarmed"],
   // Attack description shown in attack command
   description: "A simple punch using your fist.",
   // Attack damages

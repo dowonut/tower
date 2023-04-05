@@ -27,7 +27,7 @@ export default async function runCommand(
       );
 
     // Return if no command found
-    if (!command) throw new Error(`No command found by name ${commandName}`);
+    if (!command) return; //throw new Error(`No command found by name ${commandName}`);
 
     // Create new collection if no cooldown found
     if (!client.cooldowns.has(command.name)) {
@@ -55,7 +55,7 @@ export default async function runCommand(
 
     // If command has no player requirement
     if (command.needChar == false) {
-      return (command as CommandNoPlayer).execute(message, [], player, server);
+      return (command as CommandNoPlayer).execute(message, {}, player, server);
     }
     // Check if user has player character
     else if (command.needChar && !player) {
@@ -129,14 +129,14 @@ export default async function runCommand(
 
       // Try to run the command
       try {
-        await game.parseCommandArguments({
+        const parsedArgs = await game.parseCommandArguments({
           playerArgs: args,
           command,
           player,
           server,
         });
         //const beforeCommand = Date.now();
-        command.execute(message, args, player, server);
+        command.execute(message, parsedArgs, player, server);
         //const afterCommand = Date.now();
         // console.log(
         //   `command ${command.name} executed in ${

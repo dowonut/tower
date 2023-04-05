@@ -9,6 +9,10 @@ import fs from "fs";
 const EnemyBaseClass = createClassFromType<EnemyBase>();
 
 export class EnemyClass extends EnemyBaseClass {
+  // Define defaults
+  strong = [];
+  weak = [];
+
   constructor(enemy: Generic<EnemyBase>) {
     super(enemy);
 
@@ -21,8 +25,8 @@ export class EnemyClass extends EnemyBaseClass {
       };
 
       // Combine strengths and weaknesses
-      if (this.strong) this.strong = this.strong.concat(this.strong);
-      if (this.weak) this.weak = this.weak.concat(this.weak);
+      if (this.type.strong) this.strong = this.strong.concat(this.type.strong);
+      if (this.type.weak) this.weak = this.weak.concat(this.type.weak);
     }
     // Throw error if enemy doesn't belong to any type
     else {

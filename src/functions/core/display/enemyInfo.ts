@@ -11,6 +11,8 @@ export default async function enemyInfo(player: Player) {
   const emojis = config.emojis.damage;
   const image = enemy.getImage();
 
+  console.log(enemy);
+
   const strong = enemy.strong.map((x) => config.emojis.damage[x]).join(" ");
   const weak = enemy.weak.map((x) => config.emojis.damage[x]).join(" ");
 

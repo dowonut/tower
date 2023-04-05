@@ -4,7 +4,7 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "iteminfo",
   aliases: ["ii"],
-  arguments: "<item name>",
+  arguments: [{ name: "item_name", type: "playerOwnedItem" }],
   description: "Get detailed information about an item.",
   category: "items",
   useInCombat: true,
@@ -13,7 +13,7 @@ export default {
       return game.error({ message, content: "provide the name of an item." });
 
     // Get player item
-    let item = await player.getItem(args.join(" "));
+    let item = await player.getItem(args.item_name);
 
     // Check if showing sellbuttons
     let showingSellRow = false;
@@ -198,7 +198,7 @@ export default {
     async function eat() {
       await game.runCommand("eat", { message, args: [item.name], server });
 
-      const newItem = await player.getItem(args.join(" "));
+      const newItem = await player.getItem(args.item_name);
       item.quantity = newItem ? newItem.quantity : 0;
       await updateEmbed();
       await updateButtonRow();
@@ -212,7 +212,7 @@ export default {
         server,
       });
 
-      const newItem = await player.getItem(args.join(" "));
+      const newItem = await player.getItem(args.item_name);
       item.quantity = newItem ? newItem.quantity : 0;
       await updateEmbed();
       await updateButtonRow();
@@ -302,7 +302,7 @@ export default {
     async function drink() {
       await game.runCommand("drink", { message, args: [item.name], server });
 
-      const newItem = await player.getItem(args.join(" "));
+      const newItem = await player.getItem(args.item_name);
       item.quantity = newItem ? newItem.quantity : 0;
       await updateEmbed();
       await updateButtonRow();

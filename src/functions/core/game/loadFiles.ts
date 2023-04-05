@@ -35,7 +35,7 @@ export default async function loadFiles<Type>(
         const { default: itemType } = await import(
           `../../../game/enemyTypes/${item.type}.js`
         );
-        finalItem = { ...item, type: { ...itemType } };
+        finalItem = { ...finalItem, type: { ...itemType } };
       } catch (err) {
         continue;
       }

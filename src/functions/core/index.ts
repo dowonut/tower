@@ -24,6 +24,7 @@ export { default as getItem } from "./get/getItem.js";
 export { default as getPlayer } from "./get/getPlayer.js";
 export { default as getRegion } from "./get/getRegion.js";
 export { default as getUser } from "./get/getUser.js";
+export { default as checkQuantity } from "./math/checkQuantity.js";
 export { default as cycleArray } from "./math/cycleArray.js";
 export { default as getRandom } from "./math/getRandom.js";
 export { default as getWeightedArray } from "./math/getWeightedArray.js";

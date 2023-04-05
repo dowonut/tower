@@ -1,17 +1,16 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "attack",
   aliases: ["a"],
   description: "Attack the enemy you're fighting.",
-  arguments: "<attack name>",
+  arguments: [{ name: "attack_name", type: "playerAvailableAttack" }],
   category: "combat",
   useInCombat: true,
   cooldown: "1",
   async execute(message, args, player, server) {
     // Format imput
-    const input = args.join(" ").toLowerCase();
+    const input = args.attack_name;
 
     // Check if user specified attack
     if (args[0]) {
@@ -25,16 +24,16 @@ export default {
       if (!player.canAttack)
         return game.error({ message, content: "you can't attack right now." });
 
-      if (!isNaN(args[0]))
-        return game.error({
-          message,
-          content: "provide the name of the attack you want to use.",
-        });
+      // if (!isNaN(args[0]))
+      //   return game.error({
+      //     message,
+      //     content: "provide the name of the attack you want to use.",
+      //   });
 
       const attack = await player.getAttack(input);
 
-      if (!attack)
-        return game.error({ message, content: "not a valid attack." });
+      // if (!attack)
+      //   return game.error({ message, content: "not a valid attack." });
 
       if (attack.remCooldown > 0)
         return game.error({
@@ -42,21 +41,21 @@ export default {
           content: "this attack is still on cooldown.",
         });
 
-      return await performAttack(message, config, player, server, attack);
+      return await performAttack(message, player, server, attack);
     } else {
-      return await listAttacks(message, config, player);
+      return await listAttacks(message, player);
     }
   },
-};
+} as Command;
 
 // List all attacks when no name is provided
 
-async function listAttacks(message, config, player) {
+async function listAttacks(message: Message, player: Player) {
   let description = ``;
   const attacks = await player.getAttacks();
 
   // Fetch enemy
-  let enemy = await player.getCurrentEnemy();
+  let enemy = await player.getEnemy();
 
   for (const attack of attacks) {
     const damageInfo = await attack.damageInfo(player, enemy);
@@ -93,11 +92,16 @@ async function listAttacks(message, config, player) {
 
 // Perform attack after name is provided
 
-async function performAttack(message, config, player, server, attack) {
+async function performAttack(
+  message: Message,
+  player: Player,
+  server: Server,
+  attack: Attack
+) {
   await player.update({ canAttack: false });
 
   // Get current enemy
-  let enemy = await player.getCurrentEnemy();
+  let enemy = await player.getEnemy();
 
   // Get damage from attack
   const damage = await attack.getDamage(player, enemy);
@@ -166,11 +170,16 @@ async function performAttack(message, config, player, server, attack) {
     );
 
     // Add explore button
-    game.cmdButton(message, reply, ["explore", message, [], server]);
+    game.commandButton({ message, reply, server, command: "explore" });
 
     // Add stats button
     if (levelReply) {
-      game.cmdButton(message, levelReply, ["stats", message, [], server]);
+      game.commandButton({
+        server,
+        message,
+        reply: levelReply,
+        command: "stats",
+      });
     }
 
     // Unlock new commands
@@ -206,7 +215,7 @@ async function performAttack(message, config, player, server, attack) {
       });
 
       // Send attack message
-      game.reply(message, attackMessage, false);
+      game.send({ message, content: attackMessage, reply: true });
 
       await player.update({ canAttack: true });
 
@@ -214,7 +223,7 @@ async function performAttack(message, config, player, server, attack) {
       if (playerData.health <= 0) {
         const deathMessage = `:skull_crossbones: **\`You died!\`** :skull_crossbones:`;
 
-        await game.reply(message, deathMessage, true, config.red, "");
+        await game.send({ message, content: deathMessage, reply: true });
 
         await player.erase();
         await game.createPlayer(message.author, player.unlockedCommands);

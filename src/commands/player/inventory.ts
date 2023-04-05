@@ -3,7 +3,6 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "inventory",
   aliases: ["i"],
-  arguments: "",
   description: "List all your items.",
   category: "player",
   useInCombat: true,

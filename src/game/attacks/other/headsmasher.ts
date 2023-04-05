@@ -2,7 +2,7 @@ export default {
   // Name of attack (lowercase)
   name: "headsmasher",
   // Type of attack (unarmed, sword, etc)
-  type: ["rock"],
+  weaponType: ["rock"],
   // Attack description shown in attack command
   description: "Brutally smash a rock against your enemy's head.",
   // Attack damages
@@ -16,4 +16,4 @@ export default {
     "You channel the energy of your caveman ancestors, brutally crushing the rock against ENEMY and dealing DAMAGE",
     "ENEMY is completely annihilated by the rock and takes DAMAGE",
   ],
-};
+} satisfies AttackData;

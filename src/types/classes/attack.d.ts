@@ -5,12 +5,14 @@ declare global {
   export type AttackData = {
     name: string;
     /** Attack type. Dictates the requirements for being able to use it. For example: "sword" can only be uses when wielding a sword type weapon. */
-    type: AttackType[];
+    weaponType: AttackType[];
     description: string;
     /** All damage dealt by the attack. */
     damage: AttackDamage[];
     /** Message sent when using the attack. Variables: ENEMY, DAMAGE. */
     messages: string[];
+    /** How many combat rounds between uses. */
+    cooldown?: number;
   };
 
   export type AttackDamage = {

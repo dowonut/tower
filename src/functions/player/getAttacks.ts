@@ -9,7 +9,7 @@ export default (async function () {
     where: { playerId: this.id },
   });
 
-  let attackArray = [];
+  let attackArray: Attack[] = [];
 
   for (const playerAttack of playerAttacks) {
     const attackClass = attacks.find(
@@ -27,9 +27,11 @@ export default (async function () {
 
   if (this.hand) {
     const item = await this.getItem(this.hand);
-    finalArray = attackArray.filter((x) => x.type.includes(item.weaponType));
+    finalArray = attackArray.filter((x) =>
+      x.weaponType.includes(item.weaponType)
+    );
   } else {
-    finalArray = attackArray.filter((x) => x.type.includes("unarmed"));
+    finalArray = attackArray.filter((x) => x.weaponType.includes("unarmed"));
   }
 
   return finalArray;

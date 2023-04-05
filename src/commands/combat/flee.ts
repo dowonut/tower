@@ -1,6 +1,5 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "flee",
   aliases: ["fl"],
@@ -8,10 +7,10 @@ export default {
   category: "combat",
   useInCombatOnly: true,
   async execute(message, args, player, server) {
-    const enemy = await player.getCurrentEnemy();
+    //const enemy = await player.getEnemy();
 
     player.exitCombat();
-    player.killEnemy(enemy);
+    player.killEnemy();
 
     const reply = await game.send({
       message,
@@ -20,6 +19,6 @@ export default {
     });
 
     // Add explore button
-    return game.cmdButton(message, reply, ["explore", message, [], server]);
+    return game.commandButton({ message, reply, server, command: "explore" });
   },
-};
+} as Command;

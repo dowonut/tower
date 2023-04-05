@@ -30,4 +30,4 @@ export default {
 
     // console.dir(items[0].getEmoji());
   },
-} as CommandTemp;
+} as Command;

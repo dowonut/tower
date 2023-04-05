@@ -26,7 +26,7 @@ declare global {
     /** Aliases of the command. */
     aliases?: string[];
     /** User arguments for the command. */
-    arguments?: string; //CommandArguments[];
+    arguments?: CommandArgument[];
     /** Category the command belongs to. */
     category?: CommandCategory;
     /** Command cooldown. */
@@ -53,18 +53,34 @@ declare global {
     /** Make argument not-optional. */
     required?: boolean;
     /** Require argument to be specific type. */
-    type?: "number";
+    type?: CommandArgumentType;
     /** Check argument against filter. */
     filter?: (
       input: string,
       player: Player,
-      args: string[]
+      args: any
     ) => Promise<CommandArgumentFilterResult> | CommandArgumentFilterResult;
   }
 
+  /**
+   * Possible argument types for commands.
+   */
+  type CommandArgumentType =
+    | "number"
+    | "playerOwnedItem"
+    | "playerAvailableAttack";
+
+  /**
+   * Object containing parsed player arguments.
+   */
+  type CommandParsedArguments = { [key: string]: string };
+
+  /**
+   * Object to return for command argument filters.
+   */
   type CommandArgumentFilterResult =
-    | { success: true; message: never }
-    | { success: false; message: string };
+    | { success: true; message: never; content?: any }
+    | { success: false; message: string; content: never };
 
   export type CommandTemp = Modify<Command, { arguments: CommandArgument[] }>;
 
@@ -79,7 +95,12 @@ declare global {
    * Main command function.
    */
   export interface Execute {
-    (message: Message, args: string[], player: Player, server: any): void;
+    (
+      message: Message,
+      args: CommandParsedArguments,
+      player: Player,
+      server: any
+    ): void;
   }
 
   /**
@@ -88,7 +109,7 @@ declare global {
   interface ExecuteNoPlayer {
     (
       message: Message,
-      args: string[],
+      args: CommandParsedArguments,
       player: Player | void,
       server: any
     ): void;
