@@ -8,6 +8,6 @@ export default (async function (args: Prisma.PlayerUpdateInput) {
   return await game.getPlayer({
     message: this.message,
     server: this.server,
-    discordId: this.discordId,
+    discordId: this.user.discordId,
   });
 } satisfies PlayerFunction);

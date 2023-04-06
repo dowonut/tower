@@ -1,6 +1,9 @@
 import { MessageCreateOptions, TextChannel } from "discord.js";
 import { game, config } from "../../../tower.js";
 
+/**
+ * Send an embed with the default bot format.
+ */
 export default async function fastEmbed<T extends boolean>(args: {
   message: Message;
   player: Player;
@@ -23,7 +26,7 @@ export default async function fastEmbed<T extends boolean>(args: {
   const embedInfo: Embed = {
     author: {
       name: title,
-      icon_url: player.pfp,
+      icon_url: player.user.pfp,
     },
     color: parseInt("0x" + player.user.embed_color),
   };

@@ -4,9 +4,9 @@ import tutorials from "../../game/_classes/tutorials.js";
 export default (async function (message: Message, commandNames: string[]) {
   let tutorialRefs = [];
   for (const commandName of commandNames) {
-    if (!this.unlockedCommands.includes(commandName)) {
-      await prisma.player.update({
-        where: { id: this.id },
+    if (!this.user.unlockedCommands.includes(commandName)) {
+      await prisma.user.update({
+        where: { id: this.userId },
         data: {
           unlockedCommands: { push: commandName },
         },

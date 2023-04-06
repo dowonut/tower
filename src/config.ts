@@ -9,6 +9,7 @@ export const red = 0xff3838;
 export const purple = 0x9600ff;
 export const botBanner = "https://i.imgur.com/RwqxsiL.png";
 export const botIcon = "https://i.imgur.com/S9LRuXa.png";
+export const developerId = "326536300985581568";
 
 export const emojis = {
   bullet: "<:bullet:1007341922479771648>",
@@ -99,6 +100,28 @@ export const shardTypes = [
   "legendary",
 ] as const;
 export const attackTypes = ["unarmed", ...weaponTypes] as const;
+export const commandCategories = [
+  "general",
+  "player",
+  "location",
+  "item",
+  "crafting",
+  "combat",
+  "settings",
+  "other",
+  "admin",
+] as const;
+export const commandCategoryDescriptions = {
+  general: "General commands.",
+  player: "Commands relating to your character.",
+  location: "Commands to travel and move in the game.",
+  item: "Commands relating to items.",
+  crafting: "Commands relating to crafting and recipes.",
+  combat: "Commands relating to combat and cool things.",
+  settings: "Boring commands for changing settings.",
+  other: "Commands I didn't know where to put.",
+  admin: "Hands off! Admins only.",
+};
 
 export const defaultAttackMessage = "ENEMY attacks PLAYER and deals DAMAGE";
 

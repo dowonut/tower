@@ -1,4 +1,4 @@
-import { GuildMember, User as DiscordUser } from "discord.js";
+import { User as DiscordUser } from "discord.js";
 import { game, prisma } from "../../../tower.js";
 
 /**
@@ -27,20 +27,25 @@ export default async function createPlayer(
     where: { discordId: user.id },
   });
   if (!userData) {
-    await prisma.user.create({ data: { discordId: user.id } });
+    userData = await prisma.user.create({
+      data: {
+        discordId: user.id,
+        username: user.username,
+        discriminator: user.discriminator,
+        pfp: user.displayAvatarURL({
+          size: 128,
+          extension: "png",
+        }),
+        unlockedCommands: unlockedCommands,
+      },
+    });
   }
 
   // Create new player in database
   const playerData = await prisma.player.create({
     data: {
-      discordId: user.id,
-      username: user.username,
-      discriminator: user.discriminator,
-      pfp: user.displayAvatarURL({
-        size: 128,
-        extension: "png",
-      }),
-      unlockedCommands: unlockedCommands,
+      userId: userData.id,
+      guildId: server.serverId,
     },
   });
 

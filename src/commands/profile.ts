@@ -4,30 +4,12 @@ export default {
   name: "profile",
   description: "Show all relevant information about your character.",
   aliases: ["pr", "p"],
+  arguments: [{ name: "user", type: "user", required: false }],
   //  category: "General",
   useInCombat: true,
   async execute(message, args, player, server) {
-    if (args[0] && args[0].startsWith("<@")) {
-      const user = message.mentions.users.first();
-
-      game.send({ channel: message.channel });
-
-      // fetch player data when pinging
-      if (user) {
-        const playerData = await game.getPlayer({
-          discordId: user.id,
-          server: server,
-          message: message,
-        });
-
-        if (!playerData)
-          return game.error({
-            message,
-            content: "this user has no character.",
-          });
-
-        player = playerData;
-      }
+    if (args.user) {
+      player = args.user;
     }
 
     const { embedVariable: format } = game;
@@ -78,10 +60,10 @@ export default {
     const embed = {
       color: parseInt("0x" + color),
       author: {
-        name: player.username + "#" + player.discriminator,
+        name: player.user.username + "#" + player.user.discriminator,
       },
       thumbnail: {
-        url: player.pfp,
+        url: player.user.pfp,
       },
       description: description,
     };
@@ -94,7 +76,7 @@ export default {
     // ]);
 
     // Check if player is same as the message author
-    const playerIsAuthor = player.discordId == message.author.id;
+    const playerIsAuthor = player.user.discordId == message.author.id;
     let sentInventory = false;
     let sentEquipment = false;
 

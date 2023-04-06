@@ -16,7 +16,7 @@ export default async function enemyInfo(player: Player) {
   const strong = enemy.strong.map((x) => config.emojis.damage[x]).join(" ");
   const weak = enemy.weak.map((x) => config.emojis.damage[x]).join(" ");
 
-  const title = enemy.getName() + ` (fighting ` + player.username + `)`;
+  const title = enemy.getName() + ` (fighting ` + player.user.username + `)`;
   let description = `
 *${enemy.description}*
         
@@ -49,7 +49,7 @@ Weaknesses: ${weak}
     description: description,
     color: config.botColor,
     author: {
-      icon_url: player.pfp,
+      icon_url: player.user.pfp,
       name: title,
     },
   };

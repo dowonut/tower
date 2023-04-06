@@ -4,7 +4,7 @@ import { game, prisma, playerFunctions } from "../../../tower.js";
 export default async function getPlayer(args: {
   message?: Message;
   discordId?: string;
-  server?: Server;
+  server: Server;
 }) {
   const { message, discordId, server } = args;
 
@@ -18,18 +18,20 @@ export default async function getPlayer(args: {
   // Get user
   const user = await game.getUser({ discordId: playerId });
 
+  if (!user) return;
+
   // Get player from database
   let playerData = await prisma.player.findUnique({
-    where: { discordId: playerId },
+    where: { guildId_userId: { guildId: server.serverId, userId: user.id } },
   });
   // Check if player has entry in database-
-  if (!playerData) throw new Error("No player found.");
+  if (!playerData) return; //throw new Error("No player found.");
 
   let player: Player = { ...playerData, ...playerFunctions };
 
   if (message) player.message = message;
   if (server) player.server = server;
-  if (user) player.user = user;
+  player.user = user;
 
   return player;
 }

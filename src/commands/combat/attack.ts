@@ -4,7 +4,9 @@ export default {
   name: "attack",
   aliases: ["a"],
   description: "Attack the enemy you're fighting.",
-  arguments: [{ name: "attack_name", type: "playerAvailableAttack" }],
+  arguments: [
+    { name: "attack_name", type: "playerAvailableAttack", required: false },
+  ],
   category: "combat",
   useInCombat: true,
   cooldown: "1",
@@ -13,7 +15,7 @@ export default {
     const input = args.attack_name;
 
     // Check if user specified attack
-    if (args[0]) {
+    if (args.attack_name) {
       // Check if player is in combat
       if (!player.inCombat)
         return game.error({
@@ -81,7 +83,7 @@ async function listAttacks(message: Message, player: Player) {
   const embed = {
     color: config.botColor,
     author: {
-      icon_url: player.pfp,
+      icon_url: player.user.pfp,
       name: "Available Attacks",
     },
     description: description,
@@ -107,7 +109,7 @@ async function performAttack(
   const damage = await attack.getDamage(player, enemy);
 
   // Get chosen attack from enemy
-  let enemyAttack = enemy.chooseAttack(player);
+  let baseEnemyAttack = enemy.chooseAttack(player);
 
   // Deal damage to enemy
   const enemyData = await player.updateEnemy({
@@ -138,7 +140,7 @@ async function performAttack(
   });
 
   // Set attack cooldown
-  let cooldown;
+  let cooldown: number;
   if (attack.cooldown) {
     cooldown = attack.cooldown;
   } else {
@@ -163,11 +165,11 @@ async function performAttack(
     player.killEnemy();
 
     // Give loot to player
-    const { reply, levelReply } = await player.enemyLoot(
+    const { reply, levelReply } = await player.giveEnemyLoot({
       enemy,
       server,
-      message
-    );
+      message,
+    });
 
     // Add explore button
     game.commandButton({ message, reply, server, command: "explore" });
@@ -183,7 +185,7 @@ async function performAttack(
     }
 
     // Unlock new commands
-    player.unlockCommands(message, server, ["inventory", "skills"]);
+    player.unlockCommands(message, ["inventory", "skills"]);
 
     // Exit out of combat
     player.exitCombat();
@@ -192,7 +194,7 @@ async function performAttack(
   }
 
   // Get player damage
-  enemyAttack.damage = await player.getDamageTaken(enemyAttack.damage);
+  let enemyAttack = await player.getDamageTaken(baseEnemyAttack);
 
   // Update player health
   const playerData = await player.update({
@@ -225,8 +227,13 @@ async function performAttack(
 
         await game.send({ message, content: deathMessage, reply: true });
 
+        console.log("erasing player...");
         await player.erase();
-        await game.createPlayer(message.author, player.unlockedCommands);
+        await game.createPlayer(
+          message.author,
+          server,
+          player.user.unlockedCommands
+        );
 
         resolve("KILLED_PLAYER");
       }
@@ -237,9 +244,9 @@ async function performAttack(
   // Function to get attack message
   function getAttackMessage(object) {
     const { enemy, damage, player, attack } = object;
-    let attackMsg;
-    let healthText;
-    let statTitle;
+    let attackMsg: string;
+    let healthText: string;
+    let statTitle: string;
     const healthE = config.emojis.health;
     // If player is attacking
     if (object.source == "player") {

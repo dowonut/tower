@@ -58,7 +58,7 @@ export class EnemyClass extends EnemyBaseClass {
   }
 
   /** Get all attacks. */
-  getAttacks() {
+  getAttacks(): EnemyEvaluatedAttack[] {
     // Fetch all class attacks available to the enemy
     let attacks = this.type.attacks.filter((x) =>
       this.attacks.includes(x.name)
@@ -88,7 +88,7 @@ export class EnemyClass extends EnemyBaseClass {
 
   /** Get attack damage. */
   getDamage(input: EnemyAttack) {
-    let damage: EnemyEvaluatedAttackDamage = { damages: [], min: 0, max: 0 };
+    let damage: EnemyAttackEvaluatedDamage = { damages: [], min: 0, max: 0 };
     for (const value of input.damage) {
       // Sex values
       let damageMin = value.min;
@@ -117,7 +117,7 @@ export class EnemyClass extends EnemyBaseClass {
   }
 
   /** Format attack message. */
-  attackMessage(attack: EnemyAttack, player: Player) {
+  attackMessage(attack: EnemyEvaluatedAttack, player: Player) {
     let message: string;
 
     // Revert to default message if none found.
@@ -126,12 +126,12 @@ export class EnemyClass extends EnemyBaseClass {
     } else {
       message = getRandom(attack.messages);
     }
-    const damages = attack.evaluatedDamage.damages.map(
+    const damages = attack.damage.damages.map(
       (x) => `\`${x.final}\`${config.emojis.damage[x.type]}`
     );
     const damageText = damages.join(" ");
 
-    message = message.replace("PLAYER", `<@${player.discordId}>`);
+    message = message.replace("PLAYER", `<@${player.user.discordId}>`);
     message = message.replace("ENEMY", `**${this.getName()}**`);
     message = message.replace("DAMAGE", damageText + " damage");
 

@@ -6,12 +6,9 @@ export default {
   aliases: ["ii"],
   arguments: [{ name: "item_name", type: "playerOwnedItem" }],
   description: "Get detailed information about an item.",
-  category: "items",
+  category: "item",
   useInCombat: true,
   async execute(message, args, player, server) {
-    if (!args[0])
-      return game.error({ message, content: "provide the name of an item." });
-
     // Get player item
     let item = await player.getItem(args.item_name);
 
@@ -208,7 +205,7 @@ export default {
     async function sell(quantity = 1) {
       await game.runCommand("sell", {
         message,
-        args: [item.name, "$", quantity.toString()],
+        args: [item.name, quantity.toString()],
         server,
       });
 

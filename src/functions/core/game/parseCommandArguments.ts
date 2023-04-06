@@ -1,4 +1,4 @@
-import { game } from "../../../tower.js";
+import { game, prisma, config } from "../../../tower.js";
 
 export default async function parseCommandArguments(options: {
   playerArgs: string[];
@@ -8,7 +8,7 @@ export default async function parseCommandArguments(options: {
 }) {
   const { playerArgs, command, player, server } = options;
 
-  let argsObject: any = {};
+  let argsObject: CommandParsedArguments = {};
 
   if (!Array.isArray(command.arguments)) return;
 
@@ -19,11 +19,13 @@ export default async function parseCommandArguments(options: {
 
     // Format command arguments
     let commandArguments = game.formatCommandArguments(
-      command.arguments,
+      command,
+      server,
       argument.name
     );
 
-    let commandText = displayCommand(commandArguments);
+    //let commandText = displayCommand(commandArguments);
+    let commandText = commandArguments;
     let errorContent: undefined | string;
 
     // Handle missing required type
@@ -36,7 +38,7 @@ export default async function parseCommandArguments(options: {
     argsObject[argument.name] = input || undefined;
 
     // Handle argument type
-    if (argument.type) {
+    if (argument.type && input) {
       // Number type
       switch (argument.type) {
         case "number":
@@ -56,19 +58,69 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
+        // Must be the name of an item owned by the player
         case "playerOwnedItem":
           const item = await player.getItem(input);
           if (!item) {
-            errorContent = `No item found with name \`${input}\``;
+            errorContent = `No item found with name **\`${input}\`**`;
             error();
           }
+          break;
 
+        // Must be the name of an attack available to the player
         case "playerAvailableAttack":
           const attack = await player.getAttack(input);
           if (!attack) {
-            errorContent = `No attack found with name \`${input}\``;
+            errorContent = `No attack found with name **\`${input}\`**`;
             error();
           }
+          break;
+
+        case "commandCategory":
+          if (
+            !config.commandCategories.includes(
+              input.toLowerCase() as CommandCategory
+            )
+          ) {
+            let commandCategories = config.commandCategories
+              .filter((x) => x !== "admin")
+              .map((x) => `\`${x}\``)
+              .join(", ");
+            errorContent = `**\`${input}\`** is not a valid command category.\nCategories: ${commandCategories}`;
+            error();
+          } else {
+            argsObject[argument.name] = input.toLowerCase();
+          }
+          break;
+
+        // Must be a valid user in the game
+        case "user":
+          let discordId: string;
+          if (input.startsWith("<@") && input.endsWith(">")) {
+            discordId = input.slice(2, -1);
+          } else if (!isNaN(+input)) {
+            discordId = input;
+          } else {
+            const userSearch = await prisma.user.findMany({
+              where: { username: { equals: input, mode: "insensitive" } },
+            });
+            if (userSearch[0]) {
+              discordId = userSearch[0].discordId;
+            } else {
+              errorContent = `No user found with username **\`${input}\`**`;
+              error();
+            }
+          }
+          console.log(discordId);
+
+          const playerReference = await game.getPlayer({ discordId, server });
+          if (!playerReference) {
+            errorContent = `No user found with ID **\`${discordId}\`**`;
+            error();
+          } else {
+            argsObject[argument.name] = playerReference;
+          }
+          break;
       }
     }
 
@@ -90,7 +142,7 @@ export default async function parseCommandArguments(options: {
     function error() {
       throw new game.cmdError({
         type: "argumentError",
-        message: commandText + "└ " + errorContent,
+        message: commandText + "❌ " + errorContent,
       });
     }
   }
@@ -102,7 +154,7 @@ export default async function parseCommandArguments(options: {
   /**
    * Create formatted text showing command and arguments.
    */
-  function displayCommand(commandArguments: any) {
-    return `\`${server.prefix}${command.name}\` ${commandArguments}\n`;
-  }
+  // function displayCommand(commandArguments: any) {
+  //   return `\`${server.prefix}${command.name}\` ${commandArguments}\n`;
+  // }
 }

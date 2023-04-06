@@ -8,7 +8,7 @@ export default {
     { name: "quantity", type: "number", required: false },
   ],
   description: "Sell items in your inventory.",
-  category: "items",
+  category: "item",
   async execute(message, args, player, server) {
     let quantity: string | number = args.quantity;
 

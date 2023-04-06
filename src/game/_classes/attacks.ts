@@ -24,7 +24,7 @@ export class AttackClass extends AttackClassBase {
   }
 
   // Calculate all damage bonuses
-  async damageBonus(player) {
+  async damageBonus(player: Player) {
     const item = await player.getEquipped("hand");
 
     if (!item) return 0;
@@ -33,8 +33,8 @@ export class AttackClass extends AttackClassBase {
   }
 
   // Calculate damage multipliers
-  async damageMultiplier(player) {
-    const passives = await player.getPassives("damage");
+  async damageMultiplier(player: Player) {
+    const passives = await player.getPassives({ target: "damage" });
 
     let skillValue = 0;
     let potionValue = 0;
@@ -62,8 +62,8 @@ export class AttackClass extends AttackClassBase {
     return damageMultiplier;
   }
 
-  // Get total damage
-  async getDamage(player: Player, enemy: Enemy) {
+  /** Get total damage of attack. Enemy is optional. */
+  async getDamage(player: Player, enemy?: Enemy) {
     // Base damage
     let damage = await this.baseDamage();
 
@@ -107,8 +107,8 @@ export class AttackClass extends AttackClassBase {
     return damage;
   }
 
-  // Formats text for damage info
-  async damageInfo(player, enemy) {
+  /** Format text with damage info. */
+  async damageInfo(player: Player, enemy?: Enemy) {
     let text = [];
     const damage = await this.getDamage(player, enemy);
     for (const dmg of damage.damages) {
@@ -120,7 +120,7 @@ export class AttackClass extends AttackClassBase {
     return text.join(" ");
   }
 
-  // Format attack message
+  /** Format attack message. */
   attackMessage(attack: any, enemy: Enemy) {
     if (!this.messages) return undefined;
 

@@ -50,6 +50,7 @@ declare global {
    */
   export type EnemyType = {
     name: string;
+    /** Base XP dropped by enemy type. Value is combined with specific enemy XP. */
     xp: { min: number; max: number };
     /** Class resistances. */
     strong?: DamageType[];
@@ -69,8 +70,15 @@ declare global {
     /** How many combat rounds the attack takes to cooldown. */
     cooldown?: number;
     damage: EnemyAttackDamage[];
-    evaluatedDamage?: EnemyEvaluatedAttackDamage;
   };
+
+  /**
+   * Enemy attack with evaluated damage.
+   */
+  export type EnemyEvaluatedAttack = Modify<
+    EnemyAttack,
+    { damage: EnemyAttackEvaluatedDamage }
+  >;
 
   /**
    * Base attack damage before calculations.
@@ -86,10 +94,12 @@ declare global {
   /**
    * Final attack damage after all calculations.
    */
-  type EnemyEvaluatedAttackDamage = {
+  type EnemyAttackEvaluatedDamage = {
     damages: any[];
     min: number;
     max: number;
+    /** Do not assign. Final evaluated damage dealt to player. */
+    total?: number;
   };
 }
 

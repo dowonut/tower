@@ -21,6 +21,8 @@ declare global {
    */
   export type AttackType = typeof config.attackTypes[number];
 
+  export type PassiveTarget = "";
+
   /**
    * Item categories.
    */
@@ -36,16 +38,7 @@ declare global {
   /**
    * Categories for Discord commands.
    */
-  export type CommandCategory =
-    | "general"
-    | "player"
-    | "location"
-    | "items"
-    | "crafting"
-    | "combat"
-    | "settings"
-    | "other"
-    | "admin";
+  export type CommandCategory = typeof config.commandCategories[number];
 
   /**
    * Player stats.

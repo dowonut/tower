@@ -5,7 +5,7 @@ import { game } from "../../tower.js";
  */
 export default (async function () {
   const player = await game.getPlayer({
-    discordId: this.discordId,
+    discordId: this.user.discordId,
     server: this.server,
   });
 

@@ -1,3 +1,9 @@
-export default (async function () {
+import { game, prisma } from "../../tower.js";
 
-} satisfies PlayerFunction)
+/** Erase all player data. */
+export default (async function () {
+  console.log(this.id);
+  await prisma.player.delete({
+    where: { id: this.id },
+  });
+} satisfies PlayerFunction);

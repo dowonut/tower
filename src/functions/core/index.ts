@@ -8,6 +8,7 @@ export { default as fastEmbed } from "./discord/fastEmbed.js";
 export { default as send } from "./discord/send.js";
 export { default as embedVariable } from "./display/embedVariable.js";
 export { default as enemyInfo } from "./display/enemyInfo.js";
+export { default as levelProgress } from "./display/levelProgress.js";
 export { default as progressBar } from "./display/progressBar.js";
 export { default as titleCase } from "./display/titleCase.js";
 export { default as cmdError } from "./game/cmdError.js";

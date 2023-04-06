@@ -58,7 +58,7 @@ export default async function runCommand(
       return (command as CommandNoPlayer).execute(message, {}, player, server);
     }
     // Check if user has player character
-    else if (command.needChar && !player) {
+    else if (!player) {
       return game.send({
         message,
         ping: true,
@@ -75,9 +75,16 @@ export default async function runCommand(
         });
       }
 
+      if (command.dev && message.author.id !== config.developerId) {
+        return game.error({
+          message,
+          content: `this command is only for Dowonut. `,
+        });
+      }
+
       // Check if command is unlocked
       if (
-        !player.unlockedCommands.includes(command.name) &&
+        !player.user.unlockedCommands.includes(command.name) &&
         !authorPerms.has(ADMIN)
       ) {
         return game.error({
@@ -149,7 +156,7 @@ export default async function runCommand(
           let errorTitle: string;
           switch (object.type) {
             case "argumentError":
-              errorTitle = `❌ **Invalid arguments:**`;
+              errorTitle = ""; //`❌ **Invalid arguments:**`;
               break;
             case "internalError":
               errorTitle = `⚠️ **Something went wrong...**`;

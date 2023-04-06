@@ -31,6 +31,8 @@ declare global {
     category?: CommandCategory;
     /** Command cooldown. */
     cooldown?: string;
+    /** The command can only be used by Dowonut. Default: false. */
+    dev?: boolean;
     /** The command is exclusive to admins. Default: false. */
     admin?: boolean;
     /** A character is required to run the command. Default: true. */
@@ -68,12 +70,14 @@ declare global {
   type CommandArgumentType =
     | "number"
     | "playerOwnedItem"
-    | "playerAvailableAttack";
+    | "playerAvailableAttack"
+    | "user"
+    | "commandCategory";
 
   /**
    * Object containing parsed player arguments.
    */
-  type CommandParsedArguments = { [key: string]: string };
+  type CommandParsedArguments = { [key: string]: string | any };
 
   /**
    * Object to return for command argument filters.

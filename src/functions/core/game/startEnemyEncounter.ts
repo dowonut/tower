@@ -36,7 +36,7 @@ export default async function startEnemyEncounter(args: {
     color: config.botColor,
     author: {
       name: `${enemyData.getName()} has appeared!`,
-      icon_url: player.pfp,
+      icon_url: player.user.pfp,
     },
     description: description,
   };
@@ -88,7 +88,7 @@ export default async function startEnemyEncounter(args: {
     data: {
       name: enemyData.name,
       health: enemyData.maxHealth,
-      fighting: player.discordId,
+      fighting: player.user.discordId,
     },
   });
 

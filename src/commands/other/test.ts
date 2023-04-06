@@ -23,6 +23,7 @@ export default {
   ],
   description: "For testing purposes.",
   category: "admin",
+  dev: true,
   async execute(message, args, player, server) {
     const items = await player.getItems({
       sort: "quantity",
