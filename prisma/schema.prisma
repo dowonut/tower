@@ -27,7 +27,7 @@ model User {
   players          Player[]
   unlockedCommands String[]
   // Settings
-  embed_color      String   @default("2f3136") // Their default embed color.
+  embed_color      String   @default("2b2d31") // Their default embed color.
 }
 
 model Player {

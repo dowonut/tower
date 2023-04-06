@@ -15,7 +15,7 @@ export default {
 
     const embed = {
       thumbnail: { url: player.user.pfp },
-      color: config.botColor,
+      color: config.defaultEmbedColor,
       description: `**${auth.username}**, welcome to **Tower**!\nIn this game you progress and become overpowered while gradually climbing the tower.\nCheck out your profile with \`${server.prefix}profile\`\nBegin exploring the first floor with \`${server.prefix}explore\`\nSee the list of available commands with \`${server.prefix}help\``,
     };
 

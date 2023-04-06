@@ -80,16 +80,7 @@ async function listAttacks(message: Message, player: Player) {
     //description += `\n\n*Use an attack with \`${server.prefix}attack <name of attack>\`*`;
   }
 
-  const embed = {
-    color: config.botColor,
-    author: {
-      icon_url: player.user.pfp,
-      name: "Available Attacks",
-    },
-    description: description,
-  };
-
-  game.send({ message, embeds: [embed] });
+  game.fastEmbed({ message, title: "Available Attacks", description, player });
 }
 
 // Perform attack after name is provided

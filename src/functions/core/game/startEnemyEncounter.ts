@@ -27,19 +27,21 @@ export default async function startEnemyEncounter(args: {
 
   // Format description
   const description = `
-\`[ LVL ${enemyData.level} | HP ${enemyData.maxHealth} ]\`  
-    
-\`${server.prefix}attack | ${server.prefix}flee | ${server.prefix}enemyinfo\``;
+*${enemyData.description}*
+
+Level: **\`${enemyData.level}\`** | ${config.emojis.health} **\`${enemyData.maxHealth}\`**
+  `;
 
   // Create embed for start of encounter
   let embed: Embed = {
-    color: config.botColor,
-    author: {
-      name: `${enemyData.getName()} has appeared!`,
-      icon_url: player.user.pfp,
-    },
+    // color: config.defaultEmbedColor,
+    // author: {
+    //   name: `${enemyData.getName()} has appeared!`,
+    //   icon_url: player.user.pfp,
+    // },
     description: description,
   };
+  const title = `${enemyData.getName()} has appeared!`;
 
   if (image) embed.thumbnail = { url: `attachment://${image.name}` };
 
@@ -48,7 +50,7 @@ export default async function startEnemyEncounter(args: {
     {
       id: "attack",
       label: "Attack",
-      style: "secondary",
+      style: "primary",
       function: async (reply, i) => {
         await attack();
       },
@@ -56,7 +58,7 @@ export default async function startEnemyEncounter(args: {
     {
       id: "flee",
       label: "Flee",
-      style: "secondary",
+      style: "primary",
       function: async (reply, i) => {
         await reply.edit({ components: [] });
         flee();
@@ -64,9 +66,8 @@ export default async function startEnemyEncounter(args: {
     },
     {
       id: "enemyinfo",
-      //label: "Enemy Info",
-      emoji: "ℹ",
-      style: "secondary",
+      label: "Info",
+      style: "primary",
       function: async (reply, i) => {
         await enemyInfo();
       },
@@ -75,10 +76,11 @@ export default async function startEnemyEncounter(args: {
   // Format action row
   let row = game.actionRow("buttons", buttons);
 
-  // Send embed
-  const reply = await game.send({
+  const reply = await game.fastEmbed({
     message,
-    embeds: [embed],
+    player,
+    title,
+    embed,
     files: [image],
     components: [row],
   });
@@ -112,10 +114,10 @@ export default async function startEnemyEncounter(args: {
   // Edit embed with enemyinfo
   async function enemyInfo() {
     player = await player.refresh();
-    const { embed, image } = await game.enemyInfo(player);
-    if (!embed) return;
 
-    await reply.edit({ embeds: [embed] });
+    const messageRef = await game.enemyInfo(message, player);
+
+    await reply.edit(messageRef);
 
     const index = buttons.findIndex((obj) => obj.id == "enemyinfo");
     buttons[index].disable = true;

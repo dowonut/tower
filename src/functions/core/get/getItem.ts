@@ -7,7 +7,7 @@ import { game, prisma } from "../../../tower.js";
 export default function getItem(itemName: string) {
   const item = items.find((x) => x.name == itemName.toLowerCase());
 
-  if (!item) throw new Error(`No item found by name ${itemName}`);
+  if (!item) return;
 
   return item;
 }

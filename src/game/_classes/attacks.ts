@@ -1,4 +1,3 @@
-import { emojis } from "../../config.js";
 import { createClassFromType, loadFiles } from "../../functions/core/index.js";
 import { game, config } from "../../tower.js";
 
@@ -115,7 +114,7 @@ export class AttackClass extends AttackClassBase {
       let damageText = `${dmg.min} - ${dmg.max}`;
       if (dmg.min == dmg.max) damageText = `${dmg.max}`;
 
-      text.push(`\`${damageText}\`${emojis.damage[dmg.type]}`);
+      text.push(`\`${damageText}\`${config.emojis.damage[dmg.type]}`);
     }
     return text.join(" ");
   }
@@ -127,7 +126,7 @@ export class AttackClass extends AttackClassBase {
     let message = game.getRandom(this.messages);
 
     const damages = attack.damages.map(
-      (x) => `\`${x.total}\`${emojis.damage[x.type]}`
+      (x) => `\`${x.total}\`${config.emojis.damage[x.type]}`
     );
     const damageText = damages.join(" ");
 

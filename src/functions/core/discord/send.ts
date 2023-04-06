@@ -13,13 +13,18 @@ import { MessageReplyOptions } from "discord.js";
  */
 export default async function send<B extends boolean = true>(args: {
   message?: Message;
+  /** Optional as backup if message not available. */
   channel?: TextChannel;
+  /** Ping the user at the start of the message. Default: false.*/
   ping?: boolean;
+  /** Reply to the user's original message. Default: false. */
   reply?: boolean;
+  /** Regular message content. */
   content?: string;
-  embeds?: any[];
+  embeds?: Embed[];
   components?: any[];
   files?: any[];
+  /** Send the message or return object with message create options. Default: true. */
   send?: B;
 }): Promise<B extends true ? Message : MessageOptions> {
   const {
@@ -52,7 +57,7 @@ export default async function send<B extends boolean = true>(args: {
     // Format embeds
     for (let i = 0; i < embeds.length; i++) {
       if (!embeds[i].color) {
-        embeds[i].color = config.botColor;
+        embeds[i].color = config.defaultEmbedColor;
       }
     }
 

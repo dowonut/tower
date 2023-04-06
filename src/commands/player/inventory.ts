@@ -9,6 +9,12 @@ export default {
   async execute(message, args, player, server) {
     let items = await player.getItems();
 
+    if (!items)
+      return game.error({
+        message,
+        content: "you don't have any items yet...",
+      });
+
     // Create variables for modifying page
     let page = 1;
     let sort = "name";
@@ -86,9 +92,9 @@ export default {
         let emoji = item.getEmoji();
 
         // Set item name
-        description += `\n**${item.getName()}**`;
+        description += `\n${emoji} **${item.getName()}**`;
 
-        if (quantity) description += " | " + quantity;
+        if (quantity) description += " " + quantity;
         if (equipped) description += " | " + equipped;
         if (sort == "value") {
           if (value) description += " | " + value;

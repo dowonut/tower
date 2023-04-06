@@ -3,15 +3,13 @@ import { config, game } from "../../../tower.js";
 /**
  * Get formatted enemy info from player in combat.
  */
-export default async function enemyInfo(player: Player) {
+export default async function enemyInfo(message: Message, player: Player) {
   if (!player.fighting) throw new Error("Player must be fighting an enemy.");
 
   const enemy = await player.getEnemy();
 
   const emojis = config.emojis.damage;
   const image = enemy.getImage();
-
-  console.log(enemy);
 
   const strong = enemy.strong.map((x) => config.emojis.damage[x]).join(" ");
   const weak = enemy.weak.map((x) => config.emojis.damage[x]).join(" ");
@@ -47,14 +45,23 @@ Weaknesses: ${weak}
 
   const embed: Embed = {
     description: description,
-    color: config.botColor,
-    author: {
-      icon_url: player.user.pfp,
-      name: title,
-    },
+    // color: config.defaultEmbedColor,
+    // author: {
+    //   icon_url: player.user.pfp,
+    //   name: title,
+    // },
   };
 
   if (image) embed.thumbnail = { url: `attachment://${image.name}` };
 
-  return { embed, image };
+  const botMessage = await game.fastEmbed({
+    message,
+    player,
+    title,
+    embed: embed,
+    send: false,
+    files: image ? [image] : [],
+  });
+
+  return botMessage;
 }

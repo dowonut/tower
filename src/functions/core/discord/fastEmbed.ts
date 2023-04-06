@@ -2,16 +2,23 @@ import { MessageCreateOptions, TextChannel } from "discord.js";
 import { game, config } from "../../../tower.js";
 
 /**
- * Send an embed with the default bot format.
+ * Send an embed with the default bot formatting.
  */
-export default async function fastEmbed<T extends boolean>(args: {
+export default async function fastEmbed<T extends boolean = true>(args: {
   message: Message;
   player: Player;
+  /** Embed title. */
   title: string;
-  embed: Embed;
+  /** Optional embed description. */
+  description?: string;
+  /** Optional embed object to further customize message. */
+  embed?: Embed;
   components?: any[];
   files?: any[];
+  /** Send the message or return object with message create options. Default: true. */
   send?: T;
+  /** Reply to the user's original message. Default: true. */
+  reply?: boolean;
 }): Promise<T extends true ? Message : MessageOptions> {
   const {
     message,
@@ -21,15 +28,16 @@ export default async function fastEmbed<T extends boolean>(args: {
     components = [],
     files = [],
     send = true,
+    reply = true,
+    description,
   } = args;
 
   const embedInfo: Embed = {
-    author: {
-      name: title,
-      icon_url: player.user.pfp,
-    },
+    title: `**${title}**`,
     color: parseInt("0x" + player.user.embed_color),
   };
+
+  if (description) embedInfo.description = description;
 
   const finalEmbed: Embed = { ...embed, ...embedInfo };
 
@@ -39,5 +47,6 @@ export default async function fastEmbed<T extends boolean>(args: {
     components,
     files,
     send,
+    reply,
   })) as any;
 }

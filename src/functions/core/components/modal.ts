@@ -72,7 +72,7 @@ export default async function modal(args: Modal, interaction: Interaction) {
       interaction.user.username + "#" + interaction.user.discriminator;
 
     const embed = {
-      color: config.botColor,
+      color: config.defaultEmbedColor,
       author: {
         name: "Submitted Form",
         icon_url: interaction.user.displayAvatarURL({

@@ -39,13 +39,9 @@ export default async function parseCommandArguments(options: {
 
     // Handle argument type
     if (argument.type && input) {
-      // Number type
       switch (argument.type) {
         case "number":
-          // Set number to default of 1
-          if (!input) argsObject[argument.name] = "1";
-          else if (input == "all" || input == "a")
-            argsObject[argument.name] = "all";
+          if (input == "all" || input == "a") argsObject[argument.name] = "all";
           // If argument isn't a number
           else if (isNaN(+input)) {
             errorContent = `Argument **\`${argument.name}\`** must be a number`;
@@ -55,13 +51,41 @@ export default async function parseCommandArguments(options: {
           else if (+input <= 0) {
             errorContent = `Argument **\`${argument.name}\`** cannot be less than 0`;
             error();
+          } else if (+input >= 2147483647) {
+            errorContent = `Number too large.`;
+            error();
+          }
+          argsObject[argument.name] = parseInt(input);
+          break;
+
+        // Strict number type
+        case "strictNumber":
+          if (isNaN(+input)) {
+            errorContent = `Argument **\`${argument.name}\`** must be a number`;
+            error();
+          } else if (+input <= 0) {
+            errorContent = `Argument **\`${argument.name}\`** cannot be less than 0`;
+            error();
+          } else if (+input >= 2147483647) {
+            errorContent = `Number too large.`;
+            error();
+          }
+          argsObject[argument.name] = parseInt(input);
+          break;
+
+        // Must be a valid item in the game.
+        case "item":
+          const gameItem = game.getItem(input);
+          if (!gameItem) {
+            errorContent = `No item exists with name **\`${input}\`**`;
+            error();
           }
           break;
 
         // Must be the name of an item owned by the player
         case "playerOwnedItem":
-          const item = await player.getItem(input);
-          if (!item) {
+          const playerItem = await player.getItem(input);
+          if (!playerItem) {
             errorContent = `No item found with name **\`${input}\`**`;
             error();
           }
@@ -76,6 +100,7 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
+        // Must be a valid command category
         case "commandCategory":
           if (
             !config.commandCategories.includes(
@@ -100,6 +125,8 @@ export default async function parseCommandArguments(options: {
             discordId = input.slice(2, -1);
           } else if (!isNaN(+input)) {
             discordId = input;
+          } else if (input == "me") {
+            discordId = player.user.discordId;
           } else {
             const userSearch = await prisma.user.findMany({
               where: { username: { equals: input, mode: "insensitive" } },
@@ -111,7 +138,6 @@ export default async function parseCommandArguments(options: {
               error();
             }
           }
-          console.log(discordId);
 
           const playerReference = await game.getPlayer({ discordId, server });
           if (!playerReference) {
@@ -120,6 +146,16 @@ export default async function parseCommandArguments(options: {
           } else {
             argsObject[argument.name] = playerReference;
           }
+          break;
+      }
+    }
+
+    // Handle defaults
+    if (argument.type && !input) {
+      switch (argument.type) {
+        case "number":
+        case "strictNumber":
+          argsObject[argument.name] = 1;
           break;
       }
     }
@@ -142,7 +178,7 @@ export default async function parseCommandArguments(options: {
     function error() {
       throw new game.cmdError({
         type: "argumentError",
-        message: commandText + "❌ " + errorContent,
+        message: config.emojis.error + " " + errorContent + "\n" + commandText,
       });
     }
   }

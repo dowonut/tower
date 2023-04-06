@@ -59,9 +59,10 @@ export default {
     const color = player.user.embed_color;
     const embed = {
       color: parseInt("0x" + color),
-      author: {
-        name: player.user.username + "#" + player.user.discriminator,
-      },
+      // author: {
+      //   name: player.user.username + "#" + player.user.discriminator,
+      // },
+      title: `**${player.user.username}'s Profile**`,
       thumbnail: {
         url: player.user.pfp,
       },
@@ -85,11 +86,11 @@ export default {
     const row = game.actionRow("buttons", buttons);
 
     // Send embed
-    const reply = (await game.send({
+    const reply = await game.send({
       message,
       embeds: [embed],
       components: [row],
-    })) as Message;
+    });
 
     // Create collector
     game.componentCollector(message, reply, buttons);

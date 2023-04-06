@@ -15,9 +15,6 @@ export default {
     // Fetch item data
     const item = await player.getItem(args.item_name);
 
-    // Return if no item
-    if (!item) return game.error({ message, content: "not a valid item." });
-
     if (!item.value)
       return game.error({ message, content: "you can't sell this item." });
 
@@ -46,11 +43,11 @@ export default {
     game.send({
       message,
       reply: true,
-      content: `you sold \`${quantity}x\` **${item.getName()}** for \`${
+      content: `Sold \`${quantity}x\` **${item.getName()}** for \`${
         item.value * +quantity
-      }\` ${config.emojis.mark} | Total: \`${playerData.marks}\` ${
+      }\` ${config.emojis.mark} (\`${playerData.marks}\` ${
         config.emojis.mark
-      }`,
+      })`,
     });
 
     player.unlockCommands(message, ["merchants"]);

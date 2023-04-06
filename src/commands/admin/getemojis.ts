@@ -1,16 +1,17 @@
+import { GuildEmojiManager } from "discord.js";
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
-  name: "loademojis",
-  aliases: ["le"],
-  arguments: "",
-  description: "Load all emojis.",
+  name: "getemojis",
+  aliases: ["ge"],
+  description: "Get all emojis from guild.",
   category: "admin",
+  needChar: false,
   async execute(message, args, player, server) {
-    const guilds = client.guilds.cache.map((x) => {
-      return { id: x.id, name: x.name, emojis: x.emojis };
-    });
+    const guilds: { id: string; name: string; emojis: any }[] =
+      client.guilds.cache.map((x) => {
+        return { id: x.id, name: x.name, emojis: x.emojis };
+      });
 
     for (let guild of guilds) {
       guild.emojis = (await guild.emojis.fetch()).map((x) => {
@@ -26,7 +27,8 @@ export default {
     for (const emoji of guild.emojis) {
       let animated = emoji.animated ? "a" : "";
       let emojiFormat = `<${animated}:${emoji.name}:${emoji.id}>`;
-      emojiList += `\n${emojiFormat} \`${emojiFormat}\``;
+      //emojiList += `\n${emojiFormat} \`${emojiFormat}\``;
+      emojiList += `\n${emoji.name}: "${emojiFormat}",`;
       //   emojiList += emojiFormat;
     }
 
@@ -34,11 +36,11 @@ export default {
       emojiList =
         emojiList.slice(0, 4000) + "...\nToo many emojis for one embed :(";
 
-    const embed = {
-      color: config.botColor,
-      description: emojiList,
-    };
-
-    game.send({ message, embeds: [embed] });
+    game.fastEmbed({
+      message,
+      player,
+      title: "Emojis",
+      description: `\`\`\`json\n${emojiList}\`\`\``,
+    });
   },
-};
+} as Command;

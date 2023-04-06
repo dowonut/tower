@@ -17,6 +17,7 @@ export { default as createClassObject } from "./game/createClassObject.js";
 export { default as createPlayer } from "./game/createPlayer.js";
 export { default as events } from "./game/events.js";
 export { default as formatCommandArguments } from "./game/formatCommandArguments.js";
+export { default as giveItem } from "./game/giveItem.js";
 export { default as loadFiles } from "./game/loadFiles.js";
 export { default as parseCommandArguments } from "./game/parseCommandArguments.js";
 export { default as runCommand } from "./game/runCommand.js";

@@ -59,6 +59,18 @@ declare global {
    * Player exploration types.
    */
   export type ExplorationType = "enemy" | "loot" | "merchant";
+
+  /**
+   * Possible argument types for commands.
+   */
+  export type CommandArgumentType =
+    | "number"
+    | "strictNumber"
+    | "playerOwnedItem"
+    | "playerAvailableAttack"
+    | "user"
+    | "commandCategory"
+    | "item";
 }
 
 export {};

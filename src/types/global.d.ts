@@ -52,7 +52,7 @@ declare global {
    */
   export interface CommandArgument {
     name: string;
-    /** Make argument not-optional. */
+    /** Argument is required. Default: true. */
     required?: boolean;
     /** Require argument to be specific type. */
     type?: CommandArgumentType;
@@ -65,16 +65,6 @@ declare global {
   }
 
   /**
-   * Possible argument types for commands.
-   */
-  type CommandArgumentType =
-    | "number"
-    | "playerOwnedItem"
-    | "playerAvailableAttack"
-    | "user"
-    | "commandCategory";
-
-  /**
    * Object containing parsed player arguments.
    */
   type CommandParsedArguments = { [key: string]: string | any };
@@ -85,8 +75,6 @@ declare global {
   type CommandArgumentFilterResult =
     | { success: true; message: never; content?: any }
     | { success: false; message: string; content: never };
-
-  export type CommandTemp = Modify<Command, { arguments: CommandArgument[] }>;
 
   /**
    * User command object without player requirement.

@@ -12,6 +12,7 @@ export default {
   arguments: [{ name: "category", type: "commandCategory", required: false }],
   useInCombat: true,
   ignoreInHelp: true,
+  // needChar: false,
   async execute(message, args, player, server) {
     let allCommands: Command[] = [];
     let commandFiles = [];
