@@ -8,8 +8,8 @@ export default {
   category: "combat",
   useInCombatOnly: true,
   async execute(message, args, player, server) {
-    const { embed, image } = await game.enemyInfo(config, player);
+    const messageOptions = await game.enemyInfo(message, player);
 
-    game.fastEmbed(message, player, embed, embed.author.name, image);
+    game.send({ message, ...messageOptions });
   },
-};
+} as Command;

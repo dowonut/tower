@@ -26,8 +26,8 @@ export default (async function (args: {
 
   let lootList = ``;
   for (const item of loots) {
-    lootList += `\n+ ${item.getEmoji()} **${item.getName()}**`;
-    if (item.quantity > 1) lootList += ` | \`x${item.quantity}\``;
+    lootList += `\n${item.getEmoji()} **${item.getName()}**`;
+    if (item.quantity > 1) lootList += ` \`x${item.quantity}\``;
   }
 
   // Check if enemy dropped shard

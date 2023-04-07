@@ -14,7 +14,7 @@ export default {
 
     const reply = await game.send({
       message,
-      content: "you ran away!",
+      content: "You ran away!",
       reply: true,
     });
 

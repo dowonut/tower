@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { PermissionsBitField } from "discord.js";
 const ADMIN = PermissionsBitField.Flags.Administrator;
 
@@ -14,24 +12,8 @@ export default {
   ignoreInHelp: true,
   // needChar: false,
   async execute(message, args, player, server) {
-    let allCommands: Command[] = [];
-    let commandFiles = [];
+    const allCommands = await game.getCommands();
     const authorPerms = message.channel.permissionsFor(message.author);
-    function throughDirectory(directory: any, array: string[]) {
-      fs.readdirSync(directory).forEach((file) => {
-        const absolute = path.join(directory, file);
-        if (fs.statSync(absolute).isDirectory())
-          return throughDirectory(absolute, array);
-        else return array.push(absolute);
-      });
-    }
-    throughDirectory("./src/commands", commandFiles);
-
-    for (const file of commandFiles) {
-      if (!file.endsWith(".ts")) continue;
-      const { default: command } = await import(`../../${file}`);
-      allCommands.push(command);
-    }
 
     // Filter commands according to user
     let allCommandsFiltered: Command[] = [];

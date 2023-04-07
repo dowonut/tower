@@ -220,11 +220,7 @@ async function performAttack(
 
         console.log("erasing player...");
         await player.erase();
-        await game.createPlayer(
-          message.author,
-          server,
-          player.user.unlockedCommands
-        );
+        await game.createPlayer(message.author, server);
 
         resolve("KILLED_PLAYER");
       }

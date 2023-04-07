@@ -1,4 +1,6 @@
+export { default as addAttack } from "./addAttack.js";
 export { default as addExploration } from "./addExploration.js";
+export { default as addPassive } from "./addPassive.js";
 export { default as addRecipe } from "./addRecipe.js";
 export { default as enterCombat } from "./enterCombat.js";
 export { default as erase } from "./erase.js";
@@ -15,6 +17,7 @@ export { default as getItem } from "./getItem.js";
 export { default as getItems } from "./getItems.js";
 export { default as getPassives } from "./getPassives.js";
 export { default as getRegion } from "./getRegion.js";
+export { default as getUnlockedMerchants } from "./getUnlockedMerchants.js";
 export { default as giveEnemyLoot } from "./giveEnemyLoot.js";
 export { default as giveItem } from "./giveItem.js";
 export { default as giveRandomLoot } from "./giveRandomLoot.js";

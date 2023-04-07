@@ -3,21 +3,18 @@ import path from "path";
 
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "unlockallcommands",
   aliases: ["uac"],
-  arguments: "",
   description: "Unlock all commands in the game.",
   category: "other",
   async execute(message, args, player, server) {
-    /** @type {ComponentButton[]} */
-    const buttons = [
+    const buttons: Button[] = [
       {
         id: "yes",
         label: "✔ Yes, unlock all commands.",
         style: "success",
-        function() {
+        async function() {
           return "yes";
         },
       },
@@ -25,7 +22,7 @@ export default {
         id: "no",
         label: "✖",
         style: "danger",
-        function() {
+        async function() {
           return "no";
         },
       },
@@ -48,37 +45,23 @@ This will skip all tutorials, so it's **only recommended for experienced players
     if (result == "yes") {
       await unlockCommands();
       return await reply.edit({
-        content: "**`Unlocked all commands`** :white_check_mark:",
+        content: "**Unlocked all commands** :white_check_mark:",
         components: [],
       });
     }
     // If no, then cancel
     else if (result == "no") {
       return await reply.edit({
-        content: "**`Cancelled operation`**",
+        content: "**Cancelled operation**",
         components: [],
       });
     }
 
     async function unlockCommands() {
-      let commands = [];
-      let commandFiles = [];
-      function throughDirectory(directory, array) {
-        fs.readdirSync(directory).forEach((file) => {
-          const absolute = path.join(directory, file);
-          if (fs.statSync(absolute).isDirectory())
-            return throughDirectory(absolute, array);
-          else return array.push(absolute);
-        });
-      }
-      throughDirectory("./src/commands", commandFiles);
+      const commandFiles = await game.getCommands();
+      const commands = commandFiles.map((x) => x.name);
 
-      for (const file of commandFiles) {
-        const { default: command } = await import(`../../../${file}`);
-        commands.push(command.name);
-      }
-
-      await player.update({ unlockedCommands: commands });
+      await player.update({ user: { update: { unlockedCommands: commands } } });
     }
   },
-};
+} as Command;

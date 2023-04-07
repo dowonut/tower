@@ -110,23 +110,23 @@ client.login(process.env.BOT_TOKEN);
 const rest = new REST({ version: "10" }).setToken(process.env.BOT_TOKEN || "");
 
 // Create slash commands
-const slashCommands = [
-  new ContextMenuCommandBuilder()
-    .setName("Explore")
-    .setType(ApplicationCommandType.Message),
-].map((cmd) => cmd.toJSON());
+// const slashCommands = [
+//   new ContextMenuCommandBuilder()
+//     .setName("Explore")
+//     .setType(ApplicationCommandType.Message),
+// ].map((cmd) => cmd.toJSON());
 
 // Register slash commands
-(async () => {
-  try {
-    await rest.put(Routes.applicationCommands("855569016810373140"), {
-      body: slashCommands,
-    });
-    console.log("> Loaded application commands.");
-  } catch (error) {
-    console.error(error);
-  }
-})();
+// (async () => {
+//   try {
+//     await rest.put(Routes.applicationCommands("855569016810373140"), {
+//       body: slashCommands,
+//     });
+//     console.log("> Loaded application commands.");
+//   } catch (error) {
+//     console.error(error);
+//   }
+// })();
 
 // On interaction
 client.on("interactionCreate", async (interaction) => {

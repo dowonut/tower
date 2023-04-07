@@ -1,23 +1,24 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "merchants",
   aliases: ["m", "merchant"],
-  arguments: "<merchant type>",
+  arguments: [
+    { name: "merchant", type: "playerAvailableMerchant", required: false },
+  ],
   description: "See all merchants on this floor and the items they sell.",
-  category: "items",
+  category: "item",
   async execute(message, args, player, server) {
-    const input = args.join(" ");
+    const input = args.merchant;
 
-    let embed;
-    let title;
+    let embed: Embed;
+    let title: string;
 
     // Fetch unlocked merchants
     const merchants = await player.getUnlockedMerchants();
 
     // Check if player has unlocked any merchants
-    if (!merchants)
+    if (!merchants[0])
       return game.error({
         message,
         content: `you haven't met any merchants yet. Try exploring the village...`,
@@ -51,7 +52,7 @@ export default {
         return game.error({ message, content: "not a valid merchant." });
 
       let description = ``;
-      const merchantItems = await game.getMerchantItems(merchant.name, player);
+      const merchantItems = await game.getMerchantItems(player, merchant.name);
 
       for (const item of merchantItems) {
         let emoji = item.getEmoji();
@@ -81,9 +82,9 @@ export default {
         description: description,
         footer: { text: `You have ${player.marks} marks` },
       };
-      player.unlockCommands(message, server, ["buy"]);
+      player.unlockCommands(message, ["buy"]);
     }
 
-    game.fastEmbed(message, player, embed, title);
+    game.fastEmbed({ message, player, embed, title });
   },
-};
+} as Command;

@@ -1,31 +1,20 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "buy",
   aliases: ["b"],
-  arguments: "<item name> $ <quantity>|all",
+  arguments: [
+    { name: "item_name", type: "item" },
+    { name: "quantity", required: false, type: "number" },
+  ],
   description: "Purchase items from merchants.",
-  category: "items",
+  category: "item",
   async execute(message, args, player, server) {
-    const variables = args.join(" ").split("$");
-
-    const itemNameInput = variables[0].trim().toLowerCase();
-    const quantityInput = variables[1];
-
-    // Check for valid quantity
-    let quantity = game.checkQuantity(quantityInput, message);
-    if (!quantity) return;
-
-    // Check if item name provided
-    if (!itemNameInput)
-      return game.error({ message, content: "provide the name of an item." });
+    const itemNameInput = args.item_name;
+    let quantity = args.quantity;
 
     // Fetch item data
     const item = game.getItem(itemNameInput);
-
-    // Return if no item
-    if (!item) return game.error({ message, content: "not a valid item." });
 
     // Get item from merchant
     const merchantItem = await game.getMerchantItem(itemNameInput, player);
@@ -107,7 +96,7 @@ export default {
 
     // Unlock equipment
     if (["weapon", "armor"].includes(item.category)) {
-      player.unlockCommands(message, server, ["equipment"]);
+      player.unlockCommands(message, ["equipment"]);
     }
 
     // Unlock recipe
@@ -116,11 +105,11 @@ export default {
         message,
         reply: true,
         content: `you unlocked a new recipe: **${game.titleCase(
-          item.item
+          item.recipeItem
         )}**\nSee all your recipes with \`${server.prefix}recipes\``,
       });
 
-      player.unlockCommands(message, server, ["recipes"]);
+      player.unlockCommands(message, ["recipes"]);
     }
   },
-};
+} as Command;

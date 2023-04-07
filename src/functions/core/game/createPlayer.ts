@@ -4,11 +4,7 @@ import { game, prisma } from "../../../tower.js";
 /**
  * Create a new player given a Discord user.
  */
-export default async function createPlayer(
-  user: DiscordUser,
-  server: Server,
-  commands?: string[]
-) {
+export default async function createPlayer(user: DiscordUser, server: Server) {
   const defaultCommands = [
     "erase",
     "begin",
@@ -20,7 +16,7 @@ export default async function createPlayer(
   ];
 
   // Check if unlocked commands
-  const unlockedCommands = commands ? commands : defaultCommands;
+  const unlockedCommands = defaultCommands;
 
   // Create new user if it doesn't exist
   let userData = await prisma.user.findUnique({

@@ -67,10 +67,12 @@ declare global {
     | "number"
     | "strictNumber"
     | "playerOwnedItem"
+    | "playerAvailableMerchant"
     | "playerAvailableAttack"
     | "user"
     | "commandCategory"
-    | "item";
+    | "item"
+    | "region";
 }
 
 export {};

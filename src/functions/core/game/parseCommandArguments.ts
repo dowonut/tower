@@ -51,11 +51,14 @@ export default async function parseCommandArguments(options: {
           else if (+input <= 0) {
             errorContent = `Argument **\`${argument.name}\`** cannot be less than 0`;
             error();
-          } else if (+input >= 2147483647) {
+          }
+          // If above 32 bit integer limit
+          else if (+input >= 2147483647) {
             errorContent = `Number too large.`;
             error();
+          } else {
+            argsObject[argument.name] = parseInt(input);
           }
-          argsObject[argument.name] = parseInt(input);
           break;
 
         // Strict number type
@@ -100,6 +103,22 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
+        // Must be a merchant unlocked by the player
+        case "playerAvailableMerchant":
+          const merchantErrorMessage = `No merchant found with name or category **\`${input}\`**`;
+          const merchant = game.getMerchant(input);
+          if (!merchant) {
+            errorContent = merchantErrorMessage;
+            error();
+          }
+          const playerMerchants = await player.getUnlockedMerchants();
+          const overlap = playerMerchants.find((x) => x.name == merchant.name);
+          if (!overlap) {
+            errorContent = merchantErrorMessage;
+            error();
+          }
+          break;
+
         // Must be a valid command category
         case "commandCategory":
           if (
@@ -115,6 +134,15 @@ export default async function parseCommandArguments(options: {
             error();
           } else {
             argsObject[argument.name] = input.toLowerCase();
+          }
+          break;
+
+        // Must be a valid region
+        case "region":
+          const region = game.getRegion(player, input);
+          if (!region) {
+            errorContent = `No region found with name **\`${input}\`**\nSee available regions with \`${server.prefix}floor\``;
+            error();
           }
           break;
 

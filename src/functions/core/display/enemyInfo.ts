@@ -18,10 +18,10 @@ export default async function enemyInfo(message: Message, player: Player) {
   let description = `
 *${enemy.description}*
         
-Level: \`${enemy.level}\`
+Level: **\`${enemy.level}\`**
 
 ${game.progressBar(enemy.health, enemy.maxHealth, "health")}
-${config.emojis.health} \`${enemy.health} / ${enemy.maxHealth}\`
+${config.emojis.health} **\`${enemy.health} / ${enemy.maxHealth}\`**
         
 Strengths: ${strong}
 Weaknesses: ${weak}
@@ -36,20 +36,15 @@ Weaknesses: ${weak}
     description += `\n\`${attackName}\` | `;
 
     for (const damage of attack.damage.damages) {
-      let damageText = `${damage.min} - ${damage.max}`;
+      let damageText = `${damage.min}-${damage.max}`;
       if (damage.min == damage.max) damageText = `${damage.max}`;
 
-      description += `\`${damageText}\`${emojis[damage.type]} `;
+      description += `**\`${damageText}\`**${emojis[damage.type]} `;
     }
   }
 
   const embed: Embed = {
     description: description,
-    // color: config.defaultEmbedColor,
-    // author: {
-    //   icon_url: player.user.pfp,
-    //   name: title,
-    // },
   };
 
   if (image) embed.thumbnail = { url: `attachment://${image.name}` };

@@ -1,6 +1,5 @@
 import { game, prisma, config } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "erase",
   description: "Completely reset your character.",
@@ -8,13 +7,12 @@ export default {
   category: "other",
   useInCombat: true,
   async execute(message, args, player, server) {
-    /** @type {ComponentButton[]} */
-    const buttons = [
+    const buttons: Button[] = [
       {
         id: "yes",
         label: "✔ Yes, erase everything.",
         style: "success",
-        function() {
+        async function() {
           return "yes";
         },
       },
@@ -22,7 +20,7 @@ export default {
         id: "no",
         label: "✖",
         style: "danger",
-        function() {
+        async function() {
           return "no";
         },
       },
@@ -33,7 +31,7 @@ export default {
     const reply = await game.send({
       message,
       content:
-        "**`Are you sure you want to permanently erase your character?`**",
+        "⚠️ **Are you sure you want to permanently erase your character?**",
       components: [row],
       reply: true,
     });
@@ -45,19 +43,17 @@ export default {
       // Erase player
       await player.erase();
 
-      // Create new player with unlocked commands
-      await game.createPlayer(message.author, player.unlockedCommands, server);
       return await reply.edit({
-        content: "**`Reset complete`**",
+        content: "**Reset complete** :white_check_mark:",
         components: [],
       });
     }
     // If no, then cancel
     else if (result == "no") {
       return await reply.edit({
-        content: "**`Cancelled operation`**",
+        content: "**Cancelled operation**",
         components: [],
       });
     }
   },
-};
+} as Command;

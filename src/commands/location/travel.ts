@@ -4,26 +4,14 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "travel",
   aliases: ["t"],
-  arguments: "<region name>",
+  arguments: [{ name: "region_name", type: "region" }],
   description: "Travel to a different region on your floor.",
   category: "location",
   async execute(message, args, player, server) {
-    const input = args.join(" ");
-
-    // Check if input
-    if (!input)
-      return game.error({ message, content: `provide the name of a region.` });
+    const input = args.region_name;
 
     // Fetch region data
     const region = game.getRegion(player, input);
-
-    // Check if region exists
-    if (!region)
-      return game.error({
-        message,
-        content: `not a valid region.
-See available regions with \`${server.prefix}floor\``,
-      });
 
     // Get region name
     const regionName = game.titleCase(region.name);
@@ -46,6 +34,6 @@ See available regions with \`${server.prefix}floor\``,
     });
 
     // Add explore button
-    return game.cmdButton(message, reply, ["explore", message, [], server]);
+    return game.commandButton({ message, reply, command: "explore", server });
   },
-};
+} as Command;

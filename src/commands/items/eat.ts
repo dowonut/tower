@@ -15,7 +15,12 @@ export default {
     if (item.category !== "food")
       return game.error({ message, content: `this isn't food idiot.` });
 
-    if (args.quantity == "all") args.quantity = item.quantity;
+    if (args.quantity == "all") {
+      let healthRemaining = player.maxHealth - player.health;
+      let foodRequired = Math.ceil(healthRemaining / item.health);
+
+      args.quantity = foodRequired;
+    }
 
     let heal = item.health * args.quantity;
 

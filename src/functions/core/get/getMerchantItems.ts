@@ -1,20 +1,24 @@
-import merchants from "../../game/classes/merchants.js";
-import itemInfo from "../../game/classes/items.js";
+import { game, prisma } from "../../../tower.js";
 
-export default {
-  getMerchantItem: async (itemName, player) => {
-    // Get player merchants
-    const filteredMerchants = await player.getUnlockedMerchants();
-    if (!filteredMerchants) return undefined;
+export default async function getMerchantItems(
+  player: Player,
+  merchantName?: string
+) {
+  // Get player merchants
+  const filteredMerchants = await player.getUnlockedMerchants();
+  if (!filteredMerchants) return;
 
-    // Find merchant by item
-    const merchant = filteredMerchants.find((x) =>
-      x.items.find((x) => x.name == itemName)
-    );
-    // Find item by name
-    const merchantItem = merchant.items.find((x) => x.name == itemName);
+  // Find merchant by item
+  let items = [];
 
-    // Define item
+  let merchantItems = [];
+  if (merchantName) {
+    merchantItems = filteredMerchants.find((x) => x.name == merchantName).items;
+  } else {
+    merchantItems = filteredMerchants.map((x) => x.items);
+  }
+
+  for (const merchantItem of merchantItems) {
     let item = { ...merchantItem };
 
     // Get day of the month
@@ -56,10 +60,16 @@ export default {
 
     // Define final object
     const finalItem = {
-      ...itemInfo.find((x) => x.name == item.name),
+      ...game.getItem(item.name),
       ...item,
     };
 
-    return finalItem;
-  },
-};
+    items.push(finalItem);
+  }
+
+  const sortedItems: MerchantItemMerged[] = items.sort(
+    (a, b) => b.stock - a.stock
+  );
+
+  return sortedItems;
+}

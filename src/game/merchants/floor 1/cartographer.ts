@@ -3,4 +3,4 @@ export default {
   category: "cartographer",
   name: "azathoth",
   items: [{ name: "slime dungeon map", stock: 1, price: 30 }],
-};
+} satisfies MerchantData;

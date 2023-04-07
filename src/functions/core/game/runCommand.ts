@@ -75,6 +75,7 @@ export default async function runCommand(
         });
       }
 
+      // Check if user is Dowonut
       if (command.dev && message.author.id !== config.developerId) {
         return game.error({
           message,
@@ -119,7 +120,10 @@ export default async function runCommand(
       }
 
       // Check if the user is on cooldown for that command
-      if (timestamps.has(message.author.id)) {
+      if (
+        timestamps.has(message.author.id) &&
+        message.author.id !== config.developerId
+      ) {
         const expirationTime =
           timestamps.get(message.author.id) + cooldownAmount;
         if (now < expirationTime) {
