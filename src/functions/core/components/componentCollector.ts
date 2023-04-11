@@ -11,10 +11,11 @@ import { game } from "../../../tower.js";
 /**
  * Create a collector for Discord message components.
  */
-export default async function componentCollector(
+export default async function componentCollector<T>(
   message: Message,
   reply: Message,
   components: Component[],
+  menu?: TowerMenu<T>,
   args: { unique?: boolean; filter?: (i: any) => boolean; max?: number } = {}
 ): Promise<unknown> {
   if (!components || !components[0]) return undefined;
@@ -62,6 +63,14 @@ export default async function componentCollector(
         await i.deferUpdate();
       } catch (err) {
         return;
+      }
+
+      // If menu class attached then perform special functions
+      if (menu) {
+        if (component.board) {
+          await menu.switchBoard(component.board);
+          collector.stop();
+        }
       }
 
       // If component has a function then run it

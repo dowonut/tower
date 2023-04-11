@@ -1,39 +1,102 @@
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  StringSelectMenuBuilder,
-} from "discord.js";
 import { game } from "../../../tower.js";
-import { RowType } from "./actionRow.js";
 
-export default class Menu {
-  buttons: Button[];
-  row: ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>;
-  type: RowType;
+type MenuOptions<T> = TowerMenuOptions<T>;
 
-  constructor(buttons: () => Button[], type: RowType = "buttons") {
-    this.buttons = buttons();
-    this.type = type;
+const MenuBase = class<T> {
+  constructor(args: MenuOptions<T>) {
+    Object.assign(this, args);
+  }
+} as { new <T>(args: MenuOptions<T>): MenuOptions<T> };
 
-    this.row = game.actionRow(this.type, this.buttons);
+/** testMenu */
+export default class Menu<T> extends MenuBase<T> {
+  botMessage?: Message;
+  currentBoard?: string;
+
+  constructor(object: MenuOptions<T>) {
+    super(object);
   }
 
-  /**
-   * Refresh all buttons.
-   */
-  async updateButtons(reply: Message) {
-    const newButtons = this.buttons;
-
-    const row = game.actionRow(this.type, newButtons);
-
-    if (!row) return await reply.edit({ components: [] });
-
-    return await reply.edit({ components: [row] });
+  //------------------------------------------------------------
+  /** Initialise the board menu. */
+  async init(boardName: string) {
+    const board = this.boards[boardName];
+    if (!board) return;
+    this.currentBoard = boardName;
+    if (board.message) {
+      const messageOptions = await board.message(this);
+      const { messageComponents, components } = await this.getComponents(board);
+      this.botMessage = await game.send({
+        message: this.message,
+        ...messageOptions,
+        components: messageComponents,
+      });
+      game.componentCollector(this.message, this.botMessage, components, this);
+    } else throw new Error("Initial board must contain a message function.");
   }
 
-  async collector(message: Message, reply: Message) {
-    let components: Button[] | SelectMenu = this.buttons;
-    // if (this.type == "menu") components = [this.buttons];
-    return await game.componentCollector(message, reply, components);
+  //------------------------------------------------------------
+  /** Refresh the current board. */
+  async refresh() {
+    if (!this.currentBoard || !this.botMessage)
+      throw new Error("Cannot refresh before initialized.");
+
+    await this.switchBoard(this.currentBoard);
+  }
+
+  //------------------------------------------------------------
+  /** Switch to a different board. */
+  async switchBoard(boardName: string) {
+    if (!this.currentBoard || !this.botMessage)
+      throw new Error("Cannot switch board before initialized.");
+    const board = this.boards[boardName];
+    if (!board) return;
+    this.currentBoard = boardName;
+
+    let messageOptions: MessageOptions;
+    if (board.message) {
+      messageOptions = await board.message(this);
+    }
+    const { messageComponents, components } = await this.getComponents(board);
+    this.botMessage.edit({ components: messageComponents, ...messageOptions });
+    game.componentCollector(this.message, this.botMessage, components, this);
+  }
+
+  //------------------------------------------------------------
+  /** Get all components from board. */
+  async getComponents(board: TowerBoard<T>) {
+    let components: Component[] = [];
+    let messageComponents = [];
+    for (const boardRow of board.rows) {
+      let boardComponents = await boardRow.components(this);
+      if (boardRow.type == "buttons") {
+        // Format custom component presets.
+        boardComponents = (boardComponents as Button[]).map((component) => {
+          switch (component.id) {
+            // Return button
+            case "return":
+              if (!component.board)
+                throw new Error("Return component must include board name.");
+              return {
+                id: "return",
+                emoji: "↩",
+                board: component.board,
+                //style: "primary",
+                // function: async () => {
+                //   this.switchBoard(component.board);
+                // },
+              };
+            default:
+              return component;
+          }
+        });
+        components.push(...boardComponents);
+      } else {
+        components.push(boardComponents as SelectMenu);
+      }
+      const row = game.actionRow(boardRow.type, boardComponents);
+      messageComponents.push(row);
+    }
+    return { messageComponents, components };
   }
 }

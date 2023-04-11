@@ -1,7 +1,8 @@
+export { default as Menu } from "./components/menu.js";
+export { default as OldMenu } from "./components/oldMenu.js";
 export { default as actionRow } from "./components/actionRow.js";
 export { default as commandButton } from "./components/commandButton.js";
 export { default as componentCollector } from "./components/componentCollector.js";
-export { default as menu } from "./components/menu.js";
 export { default as modal } from "./components/modal.js";
 export { default as error } from "./discord/error.js";
 export { default as fastEmbed } from "./discord/fastEmbed.js";

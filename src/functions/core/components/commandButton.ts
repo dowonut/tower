@@ -12,7 +12,7 @@ export default async function commandButton(args: {
 }) {
   const { message, reply, command, commandArgs = [], server } = args;
 
-  const menu = new game.menu(() => {
+  const menu = new game.OldMenu(() => {
     return [
       {
         id: command,

@@ -50,6 +50,9 @@ declare global {
    */
   export type Component = Button | SelectMenu;
 
+  /** Discord component row. */
+  export type Row = Button[] | SelectMenu;
+
   /**
    * Discord button component.
    */
@@ -58,10 +61,15 @@ declare global {
     label?: string;
     emoji?: string;
     style?: "primary" | "secondary" | "success" | "danger" | "link";
+    /** Button is not able to be pressed. Default: false. */
     disable?: boolean;
     url?: string;
+    /** Stop collector when button is pressed. */
     stop?: boolean;
     modal?: Modal;
+    /** Board to switch to if using menu class. */
+    board?: string;
+    /** Function to run when button is pressed. */
     function?: ComponentFunction;
   }
 
@@ -74,6 +82,7 @@ declare global {
     options: SelectMenuOption[];
     stop?: boolean;
     modal?: Modal;
+    board?: never;
     function: ComponentFunction;
   }
 
@@ -99,11 +108,9 @@ declare global {
    * Function to run when component is selected.
    */
   interface ComponentFunction {
-    (
-      reply?: Message,
-      interaction?: Discord.Interaction,
-      selection?: string
-    ): Promise<any>;
+    (reply?: Message, interaction?: Discord.Interaction, selection?: string):
+      | any
+      | Promise<any>;
   }
 }
 export {};

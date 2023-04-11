@@ -11,9 +11,10 @@ export type RowType = "buttons" | "menu";
 /**
  * Create Discord row for components.
  */
-export default function actionRow<T extends RowType>(
+export default function actionRow<K, T extends RowType>(
   type: T,
-  components: Button[] | SelectMenu
+  components: Button[] | SelectMenu,
+  menu?: TowerMenu<K>
 ): T extends "buttons"
   ? ActionRowBuilder<ButtonBuilder>
   : ActionRowBuilder<StringSelectMenuBuilder> {
@@ -22,8 +23,9 @@ export default function actionRow<T extends RowType>(
   if (type == "buttons" && Array.isArray(components)) {
     const row = new ActionRowBuilder<ButtonBuilder>();
 
-    for (const component of components) {
+    for (let component of components) {
       let buttonStyle: ButtonStyle;
+
       switch (component.style) {
         case "primary":
           buttonStyle = ButtonStyle.Primary;
@@ -47,12 +49,6 @@ export default function actionRow<T extends RowType>(
 
       const button = new ButtonBuilder();
 
-      // if (!component.id && component.style !== "link")
-      //   return console.error("Must provide an id.");
-
-      // if (!component.label && !component.emoji)
-      //   return console.error("Must provide either label or emoji.");
-
       if (component.disable && component.disable == true)
         button.setDisabled(true);
 
@@ -61,8 +57,6 @@ export default function actionRow<T extends RowType>(
       if (component.style !== "link") {
         button.setCustomId(component.id);
       } else {
-        // if (!component.url)
-        //   return console.error("Must provide URL for link button.");
         button.setURL(component.url);
       }
       button.setStyle(buttonStyle);
