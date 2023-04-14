@@ -93,6 +93,14 @@ declare global {
     id: string;
     title: string;
     components: { style: "short" | "paragraph"; id: string; label: string }[];
+    /** Function to run when the modal is submitted. */
+    function?: (response: ModalResponse[]) => any;
+  }
+
+  /** Response received from a modal. */
+  export interface ModalResponse {
+    id: string;
+    value: string;
   }
 
   /**

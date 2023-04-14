@@ -11,7 +11,10 @@ import {
 import { game, config } from "../../../tower.js";
 
 /** Show Discord model through interaction. */
-export default async function modal(args: Modal, interaction: Interaction) {
+export default async function modal(
+  args: Modal,
+  interaction: Interaction
+): Promise<ModalResponse[]> {
   return new Promise(async (resolve, reject) => {
     const modal = new ModalBuilder();
 
@@ -54,9 +57,7 @@ export default async function modal(args: Modal, interaction: Interaction) {
         filter,
         time: 60 * 1000,
       })
-      .catch((error) => {
-        resolve(undefined);
-      });
+      .catch((error) => {});
 
     if (!submitted) return;
 
@@ -64,27 +65,7 @@ export default async function modal(args: Modal, interaction: Interaction) {
       return { id: x.customId, value: x.value };
     });
 
-    let replyText = ``;
-    for (const response of responses) {
-      replyText += `\n${config.emojis.bullet} **${response.id}:**\n\`${response.value}\``;
-    }
-    const username =
-      interaction.user.username + "#" + interaction.user.discriminator;
-
-    const embed = {
-      color: config.defaultEmbedColor,
-      author: {
-        name: "Submitted Form",
-        icon_url: interaction.user.displayAvatarURL({
-          size: 128,
-          extension: "png",
-        }),
-      },
-      description: replyText,
-    };
-
-    await submitted.reply({ embeds: [embed] });
-    //await submitted.reply({ content: args.reply(response) });
+    await submitted.deferUpdate();
 
     resolve(responses);
   });

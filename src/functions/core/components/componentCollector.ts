@@ -59,17 +59,11 @@ export default async function componentCollector<T>(
       if (!component) return;
 
       // Defer interaction update
-      try {
-        await i.deferUpdate();
-      } catch (err) {
-        return;
-      }
-
-      // If menu class attached then perform special functions
-      if (menu) {
-        if (component.board) {
-          await menu.switchBoard(component.board);
-          collector.stop();
+      if (!component.modal) {
+        try {
+          await i.deferUpdate();
+        } catch (err) {
+          return;
         }
       }
 
@@ -87,9 +81,21 @@ export default async function componentCollector<T>(
       }
       // If component is a modal then open it and delete message
       else if (component.modal) {
-        const response = await game.modal(component.modal, i);
-        await reply.delete();
-        resolve(response);
+        const userResponse = await game.modal(component.modal, i);
+        // await reply.delete();
+        // Run component function
+        if (component.modal.function) {
+          const response = await component.modal.function(userResponse);
+          resolve(response);
+        }
+      }
+
+      // If menu class attached then perform special functions
+      if (menu) {
+        if (component.board) {
+          await menu.switchBoard(component.board);
+          collector.stop();
+        }
       }
 
       // If component stops collector

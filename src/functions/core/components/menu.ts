@@ -8,7 +8,7 @@ const MenuBase = class<T> {
   }
 } as { new <T>(args: MenuOptions<T>): MenuOptions<T> };
 
-/** testMenu */
+/** Menu class to handle complex Discord components. */
 export default class Menu<T> extends MenuBase<T> {
   botMessage?: Message;
   currentBoard?: string;
@@ -20,7 +20,7 @@ export default class Menu<T> extends MenuBase<T> {
   //------------------------------------------------------------
   /** Initialise the board menu. */
   async init(boardName: string) {
-    const board = this.boards[boardName];
+    const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
     if (board.message) {
@@ -49,7 +49,7 @@ export default class Menu<T> extends MenuBase<T> {
   async switchBoard(boardName: string) {
     if (!this.currentBoard || !this.botMessage)
       throw new Error("Cannot switch board before initialized.");
-    const board = this.boards[boardName];
+    const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
 
@@ -67,7 +67,9 @@ export default class Menu<T> extends MenuBase<T> {
   async getComponents(board: TowerBoard<T>) {
     let components: Component[] = [];
     let messageComponents = [];
-    for (const boardRow of board.rows) {
+    for (const rowName of board.rows) {
+      const boardRow = this.rows.find((x) => x.name == rowName);
+      if (!boardRow) throw new Error("Not a valid row.");
       let boardComponents = await boardRow.components(this);
       if (boardRow.type == "buttons") {
         // Format custom component presets.
