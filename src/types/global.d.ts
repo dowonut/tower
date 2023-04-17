@@ -128,6 +128,22 @@ declare global {
     typeof playerFunctions;
 
   /**
+   * Player appearance configuration.
+   */
+  export type PlayerAppearance = {
+    hair: PlayerAppearanceType;
+    torso: PlayerAppearanceType;
+    legs: PlayerAppearanceType;
+    skin: string;
+    eyes: string;
+  };
+
+  export type PlayerAppearanceType = {
+    name: string;
+    color?: string;
+  };
+
+  /**
    * Player class.
    */
   export interface PlayerClass {

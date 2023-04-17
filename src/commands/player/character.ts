@@ -16,18 +16,23 @@ export default {
         currentCategory: undefined,
         currentCategoryAction: undefined,
         configuration: {
-          hair: undefined,
-          torso: undefined,
-          legs: undefined,
+          hair: { name: undefined, color: undefined },
+          torso: { name: undefined, color: undefined },
+          legs: { name: undefined, color: undefined },
           skin: undefined,
-        },
+          eyes: undefined,
+        } satisfies PlayerAppearance,
       },
       boards: [
         {
           name: "categoryUnselected",
           rows: ["categoryButtons"],
           message: (m) =>
-            game.send({ message, send: false, content: "**Character**" }),
+            game.send({
+              message,
+              send: false,
+              content: "**Character**",
+            }),
         },
         {
           name: "categorySelected",
@@ -40,6 +45,13 @@ export default {
             "categoryActionButtons",
             "categoryTypeSelectMenu",
           ],
+          message: (m) =>
+            game.send({
+              message,
+              send: false,
+              content:
+                "**Character**\n" + JSON.stringify(m.variables.configuration),
+            }),
         },
         {
           name: "categorySelectColor",
@@ -48,6 +60,13 @@ export default {
             "categoryActionButtons",
             "categoryColorButton",
           ],
+          message: (m) =>
+            game.send({
+              message,
+              send: false,
+              content:
+                "**Character**\n" + JSON.stringify(m.variables.configuration),
+            }),
         },
       ],
       rows: [
@@ -131,7 +150,8 @@ export default {
             return {
               id: "test",
               function(r, i, s) {
-                m.variables.configuration[m.variables.currentCategory] = s;
+                m.variables.configuration[m.variables.currentCategory].name = s;
+                m.refresh();
               },
               options: options,
               placeholder: "Select type...",
@@ -151,7 +171,10 @@ export default {
                   title: "Input Color",
                   id: "inputColorModal",
                   function(response) {
-                    console.log(response);
+                    m.variables.configuration[
+                      m.variables.currentCategory
+                    ].color = response[0].value;
+                    m.refresh();
                   },
                   components: [
                     {
