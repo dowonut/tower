@@ -10,18 +10,20 @@ export default {
   description: "Edit your character's appearance.",
   dev: true,
   async execute(message, args, player, server) {
+    let appearance: PlayerAppearance = {
+      hair: { name: undefined, color: undefined },
+      torso: { name: undefined, color: undefined },
+      legs: { name: undefined, color: undefined },
+      skin: undefined,
+      eyes: undefined,
+    };
+
     const menu = new game.Menu({
       message,
       variables: {
         currentCategory: undefined,
         currentCategoryAction: undefined,
-        configuration: {
-          hair: { name: undefined, color: undefined },
-          torso: { name: undefined, color: undefined },
-          legs: { name: undefined, color: undefined },
-          skin: undefined,
-          eyes: undefined,
-        } satisfies PlayerAppearance,
+        configuration: appearance,
       },
       boards: [
         {
