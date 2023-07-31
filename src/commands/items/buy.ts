@@ -52,7 +52,7 @@ export default {
     }
 
     // Subtract marks from player
-    await player.update({
+    player = await player.update({
       marks: { increment: -merchantItem.price * quantity },
     });
     // Give item to player

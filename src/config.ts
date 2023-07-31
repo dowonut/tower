@@ -70,6 +70,8 @@ export const statInfo = {
 export const strongRate = 0.2;
 export const weakRate = 0.2;
 
+export const marksLostOnDeath = 0.8;
+
 // Player level formula
 export const nextLevelXp = (lvl: number) => {
   return 5 * Math.pow(lvl, 2) + 50 * lvl + 100;

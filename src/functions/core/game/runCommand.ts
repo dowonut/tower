@@ -147,7 +147,9 @@ export default async function runCommand(
           server,
         });
         //const beforeCommand = Date.now();
-        command.execute(message, parsedArgs, player, server);
+        await command.execute(message, parsedArgs, player, server);
+
+        resolve("SUCCESS");
         //const afterCommand = Date.now();
         // console.log(
         //   `command ${command.name} executed in ${
@@ -171,6 +173,7 @@ export default async function runCommand(
 
           game.send({ reply: true, message, content: messageContent });
         }
+        resolve("ERROR");
       }
     }
   });

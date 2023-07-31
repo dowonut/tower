@@ -23,7 +23,7 @@ export default {
       mark: markE,
       blank,
     } = config.emojis;
-    const region = "placeholder"; //game.titleCase(player.getRegion().name);
+    const region = game.titleCase(player.getRegion().name);
     const { strength, defence, arcane, vitality } = config.emojis.stats;
     const { strength: ps, defence: pd, arcane: pa, vitality: pv } = player;
 

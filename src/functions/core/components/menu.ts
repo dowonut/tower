@@ -24,7 +24,8 @@ export default class Menu<T> extends MenuBase<T> {
     if (!board) return;
     this.currentBoard = boardName;
     if (board.message) {
-      const messageOptions = await board.message(this);
+      const messageOptions = await this.getMessage(board).function(this);
+      // const messageOptions = await board.message();
       const { messageComponents, components } = await this.getComponents(board);
       this.botMessage = await game.send({
         message: this.message,
@@ -52,10 +53,12 @@ export default class Menu<T> extends MenuBase<T> {
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
+    this.player = await this.player.refresh();
 
     let messageOptions: MessageOptions;
     if (board.message) {
-      messageOptions = await board.message(this);
+      messageOptions = await this.getMessage(board).function(this);
+      // messageOptions = await board.message();
     }
     const { messageComponents, components } = await this.getComponents(board);
     this.botMessage.edit({ components: messageComponents, ...messageOptions });
@@ -100,5 +103,13 @@ export default class Menu<T> extends MenuBase<T> {
       messageComponents.push(row);
     }
     return { messageComponents, components };
+  }
+
+  //------------------------------------------------------------
+  /** Get message components from board. */
+  getMessage(board: TowerBoard<T>): TowerMessage<T> {
+    const message = this.messages.find((x) => x.name == board.message);
+    if (!message) return;
+    return message;
   }
 }

@@ -2,6 +2,7 @@ export { default as addAttack } from "./addAttack.js";
 export { default as addExploration } from "./addExploration.js";
 export { default as addPassive } from "./addPassive.js";
 export { default as addRecipe } from "./addRecipe.js";
+export { default as die } from "./die.js";
 export { default as enterCombat } from "./enterCombat.js";
 export { default as erase } from "./erase.js";
 export { default as exitCombat } from "./exitCombat.js";

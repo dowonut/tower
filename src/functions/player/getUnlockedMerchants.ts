@@ -5,7 +5,6 @@ export default (async function () {
   const merchantsRef = await prisma.exploration.findMany({
     where: { playerId: this.id, floor: this.floor, type: "merchant" },
   });
-  console.log(merchantsRef);
 
   if (!merchantsRef[0]) return [];
 

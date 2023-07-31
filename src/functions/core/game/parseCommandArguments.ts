@@ -6,11 +6,16 @@ export default async function parseCommandArguments(options: {
   player: Player;
   server: Server;
 }) {
-  const { playerArgs, command, player, server } = options;
+  const { command, player, server } = options;
+  let { playerArgs } = options;
 
   let argsObject: CommandParsedArguments = {};
 
+  // Check if command has arguments
   if (!Array.isArray(command.arguments)) return;
+
+  // Allow spaces for commands with one argument
+  if (command.arguments.length == 1) playerArgs = [playerArgs.join(" ")];
 
   // console.log("> INITIAL ARGS:", playerArgs);
 

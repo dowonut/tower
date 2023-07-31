@@ -30,9 +30,9 @@ const emojis = {
     slashing: "<:slashing_damage:988918963595542589>",
   },
   activities: {
-    mining: ":pick:",
-    fishing: ":fish:",
-    woodcutting: ":evergreen_tree:",
+    mining: "⛏️",
+    fishing: "🐟",
+    woodcutting: "🌲",
   },
   enemies: {},
   bars: {
@@ -63,8 +63,8 @@ const emojis = {
     },
   },
   items: {
-    map: ":map:",
-    recipe: ":scroll:",
+    map: "🗺️",
+    recipe: "📜",
     apple: "<:apple:1093620267483402260>",
     goblin_skin: "<:goblin_skin:1093620270071304292>",
     iron_sword: "<:iron_sword:1093620272877289622>",

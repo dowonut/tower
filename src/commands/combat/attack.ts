@@ -220,13 +220,18 @@ async function performAttack(
 
       // Check if player is dead
       if (playerData.health <= 0) {
-        const deathMessage = `:skull_crossbones: **\`You died!\`** :skull_crossbones:`;
+        const { marks, region } = await player.die();
+
+        const deathMessage = `
+:skull_crossbones: **You died!** :skull_crossbones:\n\`-20%\` ${
+          config.emojis.mark
+        } (Remaining: \`${marks}\`)\nReturned to \`${game.titleCase(region)}\``;
 
         await game.send({ message, content: deathMessage, reply: true });
 
-        console.log("erasing player...");
-        await player.erase();
-        await game.createPlayer(message.author, server);
+        // console.log("erasing player...");
+        // await player.erase();
+        // await game.createPlayer(message.author, server);
 
         resolve("KILLED_PLAYER");
       }

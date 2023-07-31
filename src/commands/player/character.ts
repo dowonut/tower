@@ -20,6 +20,7 @@ export default {
 
     const menu = new game.Menu({
       message,
+      player,
       variables: {
         currentCategory: undefined,
         currentCategoryAction: undefined,
@@ -29,12 +30,7 @@ export default {
         {
           name: "categoryUnselected",
           rows: ["categoryButtons"],
-          message: (m) =>
-            game.send({
-              message,
-              send: false,
-              content: "**Character**",
-            }),
+          message: "title",
         },
         {
           name: "categorySelected",
@@ -47,13 +43,7 @@ export default {
             "categoryActionButtons",
             "categoryTypeSelectMenu",
           ],
-          message: (m) =>
-            game.send({
-              message,
-              send: false,
-              content:
-                "**Character**\n" + JSON.stringify(m.variables.configuration),
-            }),
+          message: "contents",
         },
         {
           name: "categorySelectColor",
@@ -62,13 +52,7 @@ export default {
             "categoryActionButtons",
             "categoryColorButton",
           ],
-          message: (m) =>
-            game.send({
-              message,
-              send: false,
-              content:
-                "**Character**\n" + JSON.stringify(m.variables.configuration),
-            }),
+          message: "contents",
         },
       ],
       rows: [
@@ -189,6 +173,27 @@ export default {
               },
             ];
           },
+        },
+      ],
+      messages: [
+        {
+          name: "title",
+          function: (m) =>
+            game.send({
+              message,
+              send: false,
+              content: "**Character**",
+            }),
+        },
+        {
+          name: "contents",
+          function: (m) =>
+            game.send({
+              message,
+              send: false,
+              content:
+                "**Character**\n" + JSON.stringify(m.variables.configuration),
+            }),
         },
       ],
     });

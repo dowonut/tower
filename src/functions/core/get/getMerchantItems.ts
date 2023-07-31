@@ -9,13 +9,13 @@ export default async function getMerchantItems(
   if (!filteredMerchants) return;
 
   // Find merchant by item
-  let items = [];
+  let items: MerchantItemMerged[] = [];
 
-  let merchantItems = [];
+  let merchantItems: MerchantItem[] = [];
   if (merchantName) {
     merchantItems = filteredMerchants.find((x) => x.name == merchantName).items;
   } else {
-    merchantItems = filteredMerchants.map((x) => x.items);
+    merchantItems = filteredMerchants.map((x) => x.items).flat();
   }
 
   for (const merchantItem of merchantItems) {
@@ -59,17 +59,16 @@ export default async function getMerchantItems(
     }
 
     // Define final object
-    const finalItem = {
-      ...game.getItem(item.name),
-      ...item,
-    };
+    const itemClass = game.getItem(item.name);
+    const finalItem = Object.assign(
+      itemClass,
+      item
+    ) satisfies MerchantItemMerged;
 
     items.push(finalItem);
   }
 
-  const sortedItems: MerchantItemMerged[] = items.sort(
-    (a, b) => b.stock - a.stock
-  );
+  const sortedItems = items.sort((a, b) => b.stock - a.stock);
 
   return sortedItems;
 }

@@ -5,12 +5,16 @@ export default {
   description: "Check bot latency.",
   category: "other",
   async execute(message, args, player, server) {
-    const now = Date.now();
-
-    game.send({
+    const msg = await game.send({
       message,
       reply: true,
-      content: `Latency is **\`${now - message.createdTimestamp}ms\`**`,
+      content: `WebSocket Ping: \`${client.ws.ping}ms\`\nAPI Endpoint Ping: ...`,
+    });
+
+    await msg.edit({
+      content: `WebSocket Ping: \`${client.ws.ping}ms\`\nAPI Endpoint Ping: \`${
+        msg.createdTimestamp - message.createdTimestamp
+      }ms\``,
     });
   },
 } as Command;

@@ -6,6 +6,8 @@ declare global {
     floor: number;
     category: string;
     name: string;
+    /** Merchant description. Optional. */
+    description?: string;
     items: MerchantItem[];
   };
 

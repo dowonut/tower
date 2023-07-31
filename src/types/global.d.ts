@@ -92,7 +92,7 @@ declare global {
       args: CommandParsedArguments,
       player: Player,
       server: any
-    ): void;
+    ): Promise<any>;
   }
 
   /**
@@ -104,7 +104,7 @@ declare global {
       args: CommandParsedArguments,
       player: Player | void,
       server: any
-    ): void;
+    ): Promise<any>;
   }
 
   /**
