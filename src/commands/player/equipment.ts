@@ -1,29 +1,26 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "equipment",
   aliases: ["eq", "equip"],
-  arguments: "<item name>",
+  arguments: [{ name: "item", type: "playerOwnedItem", required: false }],
   description: "Check your current equipment or equip a new item.",
   category: "player",
   async execute(message, args, player, server) {
-    const input = args.join(" ");
+    const item = args.item as Item;
 
-    if (!input) {
-      // If no arguments provided then give list of equipment
+    // If no arguments provided then give list of equipment
+    if (!item) {
       let description = ``;
 
       for (const eqSlot of ["hand", "head", "torso", "legs", "feet"]) {
-        const item = game.getItem(player[eqSlot]);
+        const item = await player.getItem(player[eqSlot]);
         const key = game.titleCase(eqSlot);
         const value = item ? `**${item.getName()}**` : "`         `";
         const emoji = item ? item.getEmoji() : " ";
         description += `\n${key}: ${emoji} ${value}`;
 
         if (player[eqSlot]) {
-          const item = await player.getItem(player[eqSlot]);
-
           if (item.damage)
             description += ` | \`${item.damage}\`${
               config.emojis.damage[item.damageType]
@@ -32,28 +29,14 @@ export default {
         }
       }
 
-      const embed = {
-        color: config.botColor,
-        thumbnail: { url: player.pfp },
-        title: `Equipment`,
-        //fields: fields,
-        description: description,
-      };
+      const title = `Equipment`;
 
-      game.send({ message, embeds: [embed] });
-    } else {
+      game.fastEmbed({ message, title, description, player });
+    }
+
+    // Equip / unequip item
+    else {
       // If provided arguments for equipping
-
-      // Check if item exists
-      if (!game.getItem(input))
-        return game.error({ message, content: "this item doesn't exist." });
-
-      // Fetch item from inventory
-      let item = await player.getItem(input);
-
-      // Check if player has item
-      if (!item)
-        return game.error({ message, content: "you don't have this item." });
 
       // Check if item is equippable
       if (!item.equipSlot)
@@ -81,7 +64,7 @@ export default {
       }
 
       // Equip item
-      await player.update({ [item.equipSlot]: item.name.toLowerCase() });
+      await player.update({ [item.equipSlot]: item.name });
       await prisma.inventory.updateMany({
         where: {
           playerId: player.id,
@@ -114,4 +97,4 @@ export default {
       });
     }
   },
-};
+} satisfies Command;

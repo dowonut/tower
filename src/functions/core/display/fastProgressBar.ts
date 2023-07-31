@@ -6,6 +6,7 @@ type ProgressBar = "health" | "xp";
 export default function fastProgressBar(type: ProgressBar, player: Player) {
   let min: number;
   let max: number;
+  let color: ProgressBarColor;
   let progressBarText: string;
   const { emojis } = config;
 
@@ -13,6 +14,7 @@ export default function fastProgressBar(type: ProgressBar, player: Player) {
     case "health":
       min = player.health;
       max = player.maxHealth;
+      color = "red";
       progressBarText =
         config.emojis.health +
         ` **\`${player.health} / ${player.maxHealth}\`**`;
@@ -21,13 +23,16 @@ export default function fastProgressBar(type: ProgressBar, player: Player) {
       const nextXp = config.nextLevelXp(player.level);
       min = player.xp;
       max = nextXp;
-      progressBarText = `XP: **\`${player.xp} / ${nextXp}\`**`;
+      color = "green";
+      progressBarText = `
+Level: **\`${player.level}\`**
+XP: **\`${player.xp} / ${nextXp}\`**`;
       break;
   }
 
-  const progressBar = game.progressBar(min, max, type);
+  const progressBar = game.progressBar({ min, max, type: color });
 
-  const finalText = progressBar + "\n" + progressBarText;
+  const finalText = progressBarText + "\n" + progressBar;
 
   return finalText;
 }

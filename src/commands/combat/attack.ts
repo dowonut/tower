@@ -96,6 +96,9 @@ async function performAttack(
   // Get current enemy
   let enemy = await player.getEnemy();
 
+  // Save health before attack
+  let enemyPreviousHealth = enemy.health;
+
   // Get damage from attack
   const damage = await attack.getDamage(player, enemy);
 
@@ -114,6 +117,7 @@ async function performAttack(
     damage: damage,
     enemy: enemy,
     attack: attack,
+    enemyPreviousHealth,
   });
 
   // Send attack message
@@ -191,6 +195,7 @@ async function performAttack(
   const playerData = await player.update({
     health: { increment: -enemyAttack.damage.total },
   });
+  const previousHealth = player.health;
   player.health = playerData.health;
 
   // Send typing indicator
@@ -205,6 +210,7 @@ async function performAttack(
         attack: enemyAttack,
         player: player,
         enemy: enemy,
+        previousHealth,
       });
 
       // Send attack message
@@ -229,8 +235,24 @@ async function performAttack(
   });
 
   // Function to get attack message
-  function getAttackMessage(object) {
-    const { enemy, damage, player, attack } = object;
+  function getAttackMessage(object: {
+    source: "player" | "enemy";
+    damage?: {};
+    enemy: Enemy;
+    attack: Attack | EnemyEvaluatedAttack;
+    player?: Player;
+    previousHealth?: number;
+    enemyPreviousHealth?: number;
+  }) {
+    const {
+      enemy,
+      damage,
+      player,
+      attack,
+      previousHealth,
+      enemyPreviousHealth,
+    } = object;
+    const { embedVariable: format } = game;
     let attackMsg: string;
     let healthText: string;
     let statTitle: string;
@@ -238,40 +260,44 @@ async function performAttack(
     // If player is attacking
     if (object.source == "player") {
       // Fetch base attack message
-      attackMsg = attack.attackMessage(damage, enemy);
+      attackMsg = (attack as Attack).attackMessage(damage, enemy);
 
       // Format enemy health text
-      const healthBar = game.progressBar(
-        enemy.health,
-        enemy.maxHealth,
-        "health"
-      );
-      statTitle = `**${enemy.getName()}'s Health**`;
-      healthText = `${healthE} ${healthBar} \`${enemy.health}/${enemy.maxHealth}\``;
+      const healthBar = game.progressBar({
+        min: enemy.health,
+        max: enemy.maxHealth,
+        minPrevious: enemyPreviousHealth,
+        type: "orange",
+      });
+      healthText = `
+${healthE} ${format(`${enemy.health} / ${enemy.maxHealth}`)}
+${healthBar}`;
     }
     // If enemy is attacking
     else if (object.source == "enemy") {
       // Fetch base attack message
-      attackMsg = enemy.attackMessage(attack, player);
+      attackMsg = enemy.attackMessage(attack as EnemyEvaluatedAttack, player);
       // Define health warning
       const healthWarning =
         (player.health / player.maxHealth) * 100 < 33
           ? `:warning: **Low Health!**`
           : ``;
       // Format player health text
-      const healthBar = game.progressBar(
-        player.health,
-        player.maxHealth,
-        "health"
-      );
-      statTitle = `**${player.username}'s Health** ${healthWarning}`;
-      healthText = `${healthE} ${healthBar} \`${player.health}/${player.maxHealth}\``;
-      healthText += `\n${healthWarning}`;
+      const healthBar = game.progressBar({
+        min: player.health,
+        max: player.maxHealth,
+        minPrevious: previousHealth,
+        type: "red",
+      });
+      healthText = `
+${healthE} ${format(`${player.health} / ${player.maxHealth}`)}
+${healthBar}`;
+      // healthText += `\n${healthWarning}`;
     }
     // Start building final message
     let message = attackMsg;
     // Add seperator
-    message += "\n───────────────";
+    // message += "\n───────────────";
     //message += `\n${statTitle}`;
     message += `\n${healthText}`;
 

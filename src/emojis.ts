@@ -36,20 +36,30 @@ const emojis = {
   },
   enemies: {},
   bars: {
-    health: {
-      left: "<:health_left:1011322025639411782>",
-      middle: "<:health_middle:1011322026721550449>",
-      right: "<:health_right:1011322028390887484>",
+    red: {
+      left: "<:red_left:1135151848223940638>",
+      middle: "<:red_middle:1135151850572763166>",
+      right: "<:red_right:1135151851990429737>",
     },
-    xp: {
-      left: "<:xp_left:1011340860929097769>",
-      middle: "<:xp_middle:1011340862514548877>",
-      right: "<:xp_right:1011340863886077982>",
+    green: {
+      left: "<:green_left:1135151839801790526>",
+      middle: "<:green_middle:1135151843027197952>",
+      right: "<:green_right:1135151845266964541>",
     },
     empty: {
-      left: "<:empty_left:1011322021235408916>",
-      middle: "<:empty_middle:1011322022682439821>",
-      right: "<:empty_right:1011322024204963860>",
+      left: "<:empty_left:1135151830989541437>",
+      middle: "<:empty_middle:1135151834605039707>",
+      right: "<:empty_right:1135151836475687054>",
+    },
+    orange: {
+      left: "<:orange_left:1135157691845726279>",
+      middle: "<:orange_middle:1135157693364060272>",
+      right: "<:orange_right:1135157695314403381>",
+    },
+    white: {
+      left: "<:white_left:1135159498814804040>",
+      middle: "<:white_middle:1135159501755002921>",
+      right: "<:white_right:1135159502962970625>",
     },
   },
   items: {

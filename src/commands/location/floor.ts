@@ -1,7 +1,6 @@
-import floors from "../../game/classes/floors.js";
 import { game, config, client, prisma } from "../../tower.js";
+import floors from "../../game/_classes/floors.js";
 
-/** @type {Command} */
 export default {
   name: "floor",
   aliases: ["f"],
@@ -19,17 +18,16 @@ export default {
     const menu = dropDown(player);
     const row = game.actionRow("menu", menu);
 
-    const reply = await game.fastEmbed(
+    const reply = await game.fastEmbed({
       message,
       player,
       embed,
       title,
-      undefined,
-      [row]
-    );
+      components: [row],
+    });
 
     // Unlock the travel command
-    player.unlockCommands(message, server, ["travel"]);
+    player.unlockCommands(message, ["travel"]);
 
     // Create collector
     await game.componentCollector(message, reply, [menu]);
@@ -80,8 +78,8 @@ export default {
           description: region.description,
         });
       }
-      /** @type {SelectMenu} */
-      const menu = {
+
+      const menu: SelectMenu = {
         id: "menu",
         placeholder: "Choose a region to travel to...",
         options: options,
@@ -107,18 +105,17 @@ export default {
 
       // Get new embed
       const { embed, title } = getEmbed(player);
-      const messageRef = await game.fastEmbed(
+      const messageRef = await game.fastEmbed({
         message,
         player,
         embed,
         title,
-        undefined,
-        [row],
-        false
-      );
+        components: [row],
+        send: false,
+      });
 
       // Update message
       await reply.edit(messageRef);
     }
   },
-};
+} as Command;

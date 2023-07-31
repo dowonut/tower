@@ -22,4 +22,4 @@ export default (async function (type?: string) {
     });
   }
   return explored;
-} as PlayerFunction);
+} satisfies PlayerFunction);

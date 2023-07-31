@@ -6,7 +6,10 @@ export default (async function (name: string) {
 
   if (!recipe) throw new Error(`No recipe found by name ${name}`);
 
-  const playerRecipe = await this.fetch("recipe", name);
+  const playerRecipe = await this.fetch<Recipe, string>({
+    key: "recipe",
+    name,
+  });
 
   if (playerRecipe) return playerRecipe;
 

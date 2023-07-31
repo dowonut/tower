@@ -20,8 +20,8 @@ export default async function enemyInfo(message: Message, player: Player) {
         
 Level: **\`${enemy.level}\`**
 
-${game.progressBar(enemy.health, enemy.maxHealth, "health")}
 ${config.emojis.health} **\`${enemy.health} / ${enemy.maxHealth}\`**
+${game.progressBar({ min: enemy.health, max: enemy.maxHealth, type: "red" })}
         
 Strengths: ${strong}
 Weaknesses: ${weak}

@@ -125,7 +125,7 @@ async function drawImage(
   // Drawing shadow
   if (category == "shadow") {
     image = await getImageShadow({ name: name });
-    ctx.globalCompositeOperation = "soft-light";
+    ctx.globalCompositeOperation = "multiply"; //"soft-light";
     ctx.drawImage(image, 0, 0);
   }
   // Draw shadow if hair

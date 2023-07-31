@@ -4,22 +4,22 @@ declare global {
   /**
    * Weapon/armor equip slots
    */
-  export type EquipSlot = typeof config.equipSlots[number];
+  export type EquipSlot = (typeof config.equipSlots)[number];
 
   /**
    * Damage types.
    */
-  export type DamageType = typeof config.damageTypes[number];
+  export type DamageType = (typeof config.damageTypes)[number];
 
   /**
    * Weapon types.
    */
-  export type WeaponType = typeof config.weaponTypes[number];
+  export type WeaponType = (typeof config.weaponTypes)[number];
 
   /**
    * Player attack types.
    */
-  export type AttackType = typeof config.attackTypes[number];
+  export type AttackType = (typeof config.attackTypes)[number];
 
   export type PassiveTarget = "";
 
@@ -38,7 +38,7 @@ declare global {
   /**
    * Categories for Discord commands.
    */
-  export type CommandCategory = typeof config.commandCategories[number];
+  export type CommandCategory = (typeof config.commandCategories)[number];
 
   /**
    * Player stats.
@@ -53,7 +53,7 @@ declare global {
   /**
    * Enhancement shard types.
    */
-  export type ShardType = typeof config.shardTypes[number];
+  export type ShardType = (typeof config.shardTypes)[number];
 
   /**
    * Player exploration types.
@@ -66,6 +66,7 @@ declare global {
   export type CommandArgumentType =
     | "number"
     | "strictNumber"
+    | "playerSkill"
     | "playerOwnedItem"
     | "playerAvailableMerchant"
     | "playerAvailableAttack"
@@ -73,6 +74,8 @@ declare global {
     | "commandCategory"
     | "item"
     | "region";
+
+  export type ProgressBarColor = "red" | "green" | "orange" | "white";
 }
 
 export {};

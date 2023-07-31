@@ -5,10 +5,10 @@ import {
   titleCase,
 } from "../../functions/core/index.js";
 
-const SkillBaseClass = createClassFromType<SkillData>();
+const SkillBaseClass = createClassFromType<SkillBase>();
 
 export class SkillClass extends SkillBaseClass {
-  constructor(object: Generic<SkillData>) {
+  constructor(object: Generic<SkillBase>) {
     super(object);
   }
 

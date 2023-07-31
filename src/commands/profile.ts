@@ -27,19 +27,15 @@ export default {
     const { strength, defence, arcane, vitality } = config.emojis.stats;
     const { strength: ps, defence: pd, arcane: pa, vitality: pv } = player;
 
-    let description = ``;
-    // Add level
-    description += `\nLevel: ${format(level)}`;
-    // Add xp and xp bar
-    description += `\n${game.progressBar(xp, nextXp, "xp")}`;
-    description += `\nXP: ${format(`${xp} / ${nextXp}`)}`;
-    // Add health
-    description += `\n\n${game.progressBar(health, maxHealth, "health")}`;
-    description += `\n${healthE} ${format(health + " / " + maxHealth)}`;
-    // Add marks
-    description += `\n\n${markE} Marks: ${format(marks)}`;
-    // Add floor and region
-    description += `\n\n${floorE} Floor: ${format(floor)} | ${format(region)}`;
+    // Format profile
+    let description = `
+${game.fastProgressBar("xp", player)}
+${game.fastProgressBar("health", player)}
+
+${markE} ${format(marks)}
+${floorE} ${format(floor)} | ${format(region)}
+    `;
+
     // Add stats
     if (player.level > 0) {
       description += `\n\n${strength} ${format(ps)} ${defence} ${format(
@@ -68,13 +64,6 @@ export default {
       },
       description: description,
     };
-
-    // Unlock new commands
-    // player.unlockCommands(message, server, [
-    //   "inventory",
-    //   "equipment",
-    //   "region",
-    // ]);
 
     // Check if player is same as the message author
     const playerIsAuthor = player.user.discordId == message.author.id;
@@ -115,7 +104,7 @@ export default {
           function: () => {
             sentEquipment = true;
             updateButtons();
-            return game.runCommand("inventory", { message, server });
+            return game.runCommand("equipment", { message, server });
           },
         },
       ];

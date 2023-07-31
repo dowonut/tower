@@ -1,3 +1,6 @@
+import * as Prisma from "@prisma/client";
+import { SkillClass } from "../../game/_classes/skills.ts";
+
 declare global {
   export type SkillData = {
     name: string;
@@ -27,5 +30,9 @@ declare global {
     /** How much to increase the passve by. */
     value: number;
   };
+
+  export type SkillBase = Prisma.Skill & SkillData;
+
+  export type Skill = SkillClass;
 }
 export {};

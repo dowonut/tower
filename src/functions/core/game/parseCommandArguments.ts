@@ -34,7 +34,7 @@ export default async function parseCommandArguments(options: {
       error();
     }
 
-    //if (!playerArgs[i]) continue;
+    // if (!playerArgs[i]) continue;
     argsObject[argument.name] = input || undefined;
 
     // Handle argument type
@@ -189,10 +189,10 @@ export default async function parseCommandArguments(options: {
     }
 
     // Handle filter
-    if (argument.filter) {
+    if (argument.filter && input) {
       let result = await argument.filter(input, player, argsObject);
       if (!result.success) {
-        errorContent = result.message;
+        errorContent = result.message as string;
         error();
       }
       if (result.content) {

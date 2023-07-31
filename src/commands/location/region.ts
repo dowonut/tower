@@ -1,10 +1,8 @@
 import { game, config, client, prisma } from "../../tower.js";
 
-/** @type {Command} */
 export default {
   name: "region",
   aliases: ["r"],
-  arguments: "",
   description: "Get information about your current region.",
   category: "location",
   useInCombat: true,
@@ -27,7 +25,7 @@ export default {
           inline: true,
         };
 
-        const explored = await player.getExplored();
+        const explored = await player.getExploration();
         const exploredArr = explored.map((x) => (x.name ? x.name : x.category));
 
         // Add key values
@@ -60,9 +58,9 @@ export default {
       fields: fields,
     };
 
-    game.fastEmbed(message, player, embed, title);
+    game.fastEmbed({ message, player, embed, title });
 
     // Unlock floor command
-    player.unlockCommands(message, server, ["floor", "travel"]);
+    player.unlockCommands(message, ["floor", "travel"]);
   },
-};
+} as Command;

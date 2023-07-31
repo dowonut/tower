@@ -73,8 +73,8 @@ declare global {
    * Object to return for command argument filters.
    */
   type CommandArgumentFilterResult =
-    | { success: true; message: never; content?: any }
-    | { success: false; message: string; content: never };
+    | { success: true; content?: any; message?: void }
+    | { success: false; message: string; content?: void };
 
   /**
    * User command object without player requirement.
