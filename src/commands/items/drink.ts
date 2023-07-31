@@ -4,21 +4,12 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "drink",
   aliases: ["d"],
-  arguments: "<item name>",
+  arguments: [{ name: "item", type: "playerOwnedItem" }],
   description: "Drink a potion.",
-  category: "items",
+  category: "item",
   useInCombat: true,
   async execute(message, args, player, server) {
-    if (!args[0])
-      return game.error({ message, content: "provide the name of a potion." });
-
-    const item = await player.getItem(args.join(" "));
-
-    if (!item)
-      return game.error({
-        message,
-        content: `not a valid item.\nCheck your items with \`${server.prefix}inventory\``,
-      });
+    const item = await player.getItem(args.item);
 
     if (item.category !== "potion")
       return game.error({ message, content: `you can't drink this idiot.` });
@@ -60,8 +51,6 @@ export default {
     let drinkMessage = `you drank **${item.getName()}** ${item.getEmoji()}`;
     drinkMessage += `${effectMessage}`;
 
-    game.send({ message, content: drinkMessage, reply: true });
-
-    return;
+    await game.send({ message, content: drinkMessage, reply: true });
   },
-};
+} satisfies Command;

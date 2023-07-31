@@ -11,10 +11,8 @@ export default {
   category: "item",
   async execute(message, args, player, server) {
     const input = args.merchant;
-    const merchant = game.getMerchant(input);
-
-    let embed: Embed;
-    let title: string;
+    let merchant: Merchant;
+    if (input) merchant = game.getMerchant(input);
 
     // Fetch unlocked merchants
     const merchants = await player.getUnlockedMerchants();
@@ -62,6 +60,11 @@ export default {
                 label: x.getName(),
                 value: x.name,
                 description: x.description || "A friendly merchant.",
+                default:
+                  m.variables.currentMerchant &&
+                  m.variables.currentMerchant.name == x.name
+                    ? true
+                    : false,
               };
             });
             return {
@@ -84,7 +87,16 @@ export default {
             const options: SelectMenuOption[] = (
               await m.variables.currentMerchant.getItems(player)
             ).map((x) => {
-              return { label: x.getName(), value: x.name, emoji: x.getEmoji() };
+              return {
+                label: x.getName(),
+                value: x.name,
+                emoji: x.getEmoji(),
+                default:
+                  m.variables.currentItem &&
+                  m.variables.currentItem.name == x.name
+                    ? true
+                    : false,
+              };
             });
 
             return {
@@ -228,7 +240,9 @@ export default {
               message: m.message,
               send: false,
               description,
-              title: merchant.getName(),
+              title:
+                merchant.getName() +
+                ` (\`${game.titleCase(merchant.category)}\`)`,
             });
           },
         },

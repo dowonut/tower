@@ -49,8 +49,8 @@ export default {
       description:
         "A cozy village with kind people. Might they know something of the floor dungeons?",
       merchants: [
-        { category: "general" },
-        { category: "weapons" },
+        { category: "general goods" },
+        { category: "blacksmith" },
         { category: "cartographer" },
         { category: "alchemist" },
       ],
