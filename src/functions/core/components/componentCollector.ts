@@ -41,7 +41,7 @@ export default async function componentCollector<T>(
     // Define collector settings
     let collectorSettings: any = {
       filter,
-      time: 5 * 60 * 1000,
+      time: 60 * 60 * 1000,
     };
 
     if (args.max) {
