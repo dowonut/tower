@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "Careful... they're dangerous when they're hungry.",
   // Max health.
-  maxHealth: 8,
+  baseHP: 8,
   // Enemy level. Used to scale attack power.
   level: 3,
   // All anime attacks. Available attacks can be seen in enemy class.

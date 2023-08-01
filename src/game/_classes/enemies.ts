@@ -37,6 +37,11 @@ export class EnemyClass extends EnemyBaseClass {
     }
   }
 
+  get maxHP() {
+    const baseHP = this.baseHP || this.level * 5;
+    return baseHP;
+  }
+
   /** Get enemy image attachment. */
   getImage() {
     // Format item name

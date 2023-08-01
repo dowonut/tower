@@ -10,7 +10,8 @@ declare global {
     /** Type the enemy belongs to. Must be the name of an existing enemy type. */
     type: string;
     description: string;
-    maxHealth: number;
+    /** Optional base HP. Will default to level scaling. */
+    baseHP?: number;
     level: number;
     /** Attacks the enemy can perform. Inherited from enemy type. */
     attacks: string[];

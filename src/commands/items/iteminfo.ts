@@ -112,8 +112,8 @@ export default {
       // Create eat button
       if (item.health) {
         // Refresh player data
-        const { health, maxHealth } = await player.refresh();
-        const disable = disableCheck || health == maxHealth ? true : false;
+        const { health, maxHP } = await player.refresh();
+        const disable = disableCheck || health == maxHP ? true : false;
         buttons.push({
           id: "eat",
           emoji: config.emojis.health,

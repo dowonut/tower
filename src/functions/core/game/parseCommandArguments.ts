@@ -1,4 +1,4 @@
-import { game, prisma, config } from "../../../tower.js";
+import { game, prisma, config, client } from "../../../tower.js";
 
 export default async function parseCommandArguments(options: {
   playerArgs: string[];
@@ -34,8 +34,14 @@ export default async function parseCommandArguments(options: {
     let errorContent: undefined | string;
 
     // Handle missing required type
-    if (argument.required !== false && !playerArgs[i]) {
+    if (argument.required !== false && !input) {
       errorContent = `Missing required argument: **\`${argument.name}\`**`;
+      error();
+    }
+
+    // Handle large input
+    if (input && input.length > 100) {
+      errorContent = `Input can't be longer than \`100\` characters.`;
       error();
     }
 
@@ -161,13 +167,16 @@ export default async function parseCommandArguments(options: {
           } else if (input == "me") {
             discordId = player.user.discordId;
           } else {
-            const userSearch = await prisma.user.findMany({
-              where: { username: { equals: input, mode: "insensitive" } },
+            const guildSearch = await client.guilds.fetch(player.guildId);
+            const userSearch = await guildSearch.members.fetch({
+              query: input,
+              limit: 1,
             });
-            if (userSearch[0]) {
-              discordId = userSearch[0].discordId;
+            if (userSearch.first()) {
+              const discordUser = userSearch.first().user;
+              discordId = discordUser.id;
             } else {
-              errorContent = `No user found with username **\`${input}\`**`;
+              errorContent = `No user found with name **\`${input}\`**`;
               error();
             }
           }

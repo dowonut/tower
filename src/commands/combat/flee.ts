@@ -9,7 +9,7 @@ export default {
   async execute(message, args, player, server) {
     //const enemy = await player.getEnemy();
 
-    if (player.fighting) {
+    if (player.inCombat) {
       player.exitCombat();
       player.killEnemy();
     }

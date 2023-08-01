@@ -45,6 +45,8 @@ export default {
       },
     };
 
+    let currentCategory: CommandCategory = args.category || "general";
+
     for (const category of config.commandCategories) {
       commandObject[category] = { commands: [], text: "" };
       let commands: Command[];
@@ -97,11 +99,10 @@ export default {
           label: game.titleCase(category),
           value: category,
           description: config.commandCategoryDescriptions[category],
+          // default: category == currentCategory ? true : false,
         });
       }
     }
-
-    let currentCategory: CommandCategory = args.category || "general";
 
     if (currentCategory == "admin" && !authorPerms.has(ADMIN))
       return game.error({ message, content: `this is only for admins, silly` });

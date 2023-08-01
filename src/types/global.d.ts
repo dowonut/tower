@@ -5,6 +5,9 @@ import generic from "../game/_classes/generic.ts";
 import { playerFunctions } from "../tower.js";
 
 import * as Prisma from "@prisma/client";
+import { Prisma as PrismaClient } from "@prisma/client";
+
+import PlayerClass from "../game/_classes/players.ts";
 
 declare global {
   /**
@@ -43,6 +46,8 @@ declare global {
     useInCombat?: boolean;
     /** Ignore the command in the help menu. Default: false. */
     ignoreInHelp?: boolean;
+    /** The command can only be used when in a party. Default: false. */
+    partyOnly?: boolean;
     /** The main command function. */
     execute: Execute;
   }
@@ -91,7 +96,7 @@ declare global {
       message: Message,
       args: CommandParsedArguments,
       player: Player,
-      server: any
+      server: Server
     ): Promise<any>;
   }
 
@@ -103,7 +108,7 @@ declare global {
       message: Message,
       args: CommandParsedArguments,
       player: Player | void,
-      server: any
+      server: Server
     ): Promise<any>;
   }
 
@@ -117,15 +122,29 @@ declare global {
    */
   export type User = {} & Prisma.User;
 
+  /** Player Prisma Model */
+  type PlayerModel = PrismaClient.PlayerGetPayload<{
+    include: {
+      encounter: { include: { players: true; enemies: true } };
+      party: { include: { players: { include: { user: true } } } };
+      inventory: true;
+    };
+  }>;
+
   /**
-   * Player
+   * Player base
    */
-  export type Player = {
+  export type PlayerBase = {
     message?: Message;
     server?: Server;
     user?: User;
-  } & Prisma.Player &
+  } & PlayerModel &
     typeof playerFunctions;
+
+  /**
+   * Player
+   */
+  export type Player = PlayerClass;
 
   /**
    * Player appearance configuration.
@@ -143,12 +162,12 @@ declare global {
     color?: string;
   };
 
-  /**
-   * Player class.
-   */
-  export interface PlayerClass {
-    [key: string]: PlayerFunction;
-  }
+  // /**
+  //  * Player class.
+  //  */
+  // export interface PlayerClass {
+  //   [key: string]: PlayerFunction;
+  // }
 
   /**
    * Player function.

@@ -2,7 +2,7 @@ export default {
   name: "burning slime",
   type: "slime",
   description: "The slime is constantly on fire... how?",
-  maxHealth: 4,
+  baseHP: 4,
   level: 2,
   strong: ["fire"],
   weak: ["water"],

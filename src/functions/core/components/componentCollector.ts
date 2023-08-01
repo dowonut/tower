@@ -2,6 +2,7 @@ import {
   ButtonInteraction,
   ChannelType,
   CollectorOptions,
+  Interaction,
   InteractionType,
   StageChannel,
   StringSelectMenuInteraction,
@@ -16,10 +17,14 @@ export default async function componentCollector<T>(
   reply: Message,
   components: Component[],
   menu?: TowerMenu<T>,
-  args: { unique?: boolean; filter?: (i: any) => boolean; max?: number } = {}
+  args: {
+    unique?: boolean;
+    filter?: (i: Interaction) => boolean;
+    max?: number;
+  } = {}
 ): Promise<unknown> {
   if (!components || !components[0]) return undefined;
-  const unique = args.unique ? args.unique : true;
+  const { unique = true } = args;
 
   return new Promise((resolve, reject) => {
     let filter = (i: any) => i.message.id == reply.id;

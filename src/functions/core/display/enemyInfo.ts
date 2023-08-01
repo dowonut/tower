@@ -3,20 +3,24 @@ import { config, game } from "../../../tower.js";
 /**
  * Get formatted enemy info from player in combat.
  */
-export default async function enemyInfo(
-  message: Message,
-  player: Player,
-  enemyData?: Enemy
-) {
-  if (!player.fighting && !enemyData)
+export default async function enemyInfo(args: {
+  message: Message;
+  player: Player;
+  enemyData?: Enemy;
+  /** Shows all info. Default: true. */
+  verbose?: boolean;
+}) {
+  const { message, player, enemyData, verbose = true } = args;
+
+  if (!player.inCombat && !enemyData)
     throw new Error("Player must be fighting an enemy.");
 
   let enemy: Enemy;
-  if (player.fighting) {
-    enemy = await player.getEnemy();
+  if (player.inCombat) {
+    // enemy = await player.getEnemy();
   } else {
     enemy = enemyData;
-    enemy.health = enemy.maxHealth;
+    enemy.health = enemy.maxHP;
   }
 
   const emojis = config.emojis.damage;
@@ -31,26 +35,31 @@ export default async function enemyInfo(
         
 Level: **\`${enemy.level}\`**
 
-${config.emojis.health} **\`${enemy.health} / ${enemy.maxHealth}\`**
-${game.progressBar({ min: enemy.health, max: enemy.maxHealth, type: "red" })}
-        
+${config.emojis.health} **\`${enemy.health} / ${enemy.maxHP}\`**
+${game.progressBar({ min: enemy.health, max: enemy.maxHP, type: "red" })}
+`;
+
+  // Show more information
+  if (verbose) {
+    description += `
 Strengths: ${strong}
 Weaknesses: ${weak}
     
 **Attacks:**`;
 
-  // Format attacks
-  const attacks = enemy.getAttacks();
-  for (const attack of attacks) {
-    const attackName = game.titleCase(attack.name);
+    // Format attacks
+    const attacks = enemy.getAttacks();
+    for (const attack of attacks) {
+      const attackName = game.titleCase(attack.name);
 
-    description += `\n\`${attackName}\` | `;
+      description += `\n\`${attackName}\` | `;
 
-    for (const damage of attack.damage.damages) {
-      let damageText = `${damage.min}-${damage.max}`;
-      if (damage.min == damage.max) damageText = `${damage.max}`;
+      for (const damage of attack.damage.damages) {
+        let damageText = `${damage.min}-${damage.max}`;
+        if (damage.min == damage.max) damageText = `${damage.max}`;
 
-      description += `**\`${damageText}\`**${emojis[damage.type]} `;
+        description += `**\`${damageText}\`**${emojis[damage.type]} `;
+      }
     }
   }
 

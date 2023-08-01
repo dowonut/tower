@@ -8,7 +8,7 @@ export default {
   category: "combat",
   useInCombatOnly: true,
   async execute(message, args, player, server) {
-    const messageOptions = await game.enemyInfo(message, player);
+    const messageOptions = await game.enemyInfo({ message, player });
 
     game.send({ message, ...messageOptions });
   },

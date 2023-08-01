@@ -2,7 +2,7 @@ export default {
   name: "wet slime",
   type: "slime",
   description: "Somehow wet instead of sticky.",
-  maxHealth: 4,
+  baseHP: 4,
   level: 2,
   strong: ["water"],
   weak: ["fire"],

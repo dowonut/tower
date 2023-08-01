@@ -15,8 +15,8 @@ export default function fastProgressBar(
 
   switch (type) {
     case "health":
-      min = entity.health || entity.maxHealth;
-      max = entity.maxHealth;
+      min = entity.health || entity.maxHP;
+      max = entity.maxHP;
       color = "red";
       progressBarText = config.emojis.health + ` **\`${min} / ${max}\`**`;
       break;

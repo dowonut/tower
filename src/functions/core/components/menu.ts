@@ -61,7 +61,7 @@ export default class Menu<T> extends MenuBase<T> {
       // messageOptions = await board.message();
     }
     const { messageComponents, components } = await this.getComponents(board);
-    this.botMessage.edit({ components: messageComponents, ...messageOptions });
+    this.botMessage.edit({ ...messageOptions, components: messageComponents });
     game.componentCollector(this.message, this.botMessage, components, this);
   }
 

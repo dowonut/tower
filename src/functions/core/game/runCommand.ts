@@ -119,6 +119,14 @@ export default async function runCommand(
         });
       }
 
+      // Check party
+      if (!player.party && command.partyOnly) {
+        return game.error({
+          message,
+          content: `this command can only be used while in a party.`,
+        });
+      }
+
       // Check if the user is on cooldown for that command
       if (
         timestamps.has(message.author.id) &&
@@ -147,9 +155,14 @@ export default async function runCommand(
           server,
         });
         //const beforeCommand = Date.now();
-        await command.execute(message, parsedArgs, player, server);
+        const response = await command.execute(
+          message,
+          parsedArgs,
+          player,
+          server
+        );
 
-        resolve("SUCCESS");
+        resolve(response || "SUCCESS");
         //const afterCommand = Date.now();
         // console.log(
         //   `command ${command.name} executed in ${
@@ -172,6 +185,8 @@ export default async function runCommand(
           const messageContent = `${errorTitle}\n${errorMessage}`; //`${errorTitle}\`\`\`\n${errorMessage}\n\`\`\``;
 
           game.send({ reply: true, message, content: messageContent });
+        } else {
+          console.error(object);
         }
         resolve("ERROR");
       }

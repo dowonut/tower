@@ -189,7 +189,8 @@ export default {
 
             return game.fastEmbed({
               message: m.message,
-              send: false,
+              fullSend: false,
+              reply: true,
               description,
               title: `Merchants on Floor ${m.player.floor}`,
               player: m.player,
@@ -238,7 +239,8 @@ export default {
             return game.fastEmbed({
               player: m.player,
               message: m.message,
-              send: false,
+              fullSend: false,
+              reply: true,
               description,
               title:
                 merchant.getName() +

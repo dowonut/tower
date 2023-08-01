@@ -13,6 +13,40 @@ export const developerId = "326536300985581568";
 export const emojis = {};
 export const integerLimit = 2147483647;
 
+export const baseStats = {
+  maxHP: 10,
+  ATK: 10,
+  MAG: 10,
+  RES: 20,
+  "MAG RES": 20,
+  SPD: 80,
+  CR: 10,
+  CD: 40,
+  AR: 10,
+  AD: 20,
+};
+
+// export const subStats = {
+//   bludgeoning: 0,
+//   piercing: 0,
+//   slashing: 0,
+//   fire: 0,
+//   water: 0,
+//   earth: 0,
+//   air: 0,
+//   light: 0,
+//   void: 0,
+//   "bludgeoning RES": 0,
+//   "piercing RES": 0,
+//   "slashing RES": 0,
+//   "fire RES": 0,
+//   "water RES": 0,
+//   "earth RES": 0,
+//   "air RES": 0,
+//   "light RES": 0,
+//   "void RES": 0,
+// };
+
 export const stats = ["strength", "defence", "arcane", "vitality"];
 
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;

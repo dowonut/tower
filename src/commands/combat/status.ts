@@ -8,7 +8,8 @@ export default {
   category: "combat",
   useInCombatOnly: true,
   async execute(message, args, player, server) {
-    const enemy = await player.getEnemy();
+    const enemies = await player.getEnemies();
+    const enemy = enemies[0];
 
     const title = `${player.user.username} (fighting ${enemy.name})`;
     const embed = {

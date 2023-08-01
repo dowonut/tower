@@ -17,6 +17,8 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   files?: any[];
   /** Send the message or return object with message create options. Default: true. */
   send?: T;
+  /** Send the message normally or return game.send object. Default: true. */
+  fullSend?: boolean;
   /** Reply to the user's original message. Default: true. */
   reply?: boolean;
   /** Optional embed thumbnail. */
@@ -33,6 +35,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
     reply = true,
     description,
     thumbnail,
+    fullSend = true,
   } = args;
 
   const embedInfo: Embed = {
@@ -45,12 +48,16 @@ export default async function fastEmbed<T extends boolean = true>(args: {
 
   const finalEmbed: Embed = { ...embed, ...embedInfo };
 
-  return (await game.send({
+  const messageOptions = {
     message,
     embeds: [finalEmbed],
     components,
     files,
     send,
     reply,
-  })) as any;
+  };
+
+  if (!fullSend) return messageOptions as any;
+
+  return (await game.send(messageOptions)) as any;
 }

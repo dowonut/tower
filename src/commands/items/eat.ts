@@ -16,7 +16,7 @@ export default {
       return game.error({ message, content: `this isn't food idiot.` });
 
     if (args.quantity == "all") {
-      let healthRemaining = player.maxHealth - player.health;
+      let healthRemaining = player.maxHP - player.health;
       let foodRequired = Math.ceil(healthRemaining / item.health);
 
       args.quantity = foodRequired;
@@ -24,11 +24,11 @@ export default {
 
     let heal = item.health * args.quantity;
 
-    if (player.health == player.maxHealth)
+    if (player.health == player.maxHP)
       return game.error({ message, content: `you're already at max health!` });
 
-    if (player.health + heal > player.maxHealth)
-      heal = player.maxHealth - player.health;
+    if (player.health + heal > player.maxHP)
+      heal = player.maxHP - player.health;
 
     const playerData = await player.update({ health: { increment: heal } });
 
@@ -41,7 +41,7 @@ export default {
         args.quantity
       }x\` **${item.getName()}** and healed \`${heal}\` points (${
         config.emojis.health
-      }\`${playerData.health}/${player.maxHealth}\`)`,
+      }\`${playerData.health}/${player.maxHP}\`)`,
     });
   },
 } as Command;

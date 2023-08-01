@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "He looks like a silly little guy... but is he?",
   // Max health.
-  maxHealth: 20,
+  baseHP: 20,
   // Enemy level. Used to scale attack power.
   level: 5,
   // All anime attacks. Available attacks can be seen in enemy class.

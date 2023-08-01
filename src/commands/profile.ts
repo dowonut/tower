@@ -15,7 +15,7 @@ export default {
     const { embedVariable: format } = game;
 
     // define all variables
-    const { level, xp, health, maxHealth, floor, marks } = player;
+    const { level, xp, health, maxHP, floor, marks } = player;
     const nextXp = config.nextLevelXp(level);
     const {
       health: healthE,

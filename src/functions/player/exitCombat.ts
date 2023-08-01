@@ -1,6 +1,9 @@
-import { game } from "../../tower.js";
+import { game, prisma } from "../../tower.js";
 
 /** Exit combat. */
 export default (async function () {
-  await this.update({ fighting: null, inCombat: false, canAttack: true });
+  await this.update({ encounterId: null });
+  await prisma.encounter.deleteMany({
+    where: { players: { none: {} } },
+  });
 } satisfies PlayerFunction);

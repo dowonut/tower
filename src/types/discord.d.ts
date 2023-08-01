@@ -111,6 +111,8 @@ declare global {
     value: string;
     description?: string;
     emoji?: string;
+    /** This option is showed as selected. Default = false. */
+    default?: boolean;
   }
 
   /**

@@ -11,9 +11,7 @@ export default (async function () {
   await this.update({
     marks: newMarks,
     region: newRegion,
-    fighting: null,
-    inCombat: false,
-    health: this.maxHealth,
+    health: this.maxHP,
   });
 
   return {

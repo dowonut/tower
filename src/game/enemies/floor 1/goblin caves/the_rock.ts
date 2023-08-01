@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "Rock.",
   // Max health.
-  maxHealth: 30,
+  baseHP: 30,
   // Enemy level. Used to scale attack power.
   level: 8,
   // All anime attacks. Available attacks can be seen in enemy class.

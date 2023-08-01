@@ -52,7 +52,6 @@ model Player {
   xp            Int             @default(0)
   marks         Int             @default(0)
   health        Int             @default(10)
-  maxHealth     Int             @default(10)
   // Equipment
   head          String?
   torso         String?
@@ -65,10 +64,12 @@ model Player {
   arcane        Int             @default(0)
   vitality      Int             @default(0)
   // Misc
-  inCombat      Boolean         @default(false)
   canAttack     Boolean         @default(true)
-  fighting      Int?
   statpoints    Int             @default(0)
+  encounter     Encounter?      @relation(fields: [encounterId], references: [id])
+  encounterId   Int?
+  party         Party?          @relation(fields: [partyId], references: [id])
+  partyId       Int?
 
   @@unique([guildId, userId])
 }
@@ -176,11 +177,12 @@ model Passive {
 
 // Enemy tracking
 model Enemy {
-  id       Int           @id @default(autoincrement())
-  name     String
-  health   Int
-  fighting String?
-  attacks  enemyAttack[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  health      Int
+  attacks     enemyAttack[]
+  encounter   Encounter?    @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  encounterId Int?
 }
 
 model enemyAttack {
@@ -189,6 +191,22 @@ model enemyAttack {
   enemyId     Int
   name        String
   remCooldown Int    @default(0)
+}
+
+// Combat encounter
+model Encounter {
+  id          Int      @id @default(autoincrement())
+  players     Player[]
+  enemies     Enemy[]
+  turnsPassed Int      @default(0)
+}
+
+// Player parties
+model Party {
+  id      Int      @id @default(autoincrement())
+  players Player[]
+  leader  Int
+  name    String?  @unique
 }
 
 // OUTDATED 

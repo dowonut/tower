@@ -100,7 +100,11 @@ ${game.fastProgressBar("health", enemyData)}`,
       {
         name: "info",
         function: async (m) =>
-          await game.enemyInfo(m.message, m.player, enemyData),
+          await game.enemyInfo({
+            message: m.message,
+            player: m.player,
+            enemyData,
+          }),
       },
     ],
   });
@@ -116,11 +120,16 @@ ${game.fastProgressBar("health", enemyData)}`,
   });
 
   // Unlock new commands
-  await player.unlockCommands(message, ["attack", "flee", "enemyinfo"]);
+  await player.unlockCommands(message, [
+    "attack",
+    "flee",
+    "enemyinfo",
+    "invite",
+  ]);
 
   // Enter combat
   function enterCombat() {
-    game.enterCombat({ player, enemies: [enemyData] });
+    game.enterCombat({ player, enemies: [enemyData], message });
   }
 
   //   // Create enemy in database

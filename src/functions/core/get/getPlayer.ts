@@ -1,4 +1,5 @@
 import { game, prisma, playerFunctions } from "../../../tower.js";
+import PlayerClass from "../../../game/_classes/players.js";
 
 /** Get player. */
 export default async function getPlayer(args: {
@@ -23,15 +24,23 @@ export default async function getPlayer(args: {
   // Get player from database
   let playerData = await prisma.player.findUnique({
     where: { guildId_userId: { guildId: server.serverId, userId: user.id } },
+    include: {
+      encounter: { include: { enemies: true, players: true } },
+      party: { include: { players: { include: { user: true } } } },
+      inventory: true,
+    },
   });
   // Check if player has entry in database-
   if (!playerData) return; //throw new Error("No player found.");
 
-  let player: Player = { ...playerData, ...playerFunctions };
+  let playerObj: PlayerBase = { ...playerData, ...playerFunctions };
 
-  if (message) player.message = message;
-  if (server) player.server = server;
-  player.user = user;
+  if (message) playerObj.message = message;
+  if (server) playerObj.server = server;
+  playerObj.user = user;
+
+  // Create player class instance
+  const player: Player = new PlayerClass(playerObj);
 
   return player;
 }

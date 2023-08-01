@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "Do not enrage the hobgoblin. Bad idea.",
   // Max health.
-  maxHealth: 10,
+  baseHP: 10,
   // Enemy level. Used to scale attack power.
   level: 4,
   // All anime attacks. Available attacks can be seen in enemy class.

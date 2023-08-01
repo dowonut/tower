@@ -13,6 +13,7 @@ export default (async function <T, A extends string = undefined>(args: {
   let { key, name, filter, sort = "name" } = args;
   let array: T[] = [];
   let items: any[] = [];
+  let keyS = key.toString();
 
   // Get all items
   items = await prisma[key as string].findMany({
@@ -20,7 +21,7 @@ export default (async function <T, A extends string = undefined>(args: {
     orderBy: [{ [sort]: "desc" }],
   });
 
-  if (!items[0]) throw new Error("No items found using key: " + key);
+  if (!items[0]) throw new Error("No items found using key: " + keyS);
 
   // If name
   if (name && !filter) {
@@ -37,9 +38,9 @@ export default (async function <T, A extends string = undefined>(args: {
 
   // Create all item instances from their classes
   for (const item of items) {
-    const itemClass = classes[key + "s"];
+    const itemClass = classes[keyS + "s"];
 
-    if (!itemClass) throw new Error("No class found with name: " + key + "s");
+    if (!itemClass) throw new Error("No class found with name: " + keyS + "s");
     const finalItem = game.createClassObject<T>(itemClass, item);
 
     array.push(finalItem);
