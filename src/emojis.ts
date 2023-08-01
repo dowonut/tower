@@ -12,6 +12,7 @@ const emojis = {
   error: "<:error:1093637241215144006>",
   i_cursor: "<:i_cursor:1096550891533905972>",
   keyboard: "<:keyboard:1096550895375884338>",
+  info: "<:info_solid:1041462395408752700>",
   stats: {
     strength: "<:strength:1002671427914313880>",
     defence: "<:defence:1002673157523648663>",

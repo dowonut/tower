@@ -19,6 +19,8 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   send?: T;
   /** Reply to the user's original message. Default: true. */
   reply?: boolean;
+  /** Optional embed thumbnail. */
+  thumbnail?: string;
 }): Promise<T extends true ? Message : MessageOptions> {
   const {
     message,
@@ -30,6 +32,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
     send = true,
     reply = true,
     description,
+    thumbnail,
   } = args;
 
   const embedInfo: Embed = {
@@ -38,6 +41,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   };
 
   if (description) embedInfo.description = description;
+  if (thumbnail) embedInfo.thumbnail = { url: thumbnail };
 
   const finalEmbed: Embed = { ...embed, ...embedInfo };
 

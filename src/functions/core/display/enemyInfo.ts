@@ -3,10 +3,21 @@ import { config, game } from "../../../tower.js";
 /**
  * Get formatted enemy info from player in combat.
  */
-export default async function enemyInfo(message: Message, player: Player) {
-  if (!player.fighting) throw new Error("Player must be fighting an enemy.");
+export default async function enemyInfo(
+  message: Message,
+  player: Player,
+  enemyData?: Enemy
+) {
+  if (!player.fighting && !enemyData)
+    throw new Error("Player must be fighting an enemy.");
 
-  const enemy = await player.getEnemy();
+  let enemy: Enemy;
+  if (player.fighting) {
+    enemy = await player.getEnemy();
+  } else {
+    enemy = enemyData;
+    enemy.health = enemy.maxHealth;
+  }
 
   const emojis = config.emojis.damage;
   const image = enemy.getImage();

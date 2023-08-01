@@ -3,7 +3,10 @@ import { game, config } from "../../../tower.js";
 type ProgressBar = "health" | "xp";
 
 /** Generate progress bar from template. */
-export default function fastProgressBar(type: ProgressBar, player: Player) {
+export default function fastProgressBar(
+  type: ProgressBar,
+  entity: Player | Enemy
+) {
   let min: number;
   let max: number;
   let color: ProgressBarColor;
@@ -12,21 +15,19 @@ export default function fastProgressBar(type: ProgressBar, player: Player) {
 
   switch (type) {
     case "health":
-      min = player.health;
-      max = player.maxHealth;
+      min = entity.health || entity.maxHealth;
+      max = entity.maxHealth;
       color = "red";
-      progressBarText =
-        config.emojis.health +
-        ` **\`${player.health} / ${player.maxHealth}\`**`;
+      progressBarText = config.emojis.health + ` **\`${min} / ${max}\`**`;
       break;
     case "xp":
-      const nextXp = config.nextLevelXp(player.level);
-      min = player.xp;
+      const nextXp = config.nextLevelXp(entity.level);
+      min = entity.xp;
       max = nextXp;
       color = "green";
       progressBarText = `
-Level: **\`${player.level}\`**
-XP: **\`${player.xp} / ${nextXp}\`**`;
+Level: **\`${entity.level}\`**
+XP: **\`${min} / ${max}\`**`;
       break;
   }
 

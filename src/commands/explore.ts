@@ -52,7 +52,7 @@ export default {
     switch (item) {
       case "enemies":
         // Start random enemy encounter in region
-        await game.startEnemyEncounter({ message, player, server });
+        await game.enemyEncounter({ message, player, server });
         break;
       case "loot":
         // Give the player some random loot from that region

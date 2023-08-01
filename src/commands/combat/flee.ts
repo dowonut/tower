@@ -9,8 +9,10 @@ export default {
   async execute(message, args, player, server) {
     //const enemy = await player.getEnemy();
 
-    player.exitCombat();
-    player.killEnemy();
+    if (player.fighting) {
+      player.exitCombat();
+      player.killEnemy();
+    }
 
     const reply = await game.send({
       message,
