@@ -1,5 +1,6 @@
 import { AttackClass } from "../../game/_classes/attacks.ts";
 import Prisma from "@prisma/client";
+import { config } from "../../tower.ts";
 
 declare global {
   export type AttackData = {
@@ -17,8 +18,8 @@ declare global {
 
   export type AttackDamage = {
     type: DamageType;
-    min: number;
-    max: number;
+    source: keyof typeof config.baseStats;
+    basePercent: number;
     total?: number;
   };
 

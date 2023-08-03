@@ -1,5 +1,5 @@
 import { User as DiscordUser } from "discord.js";
-import { game, prisma } from "../../../tower.js";
+import { config, game, prisma } from "../../../tower.js";
 
 /**
  * Create a new player given a Discord user.
@@ -45,11 +45,7 @@ export default async function createPlayer(user: DiscordUser, server: Server) {
     },
   });
 
-  const entries = {
-    attack: ["punch", "slash", "headsmasher"],
-    skill: ["unarmed combat"],
-    //      recipe: ["sword handle"],
-  };
+  const entries = config.playerDefaultEntries;
 
   for (const [key, value] of Object.entries(entries)) {
     const entryArr = value.map((x) => ({ playerId: playerData.id, name: x }));

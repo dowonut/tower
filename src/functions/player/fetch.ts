@@ -21,7 +21,7 @@ export default (async function <T, A extends string = undefined>(args: {
     orderBy: [{ [sort]: "desc" }],
   });
 
-  if (!items[0]) throw new Error("No items found using key: " + keyS);
+  if (!items[0]) return; //throw new Error("No items found using key: " + keyS);
 
   // If name
   if (name && !filter) {
@@ -38,7 +38,7 @@ export default (async function <T, A extends string = undefined>(args: {
 
   // Create all item instances from their classes
   for (const item of items) {
-    const itemClass = classes[keyS + "s"];
+    const itemClass = classes[keyS + "s"].find((x) => x.name == item.name);
 
     if (!itemClass) throw new Error("No class found with name: " + keyS + "s");
     const finalItem = game.createClassObject<T>(itemClass, item);
@@ -46,9 +46,9 @@ export default (async function <T, A extends string = undefined>(args: {
     array.push(finalItem);
   }
 
-  if (array.length > 1) {
+  if (array.length > 0) {
     return array as any;
   } else {
-    return array[0] as any;
+    return [] as any;
   }
 } satisfies PlayerFunction);

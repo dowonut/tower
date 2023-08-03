@@ -1,11 +1,7 @@
 import { game, prisma } from "../../../tower.js";
 
 /** Enter a combat encounter with an enemy. */
-export default async function enterCombat(args: {
-  player: Player;
-  enemies: Enemy[];
-  message: Message;
-}) {
+export default async function enterCombat(args: { player: Player; enemies: Enemy[]; message: Message }) {
   const { player, message } = args;
   let { enemies } = args;
 
@@ -70,6 +66,14 @@ export default async function enterCombat(args: {
     enemyNumber++;
   }
 
+  // Calculate starting SV
+  for (let player of players) {
+    const SV = player.baseSV;
+    player = await player.update({ SV });
+  }
+
+  const turnOrder: (Player | Enemy)[] = game.getTurnOrder(players, enemies);
+
   // Create new encounter
   const enemyIds = enemies.map((x) => {
     return { id: x.id };
@@ -78,16 +82,12 @@ export default async function enterCombat(args: {
     return { id: x.id };
   });
   const encounter = await prisma.encounter.create({
-    data: { enemies: { connect: enemyIds }, players: { connect: playerIds } },
+    data: {
+      enemies: { connect: enemyIds },
+      players: { connect: playerIds },
+      currentPlayer: turnOrder.filter((x) => x.isPlayer)[0].id,
+    },
   });
-
-  // Calculate starting SV
-  for (let player of players) {
-    const SV = player.baseSV;
-    player = await player.update({ SV });
-  }
-
-  const turnOrder: (Player | Enemy)[] = getTurnOrder(players, enemies);
 
   // console.log(
   //   turnOrder.map((x) => {
@@ -103,7 +103,6 @@ export default async function enterCombat(args: {
       players,
       enemies,
       turnOrder,
-      currentPlayer: turnOrder.filter((x) => x.isPlayer)[0] as Player,
       selectedEnemy: undefined as number,
     },
     boards: [
@@ -188,17 +187,13 @@ export default async function enterCombat(args: {
         function: async (m) => {
           const enemies = m.variables.enemies;
           const players = m.variables.players;
-          const partyName =
-            players.length > 1 ? "Party" : `${players[0].user.username}`;
-          const title = `${partyName} fighting ${enemies
-            .map((x) => x.getName())
-            .join(", ")}`;
+          const partyName = players.length > 1 ? "Party" : `${players[0].user.username}`;
+          const title = `${partyName} fighting ${enemies.map((x) => x.getName()).join(", ")}`;
 
           // Format enemy list
           let description = ``;
           for (const enemy of enemies) {
-            const enemyName =
-              enemies.length > 1 ? `**${enemy.displayName}** | ` : ``;
+            const enemyName = enemies.length > 1 ? `**${enemy.displayName}** | ` : ``;
             const healthBar = game.fastProgressBar("health", enemy);
             description += `
 ${enemyName}${healthBar}
@@ -252,27 +247,9 @@ ${turnOrderList}
 
   menu.init("main", {
     filter: (i) => {
-      return (
-        i.user.id ==
-        (turnOrder.filter((x) => x.isPlayer)[0] as Player).user.discordId
-      );
+      return i.user.id == (turnOrder.filter((x) => x.isPlayer)[0] as Player).user.discordId;
     },
   });
 }
 
 // FUNCTIONS ===============================================================================
-
-// Get turn order based on current Speed Values
-function getTurnOrder(players: Player[], enemies: Enemy[]) {
-  const turnOrder: (Player | Enemy)[] = [...players, ...enemies].sort(
-    (a, b) => {
-      if (a.SV > b.SV) return 1;
-      if (a.SV < b.SV) return -1;
-      if (a.SPD < b.SPD) return 1;
-      if (a.SPD > b.SPD) return -1;
-      if (!("user" in a)) return 1;
-      if ("user" in a) return -1;
-    }
-  );
-  return turnOrder;
-}

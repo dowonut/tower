@@ -12,8 +12,16 @@ declare global {
     levels: SkillLevel[];
   };
 
-  export type SkillLevel = (SkillLevelAddPassive | SkillLevelNewAttack) & {
+  export type SkillLevel = {
+    rewards: SkillReward[];
     info?: string;
+  };
+
+  type SkillReward = {
+    /** The type of reward. */
+    type: "unlockAttack" | "addPassive";
+    /** Name of the attack to unlock. */
+    attack?: string;
   };
 
   type SkillLevelNewAttack = {

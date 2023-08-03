@@ -48,6 +48,10 @@ export const baseStats = {
 //   "void RES": 0,
 // };
 
+export const playerDefaultEntries = {
+  skill: ["unarmed combat"],
+};
+
 export const stats = ["strength", "defence", "arcane", "vitality"];
 
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;

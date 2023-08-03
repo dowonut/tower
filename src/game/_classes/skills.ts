@@ -13,50 +13,50 @@ export class SkillClass extends SkillBaseClass {
   }
 
   /** Get level info for skill. */
-  levelInfo(level: number) {
-    const skill = this.levels[level - 1];
+  // levelInfo(level: number) {
+  //   const skill = this.levels[level - 1];
 
-    if (!skill) return undefined;
+  //   if (!skill) return undefined;
 
-    if (skill.info) return skill.info;
+  //   if (skill.info) return skill.info;
 
-    if (skill.type == "attack")
-      return `Unlock new attack: **${titleCase(skill.name)}**`;
+  //   if (skill.type == "attack")
+  //     return `Unlock new attack: **${titleCase(skill.name)}**`;
 
-    if (skill.type == "passive") {
-      const passive = skill;
-      return `Increase ${passive.name} ${passive.target.toLowerCase()} by \`+${
-        passive.value
-      }%\``;
-    }
-  }
+  //   if (skill.type == "passive") {
+  //     const passive = skill;
+  //     return `Increase ${passive.name} ${passive.target.toLowerCase()} by \`+${
+  //       passive.value
+  //     }%\``;
+  //   }
+  // }
 
   // Level up player skill
   async levelUp(player: Player, level: SkillLevel) {
     let levelMsg: string;
 
     // If level unlocks add
-    if (level.type == "attack") {
-      // Add new attack to player
-      await player.addAttack(level.name);
-      const attackName = titleCase(level.name);
-      levelMsg = `New attack unlocked: **${attackName}**`;
-    }
+    // if (level.type == "attack") {
+    //   // Add new attack to player
+    //   await player.addAttack(level.name);
+    //   const attackName = titleCase(level.name);
+    //   levelMsg = `New attack unlocked: **${attackName}**`;
+    // }
 
     // If level unlocks passive stat
-    if (level.type == "passive") {
-      const passive = level;
-      // Add new passive stat to player
-      await player.addPassive({
-        name: passive.name,
-        target: passive.target,
-        value: passive.value,
-        modifier: "multiply",
-        source: "skill",
-      });
-      const combatName = titleCase(`${passive.name}`);
-      levelMsg = `${combatName} ${passive.target} increased by \`+${passive.value}%\``;
-    }
+    // if (level.type == "passive") {
+    //   const passive = level;
+    //   // Add new passive stat to player
+    //   await player.addPassive({
+    //     name: passive.name,
+    //     target: passive.target,
+    //     value: passive.value,
+    //     modifier: "multiply",
+    //     source: "skill",
+    //   });
+    //   const combatName = titleCase(`${passive.name}`);
+    //   levelMsg = `${combatName} ${passive.target} increased by \`+${passive.value}%\``;
+    // }
 
     // Send level message
     if (!levelMsg) return "";
@@ -65,7 +65,7 @@ export class SkillClass extends SkillBaseClass {
   }
 }
 
-const skills = await loadFiles<SkillClass>("passives", SkillClass);
+const skills = await loadFiles<SkillClass>("skills", SkillClass);
 
 export default skills;
 

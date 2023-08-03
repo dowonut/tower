@@ -3,14 +3,7 @@ export default {
   category: "combat",
   weaponType: "sword",
   levels: [
-    { attack: { name: "thrust" } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
-    { passive: { name: "sword", target: "damage", value: 10 } },
+    { rewards: [{ type: "unlockAttack", attack: "slash" }] },
+    { rewards: [{ type: "unlockAttack", attack: "thrust" }] },
   ],
 } satisfies SkillData;

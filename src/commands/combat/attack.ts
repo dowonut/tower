@@ -4,9 +4,7 @@ export default {
   name: "attack",
   aliases: ["a"],
   description: "Attack the enemy you're fighting.",
-  arguments: [
-    { name: "attack_name", type: "playerAvailableAttack", required: false },
-  ],
+  arguments: [{ name: "attack_name", type: "playerAvailableAttack", required: false }],
   category: "combat",
   useInCombat: true,
   cooldown: "1",
@@ -14,39 +12,52 @@ export default {
     // Format imput
     const input = args.attack_name;
 
-    // Check if user specified attack
-    if (args.attack_name) {
-      // Check if player is in combat
-      if (!player.inCombat)
-        return game.error({
-          message,
-          content: "you can only use an attack during combat.",
-        });
+    const attacks = await player.getAttacks();
 
-      if (!player.canAttack)
-        return game.error({ message, content: "you can't attack right now." });
+    // Format embed
+    const title = `Attacks`;
+    let fields: Embed["fields"] = [];
+    for (const attack of attacks) {
+      const description = attack.getDescription();
 
-      // if (!isNaN(args[0]))
-      //   return game.error({
-      //     message,
-      //     content: "provide the name of the attack you want to use.",
-      //   });
-
-      const attack = await player.getAttack(input);
-
-      // if (!attack)
-      //   return game.error({ message, content: "not a valid attack." });
-
-      if (attack.remCooldown > 0)
-        return game.error({
-          message,
-          content: "this attack is still on cooldown.",
-        });
-
-      // return await performAttack(message, player, server, attack);
-    } else {
-      // return await listAttacks(message, player);
+      fields.push({ name: `**${attack.getName()}** | \`Lvl. ${attack.level}\``, value: description, inline: true });
     }
+
+    game.fastEmbed({ message, player, title, embed: { fields } });
+
+    //   // Check if user specified attack
+    //   if (args.attack_name) {
+    //     // Check if player is in combat
+    //     if (!player.inCombat)
+    //       return game.error({
+    //         message,
+    //         content: "you can only use an attack during combat.",
+    //       });
+
+    //     if (!player.canAttack)
+    //       return game.error({ message, content: "you can't attack right now." });
+
+    //     // if (!isNaN(args[0]))
+    //     //   return game.error({
+    //     //     message,
+    //     //     content: "provide the name of the attack you want to use.",
+    //     //   });
+
+    //     const attack = await player.getAttack(input);
+
+    //     // if (!attack)
+    //     //   return game.error({ message, content: "not a valid attack." });
+
+    //     if (attack.remCooldown > 0)
+    //       return game.error({
+    //         message,
+    //         content: "this attack is still on cooldown.",
+    //       });
+
+    //     // return await performAttack(message, player, server, attack);
+    //   } else {
+    //     // return await listAttacks(message, player);
+    //   }
   },
 } as Command;
 

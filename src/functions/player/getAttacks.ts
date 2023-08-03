@@ -2,37 +2,38 @@ import { game, prisma, config } from "../../tower.js";
 
 import attacks from "../../game/_classes/attacks.js";
 
-/** Get available attacks based on currently equipped weapon. */
-export default (async function () {
-  const playerAttacks = await prisma.attack.findMany({
-    orderBy: [{ remCooldown: "asc" }],
-    where: { playerId: this.id },
-  });
+/** Get all player attacks */
+export default (async function (args?: {
+  /** Only get attacks that are currently usable. */
+  onlyAvailable: boolean;
+}) {
+  const skills = await this.getSkills();
 
-  let attackArray: Attack[] = [];
+  // Get unlocked attacks from skills
+  let unlockedAttacks: string[] = [];
+  for (const skill of skills) {
+    const rewards = skill.levels
+      .slice(0, skill.level + 1)
+      .map((x) => x.rewards)
+      .flat();
 
-  for (const playerAttack of playerAttacks) {
-    const attackClass = attacks.find(
-      (x) => x.name == playerAttack.name.toLowerCase()
-    );
-
-    if (!attackClass) continue;
-
-    const attack = game.createClassObject<Attack>(attackClass, playerAttack);
-
-    attackArray.push(attack);
+    for (const reward of rewards) {
+      if (reward.type == "unlockAttack") unlockedAttacks.push(reward.attack);
+    }
   }
 
-  let finalArray: Attack[];
-
-  if (this.hand) {
-    const item = await this.getItem(this.hand);
-    finalArray = attackArray.filter((x) =>
-      x.weaponType.includes(item.weaponType)
-    );
-  } else {
-    finalArray = attackArray.filter((x) => x.weaponType.includes("unarmed"));
+  // Get or create attacks
+  let attacks: Attack[] = [];
+  for (const attackName of unlockedAttacks) {
+    let attack = await this.getAttack(attackName);
+    if (!attack) {
+      await prisma.attack.create({
+        data: { playerId: this.id, name: attackName },
+      });
+      attack = await this.getAttack(attackName);
+    }
+    attacks.push(attack);
   }
 
-  return finalArray;
+  return attacks;
 } satisfies PlayerFunction);

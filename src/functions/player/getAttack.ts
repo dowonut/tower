@@ -9,11 +9,14 @@ export default (async function (attackName: string) {
     },
   });
 
-  if (attackData.length < 1 || !attackData[0]) return;
+  if (attackData.length < 1) return;
 
   const attackClass = attacks.find((x) => x.name == attackName.toLowerCase());
 
-  const finalAttack = game.createClassObject<Attack>(attackClass, attackData);
+  const finalAttack = game.createClassObject<Attack>(
+    attackClass,
+    attackData[0]
+  );
 
   return finalAttack;
 } satisfies PlayerFunction);

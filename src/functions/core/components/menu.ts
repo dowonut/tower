@@ -119,10 +119,8 @@ export default class Menu<T> extends MenuBase<T> {
   /** Create interaction collector. */
   async createCollector(components: Component[], args: CollectorArgs) {
     if (this.currentCollector) {
-      console.log("stopping existing collector");
       this.currentCollector.stop();
     }
-    console.log("creating new collector");
     const collector = await game.componentCollector(
       this.message,
       this.botMessage,

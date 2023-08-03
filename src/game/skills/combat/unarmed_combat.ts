@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "unarmed",
   levels: [
-    { type: "attack", name: "uppercut" },
-    { type: "passive", name: "unarmed", target: "damage", value: 10 },
+    { rewards: [{ type: "unlockAttack", attack: "punch" }] },
+    { rewards: [{ type: "unlockAttack", attack: "uppercut" }] },
   ],
 } satisfies SkillData;

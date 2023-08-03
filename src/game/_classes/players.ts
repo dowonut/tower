@@ -1,4 +1,4 @@
-import { createClassFromType, loadFiles } from "../../functions/core/index.js";
+import { createClassFromType, getTurnOrder, loadFiles } from "../../functions/core/index.js";
 import { config } from "../../tower.js";
 
 const PlayerBaseClass = createClassFromType<PlayerBase, false>();
@@ -23,12 +23,19 @@ export class PlayerClass extends PlayerBaseClass {
     return this.party && this.id == this.party.leader;
   }
 
+  /** Get username. */
   get displayName() {
     return this.user.username;
   }
 
   get isPlayer() {
     return true;
+  }
+
+  /** Can currently attack. */
+  get canAttack() {
+    if (!this.encounter) return false;
+    return this.encounter.currentPlayer == this.id;
   }
 
   // STATS ---------------------------------------------------------------

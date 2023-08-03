@@ -35,6 +35,7 @@ export { default as getMerchantItems } from "./get/getMerchantItems.js";
 export { default as getParty } from "./get/getParty.js";
 export { default as getPlayer } from "./get/getPlayer.js";
 export { default as getRegion } from "./get/getRegion.js";
+export { default as getTurnOrder } from "./get/getTurnOrder.js";
 export { default as getUser } from "./get/getUser.js";
 export { default as checkQuantity } from "./math/checkQuantity.js";
 export { default as cycleArray } from "./math/cycleArray.js";

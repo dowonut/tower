@@ -6,7 +6,7 @@ export default {
   // Attack description shown in attack command
   description: "Brutally smash a rock against your enemy's head.",
   // Attack damages
-  damage: [{ type: "bludgeoning", min: 3, max: 5 }],
+  damage: [{ type: "bludgeoning", source: "ATK", basePercent: 200 }],
   // Attack message to send in chat. Multiple strings will choose a random one.
   // You can input variables in the string:
   // ENEMY = enemy name

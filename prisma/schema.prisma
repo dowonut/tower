@@ -64,7 +64,6 @@ model Player {
   arcane        Int             @default(0)
   vitality      Int             @default(0)
   // Misc
-  canAttack     Boolean         @default(true)
   statpoints    Int             @default(0)
   party         Party?          @relation(fields: [partyId], references: [id])
   partyId       Int?
@@ -159,6 +158,7 @@ model Attack {
   player      Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId    Int
   name        String
+  level       Int    @default(1)
   remCooldown Int    @default(0)
 }
 
@@ -199,10 +199,11 @@ model enemyAttack {
 
 // Combat encounter
 model Encounter {
-  id          Int      @id @default(autoincrement())
-  players     Player[]
-  enemies     Enemy[]
-  turnsPassed Int      @default(0)
+  id            Int      @id @default(autoincrement())
+  players       Player[]
+  enemies       Enemy[]
+  turnsPassed   Int      @default(0)
+  currentPlayer Int?
 }
 
 // Player parties
