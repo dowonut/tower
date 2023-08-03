@@ -5,6 +5,7 @@ export default {
   description: "Start the game by creating a character.",
   needChar: false,
   ignoreInHelp: true,
+  mustUnlock: false,
   async execute(message, args, player, server) {
     const auth = message.author;
 

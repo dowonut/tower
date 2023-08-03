@@ -1,3 +1,4 @@
+import { InteractionCollector } from "discord.js";
 import { game } from "../../../tower.js";
 
 type MenuOptions<T> = TowerMenuOptions<T>;
@@ -12,6 +13,7 @@ const MenuBase = class<T> {
 export default class Menu<T> extends MenuBase<T> {
   botMessage?: Message;
   currentBoard?: string;
+  currentCollector?: InteractionCollector<any>;
 
   constructor(object: MenuOptions<T>) {
     super(object);
@@ -19,7 +21,7 @@ export default class Menu<T> extends MenuBase<T> {
 
   //------------------------------------------------------------
   /** Initialise the board menu. */
-  async init(boardName: string) {
+  async init(boardName: string, args: CollectorArgs = {}) {
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
@@ -32,22 +34,22 @@ export default class Menu<T> extends MenuBase<T> {
         ...messageOptions,
         components: messageComponents,
       });
-      game.componentCollector(this.message, this.botMessage, components, this);
+      this.createCollector(components, args);
     } else throw new Error("Initial board must contain a message function.");
   }
 
   //------------------------------------------------------------
   /** Refresh the current board. */
-  async refresh() {
+  async refresh(args: CollectorArgs = {}) {
     if (!this.currentBoard || !this.botMessage)
       throw new Error("Cannot refresh before initialized.");
 
-    await this.switchBoard(this.currentBoard);
+    await this.switchBoard(this.currentBoard, args);
   }
 
   //------------------------------------------------------------
   /** Switch to a different board. */
-  async switchBoard(boardName: string) {
+  async switchBoard(boardName: string, args: CollectorArgs = {}) {
     if (!this.currentBoard || !this.botMessage)
       throw new Error("Cannot switch board before initialized.");
     const board = this.boards.find((x) => x.name == boardName);
@@ -62,7 +64,7 @@ export default class Menu<T> extends MenuBase<T> {
     }
     const { messageComponents, components } = await this.getComponents(board);
     this.botMessage.edit({ ...messageOptions, components: messageComponents });
-    game.componentCollector(this.message, this.botMessage, components, this);
+    this.createCollector(components, args);
   }
 
   //------------------------------------------------------------
@@ -111,5 +113,23 @@ export default class Menu<T> extends MenuBase<T> {
     const message = this.messages.find((x) => x.name == board.message);
     if (!message) return;
     return message;
+  }
+
+  //------------------------------------------------------------
+  /** Create interaction collector. */
+  async createCollector(components: Component[], args: CollectorArgs) {
+    if (this.currentCollector) {
+      console.log("stopping existing collector");
+      this.currentCollector.stop();
+    }
+    console.log("creating new collector");
+    const collector = await game.componentCollector(
+      this.message,
+      this.botMessage,
+      components,
+      this,
+      args
+    );
+    this.currentCollector = collector;
   }
 }

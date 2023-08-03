@@ -37,11 +37,6 @@ export class EnemyClass extends EnemyBaseClass {
     }
   }
 
-  get maxHP() {
-    const baseHP = this.baseHP || this.level * 5;
-    return baseHP;
-  }
-
   /** Get enemy image attachment. */
   getImage() {
     // Format item name
@@ -141,6 +136,41 @@ export class EnemyClass extends EnemyBaseClass {
     message = message.replace("DAMAGE", damageText + " damage");
 
     return message;
+  }
+
+  get isPlayer() {
+    return false;
+  }
+
+  get displayName() {
+    return this.getName() + ` (${this.number})`;
+  }
+
+  // STATS ---------------------------------------------------------------
+
+  /** Max Health */
+  get maxHP() {
+    const baseHP = this.baseHP || this.level * 5;
+    return baseHP;
+  }
+
+  /** Base Speed Value */
+  get baseSV() {
+    const gauge = config.speedGauge;
+    const SV = Math.ceil(gauge / this.SPD);
+    return SV;
+  }
+
+  /** Attack */
+  get ATK() {
+    const baseATK = 10;
+    return baseATK;
+  }
+
+  /** Speed */
+  get SPD() {
+    const baseSPD = this.baseSPD || 80;
+    return baseSPD;
   }
 }
 

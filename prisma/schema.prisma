@@ -66,10 +66,12 @@ model Player {
   // Misc
   canAttack     Boolean         @default(true)
   statpoints    Int             @default(0)
-  encounter     Encounter?      @relation(fields: [encounterId], references: [id])
-  encounterId   Int?
   party         Party?          @relation(fields: [partyId], references: [id])
   partyId       Int?
+  // Combat
+  encounter     Encounter?      @relation(fields: [encounterId], references: [id])
+  encounterId   Int?
+  SV            Int?
 
   @@unique([guildId, userId])
 }
@@ -179,10 +181,12 @@ model Passive {
 model Enemy {
   id          Int           @id @default(autoincrement())
   name        String
+  number      Int           @default(0)
   health      Int
   attacks     enemyAttack[]
   encounter   Encounter?    @relation(fields: [encounterId], references: [id], onDelete: Cascade)
   encounterId Int?
+  SV          Int?
 }
 
 model enemyAttack {

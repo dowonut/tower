@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { TextChannel } from "discord.js";
 import pkg from "@prisma/client";
 import { PermissionsBitField } from "discord.js";
 const ADMIN = PermissionsBitField.Flags.Administrator;
@@ -10,10 +10,18 @@ import { game, config, client, prisma } from "../../../tower.js";
  */
 export default async function runCommand(
   commandName: string,
-  object: { message: Message; server: Server; args?: string[] }
+  object: {
+    /** Fetch player using Discord ID. */
+    discordId?: string;
+    /** Message required for channel and player information. */
+    message: Message;
+    server: Server;
+    args?: string[];
+  }
 ) {
   // Extract variables
-  const { message, server, args = [] } = object;
+  const { discordId, message, server, args = [] } = object;
+  const userId = discordId || message.author.id;
 
   return new Promise(async (resolve) => {
     // Return if command isn't sent in guild text channel
@@ -38,20 +46,35 @@ export default async function runCommand(
     const timestamps = client.cooldowns.get(command.name);
     const cooldownAmount = (parseInt(command.cooldown) || 0) * 1000;
 
-    // Check if user has permission to run the command
-    const authorPerms =
-      message.channel.permissionsFor(message.author) || new Map();
-    // if (command.permissions) {
-    //   if (!authorPerms || !authorPerms.has(command.permissions)) {
+    // if (message) {
+    //   // Check if user has permission to run the command
+    //   const authorPerms =
+    //     message.channel.permissionsFor(message.author) || new Map();
+
+    //   // Check if user is admin
+    //   if (command.category == "admin" && !authorPerms.has(ADMIN)) {
     //     return game.error({
     //       message,
-    //       content: "you're not worthy of this command.",
+    //       channel,
+    //       content: `this command requires admin permissions.`,
     //     });
     //   }
     // }
 
     // Fetch player object
-    let player = await game.getPlayer({ message, server });
+    let player: Player;
+    if (discordId) {
+      player = await game.getPlayer({ discordId, server });
+    } else if (message) {
+      player = await game.getPlayer({ message, server });
+    } else {
+      return game.error({
+        content: `something went wrong trying to find player.`,
+      });
+    }
+
+    // Override message author id for special cases
+    message.user = player.user;
 
     // If command has no player requirement
     if (command.needChar == false) {
@@ -67,16 +90,8 @@ export default async function runCommand(
     }
     // Make object null if no player data
     else if (player) {
-      // Check if user is admin
-      if (command.category == "admin" && !authorPerms.has(ADMIN)) {
-        return game.error({
-          message,
-          content: `this command requires admin permissions.`,
-        });
-      }
-
       // Check if user is Dowonut
-      if (command.dev && message.author.id !== config.developerId) {
+      if (command.dev && userId !== config.developerId) {
         return game.error({
           message,
           content: `this command is only for Dowonut. `,
@@ -86,7 +101,7 @@ export default async function runCommand(
       // Check if command is unlocked
       if (
         !player.user.unlockedCommands.includes(command.name) &&
-        !authorPerms.has(ADMIN)
+        command.mustUnlock !== false
       ) {
         return game.error({
           message,
@@ -104,11 +119,14 @@ export default async function runCommand(
 
       // Check if user is allowed to attack in combat
       if (player.canAttack == false && command.useInCombatOnly == true) {
-        return game.error({ message, content: `you can't do this right now.` });
+        return game.error({
+          message,
+          content: `you can't do this right now.`,
+        });
       }
 
       if (
-        player.inCombat == true &&
+        player.inCombat &&
         command.useInCombat !== true &&
         command.useInCombatOnly !== true &&
         command.category !== "admin"
@@ -128,23 +146,19 @@ export default async function runCommand(
       }
 
       // Check if the user is on cooldown for that command
-      if (
-        timestamps.has(message.author.id) &&
-        message.author.id !== config.developerId
-      ) {
-        const expirationTime =
-          timestamps.get(message.author.id) + cooldownAmount;
+      if (timestamps.has(userId) && userId !== config.developerId) {
+        const expirationTime = timestamps.get(userId) + cooldownAmount;
         if (now < expirationTime) {
           return game.send({
             message,
-            content: `:hourglass_flowing_sand: **${message.author.username}**, wait a moment before using this command again.`,
+            content: `:hourglass_flowing_sand: **${player.user.username}**, wait a moment before using this command again.`,
           });
         }
       }
 
       // Update command cooldown for user
-      timestamps.set(message.author.id, now);
-      setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+      timestamps.set(userId, now);
+      setTimeout(() => timestamps.delete(userId), cooldownAmount);
 
       // Try to run the command
       try {

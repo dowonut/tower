@@ -1,8 +1,10 @@
 import {
   ButtonInteraction,
   ChannelType,
+  Collector,
   CollectorOptions,
   Interaction,
+  InteractionCollector,
   InteractionType,
   StageChannel,
   StringSelectMenuInteraction,
@@ -17,12 +19,8 @@ export default async function componentCollector<T>(
   reply: Message,
   components: Component[],
   menu?: TowerMenu<T>,
-  args: {
-    unique?: boolean;
-    filter?: (i: Interaction) => boolean;
-    max?: number;
-  } = {}
-): Promise<unknown> {
+  args: CollectorArgs = {}
+): Promise<InteractionCollector<any>> {
   if (!components || !components[0]) return undefined;
   const { unique = true } = args;
 
@@ -31,7 +29,7 @@ export default async function componentCollector<T>(
 
     if (unique) {
       filter = (i: any) =>
-        i.user.id == message.author.id && i.message.id == reply.id;
+        i.user.id == message.user.discordId && i.message.id == reply.id;
     }
 
     if (args.filter) {
@@ -54,64 +52,65 @@ export default async function componentCollector<T>(
     const collector =
       message.channel.createMessageComponentCollector(collectorSettings);
 
-    collector.on("collect", async (i) => {
-      let index: number;
-      index = components.findIndex((x) => x.id == i.customId);
+    resolve(collector);
 
-      const component = components[index];
+    collector.on(
+      "collect",
+      async (i: ButtonInteraction | StringSelectMenuInteraction) => {
+        let index: number;
+        index = components.findIndex((x) => x.id == i.customId);
 
-      // Return if no component provided
-      if (!component) return;
+        const component = components[index];
 
-      // Defer interaction update
-      if (!component.modal) {
-        try {
-          await i.deferUpdate();
-        } catch (err) {
-          return;
+        // Return if no component provided
+        if (!component) return;
+
+        // Defer interaction update
+        if (!component.modal) {
+          try {
+            await i.deferUpdate();
+          } catch (err) {
+            return;
+          }
         }
-      }
 
-      // If component has a function then run it
-      if (component.function) {
-        // Get selection as function ID
-        let selection: string;
-        if (i instanceof StringSelectMenuInteraction) {
-          selection = i.values ? i.values[0] : undefined;
+        // If component has a function then run it
+        if (component.function) {
+          // Get selection as function ID
+          let selection: string;
+          if (i instanceof StringSelectMenuInteraction) {
+            selection = i.values ? i.values[0] : undefined;
+          }
+          // Get response as return from component function
+          await component.function(reply, i, selection);
         }
-        // Get response as return from component function
-        const response = await component.function(reply, i, selection);
-        // Resolve the promise
-        resolve(response);
-      }
-      // If component is a modal then open it and delete message
-      else if (component.modal) {
-        const userResponse = await game.modal(component.modal, i);
-        // await reply.delete();
-        // Run component function
-        if (component.modal.function) {
-          const response = await component.modal.function(userResponse);
-          resolve(response);
+        // If component is a modal then open it and delete message
+        else if (component.modal) {
+          const userResponse = await game.modal(component.modal, i);
+          // await reply.delete();
+          // Run component function
+          if (component.modal.function) {
+            await component.modal.function(userResponse, i);
+          }
         }
-      }
 
-      // If menu class attached then perform special functions
-      if (menu) {
-        if (component.board) {
-          await menu.switchBoard(component.board);
+        // If menu class attached then perform special functions
+        if (menu) {
+          if (component.board) {
+            await menu.switchBoard(component.board);
+            collector.stop();
+          }
+        }
+
+        // If component stops collector
+        if (component.stop) {
           collector.stop();
         }
       }
-
-      // If component stops collector
-      if (component.stop) {
-        collector.stop();
-      }
-    });
+    );
 
     // collector.on("end", async () => {
-    //   await reply.edit({ components: [] });
-    //   return resolve(undefined);
+    //   console.log("collector ended");
     // });
   });
 }

@@ -6,22 +6,41 @@ export default {
   cooldown: "60",
   category: "other",
   useInCombat: true,
+  mustUnlock: false,
   async execute(message, args, player, server) {
+    if (player.party) {
+      return game.error({
+        message,
+        content: `you can't erase your player while in a party.`,
+      });
+    }
+
     const buttons: Button[] = [
       {
         id: "yes",
         label: "✔ Yes, erase everything.",
         style: "success",
+        stop: true,
         async function() {
-          return "yes";
+          // Erase player
+          await player.erase();
+
+          return await reply.edit({
+            content: "**Reset complete** :white_check_mark:",
+            components: [],
+          });
         },
       },
       {
         id: "no",
         label: "✖",
         style: "danger",
+        stop: true,
         async function() {
-          return "no";
+          return await reply.edit({
+            content: "**Cancelled operation**",
+            components: [],
+          });
         },
       },
     ];
@@ -36,24 +55,6 @@ export default {
       reply: true,
     });
 
-    const result = await game.componentCollector(message, reply, buttons);
-
-    // If yes, then delete
-    if (result == "yes") {
-      // Erase player
-      await player.erase();
-
-      return await reply.edit({
-        content: "**Reset complete** :white_check_mark:",
-        components: [],
-      });
-    }
-    // If no, then cancel
-    else if (result == "no") {
-      return await reply.edit({
-        content: "**Cancelled operation**",
-        components: [],
-      });
-    }
+    await game.componentCollector(message, reply, buttons);
   },
 } as Command;

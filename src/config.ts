@@ -13,6 +13,7 @@ export const developerId = "326536300985581568";
 export const emojis = {};
 export const integerLimit = 2147483647;
 
+export const speedGauge = 10000;
 export const baseStats = {
   maxHP: 10,
   ATK: 10,

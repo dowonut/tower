@@ -1,4 +1,4 @@
-import Discord from "discord.js";
+import Discord, { Interaction } from "discord.js";
 
 declare global {
   /**
@@ -33,7 +33,7 @@ declare global {
   export type Message<T = Discord.TextChannel> = Modify<
     Discord.Message,
     { channel: T }
-  >;
+  > & { user?: User };
 
   /**
    * Discord message options.
@@ -94,7 +94,10 @@ declare global {
     title: string;
     components: { style: "short" | "paragraph"; id: string; label: string }[];
     /** Function to run when the modal is submitted. */
-    function?: (response: ModalResponse[]) => any;
+    function?: (
+      response: ModalResponse[],
+      interaction?: Discord.Interaction
+    ) => any;
   }
 
   /** Response received from a modal. */
@@ -122,6 +125,15 @@ declare global {
     (reply?: Message, interaction?: Discord.Interaction, selection?: string):
       | any
       | Promise<any>;
+  }
+
+  export interface CollectorArgs {
+    /** Only the message author can interact. Overwritten by filter. Default = true. */
+    unique?: boolean;
+    /** Custom filter. */
+    filter?: (i: Interaction) => boolean;
+    /** Maximum responses to collect. */
+    max?: number;
   }
 }
 export {};

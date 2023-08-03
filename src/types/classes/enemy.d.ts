@@ -12,6 +12,9 @@ declare global {
     description: string;
     /** Optional base HP. Will default to level scaling. */
     baseHP?: number;
+    /** Optional base Speed Value. Will default to level scaling. */
+    baseSPD?: number;
+    /** Enemy level. */
     level: number;
     /** Attacks the enemy can perform. Inherited from enemy type. */
     attacks: string[];

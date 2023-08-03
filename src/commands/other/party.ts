@@ -5,6 +5,7 @@ export default {
   aliases: ["pa"],
   description: "Check your current party.",
   category: "other",
+  useInCombat: true,
   async execute(message, args, player, server) {
     if (!player.party)
       return game.error({
@@ -28,7 +29,9 @@ export default {
                 label: "Invite Player",
                 emoji: "✉️",
                 disable:
-                  m.player.isPartyLeader && m.player.party.players.length < 4
+                  m.player.isPartyLeader &&
+                  m.player.party.players.length < 4 &&
+                  !m.player.inCombat
                     ? false
                     : true,
                 style: "primary",
@@ -42,10 +45,11 @@ export default {
                       style: "short",
                     },
                   ],
-                  function: async (r) => {
+                  function: async (r, i) => {
                     const playerName = r[0].value;
                     await game.runCommand("invite", {
-                      message: m.message,
+                      discordId: i.user.id,
+                      message: m.botMessage,
                       server,
                       args: [playerName],
                     });
@@ -56,10 +60,12 @@ export default {
               {
                 id: "disband",
                 label: "Disband",
-                disable: m.player.isPartyLeader ? false : true,
-                function: async () => {
+                disable:
+                  m.player.isPartyLeader && !m.player.inCombat ? false : true,
+                function: async (r, i) => {
                   const response = await game.runCommand("disbandparty", {
-                    message: m.message,
+                    discordId: i.user.id,
+                    message: m.botMessage,
                     server,
                     args: [],
                   });
@@ -70,9 +76,11 @@ export default {
               {
                 id: "leave",
                 label: "Leave",
-                function: async () => {
+                disable: m.player.inCombat,
+                function: async (r, i) => {
                   const response = await game.runCommand("leaveparty", {
-                    message: m.message,
+                    discordId: i.user.id,
+                    message: m.botMessage,
                     server,
                     args: [],
                   });
@@ -119,6 +127,10 @@ export default {
       ],
     });
 
-    menu.init("list");
+    menu.init("list", {
+      filter: (i) => {
+        return player.party.players.some((x) => x.user.discordId == i.user.id);
+      },
+    });
   },
 } satisfies Command;

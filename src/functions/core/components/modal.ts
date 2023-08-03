@@ -1,9 +1,11 @@
 import {
   ActionRowBuilder,
   AutocompleteInteraction,
+  ButtonInteraction,
   Interaction,
   ModalBuilder,
   ModalSubmitInteraction,
+  StringSelectMenuInteraction,
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
@@ -13,7 +15,7 @@ import { game, config } from "../../../tower.js";
 /** Show Discord model through interaction. */
 export default async function modal(
   args: Modal,
-  interaction: Interaction
+  interaction: ButtonInteraction | StringSelectMenuInteraction
 ): Promise<ModalResponse[]> {
   return new Promise(async (resolve, reject) => {
     const modal = new ModalBuilder();
@@ -48,7 +50,12 @@ export default async function modal(
     )
       return;
 
-    await interaction.showModal(modal);
+    try {
+      console.log("showing modal...");
+      await interaction.showModal(modal);
+    } catch (err) {
+      console.log("failed to show modal");
+    }
 
     const filter = (i: Interaction) => i.user.id == interaction.user.id;
 
@@ -65,7 +72,9 @@ export default async function modal(
       return { id: x.customId, value: x.value };
     });
 
-    await submitted.deferUpdate();
+    try {
+      await submitted.deferUpdate();
+    } catch (err) {}
 
     resolve(responses);
   });

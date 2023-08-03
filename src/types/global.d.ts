@@ -48,6 +48,8 @@ declare global {
     ignoreInHelp?: boolean;
     /** The command can only be used when in a party. Default: false. */
     partyOnly?: boolean;
+    /** The command can only be used once unlocked. Default: true. */
+    mustUnlock?: boolean;
     /** The main command function. */
     execute: Execute;
   }

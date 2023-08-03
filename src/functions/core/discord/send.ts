@@ -39,8 +39,8 @@ export default async function send<B extends boolean = true>(args: {
   } = args;
   const channel = message ? message.channel : args.channel;
 
-  // if (channel.type !== ChannelType.GuildText)
-  //   return console.error("Invalid channel type.");
+  // Check if should reply to message
+  const canReply = message.author.id == message.user.discordId;
 
   let messageObject: MessageOptions = {
     content: "",
@@ -48,6 +48,14 @@ export default async function send<B extends boolean = true>(args: {
 
   // Add message content
   if (content) messageObject.content = content;
+
+  // Format message content for pings
+  if (!canReply && content && reply) {
+    messageObject.content =
+      `<@${message.user.discordId}>, ` +
+      content.charAt(0).toLowerCase() +
+      content.slice(1);
+  }
 
   // Add components
   if (components) messageObject.components = components;
@@ -78,7 +86,7 @@ export default async function send<B extends boolean = true>(args: {
 
   // Reply to message
   let botMsg: Message<any>;
-  if (reply && message) {
+  if (reply && message && canReply) {
     botMsg = await message.reply(messageObject);
   }
   // Send new message

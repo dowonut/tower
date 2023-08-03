@@ -1,4 +1,4 @@
-import { prisma } from "../../../tower.js";
+import { client, prisma } from "../../../tower.js";
 
 /** Get a user. */
 export default async function getUser(args: {
@@ -11,10 +11,19 @@ export default async function getUser(args: {
 
   const playerId = args.discordId ? args.discordId : args.message.author.id;
 
-  const user: User = await prisma.user.findUnique({
+  let user: User = await prisma.user.findUnique({
     where: { discordId: playerId },
   });
   if (!user) return;
+
+  // Update user information
+  const discordUser = await client.users.fetch(user.discordId);
+  if (discordUser && discordUser.username !== user.username) {
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { username: discordUser.username },
+    });
+  }
 
   return user;
 }

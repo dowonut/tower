@@ -23,6 +23,14 @@ export class PlayerClass extends PlayerBaseClass {
     return this.party && this.id == this.party.leader;
   }
 
+  get displayName() {
+    return this.user.username;
+  }
+
+  get isPlayer() {
+    return true;
+  }
+
   // STATS ---------------------------------------------------------------
 
   /** Get all stats. */
@@ -43,7 +51,14 @@ export class PlayerClass extends PlayerBaseClass {
     return object;
   }
 
-  /** Max health */
+  /** Base Speed Value */
+  get baseSV() {
+    const gauge = config.speedGauge;
+    const SV = Math.ceil(gauge / this.SPD);
+    return SV;
+  }
+
+  /** Max Health */
   get maxHP() {
     const baseHP = config.baseStats.maxHP;
     return baseHP;
@@ -58,12 +73,12 @@ export class PlayerClass extends PlayerBaseClass {
     const baseMAG = config.baseStats.MAG;
     return baseMAG;
   }
-  /** Physical resistance */
+  /** Physical Resistance */
   get RES() {
     const baseRES = config.baseStats.RES;
     return baseRES;
   }
-  /** Physical resistance */
+  /** Physical Resistance */
   get MAG_RES() {
     const baseMAG_RES = config.baseStats["MAG RES"];
     return baseMAG_RES;
@@ -73,22 +88,22 @@ export class PlayerClass extends PlayerBaseClass {
     const baseSPD = config.baseStats.SPD;
     return baseSPD;
   }
-  /** Crit rate */
+  /** Crit Rate */
   get CR() {
     const baseCR = config.baseStats.CR;
     return baseCR;
   }
-  /** Crit damage */
+  /** Crit Damage */
   get CD() {
     const baseCD = config.baseStats.CD;
     return baseCD;
   }
-  /** Acute rate */
+  /** Acute Rate */
   get AR() {
     const baseAR = config.baseStats.AR;
     return baseAR;
   }
-  /** Acute damage */
+  /** Acute Damage */
   get AD() {
     const baseAD = config.baseStats.AD;
     return baseAD;

@@ -4,6 +4,7 @@ export default {
   name: "ping",
   description: "Check bot latency.",
   category: "other",
+  useInCombat: true,
   async execute(message, args, player, server) {
     const msg = await game.send({
       message,

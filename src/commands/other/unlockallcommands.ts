@@ -8,22 +8,32 @@ export default {
   aliases: ["uac"],
   description: "Unlock all commands in the game.",
   category: "other",
+  mustUnlock: false,
   async execute(message, args, player, server) {
     const buttons: Button[] = [
       {
         id: "yes",
         label: "✔ Yes, unlock all commands.",
         style: "success",
+        stop: true,
         async function() {
-          return "yes";
+          await unlockCommands();
+          return await reply.edit({
+            content: "**Unlocked all commands** :white_check_mark:",
+            components: [],
+          });
         },
       },
       {
         id: "no",
         label: "✖",
         style: "danger",
+        stop: true,
         async function() {
-          return "no";
+          return await reply.edit({
+            content: "**Cancelled operation**",
+            components: [],
+          });
         },
       },
     ];
@@ -39,23 +49,7 @@ This will skip all tutorials, so it's **only recommended for experienced players
       components: [row],
     });
 
-    const result = await game.componentCollector(message, reply, buttons);
-
-    // If yes, unlock all commands
-    if (result == "yes") {
-      await unlockCommands();
-      return await reply.edit({
-        content: "**Unlocked all commands** :white_check_mark:",
-        components: [],
-      });
-    }
-    // If no, then cancel
-    else if (result == "no") {
-      return await reply.edit({
-        content: "**Cancelled operation**",
-        components: [],
-      });
-    }
+    game.componentCollector(message, reply, buttons);
 
     async function unlockCommands() {
       const commandFiles = await game.getCommands();

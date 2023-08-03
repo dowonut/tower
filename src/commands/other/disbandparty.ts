@@ -16,7 +16,7 @@ export default {
 
       const buttons: Button[] = [
         {
-          id: "disband",
+          id: "disbandparty",
           label: "Disband",
           emoji: "💥",
           style: "success",
@@ -27,7 +27,7 @@ export default {
           },
         },
         {
-          id: "cancel",
+          id: "canceldisband",
           label: "✖",
           style: "danger",
           function: (r) => {
