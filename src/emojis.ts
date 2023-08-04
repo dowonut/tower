@@ -13,7 +13,7 @@ const emojis = {
   i_cursor: "<:i_cursor:1096550891533905972>",
   keyboard: "<:keyboard:1096550895375884338>",
   info: "<:info_solid:1041462395408752700>",
-  stats: {
+  traits: {
     strength: "<:strength:1002671427914313880>",
     defence: "<:defence:1002673157523648663>",
     arcane: "<:arcane:1002680877161123850>",

@@ -1,6 +1,6 @@
 /**
  * Format a variable for Discord embeds.
  */
-export default function embedVariable(str: string | number) {
+export default function f(str: string | number) {
   return `**\`${str}\`**`;
 }

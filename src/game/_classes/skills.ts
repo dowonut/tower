@@ -1,9 +1,5 @@
 import { config } from "../../tower.js";
-import {
-  createClassFromType,
-  loadFiles,
-  titleCase,
-} from "../../functions/core/index.js";
+import { createClassFromType, loadFiles, titleCase } from "../../functions/core/index.js";
 
 const SkillBaseClass = createClassFromType<SkillBase>();
 
@@ -13,23 +9,21 @@ export class SkillClass extends SkillBaseClass {
   }
 
   /** Get level info for skill. */
-  // levelInfo(level: number) {
-  //   const skill = this.levels[level - 1];
+  getRewardInfo(level: number) {
+    const skill = this.levels[level];
+    if (!skill) return;
 
-  //   if (!skill) return undefined;
+    let text = ``;
+    for (const reward of skill.rewards) {
+      if (reward.type == "unlockAttack") {
+        text = `New attack available: **${titleCase(reward.attack)}**`;
+      }
 
-  //   if (skill.info) return skill.info;
-
-  //   if (skill.type == "attack")
-  //     return `Unlock new attack: **${titleCase(skill.name)}**`;
-
-  //   if (skill.type == "passive") {
-  //     const passive = skill;
-  //     return `Increase ${passive.name} ${passive.target.toLowerCase()} by \`+${
-  //       passive.value
-  //     }%\``;
-  //   }
-  // }
+      if (reward.type == "addPassive") {
+      }
+    }
+    return text;
+  }
 
   // Level up player skill
   async levelUp(player: Player, level: SkillLevel) {

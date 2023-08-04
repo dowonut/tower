@@ -28,13 +28,14 @@ export default async function componentCollector<T>(
     let filter = (i: any) => i.message.id == reply.id;
 
     if (unique) {
-      filter = (i: any) =>
-        i.user.id == message.user.discordId && i.message.id == reply.id;
+      filter = (i: any) => i.user.id == message.user.discordId && i.message.id == reply.id;
     }
 
     if (args.filter) {
       filter = args.filter;
     }
+
+    // console.log("> Filter: ", args.filter);
 
     // Define collector settings
     let collectorSettings: any = {
@@ -49,65 +50,63 @@ export default async function componentCollector<T>(
     // Return if stage channel
     // if (message.channel.type == ChannelType.GuildStageVoice) return;
 
-    const collector =
-      message.channel.createMessageComponentCollector(collectorSettings);
+    const collector = message.channel.createMessageComponentCollector(collectorSettings);
 
     resolve(collector);
 
-    collector.on(
-      "collect",
-      async (i: ButtonInteraction | StringSelectMenuInteraction) => {
-        let index: number;
-        index = components.findIndex((x) => x.id == i.customId);
+    collector.on("collect", async (i: ButtonInteraction | StringSelectMenuInteraction) => {
+      let index: number;
+      index = components.findIndex((x) => x.id == i.customId);
 
-        const component = components[index];
+      const component = components[index];
 
-        // Return if no component provided
-        if (!component) return;
+      // console.log("> Component: ", component);
 
-        // Defer interaction update
-        if (!component.modal) {
-          try {
-            await i.deferUpdate();
-          } catch (err) {
-            return;
-          }
+      // Return if no component provided
+      if (!component) return;
+
+      // Defer interaction update
+      if (!component.modal) {
+        try {
+          await i.deferUpdate();
+        } catch (err) {
+          return;
         }
+      }
 
-        // If component has a function then run it
-        if (component.function) {
-          // Get selection as function ID
-          let selection: string;
-          if (i instanceof StringSelectMenuInteraction) {
-            selection = i.values ? i.values[0] : undefined;
-          }
-          // Get response as return from component function
-          await component.function(reply, i, selection);
+      // If component has a function then run it
+      if (component.function) {
+        // Get selection as function ID
+        let selection: string;
+        if (i instanceof StringSelectMenuInteraction) {
+          selection = i.values ? i.values[0] : undefined;
         }
-        // If component is a modal then open it and delete message
-        else if (component.modal) {
-          const userResponse = await game.modal(component.modal, i);
-          // await reply.delete();
-          // Run component function
-          if (component.modal.function) {
-            await component.modal.function(userResponse, i);
-          }
+        // Get response as return from component function
+        await component.function(reply, i, selection);
+      }
+      // If component is a modal then open it and delete message
+      else if (component.modal) {
+        const userResponse = await game.modal(component.modal, i);
+        // await reply.delete();
+        // Run component function
+        if (component.modal.function) {
+          await component.modal.function(userResponse, i);
         }
+      }
 
-        // If menu class attached then perform special functions
-        if (menu) {
-          if (component.board) {
-            await menu.switchBoard(component.board);
-            collector.stop();
-          }
-        }
-
-        // If component stops collector
-        if (component.stop) {
+      // If menu class attached then perform special functions
+      if (menu) {
+        if (component.board) {
+          await menu.switchBoard(component.board);
           collector.stop();
         }
       }
-    );
+
+      // If component stops collector
+      if (component.stop) {
+        collector.stop();
+      }
+    });
 
     // collector.on("end", async () => {
     //   console.log("collector ended");

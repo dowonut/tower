@@ -23,11 +23,7 @@ export default async function parseCommandArguments(options: {
     const input = playerArgs[i];
 
     // Format command arguments
-    let commandArguments = game.formatCommandArguments(
-      command,
-      server,
-      argument.name
-    );
+    let commandArguments = game.formatCommandArguments(command, server, argument.name);
 
     //let commandText = displayCommand(commandArguments);
     let commandText = commandArguments;
@@ -107,8 +103,8 @@ export default async function parseCommandArguments(options: {
 
         // Must be the name of an attack available to the player
         case "playerAvailableAttack":
-          const attack = await player.getAttack(input);
-          if (!attack) {
+          const attack = await player.getAttacks({ onlyAvailable: true, name: input });
+          if (!attack[0]) {
             errorContent = `No attack found with name **\`${input}\`**`;
             error();
           }
@@ -132,11 +128,7 @@ export default async function parseCommandArguments(options: {
 
         // Must be a valid command category
         case "commandCategory":
-          if (
-            !config.commandCategories.includes(
-              input.toLowerCase() as CommandCategory
-            )
-          ) {
+          if (!config.commandCategories.includes(input.toLowerCase() as CommandCategory)) {
             let commandCategories = config.commandCategories
               .filter((x) => x !== "admin")
               .map((x) => `\`${x}\``)

@@ -14,6 +14,7 @@ export default class Menu<T> extends MenuBase<T> {
   botMessage?: Message;
   currentBoard?: string;
   currentCollector?: InteractionCollector<any>;
+  collectorArgs?: CollectorArgs;
 
   constructor(object: MenuOptions<T>) {
     super(object);
@@ -21,7 +22,10 @@ export default class Menu<T> extends MenuBase<T> {
 
   //------------------------------------------------------------
   /** Initialise the board menu. */
-  async init(boardName: string, args: CollectorArgs = {}) {
+  async init(boardName: string, args: CollectorArgs = undefined) {
+    if (args) {
+      this.collectorArgs = args;
+    }
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
@@ -34,24 +38,25 @@ export default class Menu<T> extends MenuBase<T> {
         ...messageOptions,
         components: messageComponents,
       });
-      this.createCollector(components, args);
+      this.createCollector(components);
     } else throw new Error("Initial board must contain a message function.");
   }
 
   //------------------------------------------------------------
   /** Refresh the current board. */
   async refresh(args: CollectorArgs = {}) {
-    if (!this.currentBoard || !this.botMessage)
-      throw new Error("Cannot refresh before initialized.");
+    if (!this.currentBoard || !this.botMessage) throw new Error("Cannot refresh before initialized.");
 
     await this.switchBoard(this.currentBoard, args);
   }
 
   //------------------------------------------------------------
   /** Switch to a different board. */
-  async switchBoard(boardName: string, args: CollectorArgs = {}) {
-    if (!this.currentBoard || !this.botMessage)
-      throw new Error("Cannot switch board before initialized.");
+  async switchBoard(boardName: string, args: CollectorArgs = undefined) {
+    if (args) {
+      this.collectorArgs = args;
+    }
+    if (!this.currentBoard || !this.botMessage) throw new Error("Cannot switch board before initialized.");
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
@@ -64,7 +69,7 @@ export default class Menu<T> extends MenuBase<T> {
     }
     const { messageComponents, components } = await this.getComponents(board);
     this.botMessage.edit({ ...messageOptions, components: messageComponents });
-    this.createCollector(components, args);
+    this.createCollector(components);
   }
 
   //------------------------------------------------------------
@@ -82,8 +87,7 @@ export default class Menu<T> extends MenuBase<T> {
           switch (component.id) {
             // Return button
             case "return":
-              if (!component.board)
-                throw new Error("Return component must include board name.");
+              if (!component.board) throw new Error("Return component must include board name.");
               return {
                 id: "return",
                 emoji: "↩",
@@ -92,6 +96,7 @@ export default class Menu<T> extends MenuBase<T> {
                 // function: async () => {
                 //   this.switchBoard(component.board);
                 // },
+                ...component,
               };
             default:
               return component;
@@ -117,17 +122,14 @@ export default class Menu<T> extends MenuBase<T> {
 
   //------------------------------------------------------------
   /** Create interaction collector. */
-  async createCollector(components: Component[], args: CollectorArgs) {
+  async createCollector(components: Component[]) {
+    const args = this.collectorArgs || undefined;
     if (this.currentCollector) {
+      // console.log("> Stopping existing collector.");
       this.currentCollector.stop();
     }
-    const collector = await game.componentCollector(
-      this.message,
-      this.botMessage,
-      components,
-      this,
-      args
-    );
+    // console.log("> Creating new collector.");
+    const collector = await game.componentCollector(this.message, this.botMessage, components, this, args);
     this.currentCollector = collector;
   }
 }

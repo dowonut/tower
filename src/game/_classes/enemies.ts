@@ -1,9 +1,6 @@
-import {
-  createClassFromType,
-  loadFiles,
-  getRandom,
-} from "../../functions/core/index.js";
-import { config } from "../../tower.js";
+import { Prisma } from "@prisma/client";
+import { createClassFromType, loadFiles, getRandom } from "../../functions/core/index.js";
+import { config, prisma } from "../../tower.js";
 import fs from "fs";
 
 const EnemyBaseClass = createClassFromType<EnemyBase>();
@@ -37,6 +34,12 @@ export class EnemyClass extends EnemyBaseClass {
     }
   }
 
+  /** Update enemy in database. */
+  async update(args: Prisma.EnemyUncheckedUpdateInput | Prisma.EnemyUpdateInput) {
+    const enemyInfo = await prisma.enemy.update({ where: { id: this.id }, data: args });
+    return Object.assign(this, enemyInfo);
+  }
+
   /** Get enemy image attachment. */
   getImage() {
     // Format item name
@@ -60,9 +63,7 @@ export class EnemyClass extends EnemyBaseClass {
   /** Get all attacks. */
   getAttacks(): EnemyEvaluatedAttack[] {
     // Fetch all class attacks available to the enemy
-    let attacks = this.type.attacks.filter((x) =>
-      this.attacks.includes(x.name)
-    );
+    let attacks = this.type.attacks.filter((x) => this.attacks.includes(x.name));
 
     // Calculate and map damage of attacks
     let finalAttacks = attacks.map((x) => ({
@@ -126,9 +127,7 @@ export class EnemyClass extends EnemyBaseClass {
     } else {
       message = getRandom(attack.messages);
     }
-    const damages = attack.damage.damages.map(
-      (x) => `\`${x.final}\`${config.emojis.damage[x.type]}`
-    );
+    const damages = attack.damage.damages.map((x) => `\`${x.final}\`${config.emojis.damage[x.type]}`);
     const damageText = damages.join(" ");
 
     message = message.replace("PLAYER", `<@${player.user.discordId}>`);

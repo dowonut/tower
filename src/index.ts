@@ -3,12 +3,7 @@
 // Discord packages
 import Discord from "discord.js";
 import { REST } from "@discordjs/rest";
-import {
-  ContextMenuCommandBuilder,
-  ApplicationCommandType,
-  Routes,
-  ActivityType,
-} from "discord.js";
+import { ContextMenuCommandBuilder, ApplicationCommandType, Routes, ActivityType } from "discord.js";
 // File handling
 import fs from "fs";
 import path from "path";
@@ -29,8 +24,7 @@ let commandFiles = [];
 function throughDirectory(directory: string, array: any[]) {
   fs.readdirSync(directory).forEach((file) => {
     const absolute = path.join(directory, file);
-    if (fs.statSync(absolute).isDirectory())
-      return throughDirectory(absolute, array);
+    if (fs.statSync(absolute).isDirectory()) return throughDirectory(absolute, array);
     else return array.push(absolute);
   });
 }
@@ -52,8 +46,7 @@ client.on("messageCreate", async (message) => {
   if (message.channel.type !== Discord.ChannelType.GuildText) return;
 
   // Check if message has a guild attached
-  if (!message.guild)
-    return console.error("ERROR: Message did not contain a guild.");
+  if (!message.guild) return console.error("ERROR: Message did not contain a guild.");
 
   // Create or fetch server in database
   let server = await prisma.server.findUnique({
@@ -71,11 +64,12 @@ client.on("messageCreate", async (message) => {
   if (!message.content.startsWith(server.prefix) || message.author.bot) return;
 
   // Create command and arguments
-  const args: any = message.content
-    .slice(server.prefix.length)
-    .trim()
-    .match(/(?:[^\s"]+|"[^"]*")+/g)
-    .map((x) => x.replaceAll(`"`, ""));
+  let rawArgs = message.content.slice(server.prefix.length).trim();
+
+  // Return if no command name provided
+  if (!rawArgs) return;
+  const args = rawArgs.match(/(?:[^\s"]+|"[^"]*")+/g).map((x) => x.replaceAll(`"`, ""));
+
   if (args.length > 0) {
     const commandName = args.shift().toLowerCase();
 

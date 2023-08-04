@@ -93,7 +93,7 @@ export class PlayerClass extends PlayerBaseClass {
   /** Speed */
   get SPD() {
     const baseSPD = config.baseStats.SPD;
-    return baseSPD;
+    return baseSPD + 80;
   }
   /** Crit Rate */
   get CR() {
@@ -114,6 +114,12 @@ export class PlayerClass extends PlayerBaseClass {
   get AD() {
     const baseAD = config.baseStats.AD;
     return baseAD;
+  }
+
+  /** Aggro */
+  get AGR() {
+    const baseAGR = config.baseStats.AGR;
+    return baseAGR;
   }
 }
 

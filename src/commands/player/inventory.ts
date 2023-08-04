@@ -24,13 +24,7 @@ export default {
     let showingList = false;
 
     const sortOptions = ["name", "quantity", "value", "damage"];
-    const filterOptions = [
-      "all",
-      "equipment",
-      "crafting",
-      "consumables",
-      "other",
-    ];
+    const filterOptions = ["all", "equipment", "crafting", "consumables", "other"];
 
     // Get total pages
     let totalPages = Math.ceil(items.length / 10);
@@ -75,18 +69,13 @@ export default {
 
       for (const item of pageItems) {
         // Get item quantity
-        const quantity =
-          item.quantity > 1 ? `\`x${item.quantity}\`` : undefined;
+        const quantity = item.quantity > 1 ? `\`x${item.quantity}\`` : undefined;
         // Get item equip status
         const equipped = item.equipped ? `\`Equipped\`` : undefined;
         // Get item value
-        const value = item.value
-          ? `\`${item.value}\`${config.emojis.mark}`
-          : undefined;
+        const value = item.value ? `\`${item.value}\`${config.emojis.mark}` : undefined;
         // Get damage value
-        const damage = item.damage
-          ? `\`${item.damage}\`${config.emojis.damage[item.damageType]}`
-          : undefined;
+        const damage = item.damage ? `\`${item.damage}\`${config.emojis.damage[item.damageType]}` : undefined;
 
         // Get item emoji
         let emoji = item.getEmoji();
@@ -146,9 +135,7 @@ export default {
       if (filter == "all") {
         var filteredItems = sortedItems;
       } else {
-        var filteredItems = sortedItems.filter((x) =>
-          filterKeys.includes(x.category)
-        );
+        var filteredItems = sortedItems.filter((x) => filterKeys.includes(x.category));
       }
 
       // Reset to first page
@@ -259,6 +246,7 @@ export default {
           label: game.titleCase(item.name),
           description: item.info,
           value: item.name,
+          emoji: item.getEmoji(),
         });
       }
 
@@ -342,10 +330,7 @@ export default {
         await reply.edit(messageRef);
 
         // Create a new collector
-        await game.componentCollector(message, reply, [
-          ...buttons,
-          ...buttons2,
-        ]);
+        await game.componentCollector(message, reply, [...buttons, ...buttons2]);
       }
     }
 

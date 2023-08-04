@@ -44,6 +44,8 @@ declare global {
     useInCombatOnly?: boolean;
     /** The command can be used in combat. Default: false.*/
     useInCombat?: boolean;
+    /** The command can only be used when it's the players turn in combat. Default: false. */
+    useInTurnOnly?: boolean;
     /** Ignore the command in the help menu. Default: false. */
     ignoreInHelp?: boolean;
     /** The command can only be used when in a party. Default: false. */
@@ -94,24 +96,14 @@ declare global {
    * Main command function.
    */
   export interface Execute {
-    (
-      message: Message,
-      args: CommandParsedArguments,
-      player: Player,
-      server: Server
-    ): Promise<any>;
+    (message: Message, args: CommandParsedArguments, player: Player, server: Server): Promise<any>;
   }
 
   /**
    * Main command function without player requirement.
    */
   interface ExecuteNoPlayer {
-    (
-      message: Message,
-      args: CommandParsedArguments,
-      player: Player | void,
-      server: Server
-    ): Promise<any>;
+    (message: Message, args: CommandParsedArguments, player: Player | void, server: Server): Promise<any>;
   }
 
   /**

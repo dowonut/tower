@@ -12,19 +12,14 @@ export default {
       player = args.user;
     }
 
-    const { embedVariable: format } = game;
+    const { f } = game;
 
     // define all variables
     const { level, xp, health, maxHP, floor, marks } = player;
     const nextXp = config.nextLevelXp(level);
-    const {
-      health: healthE,
-      floor: floorE,
-      mark: markE,
-      blank,
-    } = config.emojis;
+    const { health: healthE, floor: floorE, mark: markE, blank } = config.emojis;
     const region = game.titleCase(player.getRegion().name);
-    const { strength, defence, arcane, vitality } = config.emojis.stats;
+    const { strength, defence, arcane, vitality } = config.emojis.traits;
     const { strength: ps, defence: pd, arcane: pa, vitality: pv } = player;
 
     // Format profile
@@ -32,22 +27,19 @@ export default {
 ${game.fastProgressBar("xp", player)}
 ${game.fastProgressBar("health", player)}
 
-${markE} ${format(marks)}
-${floorE} ${format(floor)} | ${format(region)}
+${markE} ${f(marks)}
+${floorE} ${f(floor)} | ${f(region)}
     `;
 
-    // Add stats
+    // Add traits
     if (player.level > 0) {
-      description += `\n\n${strength} ${format(ps)} ${defence} ${format(
-        pd
-      )} ${arcane} ${format(pa)} ${vitality} ${format(pv)}`;
+      description += `\n\n${strength} ${f(ps)} ${defence} ${f(pd)} ${arcane} ${f(pa)} ${vitality} ${f(pv)}`;
     }
 
     // Check if player is currently in combat
-    if (player.inCombat == true)
-      description += `\n\n:dagger: **Currently in combat.**\n`;
+    if (player.inCombat == true) description += `\n\n:dagger: **Currently in combat.**\n`;
 
-    // Check if player has unused stat points
+    // Check if player has unused trait points
     if (player.statpoints > 0)
       description += `\n\n:low_brightness: **You have \`${player.statpoints}\` unassigned stat points! \n${config.emojis.blank} Check your stats with \`${server.prefix}stats\`**`;
 

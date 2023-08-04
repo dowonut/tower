@@ -3,10 +3,15 @@ import { game, prisma, config } from "../../tower.js";
 import attacks from "../../game/_classes/attacks.js";
 
 /** Get all player attacks */
-export default (async function (args?: {
-  /** Only get attacks that are currently usable. */
-  onlyAvailable: boolean;
-}) {
+export default (async function (
+  args: {
+    /** Only get attacks that are currently usable. */
+    onlyAvailable?: boolean;
+    /** Optionally get attack by name. */
+    name?: string;
+  } = {}
+) {
+  const { onlyAvailable, name } = args;
   const skills = await this.getSkills();
 
   // Get unlocked attacks from skills
@@ -33,6 +38,17 @@ export default (async function (args?: {
       attack = await this.getAttack(attackName);
     }
     attacks.push(attack);
+  }
+
+  // Check if attack is currently available
+  if (onlyAvailable) {
+    const weapon = (await this.getEquipped("hand"))?.weaponType || "unarmed";
+    attacks = attacks.filter((x) => x.weaponType.includes(weapon));
+  }
+
+  // Filter by name
+  if (name) {
+    attacks = attacks.filter((x) => x.name == name.toLowerCase());
   }
 
   return attacks;

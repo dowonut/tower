@@ -4,26 +4,103 @@ export default {
   name: "attack",
   aliases: ["a"],
   description: "Attack the enemy you're fighting.",
-  arguments: [{ name: "attack_name", type: "playerAvailableAttack", required: false }],
+  arguments: [
+    { name: "attackName", type: "playerAvailableAttack", required: false },
+    {
+      name: "enemy",
+      required: false,
+      async filter(i, p) {
+        const enemyData = p.encounter.enemies.find((x) => {
+          return x.name == i.toLowerCase() || parseInt(i) == x.number;
+        });
+
+        if (!enemyData) {
+          return { success: false, message: `No enemy found with name or number ${game.f(i)}` };
+        }
+
+        const enemy = game.getEnemy(enemyData.name);
+
+        return { success: true, content: game.createClassObject(enemy, enemyData) };
+      },
+    },
+  ],
   category: "combat",
   useInCombat: true,
-  cooldown: "1",
-  async execute(message, args, player, server) {
+  cooldown: "2",
+  async execute(message, args: { attackName: string; enemy: Enemy }, player, server) {
     // Format imput
-    const input = args.attack_name;
+    let { attackName, enemy } = args;
 
     const attacks = await player.getAttacks();
 
-    // Format embed
-    const title = `Attacks`;
-    let fields: Embed["fields"] = [];
-    for (const attack of attacks) {
-      const description = attack.getDescription();
+    const menu = new game.Menu({
+      message,
+      player,
+      boards: [{ name: "attacks", rows: [], message: "attacks" }],
+      rows: [],
+      messages: [
+        {
+          name: "attacks",
+          function: (m) => {
+            const title = `Attacks`;
+            let fields: Embed["fields"] = [];
+            let i = 1;
+            for (const attack of attacks) {
+              let description = "└ " + attack.getDamageText();
+              if (attack.cooldown) {
+                description += `└ ` + attack.getCooldownText();
+              }
 
-      fields.push({ name: `**${attack.getName()}** | \`Lvl. ${attack.level}\``, value: description, inline: true });
+              fields.push({
+                name: `**${attack.getName()}** | ${game.f(`Lvl. ${attack.level}`)}`,
+                value: description,
+                inline: i % 3 === 0 ? false : true,
+              });
+              i++;
+            }
+
+            return game.fastEmbed({ message, player, title, embed: { fields }, fullSend: false, reply: true });
+          },
+        },
+      ],
+    });
+
+    // List attacks
+    if (!attackName) {
+      menu.init("attacks");
     }
 
-    game.fastEmbed({ message, player, title, embed: { fields } });
+    // Perform attack
+    else {
+      // Check if player can attack
+      if (!player.canAttack) return game.error({ message, content: `you can't attack right now.` });
+      // Check if enemy provided
+      if (!enemy)
+        return game.error({ message, content: `provide the name or number of the enemy you want to attack.` });
+
+      const attack = await player.getAttack(attackName);
+
+      // Get damage from attack
+      const damage = await attack.getDamage(enemy);
+      const previousEnemyHealth = enemy.health;
+
+      // Update enemy
+      enemy = await enemy.update({ health: { increment: -damage } });
+
+      const attackMessage = attack.getMessage(player, enemy, damage);
+      const healthText = `${config.emojis.health} ` + game.f(`${enemy.health} / ${enemy.maxHP}`);
+      const healthBar = game.progressBar({
+        type: "orange",
+        min: enemy.health,
+        max: enemy.maxHP,
+        minPrevious: previousEnemyHealth,
+        count: 16,
+      });
+
+      const finalMessage = `${attackMessage}\n\n${healthText}\n${healthBar}`;
+
+      await game.send({ message, reply: false, content: finalMessage });
+    }
 
     //   // Check if user specified attack
     //   if (args.attack_name) {

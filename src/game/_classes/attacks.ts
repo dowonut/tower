@@ -1,4 +1,4 @@
-import { createClassFromType, loadFiles, embedVariable as format } from "../../functions/core/index.js";
+import { createClassFromType, loadFiles, f } from "../../functions/core/index.js";
 import { game, config } from "../../tower.js";
 
 const AttackClassBase = createClassFromType<AttackBase>();
@@ -8,19 +8,58 @@ export class AttackClass extends AttackClassBase {
     super(object);
   }
 
-  /** Get attack description. */
-  getDescription() {
-    let damageText = ``;
-    if (this.description) damageText += `*${this.description}*\n`;
+  /** Get damage text. */
+  getDamageText() {
+    let text = ``;
+    // if (this.description) damageText += `*${this.description}*\n`;
     for (const dmg of this.damage) {
-      damageText += `${format(dmg.basePercent + "%")} of ${format(dmg.source)} as ${config.emojis.damage[dmg.type]}\n`;
+      text += `${f(dmg.basePercent + "%")} of ${f(dmg.source)} as ${config.emojis.damage[dmg.type]}\n`;
     }
+    return text;
+  }
+
+  /** Get cooldown text. */
+  getCooldownText() {
+    let text = ``;
     if (this.remCooldown < 1) {
-      if (this.cooldown) damageText += `Cooldown: \`${this.cooldown} rounds\``;
+      if (this.cooldown) text += `Cooldown: \`${this.cooldown} rounds\``;
     } else {
-      damageText += `:hourglass: Cooldown: \`${this.remCooldown} rounds\`*`;
+      text += `:hourglass: Cooldown: \`${this.remCooldown} rounds\`*`;
     }
-    return damageText;
+    return text;
+  }
+
+  /** Get full attack description. */
+  getDescription() {
+    let text = ``;
+    if (this.description) text += `*${this.description}*`;
+    const dmgText = this.getDamageText();
+    text += `\n${dmgText}`;
+    return text;
+  }
+
+  /** Get damage of attack towards an enemy. */
+  async getDamage(enemy: Enemy) {
+    return 1;
+  }
+
+  /** Format attack message. */
+  getMessage(player: Player, enemy: Enemy, damage: number) {
+    if (!this.messages) return undefined;
+
+    let message = game.getRandom(this.messages);
+
+    // const damages = this.damages.map(
+    //   (x) => `\`${x.total}\`${config.emojis.damage[x.type]}`
+    // );
+    // const damageText = damages.join(" ");
+    const damageText = game.f(damage);
+
+    message = message.replaceAll("ENEMY", `**${enemy.getName()}**`);
+    message = message.replaceAll("DAMAGE", damageText + " damage");
+    message = message.replaceAll("PLAYER", `<@${player.user.discordId}>`);
+
+    return message;
   }
 
   // Calculate base attack damage
@@ -132,23 +171,6 @@ export class AttackClass extends AttackClassBase {
   //     text.push(`\`${damageText}\`${config.emojis.damage[dmg.type]}`);
   //   }
   //   return text.join(" ");
-  // }
-
-  /** Format attack message. */
-  // attackMessage(attack: any, enemy: Enemy) {
-  //   if (!this.messages) return undefined;
-
-  //   let message = game.getRandom(this.messages);
-
-  //   const damages = attack.damages.map(
-  //     (x) => `\`${x.total}\`${config.emojis.damage[x.type]}`
-  //   );
-  //   const damageText = damages.join(" ");
-
-  //   message = message.replace("ENEMY", `**${enemy.getName()}**`);
-  //   message = message.replace("DAMAGE", damageText + " damage");
-
-  //   return message;
   // }
 }
 

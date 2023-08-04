@@ -25,6 +25,7 @@ export const baseStats = {
   CD: 40,
   AR: 10,
   AD: 20,
+  AGR: 100,
 };
 
 // export const subStats = {
@@ -56,23 +57,8 @@ export const stats = ["strength", "defence", "arcane", "vitality"];
 
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
 export const weaponTypes = ["sword", "axe", "bow", "spear", "rock"] as const;
-export const damageTypes = [
-  "slashing",
-  "piercing",
-  "bludgeoning",
-  "air",
-  "earth",
-  "fire",
-  "water",
-] as const;
-export const shardTypes = [
-  "grey",
-  "green",
-  "blue",
-  "red",
-  "pink",
-  "legendary",
-] as const;
+export const damageTypes = ["slashing", "piercing", "bludgeoning", "air", "earth", "fire", "water"] as const;
+export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] as const;
 export const attackTypes = ["unarmed", ...weaponTypes] as const;
 export const commandCategories = [
   "general",

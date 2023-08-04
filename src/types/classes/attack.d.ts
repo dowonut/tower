@@ -10,7 +10,7 @@ declare global {
     description: string;
     /** All damage dealt by the attack. */
     damage: AttackDamage[];
-    /** Message sent when using the attack. Variables: ENEMY, DAMAGE. */
+    /** Message sent when using the attack. Variables: ENEMY, DAMAGE, PLAYER. */
     messages: string[];
     /** How many combat rounds between uses. */
     cooldown?: number;

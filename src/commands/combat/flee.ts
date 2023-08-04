@@ -15,13 +15,13 @@ export default {
       if (response !== "success") return;
 
       let content = `You ran away!`;
-      if (player.party)
-        content = `${player.ping} ran away and took the party with them!`;
+      if (player.party) content = `you ran away and took the party with you!`;
 
       const reply = await game.send({
         message,
         content,
         reply: true,
+        ping: true,
       });
 
       // Add explore button

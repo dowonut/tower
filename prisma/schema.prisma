@@ -81,6 +81,8 @@ model Recipe {
   player   Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId Int
   name     String
+
+  @@unique([playerId, name])
 }
 
 // Ongoing player crafts
@@ -101,6 +103,8 @@ model Skill {
   name     String
   level    Int    @default(0)
   xp       Int    @default(0)
+
+  @@unique([playerId, name])
 }
 
 // Player item inventory
@@ -160,6 +164,8 @@ model Attack {
   name        String
   level       Int    @default(1)
   remCooldown Int    @default(0)
+
+  @@unique([playerId, name])
 }
 
 // Player passive stat modifiers
@@ -195,6 +201,8 @@ model enemyAttack {
   enemyId     Int
   name        String
   remCooldown Int    @default(0)
+
+  @@unique([enemyId, name])
 }
 
 // Combat encounter

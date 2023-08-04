@@ -2,11 +2,11 @@ export default {
   // Name of attack (lowercase)
   name: "slash",
   // Type of attack (unarmed, sword, etc)
-  type: ["sword"],
+  weaponType: ["sword"],
   // Attack description shown in attack command
   description: "A simple swing of your sword.",
   // Attack damages
-  damage: [{ type: "slashing", min: 2, max: 3 }],
+  damage: [{ type: "slashing", source: "ATK", basePercent: 50 }],
   // Attack message to send in chat. Multiple strings will choose a random one.
   // You can input variables in the string:
   // ENEMY = enemy name
@@ -16,4 +16,4 @@ export default {
     "Your sword cuts cleanly through ENEMY, dealing DAMAGE",
     "You gracefully slice at ENEMY with your blade, dealing DAMAGE",
   ],
-};
+} satisfies AttackData;

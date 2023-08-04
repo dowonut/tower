@@ -30,9 +30,7 @@ export default async function runCommand(
     // Get command by name
     const command =
       client.commands.get(commandName) ||
-      client.commands.find(
-        (cmd: Command) => cmd.aliases && cmd.aliases.includes(commandName)
-      );
+      client.commands.find((cmd: Command) => cmd.aliases && cmd.aliases.includes(commandName));
 
     // Return if no command found
     if (!command) return; //throw new Error(`No command found by name ${commandName}`);
@@ -98,11 +96,16 @@ export default async function runCommand(
         });
       }
 
+      // Check if user is admin
+      if (command.category == "admin" && player.user.discordId !== config.developerId) {
+        return game.error({
+          message,
+          content: `this command requires admin permissions.`,
+        });
+      }
+
       // Check if command is unlocked
-      if (
-        !player.user.unlockedCommands.includes(command.name) &&
-        command.mustUnlock !== false
-      ) {
+      if (!player.user.unlockedCommands.includes(command.name) && command.mustUnlock !== false) {
         return game.error({
           message,
           content: `you haven't unlocked this command yet.`,
@@ -118,7 +121,7 @@ export default async function runCommand(
       }
 
       // Check if user is allowed to attack in combat
-      if (player.canAttack == false && command.useInCombatOnly == true) {
+      if (player.canAttack == false && command.useInTurnOnly == true) {
         return game.error({
           message,
           content: `you can't do this right now.`,
@@ -168,21 +171,12 @@ export default async function runCommand(
           player,
           server,
         });
-        //const beforeCommand = Date.now();
-        const response = await command.execute(
-          message,
-          parsedArgs,
-          player,
-          server
-        );
+        const beforeCommand = Date.now();
+        const response = await command.execute(message, parsedArgs, player, server);
 
         resolve(response || "SUCCESS");
-        //const afterCommand = Date.now();
-        // console.log(
-        //   `command ${command.name} executed in ${
-        //     afterCommand - beforeCommand
-        //   }ms`
-        // );
+        const afterCommand = Date.now();
+        console.log(`> Command "${command.name}" executed in ${afterCommand - beforeCommand}ms`);
       } catch (object) {
         if (object instanceof game.cmdError) {
           const errorMessage = object.message;

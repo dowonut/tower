@@ -2,21 +2,21 @@ import { game, prisma } from "../../tower.js";
 import attacks from "../../game/_classes/attacks.js";
 
 export default (async function (attackName: string) {
-  const attackData = await prisma.attack.findMany({
+  attackName = attackName.toLowerCase();
+  const attackData = await prisma.attack.findUnique({
     where: {
-      playerId: this.id,
-      name: { equals: attackName, mode: "insensitive" },
+      playerId_name: {
+        playerId: this.id,
+        name: attackName,
+      },
     },
   });
 
-  if (attackData.length < 1) return;
+  if (!attackData) return;
 
-  const attackClass = attacks.find((x) => x.name == attackName.toLowerCase());
+  const attackClass = attacks.find((x) => x.name == attackName);
 
-  const finalAttack = game.createClassObject<Attack>(
-    attackClass,
-    attackData[0]
-  );
+  const finalAttack = game.createClassObject<Attack>(attackClass, attackData);
 
   return finalAttack;
 } satisfies PlayerFunction);
