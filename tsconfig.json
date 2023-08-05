@@ -6,7 +6,8 @@
     "module": "NodeNext",
     "rootDir": "src",
     "outDir": "dist",
-    "moduleResolution": "nodenext"
+    "moduleResolution": "nodenext",
+    "skipLibCheck": true
   },
   "ts-node": {
     "files": true,
