@@ -13,6 +13,13 @@ const emojis = {
   i_cursor: "<:i_cursor:1096550891533905972>",
   keyboard: "<:keyboard:1096550895375884338>",
   info: "<:info_solid:1041462395408752700>",
+  weapons: {
+    axe: "<:axe:1137354627361280081>",
+    sword: "<:sword:1137355113648902144>",
+    spear: "<:spear:1137356308077613056>",
+    bow: "<:bow:1137358810730733638>",
+    unarmed: "<:unarmed:1137363270945226832>",
+  },
   traits: {
     strength: "<:strength:1002671427914313880>",
     defence: "<:defence:1002673157523648663>",

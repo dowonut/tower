@@ -1,4 +1,4 @@
-import Discord, { Interaction } from "discord.js";
+import Discord, { Interaction, TextChannel } from "discord.js";
 
 declare global {
   /**
@@ -30,10 +30,7 @@ declare global {
   /**
    * Discord message.
    */
-  export type Message<T = Discord.TextChannel> = Modify<
-    Discord.Message,
-    { channel: T }
-  > & { user?: User };
+  export type Message<T = Discord.TextChannel> = Modify<Discord.Message, { channel: T }> & { user?: User };
 
   /**
    * Discord message options.
@@ -94,10 +91,7 @@ declare global {
     title: string;
     components: { style: "short" | "paragraph"; id: string; label: string }[];
     /** Function to run when the modal is submitted. */
-    function?: (
-      response: ModalResponse[],
-      interaction?: Discord.Interaction
-    ) => any;
+    function?: (response: ModalResponse[], interaction?: Discord.Interaction) => any;
   }
 
   /** Response received from a modal. */
@@ -122,18 +116,40 @@ declare global {
    * Function to run when component is selected.
    */
   interface ComponentFunction {
-    (reply?: Message, interaction?: Discord.Interaction, selection?: string):
-      | any
-      | Promise<any>;
+    (reply?: Message, interaction?: Discord.Interaction, selection?: string): any | Promise<any>;
   }
 
-  export interface CollectorArgs {
+  export interface CollectorArgs<T> {
+    /** User message for replies. */
+    message?: Message;
+    /** Optional channel if no user message available. */
+    channel?: TextChannel;
+    /** Bot message to attach collector to. */
+    reply: Message;
+    /** Components to include in collector. */
+    components: Component[];
+    /** Optional menu for advanced functions. */
+    menu?: TowerMenu<T>;
+    /** Optional collector options. */
+    options?: CollectorOptions;
+  }
+
+  export interface CollectorOptions {
     /** Only the message author can interact. Overwritten by filter. Default = true. */
     unique?: boolean;
     /** Custom filter. */
     filter?: (i: Interaction) => boolean;
     /** Maximum responses to collect. */
     max?: number;
+  }
+
+  /** Argument type for event emitter. */
+  export interface EmitterArgs {
+    encounterId: number;
+    moveType?: "attack";
+    moveOutcome?: "playerDeath" | "enemyDeath";
+    player: Player;
+    enemy: Enemy;
   }
 }
 export {};

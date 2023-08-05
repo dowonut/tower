@@ -12,20 +12,15 @@ export default {
   // All attacks available to the class
   attacks: [
     {
-      // Attack name
       name: "swallow",
-      // All damage from attack, can have several
       damage: [
         {
           type: "bludgeoning",
-          min: 1,
-          max: 2,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 80,
         },
       ],
-      // Attack message to send in chat
       messages: ["ENEMY tries to swallow PLAYER, dealing DAMAGE"],
-      // Attack round cooldown
       cooldown: 1,
     },
     {
@@ -33,9 +28,8 @@ export default {
       damage: [
         {
           type: "bludgeoning",
-          min: 0,
-          max: 1,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 50,
         },
       ],
       messages: ["ENEMY bounces on PLAYER, dealing DAMAGE"],
@@ -45,38 +39,32 @@ export default {
       damage: [
         {
           type: "bludgeoning",
-          min: 0,
-          max: 1,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 50,
         },
         {
           type: "fire",
-          min: 1,
-          max: 1,
+          source: "ATK",
+          basePercent: 50,
         },
       ],
-      messages: [
-        "ENEMY jumps on PLAYER and covers them in flames, dealing DAMAGE",
-      ],
+      messages: ["ENEMY jumps on PLAYER and covers them in flames, dealing DAMAGE"],
     },
     {
       name: "drown",
       damage: [
         {
           type: "bludgeoning",
-          min: 0,
-          max: 1,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 50,
         },
         {
           type: "water",
-          min: 1,
-          max: 1,
+          source: "ATK",
+          basePercent: 50,
         },
       ],
-      messages: [
-        "ENEMY tries to drown PLAYER by jumping on their head, dealing DAMAGE",
-      ],
+      messages: ["ENEMY tries to drown PLAYER by jumping on their head, dealing DAMAGE"],
     },
   ],
 } as EnemyType;

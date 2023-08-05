@@ -1,9 +1,4 @@
-import {
-  MessageCreateOptions,
-  MessageEditOptions,
-  MessagePayload,
-  TextChannel,
-} from "discord.js";
+import { MessageCreateOptions, MessageEditOptions, MessagePayload, TextChannel } from "discord.js";
 import { config } from "../../../tower.js";
 import { MessagePayloadOption } from "discord.js";
 import { MessageReplyOptions } from "discord.js";
@@ -27,20 +22,11 @@ export default async function send<B extends boolean = true>(args: {
   /** Send the message or return object with message create options. Default: true. */
   send?: B;
 }): Promise<B extends true ? Message : MessageOptions> {
-  const {
-    ping = false,
-    reply = false,
-    message,
-    content,
-    embeds,
-    components,
-    files,
-    send = true,
-  } = args;
+  const { ping = false, reply = false, message, content, embeds, components, files, send = true } = args;
   const channel = message ? message.channel : args.channel;
 
   // Check if should reply to message
-  const canReply = message.author.id == message.user.discordId;
+  const canReply = message?.author?.id == message?.user?.discordId;
 
   let messageObject: MessageOptions = {
     content: "",
@@ -51,10 +37,7 @@ export default async function send<B extends boolean = true>(args: {
 
   // Format message content for pings
   if (!canReply && content && reply) {
-    messageObject.content =
-      `<@${message.user.discordId}>, ` +
-      content.charAt(0).toLowerCase() +
-      content.slice(1);
+    messageObject.content = `<@${message.user.discordId}>, ` + content.charAt(0).toLowerCase() + content.slice(1);
   }
 
   // Add components

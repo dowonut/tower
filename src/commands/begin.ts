@@ -9,8 +9,7 @@ export default {
   async execute(message, args, player, server) {
     const auth = message.author;
 
-    if (player)
-      return game.error({ message, content: "you already have a character." });
+    if (player) return game.error({ message, content: "you already have a character." });
 
     player = await game.createPlayer(auth, server);
 
@@ -37,7 +36,7 @@ export default {
     })) as Message;
 
     // Create collector
-    await game.componentCollector(message, botMsg, buttons);
+    await game.componentCollector({ message, reply: botMsg, components: buttons });
 
     // Function for getting buttons
     function getButtons() {

@@ -41,7 +41,7 @@ export default {
       components: [actionRow],
     })) as Message;
 
-    await game.componentCollector(message, reply, actionButtons);
+    await game.componentCollector({ message, reply, components: actionButtons });
 
     // Get embed
     function getEmbed() {
@@ -51,12 +51,8 @@ export default {
     Category: \`${game.titleCase(item.category)}\``;
 
       if (item.category == "weapon") {
-        description += `\n\nWeapon Type: \`${game.titleCase(
-          item.weaponType
-        )}\``;
-        description += `\nDamage: \`${item.damage}\`${
-          config.emojis.damage[item.damageType]
-        }`;
+        description += `\n\nWeapon Type: \`${game.titleCase(item.weaponType)}\``;
+        description += `\nDamage: \`${item.damage}\`${config.emojis.damage[item.damageType]}`;
       }
       if (item.category == "potion") {
         item.effects.forEach((effect) => {
@@ -67,9 +63,7 @@ export default {
       let embed: any = {
         description,
       };
-      const title = `${item.getName()} ${
-        item.quantity > 1 ? `(x${item.quantity})` : ``
-      }`;
+      const title = `${item.getName()} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`;
 
       // Get image
       const file = item.getImage();
@@ -222,7 +216,7 @@ export default {
       // Update original message
       const { sellRow, sellButtons } = getSellRow();
       await reply.edit({ components: [sellRow] });
-      await game.componentCollector(message, reply, sellButtons);
+      await game.componentCollector({ message, reply, components: sellButtons });
     }
 
     // Get sell row and buttons
@@ -272,7 +266,7 @@ export default {
             // Get initial action buttons
             const { actionRow, actionButtons } = await getButtonRow();
             await reply.edit({ components: [actionRow] });
-            await game.componentCollector(message, reply, actionButtons);
+            await game.componentCollector({ message, reply, components: actionButtons });
           },
           stop: true,
         },

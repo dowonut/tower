@@ -12,6 +12,7 @@ export default (async function () {
     marks: newMarks,
     region: newRegion,
     health: this.maxHP,
+    dead: false,
   });
 
   return {

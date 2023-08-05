@@ -46,7 +46,7 @@ export default {
       components: [row, row2],
     })) as Message;
 
-    await game.componentCollector(message, reply, [...buttons, ...buttons2]);
+    await game.componentCollector({ message, reply, components: [...buttons, ...buttons2] });
 
     // Unlock new commands
     player.unlockCommands(message, ["iteminfo"]);
@@ -306,7 +306,7 @@ export default {
 
         await reply.edit({ components: [row, row3] });
 
-        await game.componentCollector(message, reply, [menu, ...buttons]);
+        await game.componentCollector({ message, reply, components: [menu, ...buttons] });
       }
       // Switch back to inventory menu
       else {
@@ -330,7 +330,7 @@ export default {
         await reply.edit(messageRef);
 
         // Create a new collector
-        await game.componentCollector(message, reply, [...buttons, ...buttons2]);
+        await game.componentCollector({ message, reply, components: [...buttons, ...buttons2] });
       }
     }
 

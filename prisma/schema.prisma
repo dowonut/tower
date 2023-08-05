@@ -71,6 +71,7 @@ model Player {
   encounter     Encounter?      @relation(fields: [encounterId], references: [id])
   encounterId   Int?
   SV            Int?
+  dead          Boolean         @default(false)
 
   @@unique([guildId, userId])
 }
@@ -193,6 +194,7 @@ model Enemy {
   encounter   Encounter?    @relation(fields: [encounterId], references: [id], onDelete: Cascade)
   encounterId Int?
   SV          Int?
+  dead        Boolean       @default(false)
 }
 
 model enemyAttack {
@@ -207,11 +209,13 @@ model enemyAttack {
 
 // Combat encounter
 model Encounter {
-  id            Int      @id @default(autoincrement())
-  players       Player[]
-  enemies       Enemy[]
-  turnsPassed   Int      @default(0)
-  currentPlayer Int?
+  id               Int      @id @default(autoincrement())
+  players          Player[]
+  enemies          Enemy[]
+  turnsPassed      Int      @default(0)
+  currentPlayer    Int?
+  discordMessageId String?
+  discordChannelId String?
 }
 
 // Player parties

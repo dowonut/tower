@@ -1,5 +1,12 @@
 import { Prisma } from "@prisma/client";
-import { createClassFromType, loadFiles, getRandom } from "../../functions/core/index.js";
+import {
+  createClassFromType,
+  loadFiles,
+  getRandom,
+  getWeightedArray,
+  evaluateAttack,
+  f,
+} from "../../functions/core/index.js";
 import { config, prisma } from "../../tower.js";
 import fs from "fs";
 
@@ -60,26 +67,27 @@ export class EnemyClass extends EnemyBaseClass {
     }
   }
 
-  /** Get all attacks. */
-  getAttacks(): EnemyEvaluatedAttack[] {
+  /** Get all attacks evaluated. */
+  async getAttacks(player: Player, evaluated: boolean = true) {
     // Fetch all class attacks available to the enemy
     let attacks = this.type.attacks.filter((x) => this.attacks.includes(x.name));
 
-    // Calculate and map damage of attacks
-    let finalAttacks = attacks.map((x) => ({
-      ...x,
-      damage: this.getDamage(x),
-    }));
+    let evaluatedAttacks: EvaluatedEnemyAttack[] = [];
 
-    return finalAttacks;
+    for (const attack of attacks) {
+      const damage = await evaluateAttack({ attack, source: this, target: player });
+      evaluatedAttacks.push({ ...attack, damage });
+    }
+
+    return evaluatedAttacks;
   }
 
   /** Calculate best attack against player. */
-  chooseAttack(player: Player) {
-    const attacks = this.getAttacks();
+  async getBestAttack(player: Player) {
+    const attacks = await this.getAttacks(player);
 
     // Sort by damage descending
-    attacks.sort((a, b) => (a.damage.max > b.damage.max ? 1 : -1));
+    attacks.sort((a, b) => (a.damage > b.damage ? 1 : -1));
 
     // Define chosen attack
     let chosenAttack = attacks[0];
@@ -87,54 +95,33 @@ export class EnemyClass extends EnemyBaseClass {
     return chosenAttack;
   }
 
-  /** Get attack damage. */
-  getDamage(input: EnemyAttack) {
-    let damage: EnemyAttackEvaluatedDamage = { damages: [], min: 0, max: 0 };
-    for (const value of input.damage) {
-      // Sex values
-      let damageMin = value.min;
-      let damageMax = value.max;
-
-      // Apply modifiers if present
-      let modifier = ``;
-      if (value.modifier) {
-        modifier = value.modifier.replace("LEVEL", this.level.toString());
-      }
-
-      // Evaluate modifiers
-      damageMin = eval(damageMin + modifier);
-      damageMax = eval(damageMax + modifier);
-
-      // Push damages
-      damage.damages.push({
-        type: value.type,
-        min: damageMin,
-        max: damageMax,
-      });
-      damage.min += damageMin;
-      damage.max += damageMax;
-    }
-    return damage;
-  }
-
   /** Format attack message. */
-  attackMessage(attack: EnemyEvaluatedAttack, player: Player) {
-    let message: string;
+  getAttackMessage(attack: EvaluatedEnemyAttack, player: Player) {
+    if (!attack.messages) return undefined;
 
-    // Revert to default message if none found.
-    if (!attack.messages) {
-      message = config.defaultAttackMessage;
-    } else {
-      message = getRandom(attack.messages);
-    }
-    const damages = attack.damage.damages.map((x) => `\`${x.final}\`${config.emojis.damage[x.type]}`);
-    const damageText = damages.join(" ");
+    let message = getRandom(attack.messages);
 
-    message = message.replace("PLAYER", `<@${player.user.discordId}>`);
-    message = message.replace("ENEMY", `**${this.getName()}**`);
-    message = message.replace("DAMAGE", damageText + " damage");
+    const damageText = f(attack.damage);
+
+    message = message.replaceAll("ENEMY", `**${this.getName()}**`);
+    message = message.replaceAll("DAMAGE", damageText + " damage");
+    message = message.replaceAll("PLAYER", `<@${player.user.discordId}>`);
 
     return message;
+  }
+
+  /** Get a target to attack. */
+  getTargetPlayer(players: Player[]) {
+    // Filter by alive
+    players = players.filter((x) => !x.dead);
+
+    // Choose weighted random from aggro
+    const chosen: { player: Player; weight: number } = getWeightedArray(
+      players.map((x) => {
+        return { player: x, weight: x.AGR };
+      })
+    );
+    return chosen.player;
   }
 
   get isPlayer() {
@@ -147,17 +134,17 @@ export class EnemyClass extends EnemyBaseClass {
 
   // STATS ---------------------------------------------------------------
 
-  /** Max Health */
-  get maxHP() {
-    const baseHP = this.baseHP || this.level * 5;
-    return baseHP;
-  }
-
   /** Base Speed Value */
   get baseSV() {
     const gauge = config.speedGauge;
     const SV = Math.ceil(gauge / this.SPD);
     return SV;
+  }
+
+  /** Max Health */
+  get maxHP() {
+    const baseHP = this.baseHP || this.level * 5;
+    return baseHP;
   }
 
   /** Attack */

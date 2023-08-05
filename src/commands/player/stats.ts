@@ -5,6 +5,7 @@ export default {
   aliases: ["s"],
   description: "See all of your stats.",
   category: "player",
+  useInCombat: true,
   async execute(message, args, player, server) {
     const obj = player.getStats();
     let description = ``;

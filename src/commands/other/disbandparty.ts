@@ -39,15 +39,20 @@ export default {
 
       const row = game.actionRow("buttons", buttons);
 
-      const botMsg = await game.send({
+      const reply = await game.send({
         message,
         reply: true,
         components: [row],
         content: `Are you sure you want to disband the party?`,
       });
 
-      game.componentCollector(message, botMsg, buttons, undefined, {
-        max: 1,
+      game.componentCollector({
+        message,
+        reply,
+        components: buttons,
+        options: {
+          max: 1,
+        },
       });
     });
   },

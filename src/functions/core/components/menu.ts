@@ -14,7 +14,7 @@ export default class Menu<T> extends MenuBase<T> {
   botMessage?: Message;
   currentBoard?: string;
   currentCollector?: InteractionCollector<any>;
-  collectorArgs?: CollectorArgs;
+  collectorArgs?: CollectorOptions;
 
   constructor(object: MenuOptions<T>) {
     super(object);
@@ -22,7 +22,7 @@ export default class Menu<T> extends MenuBase<T> {
 
   //------------------------------------------------------------
   /** Initialise the board menu. */
-  async init(boardName: string, args: CollectorArgs = undefined) {
+  async init(boardName: string, args: CollectorOptions = undefined) {
     if (args) {
       this.collectorArgs = args;
     }
@@ -34,17 +34,19 @@ export default class Menu<T> extends MenuBase<T> {
       // const messageOptions = await board.message();
       const { messageComponents, components } = await this.getComponents(board);
       this.botMessage = await game.send({
-        message: this.message,
+        message: this?.message,
+        channel: this?.channel,
         ...messageOptions,
         components: messageComponents,
       });
       this.createCollector(components);
     } else throw new Error("Initial board must contain a message function.");
+    if (this.onLoad) this.onLoad(this);
   }
 
   //------------------------------------------------------------
   /** Refresh the current board. */
-  async refresh(args: CollectorArgs = {}) {
+  async refresh(args: CollectorOptions = {}) {
     if (!this.currentBoard || !this.botMessage) throw new Error("Cannot refresh before initialized.");
 
     await this.switchBoard(this.currentBoard, args);
@@ -52,7 +54,7 @@ export default class Menu<T> extends MenuBase<T> {
 
   //------------------------------------------------------------
   /** Switch to a different board. */
-  async switchBoard(boardName: string, args: CollectorArgs = undefined) {
+  async switchBoard(boardName: string, args: CollectorOptions = undefined) {
     if (args) {
       this.collectorArgs = args;
     }
@@ -129,7 +131,14 @@ export default class Menu<T> extends MenuBase<T> {
       this.currentCollector.stop();
     }
     // console.log("> Creating new collector.");
-    const collector = await game.componentCollector(this.message, this.botMessage, components, this, args);
+    const collector = await game.componentCollector({
+      message: this?.message,
+      channel: this?.channel,
+      reply: this.botMessage,
+      components,
+      menu: this,
+      options: args,
+    });
     this.currentCollector = collector;
   }
 }

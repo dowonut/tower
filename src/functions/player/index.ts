@@ -10,7 +10,6 @@ export { default as exitCombat } from "./exitCombat.js";
 export { default as fetch } from "./fetch.js";
 export { default as getAttack } from "./getAttack.js";
 export { default as getAttacks } from "./getAttacks.js";
-export { default as getDamageTaken } from "./getDamageTaken.js";
 export { default as getEncounter } from "./getEncounter.js";
 export { default as getEnemies } from "./getEnemies.js";
 export { default as getEquipment } from "./getEquipment.js";

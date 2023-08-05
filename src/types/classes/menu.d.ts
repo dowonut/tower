@@ -1,10 +1,13 @@
+import { TextChannel } from "discord.js";
 import { RowType } from "../../functions/core/components/actionRow.ts";
 import { Menu } from "../../functions/core/index.ts";
 
 declare global {
   export type TowerMenuOptions<T> = {
     /** User message associated with the menu. */
-    message: Message;
+    message?: Message;
+    /** Optional channel object if no user message available. */
+    channel?: TextChannel;
     /** Player associated with menu. */
     player: Player;
     /** Optional variables stored in the menu. */
@@ -15,6 +18,8 @@ declare global {
     rows: TowerRow<T>[];
     /** Messages. */
     messages?: TowerMessage<T>[];
+    /** Optional function to run once menu is initialized. */
+    onLoad?(m: Menu<T>): void;
   };
 
   export type TowerBoard<T> = {

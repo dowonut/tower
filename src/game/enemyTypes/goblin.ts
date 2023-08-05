@@ -17,9 +17,8 @@ export default {
       damage: [
         {
           type: "slashing",
-          min: 1,
-          max: 2,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 70,
         },
       ],
       // Attack message to send in chat
@@ -33,15 +32,12 @@ export default {
       damage: [
         {
           type: "bludgeoning",
-          min: 0,
-          max: 1,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 50,
         },
       ],
       // Attack message to send in chat
-      messages: [
-        "ENEMY runs behind PLAYER and punches them in the nuts, dealing DAMAGE",
-      ],
+      messages: ["ENEMY runs behind PLAYER and punches them in the nuts, dealing DAMAGE"],
       // Attack round cooldown
       cooldown: 0,
     },
@@ -51,9 +47,8 @@ export default {
       damage: [
         {
           type: "bludgeoning",
-          min: 2,
-          max: 3,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 80,
         },
       ],
       // Attack message to send in chat

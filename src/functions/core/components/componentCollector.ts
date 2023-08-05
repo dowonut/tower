@@ -8,31 +8,30 @@ import {
   InteractionType,
   StageChannel,
   StringSelectMenuInteraction,
+  TextChannel,
 } from "discord.js";
 import { game } from "../../../tower.js";
 
 /**
  * Create a collector for Discord message components.
  */
-export default async function componentCollector<T>(
-  message: Message,
-  reply: Message,
-  components: Component[],
-  menu?: TowerMenu<T>,
-  args: CollectorArgs = {}
-): Promise<InteractionCollector<any>> {
+export default async function componentCollector<T>(args: CollectorArgs<T>): Promise<InteractionCollector<any>> {
+  const { message, reply, components, menu, options = {} } = args;
+  const { unique = true, max } = options;
+  const channel = message?.channel || args.channel;
+
   if (!components || !components[0]) return undefined;
-  const { unique = true } = args;
+  if (!message && !args.channel) return;
 
   return new Promise((resolve, reject) => {
     let filter = (i: any) => i.message.id == reply.id;
 
     if (unique) {
-      filter = (i: any) => i.user.id == message.user.discordId && i.message.id == reply.id;
+      filter = (i: any) => i.user.id == message?.user.discordId && i.message.id == reply.id;
     }
 
-    if (args.filter) {
-      filter = args.filter;
+    if (options.filter) {
+      filter = options.filter;
     }
 
     // console.log("> Filter: ", args.filter);
@@ -43,14 +42,14 @@ export default async function componentCollector<T>(
       time: 60 * 60 * 1000,
     };
 
-    if (args.max) {
-      collectorSettings.max = args.max;
+    if (max) {
+      collectorSettings.max = max;
     }
 
     // Return if stage channel
     // if (message.channel.type == ChannelType.GuildStageVoice) return;
 
-    const collector = message.channel.createMessageComponentCollector(collectorSettings);
+    const collector = channel.createMessageComponentCollector(collectorSettings);
 
     resolve(collector);
 

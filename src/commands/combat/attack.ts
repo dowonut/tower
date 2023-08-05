@@ -52,7 +52,7 @@ export default {
               }
 
               fields.push({
-                name: `**${attack.getName()}** | ${game.f(`Lvl. ${attack.level}`)}`,
+                name: `${attack.getEmoji()} **${attack.getName()}** | ${game.f(`Lvl. ${attack.level}`)}`,
                 value: description,
                 inline: i % 3 === 0 ? false : true,
               });
@@ -81,25 +81,26 @@ export default {
       const attack = await player.getAttack(attackName);
 
       // Get damage from attack
-      const damage = await attack.getDamage(enemy);
+      const damage = await game.evaluateAttack({ attack, source: player, target: enemy });
       const previousEnemyHealth = enemy.health;
 
       // Update enemy
-      enemy = await enemy.update({ health: { increment: -damage } });
+      const dead = enemy.health - damage < 1 ? true : false;
+      enemy = await enemy.update({ health: { increment: -damage }, dead });
 
-      const attackMessage = attack.getMessage(player, enemy, damage);
-      const healthText = `${config.emojis.health} ` + game.f(`${enemy.health} / ${enemy.maxHP}`);
-      const healthBar = game.progressBar({
-        type: "orange",
-        min: enemy.health,
-        max: enemy.maxHP,
-        minPrevious: previousEnemyHealth,
-        count: 16,
+      const attackMessage = game.getAttackMessage({
+        attack,
+        damage,
+        enemy,
+        player,
+        source: "player",
+        previousHealth: previousEnemyHealth,
       });
 
-      const finalMessage = `${attackMessage}\n\n${healthText}\n${healthBar}`;
+      await game.send({ message, reply: false, content: attackMessage });
 
-      await game.send({ message, reply: false, content: finalMessage });
+      // Send emitter
+      game.emitter.emit("playerMove", { encounterId: player.encounterId, player, enemy } satisfies EmitterArgs);
     }
 
     //   // Check if user specified attack

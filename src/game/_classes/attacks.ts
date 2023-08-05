@@ -38,9 +38,11 @@ export class AttackClass extends AttackClassBase {
     return text;
   }
 
-  /** Get damage of attack towards an enemy. */
-  async getDamage(enemy: Enemy) {
-    return 1;
+  /** Get emoji icon. */
+  getEmoji() {
+    const emoji = this.weaponType.map((x) => config.emojis.weapons[x] || "").join(" ");
+    if (!emoji) return config.emojis.blank;
+    return emoji;
   }
 
   /** Format attack message. */
@@ -49,10 +51,6 @@ export class AttackClass extends AttackClassBase {
 
     let message = game.getRandom(this.messages);
 
-    // const damages = this.damages.map(
-    //   (x) => `\`${x.total}\`${config.emojis.damage[x.type]}`
-    // );
-    // const damageText = damages.join(" ");
     const damageText = game.f(damage);
 
     message = message.replaceAll("ENEMY", `**${enemy.getName()}**`);

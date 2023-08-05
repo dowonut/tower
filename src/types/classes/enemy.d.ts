@@ -73,38 +73,13 @@ declare global {
     messages?: string[];
     /** How many combat rounds the attack takes to cooldown. */
     cooldown?: number;
-    damage: EnemyAttackDamage[];
+    damage: AttackDamage[];
   };
 
   /**
    * Enemy attack with evaluated damage.
    */
-  export type EnemyEvaluatedAttack = Modify<
-    EnemyAttack,
-    { damage: EnemyAttackEvaluatedDamage }
-  >;
-
-  /**
-   * Base attack damage before calculations.
-   */
-  type EnemyAttackDamage = {
-    type: DamageType;
-    min: number;
-    max: number;
-    /** Damage modifiers will be evaluated. Example: +LEVEL = add enemy level.*/
-    modifier: string;
-  };
-
-  /**
-   * Final attack damage after all calculations.
-   */
-  type EnemyAttackEvaluatedDamage = {
-    damages: any[];
-    min: number;
-    max: number;
-    /** Do not assign. Final evaluated damage dealt to player. */
-    total?: number;
-  };
+  export type EvaluatedEnemyAttack = Modify<EnemyAttack, { damage: number }>;
 }
 
 export {};

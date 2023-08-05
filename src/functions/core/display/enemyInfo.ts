@@ -12,8 +12,7 @@ export default async function enemyInfo(args: {
 }) {
   const { message, player, enemyData, verbose = true } = args;
 
-  if (!player.inCombat && !enemyData)
-    throw new Error("Player must be fighting an enemy.");
+  if (!player.inCombat && !enemyData) throw new Error("Player must be fighting an enemy.");
 
   let enemy: Enemy;
   if (player.inCombat) {
@@ -48,18 +47,18 @@ Weaknesses: ${weak}
 **Attacks:**`;
 
     // Format attacks
-    const attacks = enemy.getAttacks();
+    const attacks = await enemy.getAttacks(player);
     for (const attack of attacks) {
       const attackName = game.titleCase(attack.name);
 
       description += `\n\`${attackName}\` | `;
 
-      for (const damage of attack.damage.damages) {
-        let damageText = `${damage.min}-${damage.max}`;
-        if (damage.min == damage.max) damageText = `${damage.max}`;
+      // for (const damage of attack.damage.damages) {
+      //   let damageText = `${damage.min}-${damage.max}`;
+      //   if (damage.min == damage.max) damageText = `${damage.max}`;
 
-        description += `**\`${damageText}\`**${emojis[damage.type]} `;
-      }
+      //   description += `**\`${damageText}\`**${emojis[damage.type]} `;
+      // }
     }
   }
 

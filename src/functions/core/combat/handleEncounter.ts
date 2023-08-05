@@ -1,107 +1,23 @@
-import { config, game, prisma } from "../../../tower.js";
+import { TextChannel } from "discord.js";
+import { game, prisma, config } from "../../../tower.js";
 
-/** Enter a combat encounter with an enemy. */
-export default async function enterCombat(args: { player: Player; enemies: Enemy[]; message: Message }) {
-  const { player, message } = args;
-  let { enemies } = args;
+/** handleEncounter */
+export default async function handleEncounter(args: {
+  players: Player[];
+  enemies: Enemy[];
+  encounter: Encounter;
+  turnOrder: TurnOrder;
+  channel: TextChannel;
+}) {
+  const { players, enemies, channel } = args;
+  let { encounter, turnOrder } = args;
 
-  // Handle party
-  let players: Player[] = [player];
-  if (player.party) {
-    // If not leader
-    if (!player.isPartyLeader) {
-      return game.error({
-        message,
-        content: `only the party leader can initiate a combat encounter.`,
-      });
-    }
-
-    // Get players from party
-    for (const newPlayer of player.party.players) {
-      // Check if leader
-      if (newPlayer.id == player.id) continue;
-      // Get player
-      const invitee = await game.getPlayer({
-        discordId: newPlayer.user.discordId,
-        server: player.server,
-      });
-      // If player doesn't exist
-      if (!invitee) {
-        return game.error({
-          message,
-          content: `something went wrong trying to find <@${newPlayer.user.discordId}>`,
-        });
-      }
-      // If player is already in combat
-      if (invitee.inCombat) {
-        return game.error({
-          message,
-          content: `can't start encounter because ${invitee.ping} is already in combat.`,
-        });
-      }
-      // If player is on a different floor
-      if (invitee.floor !== player.floor) {
-        return game.error({
-          message,
-          content: `can't start encounter because ${invitee.ping} is on a different floor than the party leader.`,
-        });
-      }
-      // Add player to list
-      players.push(invitee);
-    }
-  }
-
-  // Create enemies in database
-  let enemyNumber = 1;
-  for (const [i, enemy] of enemies.entries()) {
-    const SV = enemy.baseSV;
-    const enemyData = await prisma.enemy.create({
-      data: {
-        name: enemy.name,
-        health: enemy.maxHP,
-        SV,
-        number: enemyNumber,
-      },
-    });
-    enemies[i] = game.createClassObject(enemy, enemyData);
-    enemyNumber++;
-  }
-
-  // Set starting SV for players
-  for (const [i, player] of players.entries()) {
-    const SV = player.baseSV;
-    players[i] = await player.update({ SV });
-  }
-
-  let turnOrder = game.getTurnOrder({ players, enemies });
-  turnOrder = await updateTurnOrder(turnOrder);
-  const firstPlayer: Player = getNextPlayer(turnOrder);
-
-  // console.log(
-  //   turnOrder.map((x) => {
-  //     return { id: x.id, SV: x.SV, isPlayer: x.isPlayer };
-  //   })
-  // );
-
-  // Create new encounter
-  const enemyIds = enemies.map((x) => {
-    return { id: x.id };
-  });
-  const playerIds = players.map((x) => {
-    return { id: x.id };
-  });
-  const encounter = await prisma.encounter.create({
-    data: {
-      enemies: { connect: enemyIds },
-      players: { connect: playerIds },
-      currentPlayer: firstPlayer.id,
-    },
-  });
+  const firstPlayer: Player = game.getNextPlayer(turnOrder);
 
   // Create menu
   const menu = new game.Menu({
+    channel,
     player: firstPlayer,
-    message,
     variables: {
       players,
       enemies,
@@ -165,7 +81,7 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
                 const response = await game.runCommand("flee", {
                   discordId: i.user.id,
                   message: m.botMessage,
-                  server: player.server,
+                  server: m.player.server,
                 });
                 if (response !== "success") return;
                 m.botMessage.delete();
@@ -215,15 +131,15 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
               label: `${x.getName()}` + (x.remCooldown ? ` (${x.remCooldown})` : ""),
               style: "success",
               stop: true,
+              emoji: x.getEmoji(),
               async function() {
                 // Attack
                 await game.runCommand("attack", {
-                  message: m.message,
+                  message: m.botMessage,
                   discordId: m.player.user.discordId,
                   server: m.player.server,
                   args: [x.name, m.variables.selectedEnemy.toString()],
                 });
-                nextTurn();
               },
             };
           });
@@ -258,61 +174,111 @@ ${enemyName}${healthBar}
           let i = 0;
           for (const entity of m.variables.turnOrder) {
             const current = i == 0 ? "▶ " : "";
-            const name = entity.isPlayer
-              ? `\u001b[1;2;37m${entity.displayName}\u001b[0m`
-              : `\u001b[1;2;31m${entity.displayName}\u001b[0m`;
-            turnOrderList += `${current}${name}\n`;
+            let name: string;
+            // Format name
+            if (entity.dead) {
+              name = `\u001b[1;2;30m${entity.displayName}\u001b[0m`;
+            } else if (entity.isPlayer) {
+              name = `\u001b[1;2;37m${entity.displayName}\u001b[0m`;
+            } else {
+              name = `\u001b[1;2;31m${entity.displayName}\u001b[0m`;
+            }
+            // Format extra info
+            const infoValue = entity.dead ? "dead" : entity.SV;
+            const info = `\u001b[0;2;30m [${infoValue}]\u001b[0m`;
+            turnOrderList += `${current}${name}${info}\n`;
             i++;
           }
           description += `\`\`\`ansi
 ${turnOrderList}
 \`\`\``;
 
+          const partyPing = m.variables.players.map((x) => x.ping).join(" ");
+
           // Return with message
           return game.fastEmbed({
-            message,
-            player,
+            message: m.botMessage,
+            player: m.player,
             title,
             description,
             fullSend: false,
             reply: false,
             thumbnail: image ? `attachment://${image.name}` : null,
             files: image ? [image] : [],
+            content: partyPing,
           });
         },
       },
       // Specific enemy info
-      {
-        name: "info",
-        function: async (m) =>
-          await game.enemyInfo({
-            message,
-            player,
-            verbose: false,
-            enemyData: enemies[0],
-          }),
-      },
+      //   {
+      //     name: "info",
+      //     function: async (m) => {
+      //       const partyPing = m.variables.players.map((x) => x.ping).join(" ");
+
+      //       return game.fastEmbed({ message: m.botMessage, player: m.player });
+      //     },
+      //   },
     ],
+    // Update encounter once menu is loaded
+    onLoad: async (m) => {
+      // Add message to database
+      encounter = await prisma.encounter.update({
+        where: { id: encounter.id },
+        data: { discordMessageId: menu.botMessage?.id, discordChannelId: menu.botMessage?.channelId },
+        include: { players: true, enemies: true },
+      });
+    },
   });
 
-  menu.init("main", {
-    filter: (i) => {
-      return i.user.id == getNextPlayer(turnOrder).user.discordId;
-    },
+  // Initiate encounter message
+  // If player
+  if (turnOrder[0].isPlayer) {
+    await menu.init("main", {
+      filter: (i) => {
+        return i.user.id == game.getNextPlayer(turnOrder).user.discordId;
+      },
+    });
+  }
+  // If enemy
+  else {
+    // Remove current player
+    await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: null } });
+    await menu.init("enemyTurn");
+    await enemyTurn(turnOrder[0] as Enemy);
+  }
+
+  // On player move
+  game.emitter.on("playerMove", (args: EmitterArgs) => {
+    if (args.encounterId !== encounter.id) return;
+
+    // Initiate next turn
+    nextTurn();
   });
 
   // FUNCTIONS ===============================================================================
 
   /** Initiate the next turn. */
   async function nextTurn() {
-    const turnOrder = await updateTurnOrder(menu.variables.turnOrder);
+    const turnOrder = await game.updateTurnOrder(menu.variables.turnOrder);
     menu.variables.turnOrder = turnOrder;
     menu.variables.selectedEnemy = undefined;
+    menu.variables.enemies = turnOrder.filter((x) => !x.isPlayer) as Enemy[];
+    menu.variables.players = turnOrder.filter((x) => x.isPlayer) as Player[];
     const nextEntity = turnOrder[0];
 
-    // Handle enemy
+    // Exit combat if all players or enemies are dead
+    if (menu.variables.players.every((x) => x.dead)) return exitCombat("allPlayersDead");
+    if (menu.variables.enemies.every((x) => x.dead)) return exitCombat("allEnemiesDead");
+
+    // Handle player
     if (nextEntity.isPlayer) {
       const player = nextEntity as Player;
+
+      // Skip player if dead
+      if (player.dead) {
+        return nextTurn();
+      }
+
       menu.player = player;
       // Update current player
       await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: player.id } });
@@ -326,35 +292,77 @@ ${turnOrderList}
     // Handle enemy
     else {
       const enemy = nextEntity as Enemy;
-
-      // Update current player
+      // Remove current player
       await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: null } });
-
       menu.switchBoard("enemyTurn");
+      // Execute enemy turn
+      await enemyTurn(enemy);
     }
   }
 
-  /** Update the turn order */
-  async function updateTurnOrder(turnOrder: (Player | Enemy)[]) {
-    // Update turn order
-    if (turnOrder[0].SV == 0) {
-      turnOrder[0] = await (turnOrder[0] as Player).update({ SV: turnOrder[0].baseSV });
-      turnOrder = game.getTurnOrder({ entities: turnOrder });
-    }
+  /** Execute an enemy's turn. */
+  async function enemyTurn(enemy: Enemy) {
+    // Send typing indicator
+    await channel.sendTyping();
+    setTimeout(async () => {
+      // Get player
+      let player = enemy.getTargetPlayer(menu.variables.players);
+      // Get evaluated attack
+      const attack = await enemy.getBestAttack(player);
+      const previousPlayerHealth = player.health;
 
-    const decreaseSV = turnOrder[0].SV;
-    // Update Speed Value
-    if (decreaseSV > 0) {
-      for (const [i, entity] of turnOrder.entries()) {
-        turnOrder[i] = await (entity as Player).update({ SV: { increment: -decreaseSV } });
+      // Update player
+      const dead = player.health - attack.damage < 1 ? true : false;
+      player = await player.update({ health: { increment: -attack.damage }, dead });
+
+      // Send attack message
+      const attackMessage = game.getAttackMessage({
+        source: "enemy",
+        player,
+        enemy,
+        attack,
+        previousHealth: previousPlayerHealth,
+      });
+      await game.send({ channel, reply: false, content: attackMessage });
+
+      // Next turn
+      nextTurn();
+    }, game.random(2, 5) * 1000);
+  }
+
+  /** Exit combat. */
+  async function exitCombat(reason: "allPlayersDead" | "allEnemiesDead") {
+    console.log(reason);
+    try {
+      menu.botMessage.delete();
+    } catch (err) {}
+    await prisma.encounter.delete({ where: { id: encounter.id } });
+
+    // Delete all enemies
+    prisma.enemy.deleteMany({
+      where: {
+        OR: menu.variables.enemies.map((x) => {
+          return { id: x.id };
+        }),
+      },
+    });
+
+    // Update players
+    for (const player of menu.variables.players) {
+      // Kill player
+      if (player.dead) {
+        const { marks, region } = await player.die();
+        const { mark } = config.emojis;
+
+        const deathMessage = `
+:skull_crossbones: ${
+          player.ping
+        } **you died!** :skull_crossbones:\n\`-20%\` ${mark} (Remaining: \`${marks}\`)\nReturned to \`${game.titleCase(
+          region
+        )}\``;
+
+        game.send({ channel, content: deathMessage, reply: true });
       }
     }
-
-    return turnOrder;
-  }
-
-  /** Get next entity in turn order. */
-  function getNextPlayer(turnOrder: (Player | Enemy)[]) {
-    return turnOrder.find((x) => x.isPlayer) as Player;
   }
 }

@@ -49,12 +49,11 @@ export default {
 
     const reply = await game.send({
       message,
-      content:
-        "⚠️ **Are you sure you want to permanently erase your character?**",
+      content: "⚠️ **Are you sure you want to permanently erase your character?**",
       components: [row],
       reply: true,
     });
 
-    await game.componentCollector(message, reply, buttons);
+    await game.componentCollector({ message, reply, components: buttons });
   },
 } as Command;

@@ -12,6 +12,7 @@ dotenv.config();
 // Game files
 // import allEvents from "./game/classes/events.js";
 import { game, config, prisma, client } from "./tower.js";
+import { cleanEncounters } from "./functions/core/index.js";
 
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
@@ -95,6 +96,9 @@ client.on("ready", () => {
     });
 
     console.log(`> ${client.user.username} has logged in.`);
+
+    // Handle cleaners
+    cleanEncounters();
   }
 });
 

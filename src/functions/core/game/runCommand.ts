@@ -72,7 +72,7 @@ export default async function runCommand(
     }
 
     // Override message author id for special cases
-    message.user = player.user;
+    if (message) message.user = player.user;
 
     // If command has no player requirement
     if (command.needChar == false) {

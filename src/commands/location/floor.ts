@@ -30,7 +30,7 @@ export default {
     player.unlockCommands(message, ["travel"]);
 
     // Create collector
-    await game.componentCollector(message, reply, [menu]);
+    await game.componentCollector({ message, reply, components: [menu] });
 
     // Embed function
     function getEmbed(player) {

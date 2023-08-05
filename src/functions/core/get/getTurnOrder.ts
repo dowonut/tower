@@ -11,8 +11,8 @@ export default function getTurnOrder(args?: { players?: Player[]; enemies?: Enem
     if (a.SV < b.SV) return -1;
     if (a.SPD < b.SPD) return 1;
     if (a.SPD > b.SPD) return -1;
-    if (!("user" in a)) return 1;
-    if ("user" in a) return -1;
+    if (!a.isPlayer) return 1;
+    if (a.isPlayer) return -1;
   });
   return turnOrder;
 }

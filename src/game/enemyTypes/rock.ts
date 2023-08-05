@@ -7,15 +7,7 @@ export default {
     max: 300,
   },
   // Base strengths and weaknesses
-  strong: [
-    "bludgeoning",
-    "piercing",
-    "slashing",
-    "earth",
-    "fire",
-    "air",
-    "water",
-  ],
+  strong: ["bludgeoning", "piercing", "slashing", "earth", "fire", "air", "water"],
   weak: [],
   // All attacks available to the class
   attacks: [
@@ -25,9 +17,8 @@ export default {
       damage: [
         {
           type: "bludgeoning",
-          min: 2,
-          max: 4,
-          modifier: "+LEVEL",
+          source: "ATK",
+          basePercent: 80,
         },
       ],
       // Attack message to send in chat

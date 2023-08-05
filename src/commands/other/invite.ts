@@ -76,9 +76,14 @@ export default {
         content: `<@${invitee.user.discordId}>, you've been invited to join <@${player.user.discordId}>'s party. **Accept?**`,
       });
 
-      game.componentCollector(message, botMsg, buttons, undefined, {
-        filter: (i) => i.user.id == invitee.user.discordId,
-        max: 1,
+      game.componentCollector({
+        message,
+        reply: botMsg,
+        components: buttons,
+        options: {
+          filter: (i) => i.user.id == invitee.user.discordId,
+          max: 1,
+        },
       });
     }
 
@@ -120,12 +125,6 @@ export default {
     }
 
     // Unlock new commands
-    player.unlockCommands(message, [
-      "party",
-      "disbandparty",
-      "leaveparty",
-      "setpartyowner",
-      "kick",
-    ]);
+    player.unlockCommands(message, ["party", "disbandparty", "leaveparty", "setpartyowner", "kick"]);
   },
 } satisfies Command;

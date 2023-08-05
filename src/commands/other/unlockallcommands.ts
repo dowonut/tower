@@ -49,7 +49,7 @@ This will skip all tutorials, so it's **only recommended for experienced players
       components: [row],
     });
 
-    game.componentCollector(message, reply, buttons);
+    game.componentCollector({ message, reply, components: buttons });
 
     async function unlockCommands() {
       const commandFiles = await game.getCommands();

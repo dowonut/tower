@@ -16,12 +16,17 @@ declare global {
     cooldown?: number;
   };
 
+  /** Attack damage type. */
   export type AttackDamage = {
     type: DamageType;
     source: keyof typeof config.baseStats;
     basePercent: number;
-    total?: number;
   };
+
+  /**
+   * Enemy attack with evaluated damage.
+   */
+  export type EvaluatedAttack = Modify<Attack, { damage: number }>;
 
   export type AttackBase = AttackData & Prisma.Attack;
 

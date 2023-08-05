@@ -23,11 +23,7 @@ export default {
       // Check if user is Dowonut
       if (command.dev && message.author.id !== config.developerId) continue;
       // Check if command is unlocked
-      if (
-        !player.user.unlockedCommands.includes(command.name) &&
-        message.author.id !== config.developerId
-      )
-        continue;
+      if (!player.user.unlockedCommands.includes(command.name) && message.author.id !== config.developerId) continue;
 
       allCommandsFiltered.push(command);
     }
@@ -52,9 +48,7 @@ export default {
       let commands: Command[];
       switch (category) {
         case "general":
-          commands = allCommandsFiltered.filter(
-            (x) => x.category == category || !x.category
-          );
+          commands = allCommandsFiltered.filter((x) => x.category == category || !x.category);
           break;
         default:
           commands = allCommandsFiltered.filter((x) => x.category == category);
@@ -117,7 +111,7 @@ export default {
       components: [row],
     });
 
-    game.componentCollector(message, botMsg, [selectMenu]);
+    game.componentCollector({ message, reply: botMsg, components: [selectMenu] });
 
     function getEmbed() {
       const embed: Embed = {

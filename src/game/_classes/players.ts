@@ -47,12 +47,13 @@ export class PlayerClass extends PlayerBaseClass {
       ATK: this.ATK,
       MAG: this.MAG,
       RES: this.RES,
-      MAG_RES: this.MAG_RES,
+      "MAG RES": this.MAG_RES,
       SPD: this.SPD,
       CR: this.CR,
       CD: this.CD,
       AR: this.AR,
       AD: this.AD,
+      AGR: this.AGR,
     };
 
     return object;
@@ -93,7 +94,7 @@ export class PlayerClass extends PlayerBaseClass {
   /** Speed */
   get SPD() {
     const baseSPD = config.baseStats.SPD;
-    return baseSPD + 80;
+    return baseSPD;
   }
   /** Crit Rate */
   get CR() {

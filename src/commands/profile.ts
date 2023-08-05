@@ -74,7 +74,7 @@ ${floorE} ${f(floor)} | ${f(region)}
     });
 
     // Create collector
-    game.componentCollector(message, reply, buttons);
+    game.componentCollector({ message, reply, components: buttons });
 
     // Function to get buttons
     function getButtons() {

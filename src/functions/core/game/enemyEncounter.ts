@@ -1,11 +1,7 @@
 import enemies from "../../../game/_classes/enemies.js";
 import { game, config, prisma } from "../../../tower.js";
 
-export default async function enemyEncounter(args: {
-  message: Message;
-  player: Player;
-  server: Server;
-}) {
+export default async function enemyEncounter(args: { message: Message; player: Player; server: Server }) {
   let { player, message, server } = args;
 
   // Get player region
@@ -15,8 +11,7 @@ export default async function enemyEncounter(args: {
   const floorEnemies = region.enemies;
 
   // Select enemy randomly based on weights
-  const chosenEnemy =
-    game.getWeightedArray<(typeof floorEnemies)[number]>(floorEnemies);
+  const chosenEnemy = game.getWeightedArray<(typeof floorEnemies)[number]>(floorEnemies);
 
   // Get enemy
   const enemyData = game.getEnemy(chosenEnemy.name);
@@ -120,12 +115,7 @@ ${game.fastProgressBar("health", enemyData)}`,
   });
 
   // Unlock new commands
-  await player.unlockCommands(message, [
-    "attack",
-    "flee",
-    "enemyinfo",
-    "invite",
-  ]);
+  await player.unlockCommands(message, ["attack", "flee", "enemyinfo", "invite"]);
 
   // Enter combat
   function enterCombat() {

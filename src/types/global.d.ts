@@ -172,4 +172,14 @@ declare global {
    * Generic class object with methods.
    */
   export type Generic<T> = T & typeof generic;
+
+  /**
+   * Turn order for combat encounters.
+   */
+  export type TurnOrder = (Enemy | Player)[];
+
+  /**
+   * Combat encounter.
+   */
+  export type Encounter = PrismaClient.EncounterGetPayload<{ include: { players: true; enemies: true } }>;
 }
