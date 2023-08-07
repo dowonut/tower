@@ -61,7 +61,8 @@ export default async function send<B extends boolean = true>(args: {
   }
 
   // Add files
-  if (files) {
+  if (files && files[0]) {
+    console.log(files);
     messageObject.files = files;
   }
 

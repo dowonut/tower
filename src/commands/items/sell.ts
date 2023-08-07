@@ -4,7 +4,7 @@ export default {
   name: "sell",
   aliases: ["se"],
   arguments: [
-    { name: "item_name", type: "playerOwnedItem" },
+    { name: "item", type: "playerOwnedItem" },
     { name: "quantity", type: "number", required: false },
   ],
   description: "Sell items in your inventory.",
@@ -13,10 +13,9 @@ export default {
     let quantity: string | number = args.quantity;
 
     // Fetch item data
-    const item = await player.getItem(args.item_name);
+    const { item } = args;
 
-    if (!item.value)
-      return game.error({ message, content: "you can't sell this item." });
+    if (!item.value) return game.error({ message, content: "you can't sell this item." });
 
     if (item.equipped)
       return game.error({
@@ -34,7 +33,7 @@ export default {
         content: "you don't have enough items to do that.",
       });
 
-    await player.giveItem(args.item_name, -quantity);
+    await player.giveItem(item.name, -quantity);
 
     const playerData = await player.update({
       marks: { increment: item.value * +quantity },
@@ -43,11 +42,9 @@ export default {
     game.send({
       message,
       reply: true,
-      content: `Sold \`${quantity}x\` **${item.getName()}** for \`${
-        item.value * +quantity
-      }\` ${config.emojis.mark} (\`${playerData.marks}\` ${
+      content: `Sold \`${quantity}x\` **${item.getName()}** for \`${item.value * +quantity}\` ${
         config.emojis.mark
-      })`,
+      } (\`${playerData.marks}\` ${config.emojis.mark})`,
     });
 
     player.unlockCommands(message, ["merchants"]);

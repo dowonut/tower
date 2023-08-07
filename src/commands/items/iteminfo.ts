@@ -183,6 +183,7 @@ export default {
 
             // Get image
             const file = item.getImage() || undefined;
+            const files = file ? [file] : undefined;
 
             // Set embed thumbnail
             if (file)
@@ -190,7 +191,7 @@ export default {
                 url: `attachment://${file.name}`,
               };
 
-            return game.fastEmbed({ message, player, embed, title, files: [file], fullSend: false });
+            return game.fastEmbed({ message, player, embed, title, files, fullSend: false });
           },
         },
       ],
@@ -217,7 +218,7 @@ export default {
         args: [item.name, amount.toString()],
         server,
       });
-      const { quantity } = await player.getItem(item.name);
+      const { quantity } = (await player.getItem(item.name)) || {};
       item.quantity = quantity;
     }
 
