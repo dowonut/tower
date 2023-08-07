@@ -6,6 +6,7 @@ import {
   getWeightedArray,
   evaluateAttack,
   f,
+  random,
 } from "../../functions/core/index.js";
 import { config, prisma } from "../../tower.js";
 import fs from "fs";
@@ -22,12 +23,6 @@ export class EnemyClass extends EnemyBaseClass {
 
     // Check if enemy belongs to an enemy type
     if (this.type && typeof this.type !== "string") {
-      // Set enemy xp based on class xp
-      this.totalXp = {
-        min: this.type.xp.min + this.xp,
-        max: this.type.xp.max + this.xp,
-      };
-
       // Combine strengths and weaknesses
       if (this.type.strong) this.strong = this.strong.concat(this.type.strong);
       if (this.type.weak) this.weak = this.weak.concat(this.type.weak);
@@ -132,7 +127,19 @@ export class EnemyClass extends EnemyBaseClass {
     return this.getName() + ` (${this.number})`;
   }
 
-  // STATS ---------------------------------------------------------------
+  // STATS =======================================================================
+
+  /** Get a specific evaluated stat. */
+  getStat(stat: EnemyStat) {
+    const baseStat = this?.stats?.["base_" + stat] || this.type?.stats?.["base_" + stat] || config.baseEnemyStats[stat];
+
+    // Get flat bonus from level
+    const levelBonusFunction = config["enemy_" + stat];
+    const levelBonus = levelBonusFunction ? levelBonusFunction(this.level, this.type?.isBoss) : 0;
+
+    const total = baseStat + levelBonus;
+    return total;
+  }
 
   /** Base Speed Value */
   get baseSV() {
@@ -141,22 +148,43 @@ export class EnemyClass extends EnemyBaseClass {
     return SV;
   }
 
+  /** XP dropped by enemy. */
+  get XP() {
+    const baseXP = this.getStat("XP");
+    const min = Math.floor(baseXP * 0.9);
+    const max = Math.floor(baseXP * 1.1);
+    const finalXP = random(min, max);
+    return finalXP;
+  }
+
   /** Max Health */
   get maxHP() {
-    const baseHP = this.baseHP || this.level * 5;
-    return baseHP;
+    return this.getStat("maxHP");
   }
 
   /** Attack */
   get ATK() {
-    const baseATK = 10;
-    return baseATK;
+    return this.getStat("ATK");
+  }
+
+  /** Magic */
+  get MAG() {
+    return this.getStat("MAG");
+  }
+
+  /** Physical Resistance */
+  get RES() {
+    return this.getStat("RES");
+  }
+
+  /** Magic Resistance */
+  get MAG_RES() {
+    return this.getStat("MAG_RES");
   }
 
   /** Speed */
   get SPD() {
-    const baseSPD = this.baseSPD || 80;
-    return baseSPD;
+    return this.getStat("SPD");
   }
 }
 

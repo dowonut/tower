@@ -7,5 +7,6 @@ export default {
     { name: "apple", stock: 17, price: 1, restock: 1 },
     { name: "leather", stock: 9, price: 3, restock: 7 },
     { name: "rock", stock: 175, price: 29 },
+    { name: "dusty stick", stock: 1, price: 10 },
   ],
 } satisfies MerchantData;

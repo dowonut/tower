@@ -1,11 +1,7 @@
 import { game } from "../../tower.js";
 
 /** Give loot from enemy to player. */
-export default (async function (args: {
-  enemy: Enemy;
-  server: Server;
-  message: Message;
-}) {
+export default (async function (args: { enemy: Enemy; server: Server; message: Message }) {
   const { enemy, server, message } = args;
   let loots: Item[] = [];
 
@@ -22,7 +18,7 @@ export default (async function (args: {
   }
 
   // Get xp from enemy kill
-  let xp = game.random(enemy.totalXp.min, enemy.totalXp.max);
+  let xp = enemy.XP;
 
   let lootList = ``;
   for (const item of loots) {

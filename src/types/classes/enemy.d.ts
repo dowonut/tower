@@ -10,10 +10,6 @@ declare global {
     /** Type the enemy belongs to. Must be the name of an existing enemy type. */
     type: string;
     description: string;
-    /** Optional base HP. Will default to level scaling. */
-    baseHP?: number;
-    /** Optional base Speed Value. Will default to level scaling. */
-    baseSPD?: number;
     /** Enemy level. */
     level: number;
     /** Attacks the enemy can perform. Inherited from enemy type. */
@@ -22,18 +18,12 @@ declare global {
     strong?: DamageType[];
     /** Enemy weaknesses. */
     weak?: DamageType[];
-    loot?: {
-      name: string;
-      dropChance: number;
-      min: number;
-      max: number;
-    }[];
+    /** Optional loot. */
+    loot?: EnemyLoot[];
     /** Potential shard droppable by the enemy. Subject to change! */
     shard?: { dropChance: number; type: ShardType };
-    /** XP dropped by enemy. Value is added to XP from enemy type. */
-    xp: number;
-    /** Do not assign. Determined by enemy type. */
-    totalXp?: { min: number; max: number };
+    /** Optionally define base stats. */
+    stats?: EnemyStats;
   };
 
   /** Enemy data but with enemy type checked. */
@@ -54,14 +44,48 @@ declare global {
    */
   export type EnemyType = {
     name: string;
-    /** Base XP dropped by enemy type. Value is combined with specific enemy XP. */
-    xp: { min: number; max: number };
+    /** This enemy is a boss. Default: false. */
+    isBoss?: boolean;
     /** Class resistances. */
     strong?: DamageType[];
     /** Class weaknesses. */
     weak?: DamageType[];
-    /** Attacks available to that class. Inherited by specific enemies. */
+    /** Attacks available to this type. Inherited by specific enemies. */
     attacks: EnemyAttack[];
+    /** Optionally define base stats for type. */
+    stats?: EnemyStats;
+    /** Optionally define base loot for type. */
+    loot?: EnemyLoot[];
+  };
+
+  /** Enemy loot. */
+  export type EnemyLoot = {
+    /** Name of item. */
+    name: string;
+    /** Percent chance of dropping on kill. */
+    dropChance: number;
+    /** Minimum items to drop. */
+    min: number;
+    /** Max items to drop. */
+    max: number;
+  };
+
+  /** Enemy base stats. */
+  export type EnemyStats = {
+    /** Optional base XP. Default: 20. */
+    base_XP?: number;
+    /** Optional base maxHP. Default: 0. */
+    base_maxHP?: number;
+    /** Optional base ATK. Default: 10. */
+    base_ATK?: number;
+    /** Optional base MAG. Default: 10. */
+    base_MAG?: number;
+    /** Optional base RES. Default: 20. */
+    base_RES?: number;
+    /** Optional base MAG RES. Default: 20. */
+    base_MAG_RES?: number;
+    /** Optional base SPD. Default: 80. */
+    base_SPD?: number;
   };
 
   /**

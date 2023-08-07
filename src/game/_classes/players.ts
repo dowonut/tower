@@ -41,7 +41,10 @@ export class PlayerClass extends PlayerBaseClass {
   // STATS =================================================================
 
   /** Get a specific evaluated stat. */
-  getStat(stat: PlayerStat) {
+  getStat<T extends boolean = false>(
+    stat: PlayerStat,
+    verbose?: T
+  ): T extends false ? number : { baseStat: number; levelBonus: number; weaponLevelBonus: number } {
     const baseStat = config.baseStats[stat];
 
     // Get flat bonus from level
@@ -54,14 +57,12 @@ export class PlayerClass extends PlayerBaseClass {
       // Get weapon stats
       if (item?.category == "weapon") {
         if (!item.weaponType) continue;
-        const factor = config.weapons[item.weaponType][stat] || 0;
-        const levelBonusFunction = config["weapon_" + stat];
-        const levelBonus = levelBonusFunction ? levelBonusFunction(item.level, factor) : 0;
-        weaponLevelBonus += levelBonus;
+        weaponLevelBonus += item.getStat(stat as WeaponStat);
       }
     }
 
     const total = baseStat + levelBonus + weaponLevelBonus;
+    if (verbose) return { baseStat, levelBonus, weaponLevelBonus } as any;
     return total;
   }
 
@@ -107,7 +108,7 @@ export class PlayerClass extends PlayerBaseClass {
   get RES() {
     return this.getStat("RES");
   }
-  /** Physical Resistance */
+  /** Magic Resistance */
   get MAG_RES() {
     return this.getStat("MAG_RES");
   }

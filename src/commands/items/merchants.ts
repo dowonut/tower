@@ -1,12 +1,10 @@
-import { Menu } from "../../functions/core/index.js";
+import { Menu, f } from "../../functions/core/index.js";
 import { game, config, client, prisma } from "../../tower.js";
 
 export default {
   name: "merchants",
   aliases: ["m", "merchant"],
-  arguments: [
-    { name: "merchant", type: "playerAvailableMerchant", required: false },
-  ],
+  arguments: [{ name: "merchant", type: "playerAvailableMerchant", required: false }],
   description: "See all merchants on this floor and the items they sell.",
   category: "item",
   async execute(message, args, player, server) {
@@ -60,19 +58,13 @@ export default {
                 label: x.getName(),
                 value: x.name,
                 description: x.description || "A friendly merchant.",
-                default:
-                  m.variables.currentMerchant &&
-                  m.variables.currentMerchant.name == x.name
-                    ? true
-                    : false,
+                default: m.variables.currentMerchant && m.variables.currentMerchant.name == x.name ? true : false,
               };
             });
             return {
               id: "selectMerchant",
               function(r, i, s) {
-                m.variables.currentMerchant = merchants.find(
-                  (x) => x.name == s
-                );
+                m.variables.currentMerchant = merchants.find((x) => x.name == s);
                 m.switchBoard("merchant");
               },
               options,
@@ -84,18 +76,12 @@ export default {
           name: "selectItem",
           type: "menu",
           components: async (m) => {
-            const options: SelectMenuOption[] = (
-              await m.variables.currentMerchant.getItems(player)
-            ).map((x) => {
+            const options: SelectMenuOption[] = (await m.variables.currentMerchant.getItems(player)).map((x) => {
               return {
                 label: x.getName(),
                 value: x.name,
                 emoji: x.getEmoji(),
-                default:
-                  m.variables.currentItem &&
-                  m.variables.currentItem.name == x.name
-                    ? true
-                    : false,
+                default: m.variables.currentItem && m.variables.currentItem.name == x.name ? true : false,
               };
             });
 
@@ -124,18 +110,14 @@ export default {
             const item = m.variables.currentItem;
             const merchantItem = await game.getMerchantItem(item.name, player);
             const marks = m.player.marks;
-            const max = Math.min(
-              Math.floor(marks / item.price),
-              merchantItem.stock
-            );
+            const max = Math.min(Math.floor(marks / item.price), merchantItem.stock);
 
             return [
               {
                 id: "buy_1",
                 style: "success",
                 label: "Buy 1",
-                disable:
-                  item.price > marks ? true : false || merchantItem.stock < 1,
+                disable: item.price > marks ? true : false || merchantItem.stock < 1,
                 async function() {
                   await buy(1, m.variables.currentItem.name);
                   m.refresh();
@@ -145,10 +127,7 @@ export default {
                 id: "buy_10",
                 style: "success",
                 label: "Buy 10",
-                disable:
-                  item.price * 10 > marks
-                    ? true
-                    : false || merchantItem.stock < 10,
+                disable: item.price * 10 > marks ? true : false || merchantItem.stock < 10,
                 async function() {
                   await buy(10, m.variables.currentItem.name);
                   m.refresh();
@@ -158,8 +137,7 @@ export default {
                 id: "buy_max",
                 style: "success",
                 label: `Buy Max (${max})`,
-                disable:
-                  item.price > marks ? true : false || merchantItem.stock < 1,
+                disable: item.price > marks ? true : false || merchantItem.stock < 1,
                 async function() {
                   await buy("all", m.variables.currentItem.name);
                   m.refresh();
@@ -178,9 +156,7 @@ export default {
             let description = merchants
               .map(
                 (x) =>
-                  `**${x.getName()}** (\`${game.titleCase(x.category)}\`) *${
-                    x.description || "A friendly merchant."
-                  }*`
+                  `**${x.getName()}** (\`${game.titleCase(x.category)}\`) *${x.description || "A friendly merchant."}*`
               )
               .join("\n");
 
@@ -216,21 +192,25 @@ export default {
               }
 
               if (item.stock > 0) {
-                const itemStock = `${item.stock} remaining`;
+                const itemStock = `x${item.stock}`;
                 const itemName = `**${item.getName()}**`;
-                description += `\n${highlighted}${emoji} ${itemName} | \`${itemStock}\` | \`${item.price}\`${config.emojis.mark}`;
+                let other = ``;
+                if (item.category == "weapon") other += ` \`Lvl.${item.getLevel()}\` |`;
+                description += `\n${highlighted}${emoji} ${itemName}${other} \`${itemStock}\` | \`${item.price}\`${config.emojis.mark}`;
               } else {
                 let itemStock = `out of stock`;
                 if (item.restock) {
                   const restocked = item.restocked;
                   const date = new Date().getDate();
-                  itemStock = `restocks in ${
-                    item.restock - (date - restocked)
-                  } days`;
+                  itemStock = `restocks in ${item.restock - (date - restocked)} days`;
                 }
                 const itemName = `${item.getName()}`;
-                description += `\n${highlighted}${emoji} ${itemName} | \`${itemStock}\``;
+                description += `\n${highlighted}${emoji} ${itemName} \`${itemStock}\``;
               }
+            }
+
+            if (m.variables.currentItem) {
+              description += `\n\n` + m.variables.currentItem.getDescription();
             }
 
             const balanceText = `Your balance: \`${m.player.marks}\` ${config.emojis.mark}`;
@@ -242,9 +222,7 @@ export default {
               fullSend: false,
               reply: true,
               description,
-              title:
-                merchant.getName() +
-                ` (\`${game.titleCase(merchant.category)}\`)`,
+              title: merchant.getName() + ` (\`${game.titleCase(merchant.category)}\`)`,
             });
           },
         },

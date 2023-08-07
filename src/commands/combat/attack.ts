@@ -54,8 +54,9 @@ export default {
               fields.push({
                 name: `${attack.getEmoji()} **${attack.getName()}** | ${game.f(`Lvl. ${attack.level}`)}`,
                 value: description,
-                inline: i % 3 === 0 ? false : true,
+                inline: true,
               });
+              if (i % 2 == 0) fields.push({ name: "** **", value: "** **" });
               i++;
             }
 

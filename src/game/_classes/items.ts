@@ -1,5 +1,5 @@
 import fs from "fs";
-import { createClassFromType, loadFiles } from "../../functions/core/index.js";
+import { createClassFromType, f, loadFiles } from "../../functions/core/index.js";
 import { config } from "../../tower.js";
 
 const ItemBaseClass = createClassFromType<ItemBase>();
@@ -62,7 +62,62 @@ export class ItemClass extends ItemBaseClass {
     return imageName;
   }
 
+  /** Get detailed description. */
+  getDescription() {
+    let text = ``;
+    if (this.info) text += `*${this.info}*\n`;
+    text += `\nCategory: ${f(this.category)}`;
+
+    // Weapon
+    if (this.category == "weapon") {
+      text += `\nWeapon Type: ${f(this.weaponType)}`;
+      text += `\n\nATK: ${f(this.ATK)} | MAG: ${f(this.MAG)} | RES: ${f(this.RES)} | SPD: ${f(this.SPD)}`;
+    }
+
+    return text;
+  }
+
   // STATS =================================================================
+
+  /** Get a specific evaluated stat. */
+  getStat(stat: WeaponStat) {
+    if (this.category !== "weapon") return;
+
+    const baseStat = config.baseWeaponStats?.[stat] || 0;
+
+    const factor = config.weapons[this.weaponType]?.[stat] || 0;
+    const levelBonusFunction = config["weapon_" + stat];
+    const level = this.getLevel();
+    const levelBonus = levelBonusFunction ? levelBonusFunction(level, factor) : 0;
+
+    return baseStat + levelBonus;
+  }
+
+  /** Get item level. */
+  getLevel() {
+    const level = this.level || this?.stats?.baseLevel || 1;
+    return level;
+  }
+
+  /** Attack */
+  get ATK() {
+    return this.getStat("ATK");
+  }
+
+  /** Attack */
+  get MAG() {
+    return this.getStat("MAG");
+  }
+
+  /** Attack */
+  get RES() {
+    return this.getStat("RES");
+  }
+
+  /** Attack */
+  get SPD() {
+    return this.getStat("SPD");
+  }
 }
 
 const items = await loadFiles<ItemClass>("items", ItemClass);

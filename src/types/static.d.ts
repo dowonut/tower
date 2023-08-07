@@ -39,6 +39,16 @@ declare global {
   export type PlayerStat = keyof typeof config.baseStats;
 
   /**
+   * Enemy stats.
+   */
+  export type EnemyStat = keyof typeof config.baseEnemyStats;
+
+  /**
+   * Weapon stat.
+   */
+  export type WeaponStat = keyof typeof config.baseWeaponStats;
+
+  /**
    * Enhancement shard types.
    */
   export type ShardType = (typeof config.shardTypes)[number];

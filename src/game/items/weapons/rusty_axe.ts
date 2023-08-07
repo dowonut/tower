@@ -1,7 +1,7 @@
 export default {
-  name: "stone axe",
+  name: "rusty axe",
   category: "weapon",
   weaponType: "axe",
-  info: "A shoddy axe you put together with a rock and a stick.",
+  info: "This won't be doing a lot of chopping anymore.",
   equipSlot: "hand",
 } satisfies ItemData;

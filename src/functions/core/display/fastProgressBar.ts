@@ -19,7 +19,7 @@ export default function fastProgressBar(type: ProgressBar, entity: Player | Enem
       break;
     case "xp":
       const nextXp = config.nextLevelXp(entity.level);
-      min = entity.xp;
+      min = (entity as Player).xp;
       max = nextXp;
       color = "green";
       progressBarText = `

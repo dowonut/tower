@@ -125,8 +125,8 @@ model Inventory {
   nickname     String?
   enhancements Enhancement[]
   // Equipment
-  level        Int           @default(0)
-  grade        String        @default("common")
+  level        Int?          @default(1)
+  grade        String?       @default("common")
   materials    String[]      @default(["steel"])
 }
 

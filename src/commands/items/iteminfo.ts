@@ -1,5 +1,6 @@
 import { MessageEditOptions } from "discord.js";
 import { game, config, client, prisma } from "../../tower.js";
+import { f } from "../../functions/core/index.js";
 
 export default {
   name: "iteminfo",
@@ -168,24 +169,17 @@ export default {
           name: "main",
           function: (m) => {
             // Format item description
-            let description = `
-    *${item.info}*\n
-    Category: \`${game.titleCase(item.category)}\``;
+            let description = item.getDescription();
+
+            let title = `${item.getName()} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`;
 
             if (item.category == "weapon") {
-              description += `\n\nWeapon Type: \`${game.titleCase(item.weaponType)}\``;
-              // description += `\nDamage: \`${item.damage}\`${config.emojis.damage[item.damageType]}`;
-            }
-            if (item.category == "potion") {
-              item.effects.forEach((effect) => {
-                description += `\n\nEffect: **${effect.info}**`;
-              });
+              title += ` | \`Lvl. ${item.level}\``;
             }
 
             let embed: any = {
               description,
             };
-            const title = `${item.getName()} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`;
 
             // Get image
             const file = item.getImage() || undefined;

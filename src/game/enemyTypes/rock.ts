@@ -1,11 +1,6 @@
 export default {
   // Name of class
   name: "rock",
-  // Base XP dropped by class
-  xp: {
-    min: 200,
-    max: 300,
-  },
   // Base strengths and weaknesses
   strong: ["bludgeoning", "piercing", "slashing", "earth", "fire", "air", "water"],
   weak: [],
@@ -29,4 +24,4 @@ export default {
       cooldown: 0,
     },
   ],
-} as EnemyType;
+} satisfies EnemyType;

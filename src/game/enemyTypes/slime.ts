@@ -1,11 +1,6 @@
 export default {
   // Name of class
   name: "slime",
-  // Base XP dropped by class
-  xp: {
-    min: 10,
-    max: 20,
-  },
   // Base strengths and weaknesses
   strong: ["bludgeoning"],
   weak: ["slashing"],
@@ -67,4 +62,4 @@ export default {
       messages: ["ENEMY tries to drown PLAYER by jumping on their head, dealing DAMAGE"],
     },
   ],
-} as EnemyType;
+} satisfies EnemyType;

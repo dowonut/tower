@@ -27,6 +27,21 @@ export const baseStats = {
   AD: 20,
   AGR: 100,
 };
+export const baseEnemyStats = {
+  XP: 20,
+  maxHP: 0,
+  ATK: 10,
+  MAG: 10,
+  RES: 20,
+  MAG_RES: 20,
+  SPD: 80,
+};
+export const baseWeaponStats = {
+  ATK: 0,
+  MAG: 0,
+  RES: 0,
+  SPD: 0,
+};
 
 // export const subStats = {
 //   bludgeoning: 0,
@@ -188,5 +203,50 @@ export const weapon_RES = (lvl: number, factor: number) => {
 // Get weapon SPD
 export const weapon_SPD = (lvl: number, factor: number) => {
   let v = (lvl / 2 + Math.pow(lvl, 1.5) / 20) * 0.2 * factor;
+  return Math.floor(v);
+};
+
+// ENEMY LEVEL FORMULAS ============================================
+
+// Get XP dropped by enemy.
+export const enemy_XP = (lvl: number, boss = false) => {
+  let v = 5 * (Math.pow(lvl, 2) / 30) + 20;
+  return Math.floor(v);
+};
+
+// Get enemy HP.
+export const enemy_maxHP = (lvl: number, boss = false) => {
+  let v = Math.pow(lvl, 1.9) + lvl * 2;
+  if (boss) v = Math.pow(lvl, 1.9) + lvl * 100;
+  return Math.floor(v);
+};
+
+// Get enemy HP.
+export const enemy_ATK = (lvl: number, boss = false) => {
+  let v = Math.pow(lvl, 1.5) + lvl;
+  return Math.floor(v);
+};
+
+// Get enemy HP.
+export const enemy_MAG = (lvl: number, boss = false) => {
+  let v = Math.pow(lvl, 1.5) + lvl;
+  return Math.floor(v);
+};
+
+// Get enemy RES.
+export const enemy_RES = (lvl: number, boss = false) => {
+  let v = Math.pow(lvl, 1.3) + lvl * 5;
+  return Math.floor(v);
+};
+
+// Get enemy MAG RES.
+export const enemy_MAG_RES = (lvl: number, boss = false) => {
+  let v = Math.pow(lvl, 1.3) + lvl * 5;
+  return Math.floor(v);
+};
+
+// Get enemy SPD.
+export const enemy_SPD = (lvl: number, boss = false) => {
+  let v = lvl / 10 + Math.pow(lvl, 1.5) / 50;
   return Math.floor(v);
 };

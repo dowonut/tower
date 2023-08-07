@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Inventory" ALTER COLUMN "grade" DROP NOT NULL,
+ALTER COLUMN "level" DROP NOT NULL,
+ALTER COLUMN "level" SET DEFAULT 1;

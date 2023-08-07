@@ -1,9 +1,5 @@
 export default {
   name: "frog",
-  xp: {
-    min: 80,
-    max: 90,
-  },
   strong: ["water"],
   weak: ["fire"],
   attacks: [

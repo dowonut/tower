@@ -1,4 +1,5 @@
-import { game } from "../../tower.js";
+import { f } from "../../functions/core/index.js";
+import { config, game } from "../../tower.js";
 
 export default {
   name: "stats",
@@ -7,15 +8,22 @@ export default {
   category: "player",
   useInCombat: true,
   async execute(message, args, player, server) {
-    const obj = player.getStats();
     let description = ``;
     let title = `Stats`;
 
-    for (let [stat, value] of Object.entries(obj)) {
-      if (stat == "maxHP") stat = "HP";
+    for (let statName of Object.keys(config.baseStats) as PlayerStat[]) {
+      const { baseStat, levelBonus, weaponLevelBonus } = player.getStat(statName, true);
+      let name: string = statName;
+      if (statName == "maxHP") name = "HP";
       let percent = ``;
-      if (["CR", "CD", "AR", "AD"].includes(stat)) percent = ` %`;
-      description += `${stat}: **\`${value}${percent}\`**\n`;
+      if (["CR", "CD", "AR", "AD"].includes(name)) percent = `%`;
+
+      const base = baseStat + levelBonus + percent;
+      const weapon = "+" + weaponLevelBonus + percent;
+
+      description += `\n${name}: ${f(base)}`;
+
+      if (weaponLevelBonus) description += ` ${f(weapon)}`;
     }
 
     game.fastEmbed({ message, player, description, title });

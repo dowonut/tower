@@ -1,11 +1,6 @@
 export default {
   // Name of class
   name: "goblin",
-  // Base XP dropped by class
-  xp: {
-    min: 50,
-    max: 60,
-  },
   // Base strengths and weaknesses
   strong: ["earth"],
   weak: ["water"],
@@ -57,4 +52,4 @@ export default {
       cooldown: 0,
     },
   ],
-} as EnemyType;
+} satisfies EnemyType;
