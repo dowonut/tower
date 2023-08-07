@@ -4,25 +4,25 @@ export default {
   name: "eat",
   aliases: ["ea"],
   arguments: [
-    { name: "item_name", type: "playerOwnedItem" },
+    { name: "item", type: "playerOwnedItem" },
     { name: "quantity", type: "number", required: false },
   ],
   description: "Eat food you have in your inventory.",
   category: "item",
-  async execute(message, args, player, server) {
-    const item = await player.getItem(args.item_name);
+  async execute(message, args: { item: Item; quantity: number | "all" }, player, server) {
+    let { item, quantity } = args;
     const maxHP = player.maxHP;
 
     if (item.category !== "food") return game.error({ message, content: `this isn't food idiot.` });
 
-    if (args.quantity == "all") {
+    if (quantity == "all") {
       let healthRemaining = maxHP - player.health;
       let foodRequired = Math.ceil(healthRemaining / item.health);
 
-      args.quantity = foodRequired;
+      quantity = foodRequired;
     }
 
-    let heal = item.health * args.quantity;
+    let heal = item.health * quantity;
 
     if (player.health == maxHP) return game.error({ message, content: `you're already at max health!` });
 
@@ -30,14 +30,14 @@ export default {
 
     const playerData = await player.update({ health: { increment: heal } });
 
-    await player.giveItem(item.name, -args.quantity);
+    await player.giveItem(item.name, -quantity);
 
     game.send({
       message,
       reply: true,
-      content: `Ate \`${args.quantity}x\` **${item.getName()}** and healed \`${heal}\` points (${
-        config.emojis.health
-      }\`${playerData.health}/${maxHP}\`)`,
+      content: `Ate \`${quantity}x\` **${item.getName()}** and healed \`${heal}\` points (${config.emojis.health}\`${
+        playerData.health
+      }/${maxHP}\`)`,
     });
   },
 } as Command;

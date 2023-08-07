@@ -1,10 +1,6 @@
 import { game, prisma } from "../../../tower.js";
 
-export default async function giveItem(
-  player: Player,
-  name: string,
-  quantity: number = 1
-) {
+export default async function giveItem(player: Player, name: string, quantity: number = 1) {
   const item = game.getItem(name);
   if (!item) return;
 
@@ -26,6 +22,8 @@ export default async function giveItem(
         playerId: player.id,
         name: item.name,
         quantity: quantity,
+        level: item.getLevel(),
+        grade: item.getGrade(),
       },
     });
   }

@@ -99,6 +99,11 @@ export class ItemClass extends ItemBaseClass {
     return level;
   }
 
+  getGrade() {
+    const grade = this.grade || this?.stats?.baseGrade || "common";
+    return grade;
+  }
+
   /** Attack */
   get ATK() {
     return this.getStat("ATK");
