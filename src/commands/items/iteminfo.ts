@@ -207,7 +207,7 @@ export default {
     // Eat item
     async function eat() {
       await game.runCommand("eat", { message, args: [item.name], server });
-      const { quantity } = await player.getItem(item.name);
+      const { quantity } = (await player.getItem(item.name)) || {};
       item.quantity = quantity;
     }
 
@@ -235,7 +235,7 @@ export default {
     // Drink potion
     async function drink() {
       await game.runCommand("drink", { message, args: [item.name], server });
-      const { quantity } = await player.getItem(item.name);
+      const { quantity } = (await player.getItem(item.name)) || {};
       item.quantity = quantity;
     }
   },

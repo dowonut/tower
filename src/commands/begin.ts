@@ -13,6 +13,8 @@ export default {
 
     player = await game.createPlayer(auth, server);
 
+    message.user = player.user;
+
     const embed = {
       thumbnail: { url: player.user.pfp },
       color: config.defaultEmbedColor,
