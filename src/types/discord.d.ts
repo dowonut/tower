@@ -150,6 +150,7 @@ declare global {
     moveOutcome?: "playerDeath" | "enemyDeath";
     player: Player;
     enemy: Enemy;
+    attackMessage?: string;
   }
 }
 export {};

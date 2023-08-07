@@ -8,6 +8,7 @@ export default async function cleanEncounters() {
   });
 
   for (const encounter of encounters) {
+    if (!encounter.discordChannelId) continue;
     try {
       const channel = (await client.channels.fetch(encounter.discordChannelId)) as TextChannel;
       // Delete original encounter message

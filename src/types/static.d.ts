@@ -14,12 +14,7 @@ declare global {
   /**
    * Weapon types.
    */
-  export type WeaponType = (typeof config.weaponTypes)[number];
-
-  /**
-   * Player attack types.
-   */
-  export type AttackType = (typeof config.attackTypes)[number];
+  export type WeaponType = keyof typeof config.weapons;
 
   export type PassiveTarget = "";
 
@@ -27,13 +22,6 @@ declare global {
    * Item categories.
    */
   export type ItemCategory = keyof ItemTypes;
-  // | "weapon"
-  // | "food"
-  // | "crafting"
-  // | "recipe"
-  // | "potion"
-  // | "map"
-  // | "enhancement";
 
   /**
    * Categories for Discord commands.
@@ -41,14 +29,14 @@ declare global {
   export type CommandCategory = (typeof config.commandCategories)[number];
 
   /**
+   * Player traits.
+   */
+  export type PlayerTrait = "health" | "strength" | "defence" | "arcane" | "vitality";
+
+  /**
    * Player stats.
    */
-  export type PlayerStats =
-    | "health"
-    | "strength"
-    | "defence"
-    | "arcane"
-    | "vitality";
+  export type PlayerStat = keyof typeof config.baseStats;
 
   /**
    * Enhancement shard types.
@@ -76,6 +64,12 @@ declare global {
     | "region";
 
   export type ProgressBarColor = "red" | "green" | "orange" | "white";
+
+  /** Item grades. */
+  export type ItemGrade = "common" | "uncommon" | "rare" | "epic" | "legendary" | "mythical";
+
+  /** Item material types. */
+  export type ItemMaterial = "steel";
 }
 
 export {};

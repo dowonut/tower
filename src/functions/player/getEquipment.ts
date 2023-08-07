@@ -1,19 +1,12 @@
-import { game } from "../../tower.js";
-
-const equipmentSlots = ["head", "torso", "legs", "feet", "hand"];
-
-/**
- * Object containing player equipment.
- */
-type Equipment = { [key in EquipSlot]?: Item | undefined };
+import { config, game } from "../../tower.js";
 
 /**
  * Get equipped items.
  */
-export default (async function <T extends EquipSlot>(
+export default (async function <T extends EquipSlot = undefined>(
   this: Player,
   slot?: T
-): Promise<T extends undefined ? Equipment : Item> {
+): Promise<T extends undefined ? PlayerEquipment : Item> {
   // If specific equipment slot specified
   if (slot) {
     const itemName = this[slot];
@@ -25,7 +18,8 @@ export default (async function <T extends EquipSlot>(
 
   // Return object with all equipped items
   else {
-    let equipment: Equipment = {};
+    let equipment: PlayerEquipment = {};
+    const equipmentSlots = config.equipSlots;
 
     // Grab all equipped items and build object
     for (const slot of equipmentSlots) {

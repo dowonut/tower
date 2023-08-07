@@ -121,6 +121,7 @@ declare global {
     include: {
       encounter: { include: { players: true; enemies: true } };
       party: { include: { players: { include: { user: true } } } };
+      passives: true;
       inventory: true;
     };
   }>;
@@ -132,8 +133,16 @@ declare global {
     message?: Message;
     server?: Server;
     user?: User;
+    equipment?: PlayerEquipment;
   } & PlayerModel &
     typeof playerFunctions;
+
+  /**
+   * Player equipment.
+   */
+  export type PlayerEquipment = {
+    [key in EquipSlot]?: Item;
+  };
 
   /**
    * Player

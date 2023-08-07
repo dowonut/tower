@@ -75,7 +75,7 @@ export default {
         // Get item value
         const value = item.value ? `\`${item.value}\`${config.emojis.mark}` : undefined;
         // Get damage value
-        const damage = item.damage ? `\`${item.damage}\`${config.emojis.damage[item.damageType]}` : undefined;
+        const damage = ``;
 
         // Get item emoji
         let emoji = item.getEmoji();

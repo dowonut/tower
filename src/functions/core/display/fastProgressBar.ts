@@ -3,10 +3,7 @@ import { game, config } from "../../../tower.js";
 type ProgressBar = "health" | "xp";
 
 /** Generate progress bar from template. */
-export default function fastProgressBar(
-  type: ProgressBar,
-  entity: Player | Enemy
-) {
+export default function fastProgressBar(type: ProgressBar, entity: Player | Enemy) {
   let min: number;
   let max: number;
   let color: ProgressBarColor;

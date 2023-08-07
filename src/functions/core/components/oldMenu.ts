@@ -28,8 +28,8 @@ export default class OldMenu {
   }
 
   async collector(message: Message, reply: Message) {
-    let components: Button[] | SelectMenu = this.buttons;
-    // if (this.type == "menu") components = [this.buttons];
-    // return await game.componentCollector(message, reply, components);
+    let components: Component[] = this.buttons;
+    if (this.type == "menu") components = [...this.buttons];
+    return await game.componentCollector({ message, reply, components });
   }
 }

@@ -15,8 +15,13 @@ export class ItemClass extends ItemBaseClass {
     const itemName = this.getImageName();
 
     // Create path and check if item image exists
-    const path = `./assets/items/${itemName}.png`;
+    let path = `./assets/items/${itemName}.png`;
     let file: any;
+
+    // Change path for weapons
+    if (this.category == "weapon") {
+      path = `./assets/icons/${this.weaponType}.png`;
+    }
 
     // Attach image
     if (fs.existsSync(path)) {
@@ -35,6 +40,12 @@ export class ItemClass extends ItemBaseClass {
     const emojiName = this.getImageName();
 
     let emoji = config.emojis.items[emojiName];
+
+    // Get weapon icon
+    if (this.category == "weapon") {
+      emoji = config.emojis.weapons[this.weaponType];
+    }
+
     if (!emoji) emoji = config.emojis.blank;
 
     return emoji;
@@ -50,6 +61,8 @@ export class ItemClass extends ItemBaseClass {
 
     return imageName;
   }
+
+  // STATS =================================================================
 }
 
 const items = await loadFiles<ItemClass>("items", ItemClass);

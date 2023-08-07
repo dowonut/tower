@@ -1,10 +1,7 @@
 export default {
   name: "rock",
-  category: "weapon",
-  weaponType: "rock",
+  category: "crafting",
   description: "Literally just a rock.",
   info: "Why did you pick up a rock?",
-  equipSlot: "hand",
-  damage: 1,
-  damageType: "bludgeoning",
+  value: 1,
 } satisfies ItemData;

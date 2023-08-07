@@ -17,10 +17,10 @@ export default {
     // define all variables
     const { level, xp, health, maxHP, floor, marks } = player;
     const nextXp = config.nextLevelXp(level);
-    const { health: healthE, floor: floorE, mark: markE, blank } = config.emojis;
+    const { health: healthE, staircase: floorE, mark: markE, blank } = config.emojis;
     const region = game.titleCase(player.getRegion().name);
     const { strength, defence, arcane, vitality } = config.emojis.traits;
-    const { strength: ps, defence: pd, arcane: pa, vitality: pv } = player;
+    const { strength: ps, defense: pd, arcane: pa, vitality: pv } = player;
 
     // Format profile
     let description = `

@@ -2,8 +2,15 @@ import { config, game, prisma } from "../../../tower.js";
 
 /** Enter a combat encounter with an enemy. */
 export default async function enterCombat(args: { player: Player; enemies: Enemy[]; message: Message }) {
-  const { player, message } = args;
+  let { player, message } = args;
   let { enemies } = args;
+  // Update player
+  player = await player.refresh();
+
+  // Check if already in combat
+  if (player.encounter) {
+    return game.error({ message, content: `You are already engaged in combat.` });
+  }
 
   // Handle party
   let players: Player[] = [player];
@@ -69,7 +76,7 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
 
   // Set starting SV for players
   for (const [i, player] of players.entries()) {
-    const SV = player.baseSV;
+    const SV = await player.baseSV;
     players[i] = await player.update({ SV });
   }
 

@@ -8,15 +8,14 @@ export default (async function () {
   const newMarks = Math.floor(currentMarks * marksLostOnDeath);
   const newRegion = game.getFloor(this.floor).regions[0].name;
 
-  await this.update({
+  const player = await this.update({
     marks: newMarks,
     region: newRegion,
-    health: this.maxHP,
-    dead: false,
   });
 
   return {
     marks: newMarks,
     region: newRegion,
+    newPlayer: player,
   };
 } satisfies PlayerFunction);

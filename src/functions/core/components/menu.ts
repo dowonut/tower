@@ -34,9 +34,9 @@ export default class Menu<T> extends MenuBase<T> {
       // const messageOptions = await board.message();
       const { messageComponents, components } = await this.getComponents(board);
       this.botMessage = await game.send({
+        ...messageOptions,
         message: this?.message,
         channel: this?.channel,
-        ...messageOptions,
         components: messageComponents,
       });
       this.createCollector(components);
@@ -46,7 +46,7 @@ export default class Menu<T> extends MenuBase<T> {
 
   //------------------------------------------------------------
   /** Refresh the current board. */
-  async refresh(args: CollectorOptions = {}) {
+  async refresh(args: CollectorOptions = undefined) {
     if (!this.currentBoard || !this.botMessage) throw new Error("Cannot refresh before initialized.");
 
     await this.switchBoard(this.currentBoard, args);
@@ -111,6 +111,7 @@ export default class Menu<T> extends MenuBase<T> {
       const row = game.actionRow(boardRow.type, boardComponents);
       messageComponents.push(row);
     }
+    if (messageComponents.length < 1 || components.length < 1) return {};
     return { messageComponents, components };
   }
 

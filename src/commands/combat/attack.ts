@@ -97,10 +97,13 @@ export default {
         previousHealth: previousEnemyHealth,
       });
 
-      await game.send({ message, reply: false, content: attackMessage });
-
       // Send emitter
-      game.emitter.emit("playerMove", { encounterId: player.encounterId, player, enemy } satisfies EmitterArgs);
+      game.emitter.emit("playerMove", {
+        encounterId: player.encounterId,
+        player,
+        enemy,
+        attackMessage,
+      } satisfies EmitterArgs);
     }
 
     //   // Check if user specified attack

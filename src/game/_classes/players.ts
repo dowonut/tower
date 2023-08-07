@@ -38,7 +38,32 @@ export class PlayerClass extends PlayerBaseClass {
     return this.encounter.currentPlayer == this.id;
   }
 
-  // STATS ---------------------------------------------------------------
+  // STATS =================================================================
+
+  /** Get a specific evaluated stat. */
+  getStat(stat: PlayerStat) {
+    const baseStat = config.baseStats[stat];
+
+    // Get flat bonus from level
+    const levelBonusFunction = config["level_" + stat];
+    const levelBonus = levelBonusFunction ? levelBonusFunction(this.level) : 0;
+
+    // Get flat bonuses from equipment
+    let weaponLevelBonus = 0;
+    for (const [key, item] of Object.entries(this.equipment)) {
+      // Get weapon stats
+      if (item?.category == "weapon") {
+        if (!item.weaponType) continue;
+        const factor = config.weapons[item.weaponType][stat] || 0;
+        const levelBonusFunction = config["weapon_" + stat];
+        const levelBonus = levelBonusFunction ? levelBonusFunction(item.level, factor) : 0;
+        weaponLevelBonus += levelBonus;
+      }
+    }
+
+    const total = baseStat + levelBonus + weaponLevelBonus;
+    return total;
+  }
 
   /** Get all stats. */
   getStats() {
@@ -68,59 +93,48 @@ export class PlayerClass extends PlayerBaseClass {
 
   /** Max Health */
   get maxHP() {
-    const baseHP = config.baseStats.maxHP;
-    return baseHP;
+    return this.getStat("maxHP");
   }
   /** Attack */
   get ATK() {
-    const baseATK = config.baseStats.ATK;
-    return baseATK;
+    return this.getStat("ATK");
   }
   /** Magic */
   get MAG() {
-    const baseMAG = config.baseStats.MAG;
-    return baseMAG;
+    return this.getStat("MAG");
   }
   /** Physical Resistance */
   get RES() {
-    const baseRES = config.baseStats.RES;
-    return baseRES;
+    return this.getStat("RES");
   }
   /** Physical Resistance */
   get MAG_RES() {
-    const baseMAG_RES = config.baseStats["MAG RES"];
-    return baseMAG_RES;
+    return this.getStat("MAG_RES");
   }
   /** Speed */
   get SPD() {
-    const baseSPD = config.baseStats.SPD;
-    return baseSPD;
+    return this.getStat("SPD");
   }
   /** Crit Rate */
   get CR() {
-    const baseCR = config.baseStats.CR;
-    return baseCR;
+    return this.getStat("CR");
   }
   /** Crit Damage */
   get CD() {
-    const baseCD = config.baseStats.CD;
-    return baseCD;
+    return this.getStat("CD");
   }
   /** Acute Rate */
   get AR() {
-    const baseAR = config.baseStats.AR;
-    return baseAR;
+    return this.getStat("AR");
   }
   /** Acute Damage */
   get AD() {
-    const baseAD = config.baseStats.AD;
-    return baseAD;
+    return this.getStat("AD");
   }
 
   /** Aggro */
   get AGR() {
-    const baseAGR = config.baseStats.AGR;
-    return baseAGR;
+    return this.getStat("AGR");
   }
 }
 

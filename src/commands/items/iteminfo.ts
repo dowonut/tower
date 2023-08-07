@@ -4,16 +4,13 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "iteminfo",
   aliases: ["ii"],
-  arguments: [{ name: "item_name", type: "playerOwnedItem" }],
+  arguments: [{ name: "item", type: "playerOwnedItem" }],
   description: "Get detailed information about an item.",
   category: "item",
   useInCombat: true,
-  async execute(message, args, player, server) {
+  async execute(message, args: { item: Item }, player, server) {
     // Get player item
-    let item = await player.getItem(args.item_name);
-
-    // Check if showing sellbuttons
-    let showingSellRow = false;
+    let { item } = args;
 
     // Check if item exists
     if (!item)
@@ -22,258 +19,212 @@ export default {
         content: `not a valid item.\nCheck your items with \`${server.prefix}inventory\``,
       });
 
-    // Get item embed
-    const { embed, title, file } = getEmbed();
+    const menu = new game.Menu({
+      message,
+      player,
+      boards: [
+        { name: "main", rows: ["main"], message: "main" },
+        { name: "sell", rows: ["sell"] },
+      ],
+      rows: [
+        // Main buttons
+        {
+          name: "main",
+          type: "buttons",
+          components: async (m) => {
+            let buttons: Button[] = [];
+            const disableCheck = player.inCombat || item.quantity < 1;
 
-    // Get initial action buttons
-    const { actionRow, actionButtons } = await getButtonRow();
+            // Create sell button
+            if (item.value) {
+              buttons.push({
+                id: "sell",
+                label: `Sell for ${item.value} marks`,
+                emoji: config.emojis.mark,
+                disable: disableCheck,
+                function: async () => {
+                  if (item.quantity > 1) {
+                    m.switchBoard("sell");
+                  } else {
+                    await sell(1);
+                    m.refresh();
+                  }
+                },
+              });
+            }
+            // Create eat button
+            if (item.health) {
+              // Refresh player data
+              const { health, maxHP } = m.player;
+              const disable = disableCheck || health == maxHP ? true : false;
+              buttons.push({
+                id: "eat",
+                emoji: config.emojis.health,
+                label: `Eat for ${item.health} HP`,
+                style: "success",
+                disable: disable,
+                function: async () => {
+                  await eat();
+                  m.refresh();
+                },
+              });
+            }
+            // Create equip button
+            if (item.equipSlot) {
+              // Get current equipped item
+              let current = await m.player.getEquipment(item.equipSlot);
+
+              // Check if item is equipped
+              const equipped = current?.name == item.name;
+              const disable = disableCheck;
+              let label = equipped ? "Unequip" : "Equip";
+              // Push button
+              buttons.push({
+                id: "equip",
+                label: label,
+                disable: disable,
+                function: async () => {
+                  await equip();
+                  m.refresh();
+                },
+              });
+            }
+            // Create drink button
+            if (item.category == "potion") {
+              buttons.push({
+                id: "drink",
+                label: "Drink",
+                style: "success",
+                disable: item.quantity < 1,
+                function: async () => {
+                  await drink();
+                  m.refresh();
+                },
+              });
+            }
+
+            return buttons;
+          },
+        },
+        // Sell buttons
+        {
+          name: "sell",
+          type: "buttons",
+          components: async (m) => {
+            const disable = item.quantity < 1 ? true : false;
+            const buttons: Button[] = [
+              {
+                id: "one",
+                label: "1",
+                style: "success",
+                disable: disable,
+                function: async () => {
+                  await sell();
+                  m.refresh();
+                },
+              },
+              {
+                id: "ten",
+                label: "10",
+                style: "success",
+                disable: item.quantity < 10 ? true : false,
+                function: async () => {
+                  await sell(10);
+                  m.refresh();
+                },
+              },
+              {
+                id: "hundred",
+                label: "100",
+                style: "success",
+                disable: item.quantity < 100 ? true : false,
+                function: async () => {
+                  await sell(100);
+                  m.refresh();
+                },
+              },
+              {
+                id: "all",
+                label: "All",
+                style: "success",
+                disable: disable,
+                function: async () => {
+                  await sell(item.quantity);
+                  m.refresh();
+                },
+              },
+              {
+                id: "return",
+                board: "main",
+              },
+            ];
+            return buttons;
+          },
+        },
+      ],
+      messages: [
+        // Main item message
+        {
+          name: "main",
+          function: (m) => {
+            // Format item description
+            let description = `
+    *${item.info}*\n
+    Category: \`${game.titleCase(item.category)}\``;
+
+            if (item.category == "weapon") {
+              description += `\n\nWeapon Type: \`${game.titleCase(item.weaponType)}\``;
+              // description += `\nDamage: \`${item.damage}\`${config.emojis.damage[item.damageType]}`;
+            }
+            if (item.category == "potion") {
+              item.effects.forEach((effect) => {
+                description += `\n\nEffect: **${effect.info}**`;
+              });
+            }
+
+            let embed: any = {
+              description,
+            };
+            const title = `${item.getName()} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`;
+
+            // Get image
+            const file = item.getImage() || undefined;
+
+            // Set embed thumbnail
+            if (file)
+              embed.thumbnail = {
+                url: `attachment://${file.name}`,
+              };
+
+            return game.fastEmbed({ message, player, embed, title, files: [file], fullSend: false });
+          },
+        },
+      ],
+    });
+
+    menu.init("main");
 
     // Unlock commands
     player.unlockCommands(message, ["sell", "eat", "drink"]);
 
-    // Get message
-    const reply = (await game.fastEmbed({
-      message,
-      player,
-      embed,
-      title,
-      files: file ? [file] : undefined,
-      components: [actionRow],
-    })) as Message;
-
-    await game.componentCollector({ message, reply, components: actionButtons });
-
-    // Get embed
-    function getEmbed() {
-      // Format item description
-      let description = `
-    *${item.info}*\n
-    Category: \`${game.titleCase(item.category)}\``;
-
-      if (item.category == "weapon") {
-        description += `\n\nWeapon Type: \`${game.titleCase(item.weaponType)}\``;
-        description += `\nDamage: \`${item.damage}\`${config.emojis.damage[item.damageType]}`;
-      }
-      if (item.category == "potion") {
-        item.effects.forEach((effect) => {
-          description += `\n\nEffect: **${effect.info}**`;
-        });
-      }
-
-      let embed: any = {
-        description,
-      };
-      const title = `${item.getName()} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`;
-
-      // Get image
-      const file = item.getImage();
-
-      // Set embed thumbnail
-      if (file)
-        embed.thumbnail = {
-          url: `attachment://${file.name}`,
-        };
-
-      return { embed, title, file };
-    }
-
-    // Get buttons
-    async function getButtonRow() {
-      // Disable function
-      const disableCheck = player.inCombat || item.quantity < 1 ? true : false;
-
-      // Create buttons
-      /** @type {ComponentButton[]} */
-      let buttons = [];
-
-      // Create sell button
-      if (item.value) {
-        buttons.push({
-          id: "sell",
-          label: `Sell for ${item.value} marks`,
-          emoji: config.emojis.mark,
-          disable: disableCheck,
-          function: async () => {
-            if (item.quantity > 1) {
-              sellMenu();
-            } else {
-              return await sell();
-            }
-          },
-          stop: item.quantity > 1 ? true : false,
-        });
-      }
-      // Create eat button
-      if (item.health) {
-        // Refresh player data
-        const { health, maxHP } = await player.refresh();
-        const disable = disableCheck || health == maxHP ? true : false;
-        buttons.push({
-          id: "eat",
-          emoji: config.emojis.health,
-          label: `Eat for ${item.health} HP`,
-          style: "success",
-          disable: disable,
-          function: async () => {
-            return await eat();
-          },
-        });
-      }
-      // Create equip button
-      if (item.equipSlot) {
-        // Get current equipped item
-        let current = await player.getEquipment(item.equipSlot);
-
-        // Check if item is equipped
-        const equipped = current && current.name == item.name;
-        const disable = disableCheck ? true : false;
-        let label = equipped ? "Unequip" : "Equip";
-        // Push button
-        buttons.push({
-          id: "equip",
-          label: label,
-          disable: disable,
-          function: async () => {
-            return await equip();
-          },
-        });
-      }
-      // Create drink button
-      if (item.category == "potion") {
-        buttons.push({
-          id: "drink",
-          label: "Drink",
-          style: "success",
-          disable: item.quantity < 1 ? true : false,
-          function: async () => {
-            return await drink();
-          },
-        });
-      }
-
-      // Check if any buttons have been created
-      if (buttons.length < 1) return;
-
-      // Created and return action row
-      const row = game.actionRow("buttons", buttons);
-      return { actionRow: row, actionButtons: buttons };
-    }
-
-    // Update main embed
-    async function updateEmbed() {
-      const { embed, title, file } = getEmbed();
-
-      const messageRef = await game.fastEmbed({
-        message,
-        player,
-        embed,
-        title,
-        send: false,
-      });
-
-      await reply.edit(messageRef as MessageEditOptions);
-    }
-
-    // Update main button row
-    async function updateButtonRow() {
-      if (!showingSellRow) {
-        var { actionRow: row } = await getButtonRow();
-      } else {
-        var { sellRow: row } = getSellRow();
-      }
-
-      await reply.edit({ components: [row] });
-    }
+    // FUNCTIONS ===============================================================
 
     // Eat item
     async function eat() {
       await game.runCommand("eat", { message, args: [item.name], server });
-
-      const newItem = await player.getItem(args.item_name);
-      item.quantity = newItem ? newItem.quantity : 0;
-      await updateEmbed();
-      await updateButtonRow();
+      const { quantity } = await player.getItem(item.name);
+      item.quantity = quantity;
     }
 
     // Sell item
-    async function sell(quantity = 1) {
+    async function sell(amount = 1) {
       await game.runCommand("sell", {
         message,
-        args: [item.name, quantity.toString()],
+        args: [item.name, amount.toString()],
         server,
       });
-
-      const newItem = await player.getItem(args.item_name);
-      item.quantity = newItem ? newItem.quantity : 0;
-      await updateEmbed();
-      await updateButtonRow();
-    }
-
-    // Sell item menu
-    async function sellMenu() {
-      // Update boolean
-      showingSellRow = true;
-      // Update original message
-      const { sellRow, sellButtons } = getSellRow();
-      await reply.edit({ components: [sellRow] });
-      await game.componentCollector({ message, reply, components: sellButtons });
-    }
-
-    // Get sell row and buttons
-    function getSellRow() {
-      const disable = item.quantity < 1 ? true : false;
-      const sellButtons: Button[] = [
-        {
-          id: "one",
-          label: "1",
-          style: "success",
-          disable: disable,
-          function: async () => {
-            return await sell();
-          },
-        },
-        {
-          id: "ten",
-          label: "10",
-          style: "success",
-          disable: item.quantity < 10 ? true : false,
-          function: async () => {
-            return await sell(10);
-          },
-        },
-        {
-          id: "hundred",
-          label: "100",
-          style: "success",
-          disable: item.quantity < 100 ? true : false,
-          function: async () => {
-            return await sell(100);
-          },
-        },
-        {
-          id: "all",
-          label: "All",
-          style: "success",
-          disable: disable,
-          function: async () => {
-            return await sell(item.quantity);
-          },
-        },
-        {
-          id: "return",
-          emoji: "↩",
-          function: async () => {
-            // Get initial action buttons
-            const { actionRow, actionButtons } = await getButtonRow();
-            await reply.edit({ components: [actionRow] });
-            await game.componentCollector({ message, reply, components: actionButtons });
-          },
-          stop: true,
-        },
-      ];
-      const sellRow = game.actionRow("buttons", sellButtons);
-
-      return { sellRow, sellButtons };
+      const { quantity } = await player.getItem(item.name);
+      item.quantity = quantity;
     }
 
     // Equip the item
@@ -283,20 +234,14 @@ export default {
         args: [item.name],
         server,
       });
-
-      player = await player.refresh();
-      await updateEmbed();
-      await updateButtonRow();
+      item = await player.getItem(item.name);
     }
 
     // Drink potion
     async function drink() {
       await game.runCommand("drink", { message, args: [item.name], server });
-
-      const newItem = await player.getItem(args.item_name);
-      item.quantity = newItem ? newItem.quantity : 0;
-      await updateEmbed();
-      await updateButtonRow();
+      const { quantity } = await player.getItem(item.name);
+      item.quantity = quantity;
     }
   },
 } as Command;

@@ -19,7 +19,7 @@ export const baseStats = {
   ATK: 10,
   MAG: 10,
   RES: 20,
-  "MAG RES": 20,
+  MAG_RES: 20,
   SPD: 80,
   CR: 10,
   CD: 40,
@@ -53,13 +53,28 @@ export const playerDefaultEntries = {
   skill: ["unarmed combat"],
 };
 
-export const stats = ["strength", "defence", "arcane", "vitality"];
+// Weapons and balancing
+export const weapons = {
+  sword: { ATK: 2, MAG: 0, RES: 1, SPD: 2 },
+  spear: { ATK: 3, MAG: 0, RES: 0, SPD: 2 },
+  staff: { ATK: 2, MAG: 0, RES: 0, SPD: 3 },
+  amplifier: { ATK: 0, MAG: 4, RES: 0, SPD: 1 },
+  axe: { ATK: 3, MAG: 0, RES: 1, SPD: 1 },
+  hammer: { ATK: 3, MAG: 0, RES: 2, SPD: 0 },
+  bow: { ATK: 1, MAG: 0, RES: 2, SPD: 2 },
+  shield: { ATK: 1, MAG: 0, RES: 4, SPD: 0 },
+  unarmed: { ATK: 1, MAG: 1, RES: 0, SPD: 3 },
+};
 
+// Player traits
+export const traits = ["strength", "defence", "arcane", "vitality"];
+// Possible equipment slots
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
-export const weaponTypes = ["sword", "axe", "bow", "spear", "rock"] as const;
+// Types of damage
 export const damageTypes = ["slashing", "piercing", "bludgeoning", "air", "earth", "fire", "water"] as const;
+// Types of shards
 export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] as const;
-export const attackTypes = ["unarmed", ...weaponTypes] as const;
+// Command categories
 export const commandCategories = [
   "general",
   "player",
@@ -71,6 +86,7 @@ export const commandCategories = [
   "other",
   "admin",
 ] as const;
+// Descriptions for command categories
 export const commandCategoryDescriptions = {
   general: "General commands.",
   player: "Commands relating to your character.",
@@ -85,7 +101,7 @@ export const commandCategoryDescriptions = {
 
 export const defaultAttackMessage = "ENEMY attacks PLAYER and deals DAMAGE";
 
-export const statInfo = {
+export const traitInfo = {
   strength: "Physical damage dealt `+1%`",
   defence: "Physical damage taken `-1%`",
   arcane: "Magical damage dealt `+1%`",
@@ -97,33 +113,80 @@ export const weakRate = 0.2;
 
 export const marksLostOnDeath = 0.8;
 
-// Player level formula
+// PLAYER LEVEL FORMULAS =======================================
+
+// Required XP for next player level.
 export const nextLevelXp = (lvl: number) => {
-  return 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
+  let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
+  if (lvl >= 90) v = 2 * Math.pow(lvl - 58, 2.9);
+  return Math.floor(v);
 };
 
-// Skill level formula
+// Required XP for next skill level.
 export const nextLevelXpSkill = (lvl: number) => {
-  return 5 * Math.pow(lvl, 2) + 20 * lvl + 100;
+  let v = 2 * Math.pow(lvl, 2) + 20 * lvl + 100;
+  if (lvl >= 90) v = 2 * Math.pow(lvl - 42, 2.5);
+  return Math.floor(v);
 };
 
-// Choose random entry from array
-export function getRandom(array: any[]) {
-  const random = Math.floor(Math.random() * array.length);
-  return array[random];
-}
+// Get ATK based on level.
+export const level_ATK = (lvl: number) => {
+  let v = 3 * lvl + Math.pow(lvl, 1.5);
+  return Math.floor(v);
+};
 
-// // Create area emoji description
-// export function description(area: any) {
-//   let description = "";
+// Get MAG based on level.
+export const level_MAG = (lvl: number) => {
+  let v = 3 * lvl + Math.pow(lvl, 1.5);
+  return Math.floor(v);
+};
 
-//   if (area.shop == true) description += emojis.shop;
-//   if (area.danger == true) description += emojis.danger;
-//   if (area.activities[0]) {
-//     area.activities.forEach((activity) => {
-//       description += emojis[activity];
-//     });
-//   }
+// Get maxHP based on level.
+export const level_maxHP = (lvl: number) => {
+  let v = lvl * 5 + Math.pow(lvl, 1.6);
+  return Math.floor(v);
+};
 
-//   return description;
-// }
+// Get RES based on level.
+export const level_RES = (lvl: number) => {
+  let v = lvl * 2 + Math.pow(lvl, 1.3);
+  return Math.floor(v);
+};
+
+// Get MAG RES based on level.
+export const level_MAG_RES = (lvl: number) => {
+  let v = lvl * 2 + Math.pow(lvl, 1.3);
+  return Math.floor(v);
+};
+
+// Get SPD based on level.
+export const level_SPD = (lvl: number) => {
+  let v = lvl / 4 + Math.pow(lvl, 1.5) / 50;
+  return Math.floor(v);
+};
+
+// WEAPON LEVEL FORMULAS =======================================
+
+// Get weapon ATK.
+export const weapon_ATK = (lvl: number, factor: number) => {
+  let v = (lvl * 5 + Math.pow(lvl, 1.8)) * 0.2 * factor;
+  return Math.floor(v);
+};
+
+// Get weapon MAG.
+export const weapon_MAG = (lvl: number, factor: number) => {
+  let v = (lvl * 5 + Math.pow(lvl, 1.8)) * 0.2 * factor;
+  return Math.floor(v);
+};
+
+// Get weapon RES
+export const weapon_RES = (lvl: number, factor: number) => {
+  let v = (lvl * 5 + Math.pow(lvl, 1.5)) * 0.2 * factor;
+  return Math.floor(v);
+};
+
+// Get weapon SPD
+export const weapon_SPD = (lvl: number, factor: number) => {
+  let v = (lvl / 2 + Math.pow(lvl, 1.5) / 20) * 0.2 * factor;
+  return Math.floor(v);
+};

@@ -2,16 +2,11 @@ import { game, prisma, playerFunctions } from "../../../tower.js";
 import PlayerClass from "../../../game/_classes/players.js";
 
 /** Get player. */
-export default async function getPlayer(args: {
-  message?: Message;
-  discordId?: string;
-  server: Server;
-}) {
+export default async function getPlayer(args: { message?: Message; discordId?: string; server: Server }) {
   const { message, discordId, server } = args;
 
   // Check if id provided
-  if (!args.message && !args.discordId)
-    throw new Error("Must provide either message or Discord id.");
+  if (!args.message && !args.discordId) throw new Error("Must provide either message or Discord id.");
 
   // Set player id
   const playerId = discordId ? discordId : message.author.id;
@@ -27,6 +22,7 @@ export default async function getPlayer(args: {
     include: {
       encounter: { include: { enemies: true, players: true } },
       party: { include: { players: { include: { user: true } } } },
+      passives: true,
       inventory: true,
     },
   });
@@ -40,7 +36,11 @@ export default async function getPlayer(args: {
   playerObj.user = user;
 
   // Create player class instance
-  const player: Player = new PlayerClass(playerObj);
+  let player: Player = new PlayerClass(playerObj);
+
+  // Fetch equipment
+  const equipment = await player.getEquipment();
+  player.equipment = equipment;
 
   return player;
 }

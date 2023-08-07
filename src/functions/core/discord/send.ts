@@ -23,7 +23,12 @@ export default async function send<B extends boolean = true>(args: {
   send?: B;
 }): Promise<B extends true ? Message : MessageOptions> {
   const { ping = false, reply = false, message, content, embeds, components, files, send = true } = args;
-  const channel = message ? message.channel : args.channel;
+  const channel = message?.channel || args?.channel;
+
+  if (!channel) {
+    console.log("> No channel provided.");
+    return;
+  }
 
   // Check if should reply to message
   const canReply = message?.author?.id == message?.user?.discordId;

@@ -6,25 +6,21 @@ export default {
   arguments: [{ name: "item", type: "playerOwnedItem", required: false }],
   description: "Check your current equipment or equip a new item.",
   category: "player",
-  async execute(message, args, player, server) {
-    const item = args.item as Item;
+  async execute(message, args: { item: Item }, player, server) {
+    const { item } = args;
 
     // If no arguments provided then give list of equipment
     if (!item) {
       let description = ``;
 
-      for (const eqSlot of ["hand", "head", "torso", "legs", "feet"]) {
+      for (const eqSlot of config.equipSlots) {
         const item = await player.getItem(player[eqSlot]);
         const key = game.titleCase(eqSlot);
-        const value = item ? `**${item.getName()}**` : "`         `";
+        const value = item ? `**${item.getName()}**` : "`              `";
         const emoji = item ? item.getEmoji() : " ";
-        description += `\n${key}: ${emoji} ${value}`;
+        description += `\n${key}: ${value} ${emoji}`;
 
         if (player[eqSlot]) {
-          if (item.damage)
-            description += ` | \`${item.damage}\`${
-              config.emojis.damage[item.damageType]
-            }`;
           //description += ` | *${item.description}*`;
         }
       }
@@ -36,11 +32,8 @@ export default {
 
     // Equip / unequip item
     else {
-      // If provided arguments for equipping
-
       // Check if item is equippable
-      if (!item.equipSlot)
-        return game.error({ message, content: "you can't equip this silly." });
+      if (!item.equipSlot) return game.error({ message, content: "you can't equip this silly." });
 
       // Get currently equipped item
       const equippedItem = await player.getEquipped(item.equipSlot);
@@ -59,7 +52,7 @@ export default {
         return game.send({
           message,
           reply: true,
-          content: `unequipped **${item.getName()}**`,
+          content: `Unequipped **${item.getName()}** ${item.getEmoji()}`,
         });
       }
 
@@ -86,14 +79,14 @@ export default {
         return game.send({
           message,
           reply: true,
-          content: `equipped **${item.getName()}** and unequipped **${equippedItem.getName()}**`,
+          content: `Equipped **${item.getName()}** ${item.getEmoji()} and unequipped **${equippedItem.getName()}** ${equippedItem.getEmoji()}`,
         });
       }
 
       return game.send({
         message,
         reply: true,
-        content: `equipped **${item.getName()}**`,
+        content: `Equipped **${item.getName()}** ${item.getEmoji()}`,
       });
     }
   },

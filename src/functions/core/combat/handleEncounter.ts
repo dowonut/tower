@@ -1,4 +1,4 @@
-import { TextChannel } from "discord.js";
+import { Interaction, TextChannel } from "discord.js";
 import { game, prisma, config } from "../../../tower.js";
 
 /** handleEncounter */
@@ -11,6 +11,8 @@ export default async function handleEncounter(args: {
 }) {
   const { players, enemies, channel } = args;
   let { encounter, turnOrder } = args;
+  // Handle edge cases
+  if (encounter.enemies.length < 1 || encounter.players.length < 1) return;
 
   const firstPlayer: Player = game.getNextPlayer(turnOrder);
 
@@ -34,7 +36,6 @@ export default async function handleEncounter(args: {
       {
         name: "selectAttack",
         rows: ["enemies", "attacks"],
-        message: "main",
       },
       {
         name: "enemyTurn",
@@ -100,14 +101,14 @@ export default async function handleEncounter(args: {
               id: "attack",
               label: "Attack",
               style: "primary",
-              emoji: config.emojis.traits.strength,
+              emoji: config.emojis.weapons.sword,
               board: "selectAttack",
             },
             {
               id: "magic",
               label: "Magic",
               style: "primary",
-              emoji: config.emojis.traits.arcane,
+              emoji: config.emojis.magic,
               function() {},
             },
             {
@@ -193,8 +194,6 @@ ${enemyName}${healthBar}
 ${turnOrderList}
 \`\`\``;
 
-          const partyPing = m.variables.players.map((x) => x.ping).join(" ");
-
           // Return with message
           return game.fastEmbed({
             message: m.botMessage,
@@ -205,7 +204,7 @@ ${turnOrderList}
             reply: false,
             thumbnail: image ? `attachment://${image.name}` : null,
             files: image ? [image] : [],
-            content: partyPing,
+            pingParty: true,
           });
         },
       },
@@ -233,26 +232,28 @@ ${turnOrderList}
   // Initiate encounter message
   // If player
   if (turnOrder[0].isPlayer) {
-    await menu.init("main", {
-      filter: (i) => {
-        return i.user.id == game.getNextPlayer(turnOrder).user.discordId;
-      },
-    });
+    await updateMenu("player", true);
   }
   // If enemy
   else {
     // Remove current player
     await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: null } });
-    await menu.init("enemyTurn");
+    await updateMenu("enemy", true);
     await enemyTurn(turnOrder[0] as Enemy);
   }
 
   // On player move
-  game.emitter.on("playerMove", (args: EmitterArgs) => {
+  game.emitter.on("playerMove", async (args: EmitterArgs) => {
     if (args.encounterId !== encounter.id) return;
+    const { attackMessage } = args;
+
+    // Send and store attack message
+    if (attackMessage) {
+      await sendAttackMessage(attackMessage);
+    }
 
     // Initiate next turn
-    nextTurn();
+    await nextTurn();
   });
 
   // FUNCTIONS ===============================================================================
@@ -282,19 +283,16 @@ ${turnOrderList}
       menu.player = player;
       // Update current player
       await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: player.id } });
-
-      menu.switchBoard("main", {
-        filter: (i) => {
-          return i.user.id == player.user.discordId;
-        },
-      });
+      // Refresh menu
+      await updateMenu("player");
     }
     // Handle enemy
     else {
       const enemy = nextEntity as Enemy;
       // Remove current player
       await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: null } });
-      menu.switchBoard("enemyTurn");
+      // Refresh menu
+      await updateMenu("enemy");
       // Execute enemy turn
       await enemyTurn(enemy);
     }
@@ -323,19 +321,38 @@ ${turnOrderList}
         attack,
         previousHealth: previousPlayerHealth,
       });
-      await game.send({ channel, reply: false, content: attackMessage });
+      await sendAttackMessage(attackMessage);
+
+      // Kill player
+      if (dead) {
+        const { newPlayer, marks, region } = await player.die();
+        player = newPlayer;
+        const { mark } = config.emojis;
+        const returnMessage = menu.variables.players.length > 1 ? `Returned to **${game.titleCase(region)}**` : ``;
+
+        const deathMessage = `
+        :skull_crossbones: ${player.ping} **you died!** :skull_crossbones:\n\`-20%\` ${mark} (Remaining: \`${marks}\`)\n${returnMessage}`;
+
+        await game.send({ channel, content: deathMessage, reply: true });
+      }
 
       // Next turn
-      nextTurn();
+      await nextTurn();
     }, game.random(2, 5) * 1000);
   }
 
   /** Exit combat. */
   async function exitCombat(reason: "allPlayersDead" | "allEnemiesDead") {
-    console.log(reason);
-    try {
-      menu.botMessage.delete();
-    } catch (err) {}
+    // Delete messages
+    setTimeout(async () => {
+      try {
+        menu.botMessage.delete();
+        const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
+        lastMessage.delete();
+      } catch (err) {}
+    }, 10000);
+
+    // Delete encounter
     await prisma.encounter.delete({ where: { id: encounter.id } });
 
     // Delete all enemies
@@ -347,22 +364,74 @@ ${turnOrderList}
       },
     });
 
+    // Send failure message
+    if (reason == "allPlayersDead") {
+      const title = `💀 Encounter Failed`;
+      const description = `All players died.`;
+      await game.fastEmbed({ channel, title, description, pingParty: true, player: menu.player });
+    }
+    // Send success message
+    else if (reason == "allEnemiesDead") {
+      const title = `🎉 All Enemies Slain`;
+      const description = ``;
+      await game.fastEmbed({ channel, title, description, pingParty: true, player: menu.player });
+    }
+
     // Update players
     for (const player of menu.variables.players) {
       // Kill player
       if (player.dead) {
-        const { marks, region } = await player.die();
-        const { mark } = config.emojis;
-
-        const deathMessage = `
-:skull_crossbones: ${
-          player.ping
-        } **you died!** :skull_crossbones:\n\`-20%\` ${mark} (Remaining: \`${marks}\`)\nReturned to \`${game.titleCase(
-          region
-        )}\``;
-
-        game.send({ channel, content: deathMessage, reply: true });
+        await player.update({ dead: false, health: player.maxHP });
       }
+    }
+  }
+
+  /** Send or update last attack message. */
+  async function sendAttackMessage(message: string) {
+    if (encounter.lastAttackMessageId) {
+      const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
+
+      setTimeout(async () => {
+        try {
+          await lastMessage.delete();
+        } catch (err) {}
+      }, 10000);
+    }
+
+    const botMsg = await game.send({ channel, reply: false, content: message });
+    encounter = await prisma.encounter.update({
+      where: { id: encounter.id },
+      data: { lastAttackMessageId: botMsg.id },
+      include: { players: true, enemies: true },
+    });
+  }
+
+  /** Update or initialise the encounter menu. */
+  async function updateMenu(next: "enemy" | "player", init: boolean = false) {
+    const menuFunction = init ? "init" : "switchBoard";
+
+    // Player
+    if (next == "player") {
+      // Define board
+      let board = "main";
+      if (menu.variables.enemies.length < 2) {
+        board = "enemySelected";
+        menu.variables.selectedEnemy = menu.variables.enemies[0].number;
+      }
+
+      // Define collector filter
+      const filter = (i: Interaction) => {
+        return i.user.id == menu.player.user.discordId;
+      };
+
+      // Update/create menu
+      await menu[menuFunction](board, {
+        filter,
+      });
+    }
+    // Enemy
+    else if (next == "enemy") {
+      await menu[menuFunction]("enemyTurn");
     }
   }
 }

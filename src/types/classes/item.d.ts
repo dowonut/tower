@@ -18,18 +18,8 @@ declare global {
    * Item data.
    */
   export type ItemAllData = {
-    /** Type of weapon */
-    weaponType: WeaponType;
     /** Health regained if consumable. */
     health: number;
-    /** Which slot the item is equippable to. */
-    equipSlot: EquipSlot;
-    /** Weapon base damage. */
-    damage: number;
-    /** Base tool sharpness. */
-    sharpness: number;
-    /** Weapon damage type. */
-    damageType: DamageType;
     /** Effects of item when consumed. */
     effects: {
       /** Type of effect. */
@@ -49,15 +39,33 @@ declare global {
     }[];
     /** Item to unlock when given. */
     recipeItem: string;
+    // MAP ================================================
     /** Dungeon unlocked by map. */
     dungeon: { name: string };
+    // WEAPONS =============================================
+    /** Weapon type. */
+    weaponType: WeaponType;
+    /** Which slot the item is equippable to. */
+    equipSlot: EquipSlot;
+    /** Weapon stats. */
+    stats?: WeaponStats;
+  };
+
+  /** Weapon specific stats. */
+  type WeaponStats = {
+    /** Optional base level. Default: 0. */
+    baseLevel?: number;
+    /** Optional base grade. Default: common. */
+    baseGrade?: ItemGrade;
+    /** Optional base materials. Default: steel. */
+    baseMaterials?: ItemMaterial[];
   };
 
   /** Item types and properties. */
   export type ItemTypes = {
     // Regular types
-    weapon: "weaponType" | "equipSlot" | "damage" | "damageType";
-    tool: "sharpness";
+    weapon: "weaponType" | "equipSlot" | "stats";
+    tool: undefined;
     food: "health";
     crafting: undefined;
     recipe: "recipeItem";
@@ -77,9 +85,7 @@ declare global {
   /**
    * Item base definition.
    */
-  export type ItemBase = Prisma.Inventory &
-    ItemDefaultData<ItemCategory> &
-    ItemAllData;
+  export type ItemBase = Prisma.Inventory & ItemDefaultData<ItemCategory> & ItemAllData;
 
   /**
    * Item class.

@@ -5,8 +5,9 @@ import { game, config } from "../../../tower.js";
  * Send an embed with the default bot formatting.
  */
 export default async function fastEmbed<T extends boolean = true>(args: {
-  message: Message;
-  player: Player;
+  message?: Message;
+  channel?: TextChannel;
+  player?: Player;
   /** Embed title. */
   title: string;
   /** Optional embed description. */
@@ -25,9 +26,12 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   thumbnail?: string;
   /** Optional message content. */
   content?: string;
+  /** Ping all members of the party in the message. Default: false. */
+  pingParty?: boolean;
 }): Promise<T extends true ? Message : MessageOptions> {
   const {
     message,
+    channel,
     player,
     title,
     embed = {},
@@ -38,13 +42,29 @@ export default async function fastEmbed<T extends boolean = true>(args: {
     description,
     thumbnail,
     fullSend = true,
-    content,
+    content = ``,
+    pingParty = false,
   } = args;
 
   const embedInfo: Embed = {
     title: `**${title}**`,
-    color: parseInt("0x" + player.user.embed_color),
   };
+  let fullContent = content;
+
+  // Player only features
+  if (player) {
+    // Embed color
+    embedInfo.color = parseInt("0x" + player.user.embed_color);
+
+    // Ping party members
+    if (pingParty && player.party) {
+      const pingText = player.party.players.map((x) => `<@${x.user.discordId}>`).join(" ");
+      fullContent = pingText + " " + content;
+    } else if (pingParty) {
+      const pingText = player.ping;
+      fullContent = pingText + " " + content;
+    }
+  }
 
   if (description) embedInfo.description = description;
   if (thumbnail) embedInfo.thumbnail = { url: thumbnail };
@@ -53,12 +73,13 @@ export default async function fastEmbed<T extends boolean = true>(args: {
 
   const messageOptions = {
     message,
+    channel,
     embeds: [finalEmbed],
     components,
     files,
     send,
     reply,
-    content,
+    content: fullContent,
   };
 
   if (!fullSend) return messageOptions as any;

@@ -2,7 +2,7 @@ export default {
   // Name of attack (lowercase)
   name: "headsmasher",
   // Type of attack (unarmed, sword, etc)
-  weaponType: ["rock"],
+  weaponType: ["hammer"],
   // Attack description shown in attack command
   description: "Brutally smash a rock against your enemy's head.",
   // Attack damages

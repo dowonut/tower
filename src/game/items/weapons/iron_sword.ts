@@ -1,9 +1,10 @@
 export default {
-  name: "iron sword",
+  name: "sturdy sword",
   category: "weapon",
   weaponType: "sword",
-  info: "A sturdy iron sword.",
+  info: "A sturdy steel sword.",
   equipSlot: "hand",
-  damageType: "slashing",
-  damage: 5,
+  stats: {
+    baseLevel: 3,
+  },
 } satisfies ItemData;

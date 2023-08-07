@@ -99,6 +99,7 @@ export default async function parseCommandArguments(options: {
             errorContent = `No item found with name **\`${input}\`**`;
             error();
           }
+          argsObject[argument.name] = playerItem;
           break;
 
         // Must be the name of an attack available to the player

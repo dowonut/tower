@@ -7,6 +7,10 @@ generator client {
   binaryTargets   = ["native"]
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
   provider = "postgres"
   url      = env("DATABASE_URL")
@@ -60,7 +64,7 @@ model Player {
   hand          String?
   // Stats
   strength      Int             @default(0)
-  defence       Int             @default(0)
+  defense       Int             @default(0)
   arcane        Int             @default(0)
   vitality      Int             @default(0)
   // Misc
@@ -119,9 +123,11 @@ model Inventory {
   equipped     Boolean       @default(false)
   crafted      Boolean       @default(false)
   nickname     String?
-  damage       Int?
-  damageType   String?
   enhancements Enhancement[]
+  // Equipment
+  level        Int           @default(0)
+  grade        String        @default("common")
+  materials    String[]      @default(["steel"])
 }
 
 // Item enhancements 
@@ -174,14 +180,16 @@ model Passive {
   id       Int    @id @default(autoincrement())
   player   Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId Int
-  source   String @default("skill")
-  name     String
+  /// Source of the passive. ("weapon", "consumable", etc)
+  source   String
+  /// Player stat to target. ("ATK", "MAG", etc)
   target   String
-  modifier String @default("multiply")
+  /// How to apply the value. ("flat" or "percent")
+  type     String @default("flat")
+  /// Value to apply.
   value    Int
+  /// How long the passive lasts, defined as combat turns.
   duration Int?
-
-  @@unique([playerId, source, name, target, modifier, value, duration])
 }
 
 // Enemy tracking
@@ -209,13 +217,14 @@ model enemyAttack {
 
 // Combat encounter
 model Encounter {
-  id               Int      @id @default(autoincrement())
-  players          Player[]
-  enemies          Enemy[]
-  turnsPassed      Int      @default(0)
-  currentPlayer    Int?
-  discordMessageId String?
-  discordChannelId String?
+  id                  Int      @id @default(autoincrement())
+  players             Player[]
+  enemies             Enemy[]
+  turnsPassed         Int      @default(0)
+  currentPlayer       Int?
+  discordMessageId    String?
+  discordChannelId    String?
+  lastAttackMessageId String?
 }
 
 // Player parties
