@@ -48,7 +48,6 @@ New trait points: ${f(levelUp)}
       if (stat == "maxHP") name = "HP";
       name = titleCase(name);
       const newStat = player.getBaseStat(stat);
-      console.log(newStat, value);
       if (newStat == value) continue;
       description += `\n\`${value} ${name}\` ${green_side_arrow} **\`${newStat} ${name}\`**`;
     }
