@@ -18,6 +18,6 @@ export default {
       content: `Gave **${args.quantity} XP** to ${player.ping}`,
     });
 
-    await player.giveXp({ amount: args.quantity, message });
+    await player.giveXP({ amount: args.quantity, message });
   },
 } as Command;

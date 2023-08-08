@@ -60,7 +60,7 @@ export default (async function (args: { enemy: Enemy; server: Server; message: M
   });
 
   // Give xp to player
-  const levelReply = await this.giveXp({ amount: xp, message });
+  const levelReply = await this.giveXP({ amount: xp, message });
 
   return { reply, levelReply };
 } satisfies PlayerFunction);

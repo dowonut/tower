@@ -28,7 +28,7 @@ export default {
   async execute(message, args: { player: Player; skill: Skill; amount: number }, player, server) {
     player = args.player;
 
-    await player.giveSkillXp({ skillName: args.skill.name, amount: args.amount, message });
+    await player.giveSkillXP({ skillName: args.skill.name, amount: args.amount, message });
 
     game.send({
       message,
