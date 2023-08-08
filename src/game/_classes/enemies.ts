@@ -138,6 +138,7 @@ export class EnemyClass extends EnemyBaseClass {
     const levelBonus = levelBonusFunction ? levelBonusFunction(this.level, this.type?.isBoss) : 0;
 
     const total = baseStat + levelBonus;
+
     return total;
   }
 

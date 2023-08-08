@@ -1,7 +1,7 @@
 import { game } from "../../tower.js";
 
 /** Get skill by name. */
-export default (async function (name: string) {
+export default (async function (name: string): Promise<Skill> {
   const skill = await this.fetch<Skill, string>({ key: "skill", name });
   return skill[0];
 } satisfies PlayerFunction);

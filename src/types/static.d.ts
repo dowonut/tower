@@ -31,7 +31,7 @@ declare global {
   /**
    * Player traits.
    */
-  export type PlayerTrait = "health" | "strength" | "defence" | "arcane" | "vitality";
+  export type PlayerTrait = (typeof config.traits)[number];
 
   /**
    * Player stats.
@@ -80,6 +80,9 @@ declare global {
 
   /** Item material types. */
   export type ItemMaterial = "steel";
+
+  /** Embed colors. */
+  export type EmbedColor = keyof typeof config.embedColors;
 }
 
 export {};

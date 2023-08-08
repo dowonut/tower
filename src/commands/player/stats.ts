@@ -12,16 +12,17 @@ export default {
     let title = `Stats`;
 
     for (let statName of Object.keys(config.baseStats) as PlayerStat[]) {
-      const { baseStat, levelBonus, weaponLevelBonus } = player.getStat(statName, true);
+      const baseStat = player.getBaseStat(statName);
+      const { weaponLevelBonus } = player.getStat(statName, true);
       let name: string = statName;
       if (statName == "maxHP") name = "HP";
       let percent = ``;
       if (["CR", "CD", "AR", "AD"].includes(name)) percent = `%`;
 
-      const base = baseStat + levelBonus + percent;
+      const base = baseStat;
       const weapon = "+" + weaponLevelBonus + percent;
 
-      description += `\n${name}: ${f(base)}`;
+      description += `\n${game.titleCase(name)}: ${f(base)}`;
 
       if (weaponLevelBonus) description += ` ${f(weapon)}`;
     }

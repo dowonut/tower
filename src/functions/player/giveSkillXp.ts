@@ -20,14 +20,10 @@ export default (async function (args: { skillName: string; amount: number; messa
   // Calculate xp required for next level
   let nextLevelXp = config.nextLevelXpSkill(skill.level);
 
-  console.log(skill.xp, nextLevelXp);
-
   // If level up
   for (let i = 0; skill.xp >= nextLevelXp; i++) {
     // Calculate remaining xp
     const newXp = skill.xp - nextLevelXp;
-
-    console.log("leveled up skill. new xp: ", newXp);
 
     // Update player data
     const updatedSkill = await prisma.skill.update({
@@ -38,7 +34,10 @@ export default (async function (args: { skillName: string; amount: number; messa
 
     // Send level up message
     const skillNameCase = game.titleCase(skill.name);
-    let levelMsg = `${config.emojis.level_up} Your **${skillNameCase}** skill has reached level ${game.f(skill.level)}`;
+    const { green_arrow } = config.emojis;
+    let levelMsg = `
+# ${green_arrow} Skill Level Up! ${green_arrow}
+Your **${skillNameCase}** skill has reached level ${game.f(skill.level)}`;
     let skillLevelMsg = ``;
 
     // Fetch data about skill and check if next level exists
@@ -50,7 +49,7 @@ export default (async function (args: { skillName: string; amount: number; messa
     }
 
     if (message) {
-      await game.send({ message, reply: true, content: `${levelMsg}\n\n${skillLevelMsg}` });
+      await game.fastEmbed({ message, reply: true, description: `${levelMsg}\n\n${skillLevelMsg}`, color: "green" });
     }
 
     // Get required xp for next level

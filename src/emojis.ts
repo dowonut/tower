@@ -1,7 +1,5 @@
 const emojis = {
   bullet: "<:bullet:1007341922479771648>",
-  green_bullet: "<:green_bullet:1010124816516382800>",
-  level_up: "<:level_up:1011353610610806865>",
   blank: "<:blank:1002523614345703424>",
   mark: "<:mark:1137785360005468322>",
   silver_mark: "<:silver_mark:986634284355969026>",
@@ -14,6 +12,10 @@ const emojis = {
   keyboard: "<:keyboard:1096550895375884338>",
   info: "<:info_solid:1041462395408752700>",
   magic: "<:magic:1137753181431009404>",
+  gold_arrow: "<:gold_arrow:1138473885457715230>",
+  green_arrow: "<:green_arrow:1138476227653533706>",
+  green_side_arrow: "<:green_side_arrow:1138477150362669086>",
+  side_arrow: "<:side_arrow:1138477540302921780>",
   weapons: {
     axe: "<:axe:1137354627361280081>",
     sword: "<:sword:1137355113648902144>",
@@ -29,7 +31,7 @@ const emojis = {
     strength: "<:strength:1137785050176430301>",
     vitality: "<:vitality:1137785051996770455>",
     arcane: "<:arcane:1137785038495293500>",
-    defence: "<:defence:1137785039871021056>",
+    defense: "<:defence:1137785039871021056>",
   },
   damage: {
     fire: "<:fire_damage:988863829146468352>",

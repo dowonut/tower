@@ -9,7 +9,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   channel?: TextChannel;
   player?: Player;
   /** Embed title. */
-  title: string;
+  title?: string;
   /** Optional embed description. */
   description?: string;
   /** Optional embed object to further customize message. */
@@ -28,6 +28,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   content?: string;
   /** Ping all members of the party in the message. Default: false. */
   pingParty?: boolean;
+  color?: EmbedColor;
 }): Promise<T extends true ? Message : MessageOptions> {
   const {
     message,
@@ -44,10 +45,11 @@ export default async function fastEmbed<T extends boolean = true>(args: {
     fullSend = true,
     content = ``,
     pingParty = false,
+    color,
   } = args;
 
   const embedInfo: Embed = {
-    title: `**${title}**`,
+    title: title ? `**${title}**` : undefined,
   };
   let fullContent = content;
 
@@ -64,6 +66,11 @@ export default async function fastEmbed<T extends boolean = true>(args: {
       const pingText = player.ping;
       fullContent = pingText + " " + content;
     }
+  }
+
+  // Override embed color
+  if (color) {
+    embedInfo.color = config.embedColors[color];
   }
 
   if (description) embedInfo.description = description;

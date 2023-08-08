@@ -68,7 +68,7 @@ model Player {
   arcane        Int             @default(0)
   vitality      Int             @default(0)
   // Misc
-  statpoints    Int             @default(0)
+  traitPoints   Int             @default(0)
   party         Party?          @relation(fields: [partyId], references: [id])
   partyId       Int?
   // Combat

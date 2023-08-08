@@ -44,12 +44,33 @@ export class PlayerClass extends PlayerBaseClass {
   getStat<T extends boolean = false>(
     stat: PlayerStat,
     verbose?: T
-  ): T extends false ? number : { baseStat: number; levelBonus: number; weaponLevelBonus: number } {
+  ): T extends false
+    ? number
+    : { [key in "baseStat" | "levelBonus" | "traitBonus" | "weaponLevelBonus" | "total"]: number } {
     const baseStat = config.baseStats[stat];
 
     // Get flat bonus from level
     const levelBonusFunction = config["level_" + stat];
     const levelBonus = levelBonusFunction ? levelBonusFunction(this.level) : 0;
+
+    // Get flat bonuses from traits
+    let trait = 0;
+    switch (stat) {
+      case "ATK":
+        trait = this.strength;
+        break;
+      case "MAG":
+        trait = this.arcane;
+        break;
+      case "RES":
+      case "MAG_RES":
+        trait = this.defense;
+        break;
+      case "maxHP":
+        trait = this.vitality;
+        break;
+    }
+    const traitBonus = Math.floor((baseStat + levelBonus) * (trait / 100));
 
     // Get flat bonuses from equipment
     let weaponLevelBonus = 0;
@@ -61,27 +82,34 @@ export class PlayerClass extends PlayerBaseClass {
       }
     }
 
-    const total = baseStat + levelBonus + weaponLevelBonus;
-    if (verbose) return { baseStat, levelBonus, weaponLevelBonus } as any;
+    const total = baseStat + levelBonus + traitBonus + weaponLevelBonus;
+    if (verbose) return { baseStat, levelBonus, traitBonus, weaponLevelBonus, total } as any;
     return total;
+  }
+
+  /** Get base stat. */
+  getBaseStat(stat: PlayerStat) {
+    const { baseStat, levelBonus, traitBonus } = this.getStat(stat, true);
+    return baseStat + levelBonus + traitBonus;
   }
 
   /** Get all stats. */
   getStats() {
-    const object = {
-      maxHP: this.maxHP,
-      ATK: this.ATK,
-      MAG: this.MAG,
-      RES: this.RES,
-      "MAG RES": this.MAG_RES,
-      SPD: this.SPD,
-      CR: this.CR,
-      CD: this.CD,
-      AR: this.AR,
-      AD: this.AD,
-      AGR: this.AGR,
-    };
+    let object: { [key in PlayerStat]?: number } = {};
+    for (const [stat, value] of Object.entries(config.baseStats)) {
+      const total = this.getStat(stat as PlayerStat);
+      object[stat] = total;
+    }
+    return object;
+  }
 
+  /** Get all base stats. */
+  getBaseStats() {
+    let object: { [key in PlayerStat]?: number } = {};
+    for (const [stat, value] of Object.entries(config.baseStats)) {
+      const total = this.getBaseStat(stat as PlayerStat);
+      object[stat] = total;
+    }
     return object;
   }
 

@@ -18,8 +18,8 @@ export const baseStats = {
   maxHP: 10,
   ATK: 10,
   MAG: 10,
-  RES: 20,
-  MAG_RES: 20,
+  RES: 10,
+  MAG_RES: 10,
   SPD: 80,
   CR: 10,
   CD: 40,
@@ -32,8 +32,8 @@ export const baseEnemyStats = {
   maxHP: 0,
   ATK: 10,
   MAG: 10,
-  RES: 20,
-  MAG_RES: 20,
+  RES: 10,
+  MAG_RES: 10,
   SPD: 80,
 };
 export const baseWeaponStats = {
@@ -82,7 +82,7 @@ export const weapons = {
 };
 
 // Player traits
-export const traits = ["strength", "defence", "arcane", "vitality"];
+export const traits = ["strength", "defense", "arcane", "vitality"] as const;
 // Possible equipment slots
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
 // Types of damage
@@ -117,10 +117,10 @@ export const commandCategoryDescriptions = {
 export const defaultAttackMessage = "ENEMY attacks PLAYER and deals DAMAGE";
 
 export const traitInfo = {
-  strength: "Physical damage dealt `+1%`",
-  defence: "Physical damage taken `-1%`",
-  arcane: "Magical damage dealt `+1%`",
-  vitality: "Max health `+1`",
+  strength: "Increases `ATK` by `+1%`",
+  defense: "Increases `RES` and `MAG RES` by `+1%`",
+  arcane: "Increases `MAG` by `+1%`",
+  vitality: "Increases `HP` by `+1%`",
 };
 
 export const strongRate = 0.2;
@@ -128,12 +128,18 @@ export const weakRate = 0.2;
 
 export const marksLostOnDeath = 0.8;
 
+export const embedColors = {
+  green: 0x00ff66,
+  gold: 0xf6cd26,
+  default: 0x2b2d31,
+};
+
 // PLAYER LEVEL FORMULAS =======================================
 
 // Required XP for next player level.
 export const nextLevelXp = (lvl: number) => {
   let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
-  if (lvl >= 90) v = 2 * Math.pow(lvl - 58, 2.9);
+  if (lvl >= 90) v = 5 * Math.pow(lvl - 79, 4);
   return Math.floor(v);
 };
 

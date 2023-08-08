@@ -236,5 +236,7 @@ export default {
       menu.variables.currentMerchant = merchant;
       menu.init("merchant");
     }
+
+    player.unlockCommands(message, ["buy"]);
   },
 } as Command;

@@ -11,14 +11,13 @@ export default {
   description: "Give xp to a player.",
   category: "admin",
   async execute(message, args, player, server) {
-    const toPlayer: Player = args.user;
+    player = args.user;
 
-    await toPlayer.giveXP({ amount: args.quantity, message, server });
-
-    const discordId = toPlayer.user.discordId;
-    game.send({
+    await game.send({
       message,
-      content: `Gave **${args.quantity} XP** to <@${discordId}>`,
+      content: `Gave **${args.quantity} XP** to ${player.ping}`,
     });
+
+    await player.giveXp({ amount: args.quantity, message });
   },
 } as Command;
