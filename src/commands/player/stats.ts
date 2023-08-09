@@ -12,6 +12,7 @@ export default {
     let title = `Stats`;
 
     for (let statName of Object.keys(config.baseStats) as PlayerStat[]) {
+      const { stats } = config.emojis;
       const baseStat = player.getBaseStat(statName);
       const { weaponLevelBonus } = player.getStat(statName, true);
       let name: string = statName;
@@ -22,7 +23,7 @@ export default {
       const base = baseStat;
       const weapon = "+" + weaponLevelBonus + percent;
 
-      description += `\n${game.titleCase(name)}: ${f(base)}`;
+      description += `\n${stats[statName]} ${game.titleCase(name)}: ${f(base)}`;
 
       if (weaponLevelBonus) description += ` ${f(weapon)}`;
     }

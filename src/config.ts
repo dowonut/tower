@@ -1,3 +1,5 @@
+import { default as allEmojis } from "./emojis.js";
+
 // This is the config file!
 export const prefix = "-";
 export const status = prefix + "help";
@@ -86,9 +88,24 @@ export const traits = ["strength", "defense", "arcane", "vitality"] as const;
 // Possible equipment slots
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
 // Types of damage
-export const damageTypes = ["slashing", "piercing", "bludgeoning", "air", "earth", "fire", "water"] as const;
+export const damageTypes = [
+  "slashing",
+  "piercing",
+  "bludgeoning",
+  "air",
+  "earth",
+  "fire",
+  "water",
+] as const;
 // Types of shards
-export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] as const;
+export const shardTypes = [
+  "grey",
+  "green",
+  "blue",
+  "red",
+  "pink",
+  "legendary",
+] as const;
 // Command categories
 export const commandCategories = [
   "general",
@@ -117,10 +134,10 @@ export const commandCategoryDescriptions = {
 export const defaultAttackMessage = "ENEMY attacks PLAYER and deals DAMAGE";
 
 export const traitInfo = {
-  strength: "Increases `ATK` by `+1%`",
-  defense: "Increases `RES` and `MAG RES` by `+1%`",
-  arcane: "Increases `MAG` by `+1%`",
-  vitality: "Increases `HP` by `+1%`",
+  strength: `Increases ${allEmojis.stats.ATK}\`ATK\` by \`+1%\``,
+  defense: `Increases ${allEmojis.stats.RES}\`RES\` and ${allEmojis.stats.MAG_RES}\`MAG RES\` by \`+1%\``,
+  arcane: `Increases ${allEmojis.stats.MAG}\`MAG\` by \`+1%\``,
+  vitality: `Increases ${allEmojis.stats.maxHP}\`HP\` by \`+1%\``,
 };
 
 export const strongRate = 0.2;

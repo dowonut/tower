@@ -26,7 +26,11 @@ export default {
                 disable: !hasPoints,
                 style: hasPoints ? "primary" : "secondary",
                 function: async () => {
-                  await game.runCommand("traitup", { message, server, args: [x] });
+                  await game.runCommand("traitup", {
+                    message,
+                    server,
+                    args: [x],
+                  });
                   m.refresh();
                 },
               };
@@ -41,15 +45,23 @@ export default {
             let description = ``;
             // Format embed description
             for (const trait of config.traits) {
-              description += `${config.emojis.traits[trait]} ${game.titleCase(trait)}: ${f(m.player[trait])} | *${
-                config.traitInfo[trait]
-              }*\n`;
+              description += `${config.emojis.traits[trait]} ${game.titleCase(
+                trait
+              )}: ${f(m.player[trait])} | ${config.traitInfo[trait]}\n`;
             }
             // Remind player of stat points
             if (m.player.traitPoints > 0)
-              description += `\n**You have ${f(m.player.traitPoints)} trait points available.**`;
+              description += `\n**You have ${f(
+                m.player.traitPoints
+              )} trait points available.**`;
             const title = `Traits`;
-            return game.fastEmbed({ message, player: m.player, fullSend: false, description, title });
+            return game.fastEmbed({
+              message,
+              player: m.player,
+              fullSend: false,
+              description,
+              title,
+            });
           },
         },
       ],
