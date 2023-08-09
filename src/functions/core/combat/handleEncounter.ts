@@ -1,5 +1,6 @@
 import { Interaction, TextChannel } from "discord.js";
 import { game, prisma, config } from "../../../tower.js";
+import { f } from "../index.js";
 
 /** handleEncounter */
 export default async function handleEncounter(args: {
@@ -80,7 +81,7 @@ export default async function handleEncounter(args: {
               emoji: "💨",
               function: async (r, i) => {
                 const response = await game.runCommand("flee", {
-                  discordId: i.user.id,
+                  discordId: m.player.user.discordId,
                   message: m.botMessage,
                   server: m.player.server,
                 });
@@ -126,6 +127,11 @@ export default async function handleEncounter(args: {
         type: "buttons",
         async components(m) {
           const attacks = await m.player.getAttacks({ onlyAvailable: true });
+          if (!attacks[0])
+            return [
+              { id: "noAttacks", label: "No attacks available...", disable: true },
+              { id: "return", board: "enemySelected" },
+            ];
           return attacks.map((x) => {
             return {
               id: x.name,
@@ -289,6 +295,12 @@ ${turnOrderList}
     // Handle enemy
     else {
       const enemy = nextEntity as Enemy;
+
+      // Skip enemy if dead
+      if (enemy.dead) {
+        return nextTurn();
+      }
+
       // Remove current player
       await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: null } });
       // Refresh menu
@@ -323,16 +335,9 @@ ${turnOrderList}
       });
       await sendAttackMessage(attackMessage);
 
-      // Kill player
-      if (dead) {
-        const { newPlayer, marks, region } = await player.die();
-        player = newPlayer;
-        const { mark } = config.emojis;
-        const returnMessage = menu.variables.players.length > 1 ? `Returned to **${game.titleCase(region)}**` : ``;
-
-        const deathMessage = `
-        :skull_crossbones: ${player.ping} **you died!** :skull_crossbones:\n\`-20%\` ${mark} (Remaining: \`${marks}\`)\n${returnMessage}`;
-
+      // Send player death message
+      if (dead && menu.variables.players.length > 1) {
+        const deathMessage = `:skull: ${player.ping} **has died!**`;
         await game.send({ channel, content: deathMessage, reply: true });
       }
 
@@ -364,25 +369,74 @@ ${turnOrderList}
       },
     });
 
-    // Send failure message
-    if (reason == "allPlayersDead") {
-      const title = `💀 Encounter Failed`;
-      const description = `All players died.`;
-      await game.fastEmbed({ channel, title, description, pingParty: true, player: menu.player });
-    }
-    // Send success message
-    else if (reason == "allEnemiesDead") {
-      const title = `🎉 All Enemies Slain`;
-      const description = ``;
-      await game.fastEmbed({ channel, title, description, pingParty: true, player: menu.player });
-    }
+    let players = menu.variables.players;
+    let playerLoot: Item[][] = [];
+    let playerXP: number[] = [];
+    const { star, red_x, mark } = config.emojis;
 
     // Update players
-    for (const player of menu.variables.players) {
+    for (const [i, player] of players.entries()) {
       // Kill player
       if (player.dead) {
-        await player.update({ dead: false, health: player.maxHP });
+        const { marks, region, newPlayer } = await player.die();
+        players[i] = newPlayer;
       }
+      if (reason == "allEnemiesDead") {
+        const { xp, loot } = await player.giveEnemyLoot({ enemies: menu.variables.enemies });
+        playerLoot[i] = loot;
+        playerXP[i] = xp;
+      }
+    }
+
+    // Send failure message
+    if (reason == "allPlayersDead") {
+      let description = `# ${red_x} Encounter Failed ${red_x}`;
+      // Solo
+      if (players.length < 2) {
+        const player = players[0];
+        description += `\nYou have died...\n${f(`-20%`)} ${mark} (Remaining: ${f(player.marks)})\nReturned to ${f(
+          player.region
+        )}`;
+      }
+      // With party
+      else {
+        description += `\nAll players have died...\nAll players ${f(`-20%`)} ${mark}`;
+        for (const player of players) {
+          description += `\n${player.ping} returned to ${f(player.region)}`;
+        }
+      }
+      await game.fastEmbed({ channel, description, pingParty: true, player: menu.player, color: "red" });
+    }
+
+    // Send success message
+    else if (reason == "allEnemiesDead") {
+      let description = `# ${star} Victory ${star}`;
+      // Add reward info for solo
+      if (players.length < 2) {
+        for (const loot of playerLoot[0] as Item[]) {
+          description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
+        }
+        description += `\n${f("+" + playerXP[0])} **XP**`;
+      }
+      await game.fastEmbed({ channel, description, pingParty: true, player: players[0], color: "gold" });
+
+      // Send individiual reward messages
+      if (players.length > 1) {
+        for (const [i, player] of players.entries()) {
+          const title = `${player.user.username}'s Loot`;
+          let description = ``;
+          for (const loot of playerLoot[i] as Item[]) {
+            description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
+          }
+          description += `\n${f("+" + playerXP[i])} **XP**`;
+          await game.fastEmbed({ channel, description, title, reply: true, color: "gold", player });
+        }
+      }
+    }
+
+    // Give player XP
+    for (const [i, player] of players.entries()) {
+      if (playerXP[i]) await player.giveXP({ amount: playerXP[i], message: menu.botMessage });
     }
   }
 

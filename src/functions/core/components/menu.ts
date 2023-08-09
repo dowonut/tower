@@ -70,7 +70,7 @@ export default class Menu<T> extends MenuBase<T> {
       // messageOptions = await board.message();
     }
     const { messageComponents, components } = await this.getComponents(board);
-    this.botMessage.edit({ ...messageOptions, components: messageComponents });
+    this.botMessage.edit({ ...messageOptions, components: messageComponents || [] });
     this.createCollector(components);
   }
 

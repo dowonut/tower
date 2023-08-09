@@ -1,13 +1,9 @@
 import { client, prisma } from "../../../tower.js";
 
 /** Get a user. */
-export default async function getUser(args: {
-  message?: Message;
-  discordId?: string;
-}) {
+export default async function getUser(args: { message?: Message; discordId?: string }) {
   // Check if id provided
-  if (!args.message && !args.discordId)
-    throw new Error("Must provide either message or id.");
+  if (!args.message && !args.discordId) throw new Error("Must provide either message or id.");
 
   const playerId = args.discordId ? args.discordId : args.message.author.id;
 
@@ -22,6 +18,16 @@ export default async function getUser(args: {
     user = await prisma.user.update({
       where: { id: user.id },
       data: { username: discordUser.username },
+    });
+  }
+  const avatar = discordUser.displayAvatarURL({
+    size: 128,
+    extension: "png",
+  });
+  if (avatar !== user.pfp) {
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { pfp: avatar },
     });
   }
 

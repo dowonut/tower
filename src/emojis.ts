@@ -16,6 +16,8 @@ const emojis = {
   green_arrow: "<:green_arrow:1138476227653533706>",
   green_side_arrow: "<:green_side_arrow:1138477150362669086>",
   side_arrow: "<:side_arrow:1138477540302921780>",
+  red_x: "<:x_:1138786810584125440>",
+  star: "<:star:1138789465675026472>",
   weapons: {
     axe: "<:axe:1137354627361280081>",
     sword: "<:sword:1137355113648902144>",

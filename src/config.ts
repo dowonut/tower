@@ -88,24 +88,9 @@ export const traits = ["strength", "defense", "arcane", "vitality"] as const;
 // Possible equipment slots
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
 // Types of damage
-export const damageTypes = [
-  "slashing",
-  "piercing",
-  "bludgeoning",
-  "air",
-  "earth",
-  "fire",
-  "water",
-] as const;
+export const damageTypes = ["slashing", "piercing", "bludgeoning", "air", "earth", "fire", "water"] as const;
 // Types of shards
-export const shardTypes = [
-  "grey",
-  "green",
-  "blue",
-  "red",
-  "pink",
-  "legendary",
-] as const;
+export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] as const;
 // Command categories
 export const commandCategories = [
   "general",
@@ -149,6 +134,7 @@ export const embedColors = {
   green: 0x00ff66,
   gold: 0xf6cd26,
   default: 0x2b2d31,
+  red: 0xff1d1d,
 };
 
 // PLAYER LEVEL FORMULAS =======================================
@@ -233,7 +219,7 @@ export const weapon_SPD = (lvl: number, factor: number) => {
 
 // Get XP dropped by enemy.
 export const enemy_XP = (lvl: number, boss = false) => {
-  let v = 5 * (Math.pow(lvl, 2) / 30) + 20;
+  let v = 5 * (Math.pow(lvl, 2) / 30);
   return Math.floor(v);
 };
 
@@ -244,13 +230,13 @@ export const enemy_maxHP = (lvl: number, boss = false) => {
   return Math.floor(v);
 };
 
-// Get enemy HP.
+// Get enemy ATK.
 export const enemy_ATK = (lvl: number, boss = false) => {
   let v = Math.pow(lvl, 1.5) + lvl;
   return Math.floor(v);
 };
 
-// Get enemy HP.
+// Get enemy MAG.
 export const enemy_MAG = (lvl: number, boss = false) => {
   let v = Math.pow(lvl, 1.5) + lvl;
   return Math.floor(v);

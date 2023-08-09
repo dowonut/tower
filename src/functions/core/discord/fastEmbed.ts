@@ -66,6 +66,8 @@ export default async function fastEmbed<T extends boolean = true>(args: {
       const pingText = player.ping;
       fullContent = pingText + " " + content;
     }
+
+    if (message) message.user = player.user;
   }
 
   // Override embed color

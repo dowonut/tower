@@ -9,6 +9,8 @@ export default (async function () {
   const newRegion = game.getFloor(this.floor).regions[0].name;
 
   const player = await this.update({
+    dead: false,
+    health: this.maxHP,
     marks: newMarks,
     region: newRegion,
   });

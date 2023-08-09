@@ -64,6 +64,7 @@ export class ItemClass extends ItemBaseClass {
 
   /** Get detailed description. */
   getDescription() {
+    const { ATK, MAG, RES, SPD } = config.emojis.stats;
     let text = ``;
     if (this.info) text += `*${this.info}*\n`;
     text += `\nCategory: ${f(this.category)}`;
@@ -71,7 +72,7 @@ export class ItemClass extends ItemBaseClass {
     // Weapon
     if (this.category == "weapon") {
       text += `\nWeapon Type: ${f(this.weaponType)}`;
-      text += `\n\nATK: ${f(this.ATK)} | MAG: ${f(this.MAG)} | RES: ${f(this.RES)} | SPD: ${f(this.SPD)}`;
+      text += `\n\n${ATK} ${f(this.ATK)} | ${MAG} ${f(this.MAG)} | ${RES} ${f(this.RES)} | ${SPD} ${f(this.SPD)}`;
     }
 
     return text;

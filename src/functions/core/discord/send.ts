@@ -43,6 +43,8 @@ export default async function send<B extends boolean = true>(args: {
   // Format message content for pings
   if (!canReply && content && reply) {
     messageObject.content = `<@${message.user.discordId}>, ` + content.charAt(0).toLowerCase() + content.slice(1);
+  } else if (!canReply && reply) {
+    messageObject.content = `<@${message.user.discordId}>`;
   }
 
   // Add components

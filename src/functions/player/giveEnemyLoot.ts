@@ -1,66 +1,33 @@
 import { game } from "../../tower.js";
 
-/** Give loot from enemy to player. */
-export default (async function (args: { enemy: Enemy; server: Server; message: Message }) {
-  const { enemy, server, message } = args;
+/** Get loot from an enemy. */
+export default (async function (args: { enemies: Enemy[] }) {
+  const { enemies } = args;
   let loots: Item[] = [];
+  let totalXP = 0;
 
-  for (const loot of enemy.loot) {
-    const chance = Math.random() * 100;
-    if (chance <= loot.dropChance) {
-      const quantity = game.random(loot.min, loot.max);
+  for (const enemy of enemies) {
+    if (!enemy.dead) continue;
+    let enemyLoot = [];
+    if (enemy.loot) enemyLoot.push(...enemy.loot);
+    if (enemy.type.loot) enemyLoot.push(...enemy.type.loot);
+    // Get loot
+    for (const loot of enemyLoot) {
+      const chance = Math.random() * 100;
+      if (chance <= loot.dropChance) {
+        const quantity = game.random(loot.min, loot.max);
 
-      this.giveItem(loot.name, quantity);
-      let item = game.getItem(loot.name);
-      item.quantity = quantity;
-      loots.push(item);
+        await this.giveItem(loot.name, quantity);
+        let item = game.getItem(loot.name);
+        item.quantity = quantity;
+        loots.push(item);
+      }
     }
+    // Get XP
+    const xp = enemy.XP;
+    totalXP += xp;
+    console.log(xp, totalXP);
   }
 
-  // Get xp from enemy kill
-  let xp = enemy.XP;
-
-  let lootList = ``;
-  for (const item of loots) {
-    lootList += `\n${item.getEmoji()} **${item.getName()}**`;
-    if (item.quantity > 1) lootList += ` \`x${item.quantity}\``;
-  }
-
-  // Check if enemy dropped shard
-  if (enemy.shard) {
-    const chance = Math.random() * 100;
-    if (chance <= enemy.shard.dropChance) {
-      const shardName = `${enemy.shard.type} shard`;
-      const shard = game.getItem(shardName);
-
-      this.giveItem(shardName);
-      lootList += `\n+ ${shard.getEmoji()} **${shard.getName()}**`;
-    }
-  }
-
-  lootList += `\n\n\`+${xp} XP\``;
-  lootList += `\n${game.levelProgress(this, xp)}`;
-
-  const embed = {
-    description: lootList,
-  };
-
-  // Send death message
-  await game.send({
-    message,
-    reply: true,
-    content: `you killed **${enemy.getName()}** :skull:`,
-  });
-  const reply = await game.fastEmbed({
-    message,
-    player: this,
-    embed,
-    title: `Loot from ${enemy.getName()}`,
-    send: true,
-  });
-
-  // Give xp to player
-  const levelReply = await this.giveXP({ amount: xp, message });
-
-  return { reply, levelReply };
+  return { xp: totalXP, loot: loots };
 } satisfies PlayerFunction);
