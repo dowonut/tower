@@ -29,7 +29,6 @@ export default {
     const { f } = game;
 
     const menu = new game.Menu({
-      message,
       player,
       variables: { currentSkill: skill as Skill },
       boards: [
@@ -99,7 +98,7 @@ export default {
 
             const title = `Skills`;
 
-            return game.fastEmbed({ fullSend: false, reply: true, description, title, message, player });
+            return game.fastEmbed({ fullSend: false, reply: true, description, title, player });
           },
         },
         // Show specific skill
@@ -131,7 +130,7 @@ ${progress}`;
 ${skill.getRewardInfo(skill.level + i)}`;
             }
 
-            return game.fastEmbed({ fullSend: false, reply: true, description, title, message, player });
+            return game.fastEmbed({ fullSend: false, reply: true, description, title, player });
           },
         },
       ],

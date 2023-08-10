@@ -1,13 +1,13 @@
 import { game, prisma } from "../../tower.js";
 
 /** Exit combat. */
-export default (async function (message: Message) {
+export default (async function () {
   // Handle party
   if (this.party) {
     if (this.party.leader !== this.id)
       return game.error({
-        message,
-        content: `Only the party leader can leave combat.`,
+        player: this,
+        content: `only the party leader can leave combat.`,
       });
     // Disconnect all party members from encounter
     await prisma.encounter.update({

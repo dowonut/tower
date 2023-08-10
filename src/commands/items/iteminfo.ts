@@ -16,12 +16,11 @@ export default {
     // Check if item exists
     if (!item)
       return game.error({
-        message,
+        player,
         content: `not a valid item.\nCheck your items with \`${server.prefix}inventory\``,
       });
 
     const menu = new game.Menu({
-      message,
       player,
       boards: [
         { name: "main", rows: ["main"], message: "main" },
@@ -191,7 +190,7 @@ export default {
                 url: `attachment://${file.name}`,
               };
 
-            return game.fastEmbed({ message, player, embed, title, files, fullSend: false });
+            return game.fastEmbed({ player, embed, title, files, fullSend: false });
           },
         },
       ],
@@ -200,7 +199,7 @@ export default {
     menu.init("main");
 
     // Unlock commands
-    player.unlockCommands(message, ["sell", "eat", "drink"]);
+    player.unlockCommands(["sell", "eat", "drink"]);
 
     // FUNCTIONS ===============================================================
 

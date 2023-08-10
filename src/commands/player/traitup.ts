@@ -33,7 +33,7 @@ export default {
     // Check if has quantity
     if (amount > player.traitPoints)
       return game.error({
-        message,
+        player,
         content: "you don't have enough trait points to do that.",
       });
 
@@ -47,12 +47,12 @@ export default {
 
     // Send trait up message
     game.send({
-      message,
+      player,
       reply: true,
       content: `Increased ${config.emojis.traits[trait]} **${traitName}** to ${game.f(player[trait])}`,
     });
 
     // Unlock breakdown command
-    player.unlockCommands(message, ["breakdown"]);
+    player.unlockCommands(["breakdown"]);
   },
 } satisfies Command;

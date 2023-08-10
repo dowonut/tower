@@ -10,12 +10,12 @@ export default {
   async execute(message, args, player, server) {
     if (!player.isPartyLeader)
       return game.error({
-        message,
+        player,
         content: `you're not the party leader silly.`,
       });
     if (!player.party.players.some((x) => x.id == args.player.id))
       return game.error({
-        message,
+        player,
         content: `this player is not in your party.`,
       });
 
@@ -25,7 +25,7 @@ export default {
     });
 
     game.send({
-      message,
+      player,
       reply: true,
       content: `Transferred party ownership to <@${args.player.user.discordId}> 👑`,
     });

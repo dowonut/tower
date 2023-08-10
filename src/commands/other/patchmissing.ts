@@ -10,7 +10,7 @@ export default {
 
     if (patches.length < 1) {
       return game.send({
-        message,
+        player,
         reply: true,
         content: `Nothing to patch 👍`,
       });
@@ -19,7 +19,7 @@ export default {
     let text = patches.map((x) => `\`${x}\``).join("\n");
 
     game.send({
-      message,
+      player,
       reply: true,
       content: `**Patched missing values:**\n${text}`,
     });

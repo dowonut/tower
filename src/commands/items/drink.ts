@@ -11,8 +11,7 @@ export default {
   async execute(message, args, player, server) {
     const item = await player.getItem(args.item);
 
-    if (item.category !== "potion")
-      return game.error({ message, content: `you can't drink this idiot.` });
+    if (item.category !== "potion") return game.error({ player, content: `you can't drink this idiot.` });
 
     // Iterate through item effects
     let effectMessage = ``;
@@ -51,6 +50,6 @@ export default {
     let drinkMessage = `you drank **${item.getName()}** ${item.getEmoji()}`;
     drinkMessage += `${effectMessage}`;
 
-    await game.send({ message, content: drinkMessage, reply: true });
+    await game.send({ player, content: drinkMessage, reply: true });
   },
 } satisfies Command;

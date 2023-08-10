@@ -27,13 +27,13 @@ export default {
 
       const title = `Equipment`;
 
-      game.fastEmbed({ message, title, description, player });
+      game.fastEmbed({ title, description, player });
     }
 
     // Equip / unequip item
     else {
       // Check if item is equippable
-      if (!item.equipSlot) return game.error({ message, content: "you can't equip this silly." });
+      if (!item.equipSlot) return game.error({ player, content: "you can't equip this silly." });
 
       // Get currently equipped item
       const equippedItem = await player.getEquipped(item.equipSlot);
@@ -50,7 +50,7 @@ export default {
         });
 
         return game.send({
-          message,
+          player,
           reply: true,
           content: `Unequipped **${item.getName()}** ${item.getEmoji()}`,
         });
@@ -77,14 +77,14 @@ export default {
         });
 
         return game.send({
-          message,
+          player,
           reply: true,
           content: `Equipped **${item.getName()}** ${item.getEmoji()} and unequipped **${equippedItem.getName()}** ${equippedItem.getEmoji()}`,
         });
       }
 
       return game.send({
-        message,
+        player,
         reply: true,
         content: `Equipped **${item.getName()}** ${item.getEmoji()}`,
       });

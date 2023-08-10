@@ -5,8 +5,7 @@ import { game, config } from "../../../tower.js";
  * Send an embed with the default bot formatting.
  */
 export default async function fastEmbed<T extends boolean = true>(args: {
-  message?: Message;
-  channel?: TextChannel;
+  /** Player object. */
   player?: Player;
   /** Embed title. */
   title?: string;
@@ -14,7 +13,9 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   description?: string;
   /** Optional embed object to further customize message. */
   embed?: Embed;
+  /** Optional components. */
   components?: any[];
+  /** Optional files. */
   files?: any[];
   /** Send the message or return object with message create options. Default: true. */
   send?: T;
@@ -28,11 +29,11 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   content?: string;
   /** Ping all members of the party in the message. Default: false. */
   pingParty?: boolean;
+  /** Whether to ping the user or not. Default: false. */
+  ping?: boolean;
   color?: EmbedColor;
 }): Promise<T extends true ? Message : MessageOptions> {
   const {
-    message,
-    channel,
     player,
     title,
     embed = {},
@@ -45,6 +46,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
     fullSend = true,
     content = ``,
     pingParty = false,
+    ping = false,
     color,
   } = args;
 
@@ -53,21 +55,16 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   };
   let fullContent = content;
 
-  // Player only features
-  if (player) {
-    // Embed color
-    embedInfo.color = parseInt("0x" + player.user.embed_color);
+  // Embed color
+  embedInfo.color = parseInt("0x" + player.user.embed_color);
 
-    // Ping party members
-    if (pingParty && player.party) {
-      const pingText = player.party.players.map((x) => `<@${x.user.discordId}>`).join(" ");
-      fullContent = pingText + " " + content;
-    } else if (pingParty) {
-      const pingText = player.ping;
-      fullContent = pingText + " " + content;
-    }
-
-    if (message) message.user = player.user;
+  // Ping party members
+  if (pingParty && player.party) {
+    const pingText = player.party.players.map((x) => `<@${x.user.discordId}>`).join(" ");
+    fullContent = pingText + " " + content;
+  } else if (pingParty) {
+    const pingText = player.ping;
+    fullContent = pingText + " " + content;
   }
 
   // Override embed color
@@ -81,13 +78,13 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   const finalEmbed: Embed = { ...embed, ...embedInfo };
 
   const messageOptions = {
-    message,
-    channel,
+    player,
     embeds: [finalEmbed],
     components,
     files,
     send,
     reply,
+    ping,
     content: fullContent,
   };
 

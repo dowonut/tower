@@ -61,56 +61,16 @@ ${floorE} ${f(floor)} | ${f(region)}`;
     let sentInventory = false;
     let sentEquipment = false;
 
-    // Get buttons for inventory and equipment
-    const buttons = getButtons();
-    const row = game.actionRow("buttons", buttons);
-
     // Send embed
-    const reply = await game.send({
-      message,
+    const botMessage = await game.send({
+      player,
       embeds: [embed],
-      components: [row],
     });
 
-    // Create collector
-    game.componentCollector({ message, reply, components: buttons });
-
-    // Function to get buttons
-    function getButtons() {
-      const buttons: Button[] = [
-        {
-          id: "inventory",
-          label: "Inventory",
-          disable: !playerIsAuthor || sentInventory ? true : false,
-          function: () => {
-            sentInventory = true;
-            updateButtons();
-            return game.runCommand("inventory", { message, server });
-          },
-        },
-        {
-          id: "equipment",
-          label: "Equipment",
-          disable: !playerIsAuthor || sentEquipment ? true : false,
-          function: () => {
-            sentEquipment = true;
-            updateButtons();
-            return game.runCommand("equipment", { message, server });
-          },
-        },
-      ];
-      return buttons;
-    }
-
-    // Function to update buttons
-    function updateButtons() {
-      const buttons = getButtons();
-
-      const row = game.actionRow("buttons", buttons);
-
-      if (!row || !reply) return;
-
-      reply.edit({ components: [row] });
-    }
+    await game.commandButton({
+      player,
+      botMessage,
+      commands: [{ name: "inventory" }, { name: "equipment" }],
+    });
   },
 } as Command;

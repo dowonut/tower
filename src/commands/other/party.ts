@@ -9,13 +9,12 @@ export default {
   async execute(message, args, player, server) {
     if (!player.party)
       return game.error({
-        message,
+        player,
         content: `you're not in a party. Create a party by inviting someone with \`${server.prefix}invite <player>\``,
       });
     const partyId = player.party.id;
 
     const menu = new game.Menu({
-      message,
       player,
       boards: [{ name: "list", rows: ["options"], message: "list" }],
       rows: [
@@ -29,11 +28,7 @@ export default {
                 label: "Invite Player",
                 emoji: "✉️",
                 disable:
-                  m.player.isPartyLeader &&
-                  m.player.party.players.length < 4 &&
-                  !m.player.inCombat
-                    ? false
-                    : true,
+                  m.player.isPartyLeader && m.player.party.players.length < 4 && !m.player.inCombat ? false : true,
                 style: "primary",
                 modal: {
                   id: "player",
@@ -60,8 +55,7 @@ export default {
               {
                 id: "disband",
                 label: "Disband",
-                disable:
-                  m.player.isPartyLeader && !m.player.inCombat ? false : true,
+                disable: m.player.isPartyLeader && !m.player.inCombat ? false : true,
                 function: async (r, i) => {
                   const response = await game.runCommand("disbandparty", {
                     discordId: i.user.id,
@@ -102,6 +96,7 @@ export default {
               const player = await game.getPlayer({
                 discordId: party.players[i].user.discordId,
                 server,
+                channel: m.player.getChannel(),
               });
               let emoji = ``;
               if (party.leader == player.id) emoji = "👑";
@@ -117,7 +112,6 @@ export default {
             return await game.fastEmbed({
               fullSend: false,
               reply: true,
-              message: m.message,
               player: m.player,
               description,
               title: `Party (\`${party.players.length}/4\`)`,

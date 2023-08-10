@@ -30,7 +30,7 @@ export default {
     }
 
     await game.send({
-      message,
+      player,
       reply: true,
       content: `You left the party... 👋`,
     });

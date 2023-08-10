@@ -20,19 +20,19 @@ export default {
       // Check party size
       if (player.party && player.party.players.length >= 4)
         return game.error({
-          message,
+          player,
           content: `you can't have more than **4 players** in a party.`,
         });
       // Check if invitee is already in the party
       if (player.party && player.party.players.some((x) => x.id == invitee.id))
         return game.error({
-          message,
+          player,
           content: `<@${invitee.user.discordId}> is already in the party.`,
         });
       // Check if inviting self
       if (invitee.id == player.id)
         return game.error({
-          message,
+          player,
           content: `you can't invite yourself to a party...`,
         });
       // Check if invited the same person twice
@@ -71,14 +71,14 @@ export default {
 
       // Send invite message
       const botMsg = await game.send({
-        message,
+        player,
         components: [row],
         content: `<@${invitee.user.discordId}>, you've been invited to join <@${player.user.discordId}>'s party. **Accept?**`,
       });
 
       game.componentCollector({
-        message,
-        reply: botMsg,
+        player,
+        botMessage: botMsg,
         components: buttons,
         options: {
           filter: (i) => i.user.id == invitee.user.discordId,
@@ -97,12 +97,12 @@ export default {
       // Check things again
       if (player.party && player.party.players.length >= 4)
         return game.error({
-          message,
+          player,
           content: `you can't have more than **4 players** in a party.`,
         });
       if (player.party && player.party.players.some((x) => x.id == invitee.id))
         return game.error({
-          message,
+          player,
           content: `<@${invitee.user.discordId}> is already in the party.`,
         });
 
@@ -112,7 +112,6 @@ export default {
       });
       // Delete previous party if leaving
       if (invitee.party && invitee.party.players.length <= 2) {
-        console.log("deleting old party");
         await prisma.party.delete({ where: { id: invitee.party.id } });
       }
     }
@@ -125,6 +124,6 @@ export default {
     }
 
     // Unlock new commands
-    player.unlockCommands(message, ["party", "disbandparty", "leaveparty", "setpartyowner", "kick"]);
+    player.unlockCommands(["party", "disbandparty", "leaveparty", "setpartyowner", "kick"]);
   },
 } satisfies Command;

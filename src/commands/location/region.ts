@@ -32,10 +32,7 @@ export default {
         for (const value of region[key]) {
           let name = value.name ? value.name : value.category;
 
-          let emoji =
-            config.emojis[key] && config.emojis[key][name]
-              ? config.emojis[key][name]
-              : ``;
+          let emoji = config.emojis[key] && config.emojis[key][name] ? config.emojis[key][name] : ``;
 
           if (exploredArr.includes(name) || key == "activities") {
             if (key == "merchants") {
@@ -58,9 +55,9 @@ export default {
       fields: fields,
     };
 
-    game.fastEmbed({ message, player, embed, title });
+    game.fastEmbed({ player, embed, title });
 
     // Unlock floor command
-    player.unlockCommands(message, ["floor", "travel"]);
+    player.unlockCommands(["floor", "travel"]);
   },
 } as Command;

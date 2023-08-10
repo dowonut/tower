@@ -99,19 +99,19 @@ export default {
     }
 
     if (currentCategory == "admin" && !authorPerms.has(ADMIN))
-      return game.error({ message, content: `this is only for admins, silly` });
+      return game.error({ player, content: `this is only for admins, silly` });
 
     const embed = getEmbed();
 
     const row = game.actionRow("menu", selectMenu);
 
     const botMsg = await game.send({
-      message,
+      player,
       embeds: [embed],
       components: [row],
     });
 
-    game.componentCollector({ message, reply: botMsg, components: [selectMenu] });
+    game.componentCollector({ player, botMessage: botMsg, components: [selectMenu] });
 
     function getEmbed() {
       const embed: Embed = {

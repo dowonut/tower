@@ -2,7 +2,7 @@ import { game } from "../../tower.js";
 import merchants from "../../game/_classes/merchants.js";
 
 /** Unlock a random merchant. */
-export default (async function (message: Message, server: Server) {
+export default (async function () {
   const region = this.getRegion();
   const regionName = game.titleCase(region.name);
 
@@ -17,22 +17,22 @@ export default (async function (message: Message, server: Server) {
     merchantC = game.getRandom(merchantCategories);
   }
 
-  const merchant = merchants.find(
-    (x) => x.category == merchantC && x.floor == this.floor
-  );
+  const merchant = merchants.find((x) => x.category == merchantC && x.floor == this.floor);
 
   const mName = game.titleCase(merchant.name);
   const mCategory = game.titleCase(merchant.category + " merchant");
 
   const reply = await game.send({
-    message,
+    player: this,
     reply: true,
     content: `you explore the **${regionName}** and come across **${mName}**, the local \`${mCategory}\``,
   });
-  game.commandButton({ command: "explore", message, reply, server });
+  game.commandButton({
+    player: this,
+    botMessage: reply,
+    commands: [{ name: "explore" }],
+  });
   await this.addExploration({
-    message,
-    server,
     type: "merchant",
     category: merchantC,
   });

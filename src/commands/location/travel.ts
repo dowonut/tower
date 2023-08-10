@@ -19,7 +19,7 @@ export default {
     // Check if player is already in region
     if (player.region == region.name)
       return game.error({
-        message,
+        player,
         content: `you are already at **${regionName}**`,
       });
 
@@ -27,13 +27,17 @@ export default {
     await player.update({ region: region.name });
 
     // Send message
-    const reply = await game.send({
-      message,
+    const botMessage = await game.send({
+      player,
       reply: true,
       content: `you traveled to **${regionName}** :map:`,
     });
 
     // Add explore button
-    return game.commandButton({ message, reply, command: "explore", server });
+    await game.commandButton({
+      player,
+      botMessage,
+      commands: [{ name: "explore" }],
+    });
   },
 } as Command;

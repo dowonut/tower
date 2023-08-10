@@ -19,7 +19,6 @@ export default {
     const row = game.actionRow("menu", menu);
 
     const reply = await game.fastEmbed({
-      message,
       player,
       embed,
       title,
@@ -27,10 +26,10 @@ export default {
     });
 
     // Unlock the travel command
-    player.unlockCommands(message, ["travel"]);
+    player.unlockCommands(["travel"]);
 
     // Create collector
-    await game.componentCollector({ message, reply, components: [menu] });
+    await game.componentCollector({ player, botMessage: reply, components: [menu] });
 
     // Embed function
     function getEmbed(player) {
@@ -106,7 +105,6 @@ export default {
       // Get new embed
       const { embed, title } = getEmbed(player);
       const messageRef = await game.fastEmbed({
-        message,
         player,
         embed,
         title,

@@ -26,7 +26,6 @@ export default (async function (args: { enemies: Enemy[] }) {
     // Get XP
     const xp = enemy.XP;
     totalXP += xp;
-    console.log(xp, totalXP);
   }
 
   return { xp: totalXP, loot: loots };

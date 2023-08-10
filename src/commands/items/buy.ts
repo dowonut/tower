@@ -21,8 +21,7 @@ export default {
     //console.log(merchantItem);
 
     // Check if can purchase item
-    if (!merchantItem)
-      return game.error({ message, content: "you can't purchase this item." });
+    if (!merchantItem) return game.error({ player, content: "you can't purchase this item." });
 
     // Set quantity to all
     if (quantity == "all") {
@@ -32,13 +31,13 @@ export default {
 
     // Check if item is in stock
     if (merchantItem.stock < 1) {
-      return game.error({ message, content: "this item is out of stock." });
+      return game.error({ player, content: "this item is out of stock." });
     }
 
     // Check if the player can afford
     if (merchantItem.price * quantity > player.marks) {
       return game.error({
-        message,
+        player,
         content: `you don't have enough ${config.emojis.mark} to buy this.`,
       });
     }
@@ -46,7 +45,7 @@ export default {
     // Check if buying more than stock
     if (quantity > merchantItem.stock) {
       return game.error({
-        message,
+        player,
         content: "the merchant doesn't have enough of this item in stock.",
       });
     }
@@ -87,29 +86,29 @@ export default {
 
     // Send buy message
     game.send({
-      message,
+      player,
       reply: true,
-      content: `you bought \`${quantity}x\` **${item.getName()}** for \`${
-        merchantItem.price * quantity
-      }\` ${config.emojis.mark}`,
+      content: `you bought \`${quantity}x\` **${item.getName()}** for \`${merchantItem.price * quantity}\` ${
+        config.emojis.mark
+      }`,
     });
 
     // Unlock equipment
     if (["weapon", "armor"].includes(item.category)) {
-      player.unlockCommands(message, ["equipment"]);
+      player.unlockCommands(["equipment"]);
     }
 
     // Unlock recipe
     if (item.category == "recipe") {
       game.send({
-        message,
+        player,
         reply: true,
-        content: `you unlocked a new recipe: **${game.titleCase(
-          item.recipeItem
-        )}**\nSee all your recipes with \`${server.prefix}recipes\``,
+        content: `you unlocked a new recipe: **${game.titleCase(item.recipeItem)}**\nSee all your recipes with \`${
+          server.prefix
+        }recipes\``,
       });
 
-      player.unlockCommands(message, ["recipes"]);
+      player.unlockCommands(["recipes"]);
     }
   },
 } as Command;

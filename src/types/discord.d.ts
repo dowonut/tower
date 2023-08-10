@@ -33,6 +33,11 @@ declare global {
   export type Message<T = Discord.TextChannel> = Modify<Discord.Message, { channel: T }> & { user?: User };
 
   /**
+   * Discord text channel.
+   */
+  export type Channel = TextChannel;
+
+  /**
    * Discord message options.
    */
   export type MessageOptions = {
@@ -120,12 +125,10 @@ declare global {
   }
 
   export interface CollectorArgs<T> {
-    /** User message for replies. */
-    message?: Message;
-    /** Optional channel if no user message available. */
-    channel?: TextChannel;
+    /** Player that created the collector. */
+    player: Player;
     /** Bot message to attach collector to. */
-    reply: Message;
+    botMessage: Message;
     /** Components to include in collector. */
     components: Component[];
     /** Optional menu for advanced functions. */

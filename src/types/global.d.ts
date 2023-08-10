@@ -107,6 +107,19 @@ declare global {
   }
 
   /**
+   * Type check whether either Message or Channel argument has been provided.
+   */
+  export type MessageOrChannel = MessageArgument | ChannelArgument;
+  interface MessageArgument {
+    message: Message;
+    channel?: Channel;
+  }
+  interface ChannelArgument {
+    channel: Channel;
+    message?: Message;
+  }
+
+  /**
    * Server
    */
   export type Server = {} & Prisma.Server;
@@ -130,10 +143,13 @@ declare global {
    * Player base
    */
   export type PlayerBase = {
-    message?: Message;
     server?: Server;
     user?: User;
     equipment?: PlayerEquipment;
+    /** Message object for reply functionality. */
+    message?: Message;
+    /** Channel object fallback if no message available. EITHER MESSAGE OR CHANNEL REQUIRED. */
+    channel?: TextChannel;
   } & PlayerModel &
     typeof playerFunctions;
 

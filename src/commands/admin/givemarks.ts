@@ -12,7 +12,7 @@ export default {
   category: "admin",
   async execute(message, args, player, server) {
     if (args.user.marks + args.quantity >= config.integerLimit)
-      return game.error({ message, content: `number too large.` });
+      return game.error({ player, content: `number too large.` });
 
     await prisma.player.update({
       where: { id: args.user.id },
@@ -21,7 +21,7 @@ export default {
 
     const discordId = args.user.user.discordId;
     game.send({
-      message,
+      player,
       content: `Gave \`${args.quantity}\`${config.emojis.mark} to <@${discordId}>`,
     });
   },

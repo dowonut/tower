@@ -34,7 +34,6 @@ export default {
     const attacks = await player.getAttacks();
 
     const menu = new game.Menu({
-      message,
       player,
       boards: [{ name: "attacks", rows: [], message: "attacks" }],
       rows: [],
@@ -60,7 +59,7 @@ export default {
               i++;
             }
 
-            return game.fastEmbed({ message, player, title, embed: { fields }, fullSend: false, reply: true });
+            return game.fastEmbed({ player, title, embed: { fields }, fullSend: false, reply: true });
           },
         },
       ],
@@ -74,10 +73,9 @@ export default {
     // Perform attack
     else {
       // Check if player can attack
-      if (!player.canAttack) return game.error({ message, content: `you can't attack right now.` });
+      if (!player.canAttack) return game.error({ player, content: `you can't attack right now.` });
       // Check if enemy provided
-      if (!enemy)
-        return game.error({ message, content: `provide the name or number of the enemy you want to attack.` });
+      if (!enemy) return game.error({ player, content: `provide the name or number of the enemy you want to attack.` });
 
       const attack = await player.getAttack(attackName);
 
@@ -105,6 +103,11 @@ export default {
         enemy,
         attackMessage,
       } satisfies EmitterArgs);
+
+      // Give skill xp
+      for (const weaponType of attack.weaponType) {
+        await player.giveSkillXP({ skillName: weaponType + " combat", amount: game.random(20, 30) });
+      }
     }
 
     //   // Check if user specified attack

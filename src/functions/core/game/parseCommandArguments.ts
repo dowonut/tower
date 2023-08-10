@@ -174,7 +174,12 @@ export default async function parseCommandArguments(options: {
             }
           }
 
-          const playerReference = await game.getPlayer({ discordId, server });
+          const playerReference = await game.getPlayer({
+            discordId,
+            server,
+            message: player.message,
+            channel: player.channel,
+          });
           if (!playerReference) {
             errorContent = `No user found with ID **\`${discordId}\`**`;
             error();

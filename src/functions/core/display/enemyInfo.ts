@@ -69,7 +69,6 @@ Weaknesses: ${weak}
   if (image) embed.thumbnail = { url: `attachment://${image.name}` };
 
   const botMessage = await game.fastEmbed({
-    message,
     player,
     title,
     embed: embed,

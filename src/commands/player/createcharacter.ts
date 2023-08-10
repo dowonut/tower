@@ -47,7 +47,7 @@ export default {
       image: { url: "attachment://image.png" },
     };
 
-    game.fastEmbed({ message, player, title, embed, files: [attachment] });
+    game.fastEmbed({ player, title, embed, files: [attachment] });
   },
 } as Command;
 

@@ -22,6 +22,6 @@ export default {
 
     let embed = { description: description };
 
-    game.fastEmbed({ message, player, title: `Unlocked Commands`, embed });
+    game.fastEmbed({ player, title: `Unlocked Commands`, embed });
   },
 } as Command;

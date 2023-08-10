@@ -1,8 +1,8 @@
 import enemies from "../../../game/_classes/enemies.js";
 import { game, config, prisma } from "../../../tower.js";
 
-export default async function enemyEncounter(args: { message: Message; player: Player; server: Server }) {
-  let { player, message, server } = args;
+export default async function enemyEncounter(args: { player: Player; server: Server }) {
+  let { player, server } = args;
 
   // Get player region
   const region = player.getRegion();
@@ -22,7 +22,6 @@ export default async function enemyEncounter(args: { message: Message; player: P
   // Create menu
   const menu = new game.Menu({
     player,
-    message,
     boards: [
       { name: "encounter", message: "encounter", rows: ["encounterOptions"] },
       { name: "info", message: "info", rows: ["encounterOptions"] },
@@ -38,9 +37,9 @@ export default async function enemyEncounter(args: { message: Message; player: P
               label: "Enter Combat",
               style: "primary",
               emoji: "⚔️",
-              function: () => {
-                m.botMessage.delete();
-                enterCombat();
+              function: async () => {
+                await m.botMessage.delete();
+                await enterCombat();
               },
             },
             {
@@ -48,17 +47,16 @@ export default async function enemyEncounter(args: { message: Message; player: P
               label: "Flee",
               emoji: "💨",
               function: async () => {
-                m.botMessage.delete();
-                const reply = await game.send({
-                  message,
+                await m.botMessage.delete();
+                const botMessage = await game.send({
+                  player,
                   content: `You ran away from **${enemyData.getName()}**!`,
                   reply: true,
                 });
-                game.commandButton({
-                  message,
-                  reply,
-                  server,
-                  command: "explore",
+                await game.commandButton({
+                  player,
+                  botMessage,
+                  commands: [{ name: "explore" }],
                 });
               },
             },
@@ -81,7 +79,6 @@ export default async function enemyEncounter(args: { message: Message; player: P
           game.fastEmbed({
             send: false,
             player: m.player,
-            message: m.message,
             description: `
 *${enemyData.description}*
 
@@ -96,7 +93,7 @@ ${game.fastProgressBar("health", enemyData)}`,
         name: "info",
         function: async (m) =>
           await game.enemyInfo({
-            message: m.message,
+            message: player.message,
             player: m.player,
             enemyData,
           }),
@@ -108,18 +105,16 @@ ${game.fastProgressBar("health", enemyData)}`,
 
   // Add new enemy to player explored
   await player.addExploration({
-    message,
-    server,
     type: "enemy",
     name: enemyData.name,
   });
 
   // Unlock new commands
-  await player.unlockCommands(message, ["attack", "flee", "enemyinfo", "invite"]);
+  await player.unlockCommands(["attack", "flee", "enemyinfo", "invite"]);
 
   // Enter combat
-  function enterCombat() {
-    game.enterCombat({ player, enemies: [enemyData], message });
+  async function enterCombat() {
+    await game.enterCombat({ player, enemies: [enemyData] });
   }
 
   //   // Create enemy in database

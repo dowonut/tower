@@ -11,14 +11,14 @@ export default {
 
     if (!prefix)
       return game.send({
-        message,
+        player,
         reply: true,
         content: `Current server prefix: **\`${server.prefix}\`**`,
       });
 
     if (prefix.length > 10)
       return game.error({
-        message,
+        player,
         content: "prefix can't be longer than 10 characters.",
       });
 
@@ -28,7 +28,7 @@ export default {
     });
 
     game.send({
-      message,
+      player,
       content: `Server prefix changed to: **\`${prefix}\`**`,
       reply: true,
     });

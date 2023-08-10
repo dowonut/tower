@@ -18,7 +18,7 @@ export default {
         stop: true,
         async function() {
           await unlockCommands();
-          return await reply.edit({
+          return await botMessage.edit({
             content: "**Unlocked all commands** :white_check_mark:",
             components: [],
           });
@@ -30,7 +30,7 @@ export default {
         style: "danger",
         stop: true,
         async function() {
-          return await reply.edit({
+          return await botMessage.edit({
             content: "**Cancelled operation**",
             components: [],
           });
@@ -40,8 +40,8 @@ export default {
 
     const row = game.actionRow("buttons", buttons);
 
-    const reply = await game.send({
-      message,
+    const botMessage = await game.send({
+      player,
       reply: true,
       content: `
 Are you sure you want to unlock all commands?
@@ -49,7 +49,7 @@ This will skip all tutorials, so it's **only recommended for experienced players
       components: [row],
     });
 
-    game.componentCollector({ message, reply, components: buttons });
+    game.componentCollector({ player, botMessage, components: buttons });
 
     async function unlockCommands() {
       const commandFiles = await game.getCommands();

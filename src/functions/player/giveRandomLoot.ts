@@ -1,6 +1,6 @@
 import { game } from "../../tower.js";
 
-export default (async function (message: Message, server: Server) {
+export default (async function () {
   // Fetch region and format region name
   const region = this.getRegion();
   const regionName = game.titleCase(region.name);
@@ -12,9 +12,7 @@ export default (async function (message: Message, server: Server) {
   const itemEmoji = item.getEmoji();
 
   // Determine item quantity
-  const itemQuantity = regionItem.min
-    ? game.random(regionItem.min, regionItem.max)
-    : 1;
+  const itemQuantity = regionItem.min ? game.random(regionItem.min, regionItem.max) : 1;
 
   // Give item to player
   await this.giveItem(item.name, itemQuantity);
@@ -23,11 +21,11 @@ export default (async function (message: Message, server: Server) {
   let quantityText = itemQuantity > 1 ? `\`${itemQuantity}x\` ` : ``;
 
   // Unlock region loot
-  this.addExploration({ message, server, type: "loot", name: item.name });
+  this.addExploration({ type: "loot", name: item.name });
 
   // Send message to player
   return await game.send({
-    message,
+    player: this,
     reply: true,
     content: `you explore the **${regionName}** and find ${quantityText}**${itemName}** ${itemEmoji}`,
   });

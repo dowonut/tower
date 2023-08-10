@@ -10,6 +10,6 @@ export default {
     const enemyName = args.enemy || "small slime";
     const enemy = game.getEnemy(enemyName);
 
-    game.enterCombat({ player, enemies: [enemy], message });
+    game.enterCombat({ player, enemies: [enemy] });
   },
 } satisfies Command;

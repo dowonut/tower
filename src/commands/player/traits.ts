@@ -9,7 +9,6 @@ export default {
   useInCombat: true,
   async execute(message, args, player, server) {
     const menu = new game.Menu({
-      message,
       player,
       variables: { selectedTrait: undefined as PlayerTrait },
       boards: [{ name: "main", rows: ["traits"], message: "main" }],
@@ -45,18 +44,15 @@ export default {
             let description = ``;
             // Format embed description
             for (const trait of config.traits) {
-              description += `${config.emojis.traits[trait]} ${game.titleCase(
-                trait
-              )}: ${f(m.player[trait])} | ${config.traitInfo[trait]}\n`;
+              description += `${config.emojis.traits[trait]} ${game.titleCase(trait)}: ${f(m.player[trait])} | ${
+                config.traitInfo[trait]
+              }\n`;
             }
             // Remind player of stat points
             if (m.player.traitPoints > 0)
-              description += `\n**You have ${f(
-                m.player.traitPoints
-              )} trait points available.**`;
+              description += `\n**You have ${f(m.player.traitPoints)} trait points available.**`;
             const title = `Traits`;
             return game.fastEmbed({
-              message,
               player: m.player,
               fullSend: false,
               description,

@@ -1,32 +1,38 @@
-import { game } from "../../../tower.js";
+import { config, game } from "../../../tower.js";
 
 /**
  * Attach a button component to a message that triggers a command.
  */
-export default async function commandButton(args: {
-  command: string;
-  commandArgs?: any[];
-  message: Message;
-  reply: Message;
-  server: Server;
+export default async function commandButton(obj: {
+  commands: { name: string; args?: string[] }[];
+  player: Player;
+  botMessage: Message;
 }) {
-  const { message, reply, command, commandArgs = [], server } = args;
+  const { botMessage, commands, player } = obj;
 
-  const menu = new game.OldMenu(() => {
-    return [
+  const menu = new game.Menu({
+    player,
+    botMessage: botMessage,
+    boards: [{ name: "main", rows: ["buttons"] }],
+    rows: [
       {
-        id: command,
-        label: game.titleCase(command),
-        style: "secondary",
-        function: async () => {
-          reply.edit({ components: [] });
-          game.runCommand(command, { message, server, args: commandArgs });
+        name: "buttons",
+        type: "buttons",
+        components: () => {
+          return commands.map((x) => {
+            return {
+              id: x.name,
+              label: game.titleCase(x.name),
+              emoji: config.emojis.side_arrow,
+              function: async () => {
+                await player.runCommand({ name: x.name, args: x?.args });
+              },
+            };
+          });
         },
       },
-    ] satisfies Button[];
+    ],
   });
 
-  menu.updateButtons(reply);
-
-  menu.collector(message, reply);
+  await menu.init("main");
 }

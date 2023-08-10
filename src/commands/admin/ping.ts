@@ -7,7 +7,7 @@ export default {
   useInCombat: true,
   async execute(message, args, player, server) {
     const msg = await game.send({
-      message,
+      player,
       reply: true,
       content: `WebSocket Ping: \`${client.ws.ping}ms\`\nAPI Endpoint Ping: ...`,
     });

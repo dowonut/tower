@@ -10,22 +10,25 @@ export default {
     //const enemy = await player.getEnemy();
 
     if (player.inCombat) {
-      const response = await player.exitCombat(message);
+      const response = await player.exitCombat();
 
       if (response !== "success") return;
 
       let content = `You ran away!`;
-      if (player.party) content = `you ran away and took the party with you!`;
+      if (player.party) content = `You ran away and took the party with you!`;
 
-      const reply = await game.send({
-        message,
+      const botMessage = await game.send({
+        player,
         content,
         reply: true,
-        ping: true,
       });
 
       // Add explore button
-      game.commandButton({ message, reply, server, command: "explore" });
+      game.commandButton({
+        player,
+        botMessage,
+        commands: [{ name: "explore" }],
+      });
 
       return "success";
     }

@@ -1,8 +1,8 @@
 import { game, prisma, config } from "../../tower.js";
 
 /** Give XP to a player skill. */
-export default (async function (args: { skillName: string; amount: number; message?: Message }) {
-  const { skillName, amount, message } = args;
+export default (async function (args: { skillName: string; amount: number }) {
+  const { skillName, amount } = args;
 
   let skill = await this.getSkill(skillName);
 
@@ -48,9 +48,7 @@ Your **${skillNameCase}** skill has reached level ${game.f(skill.level)}`;
       skillLevelMsg = skill.getRewardInfo(skill.level);
     }
 
-    if (message) {
-      await game.fastEmbed({ message, reply: true, description: `${levelMsg}\n\n${skillLevelMsg}`, color: "green" });
-    }
+    await game.fastEmbed({ player: this, reply: true, description: `${levelMsg}\n\n${skillLevelMsg}`, color: "green" });
 
     // Get required xp for next level
     nextLevelXp = config.nextLevelXpSkill(skill.level);

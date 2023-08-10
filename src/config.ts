@@ -148,8 +148,8 @@ export const nextLevelXp = (lvl: number) => {
 
 // Required XP for next skill level.
 export const nextLevelXpSkill = (lvl: number) => {
-  let v = 2 * Math.pow(lvl, 2) + 20 * lvl + 100;
-  if (lvl >= 90) v = 2 * Math.pow(lvl - 42, 2.5);
+  let v = 2 * Math.pow(lvl, 1.2) + 20 * lvl + 100;
+  if (lvl >= 90) v = 2 * Math.pow(lvl - 42, 2);
   return Math.floor(v);
 };
 

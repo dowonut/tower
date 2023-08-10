@@ -28,6 +28,6 @@ export default {
       if (weaponLevelBonus) description += ` ${f(weapon)}`;
     }
 
-    game.fastEmbed({ message, player, description, title });
+    game.fastEmbed({ player, description, title });
   },
 } satisfies Command;

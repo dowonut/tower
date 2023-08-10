@@ -18,6 +18,6 @@ export default {
       description: game.fastProgressBar("health", player),
     };
 
-    game.fastEmbed({ message, player, title, embed: embed });
+    game.fastEmbed({ player, title, embed: embed });
   },
 } satisfies Command;

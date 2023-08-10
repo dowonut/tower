@@ -7,9 +7,7 @@ import { MessageReplyOptions } from "discord.js";
  * Send a message to Discord.
  */
 export default async function send<B extends boolean = true>(args: {
-  message?: Message;
-  /** Optional as backup if message not available. */
-  channel?: TextChannel;
+  player: Player;
   /** Ping the user at the start of the message. Default: false.*/
   ping?: boolean;
   /** Reply to the user's original message. Default: false. */
@@ -22,16 +20,20 @@ export default async function send<B extends boolean = true>(args: {
   /** Send the message or return object with message create options. Default: true. */
   send?: B;
 }): Promise<B extends true ? Message : MessageOptions> {
-  const { ping = false, reply = false, message, content, embeds, components, files, send = true } = args;
-  const channel = message?.channel || args?.channel;
+  const { ping = false, reply = false, player, content, embeds, components, files, send = true } = args;
+  const channel = player.channel;
+  const message = player.message;
+  const shouldReply = message?.author?.id == player.user.discordId;
+
+  // console.log("CHANNEL: ", channel ? true : false);
+  // console.log("MESSAGE: ", message ? true : false);
+  // console.log("REPLY: ", reply ? true : false);
+  // console.log("SHOULD REPLY: ", reply ? true : false);
+  // console.log("====================================");
 
   if (!channel) {
-    console.log("> No channel provided.");
-    return;
+    throw new Error("No channel provided in send function.");
   }
-
-  // Check if should reply to message
-  const canReply = message?.author?.id == message?.user?.discordId;
 
   let messageObject: MessageOptions = {
     content: "",
@@ -41,10 +43,12 @@ export default async function send<B extends boolean = true>(args: {
   if (content) messageObject.content = content;
 
   // Format message content for pings
-  if (!canReply && content && reply) {
-    messageObject.content = `<@${message.user.discordId}>, ` + content.charAt(0).toLowerCase() + content.slice(1);
-  } else if (!canReply && reply) {
-    messageObject.content = `<@${message.user.discordId}>`;
+  if (ping || (reply && !shouldReply)) {
+    if (content) {
+      messageObject.content = `${player.ping}, ` + content.charAt(0).toLowerCase() + content.slice(1);
+    } else {
+      messageObject.content = `${player.ping}`;
+    }
   }
 
   // Add components
@@ -58,7 +62,6 @@ export default async function send<B extends boolean = true>(args: {
         embeds[i].color = config.defaultEmbedColor;
       }
     }
-
     messageObject.embeds = embeds;
   }
 
@@ -67,16 +70,11 @@ export default async function send<B extends boolean = true>(args: {
     messageObject.files = files;
   }
 
-  // Ping user
-  if (ping && message) {
-    messageObject.content = `<@${message.author.id}> ` + messageObject.content;
-  }
-
   if (!send) return messageObject as any;
 
   // Reply to message
   let botMsg: Message<any>;
-  if (reply && message && canReply) {
+  if (reply && shouldReply) {
     botMsg = await message.reply(messageObject);
   }
   // Send new message

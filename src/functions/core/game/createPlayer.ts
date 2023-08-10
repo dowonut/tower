@@ -4,7 +4,8 @@ import { config, game, prisma } from "../../../tower.js";
 /**
  * Create a new player given a Discord user.
  */
-export default async function createPlayer(user: DiscordUser, server: Server) {
+export default async function createPlayer(args: { user: DiscordUser; server: Server } & MessageOrChannel) {
+  const { user, server, message, channel } = args;
   const defaultCommands = ["erase", "begin", "profile", "explore", "help", "unlockallcommands", "settings"];
 
   // Check if unlocked commands
@@ -45,7 +46,7 @@ export default async function createPlayer(user: DiscordUser, server: Server) {
     await prisma[key].createMany({ data: entryArr });
   }
 
-  const player = await game.getPlayer({ discordId: user.id, server });
+  const player = await game.getPlayer({ discordId: user.id, server, message, channel });
 
   // Give apple
   await prisma.inventory.createMany({

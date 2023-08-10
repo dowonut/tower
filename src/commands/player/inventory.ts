@@ -11,7 +11,7 @@ export default {
 
     if (!items)
       return game.error({
-        message,
+        player,
         content: "you don't have any items yet...",
       });
 
@@ -39,17 +39,16 @@ export default {
     const { row2, buttons2 } = rowTwo();
 
     const reply = (await game.fastEmbed({
-      message,
       player,
       embed,
       title,
       components: [row, row2],
     })) as Message;
 
-    await game.componentCollector({ message, reply, components: [...buttons, ...buttons2] });
+    await game.componentCollector({ player, botMessage: reply, components: [...buttons, ...buttons2] });
 
     // Unlock new commands
-    player.unlockCommands(message, ["iteminfo"]);
+    player.unlockCommands(["iteminfo"]);
 
     // Function for getting embed
     function getEmbed(page: number = 1, sort?: string, filter?: string) {
@@ -278,7 +277,6 @@ export default {
 
       // Update original message
       const messageRef = await game.fastEmbed({
-        message,
         player,
         embed,
         title,
@@ -306,7 +304,7 @@ export default {
 
         await reply.edit({ components: [row, row3] });
 
-        await game.componentCollector({ message, reply, components: [menu, ...buttons] });
+        await game.componentCollector({ player, botMessage: reply, components: [menu, ...buttons] });
       }
       // Switch back to inventory menu
       else {
@@ -319,7 +317,6 @@ export default {
 
         // Update original message
         const messageRef = (await game.fastEmbed({
-          message,
           player,
           embed,
           title,
@@ -330,7 +327,7 @@ export default {
         await reply.edit(messageRef);
 
         // Create a new collector
-        await game.componentCollector({ message, reply, components: [...buttons, ...buttons2] });
+        await game.componentCollector({ player, botMessage: reply, components: [...buttons, ...buttons2] });
       }
     }
 

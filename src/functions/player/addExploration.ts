@@ -1,14 +1,8 @@
 import { prisma, game } from "../../tower.js";
 
 /** Add a new entry to tracked exploration. */
-export default (async function (args: {
-  server: Server;
-  message: Message;
-  type: ExplorationType;
-  name?: string;
-  category?: string;
-}) {
-  const { message, type, name, category, server } = args;
+export default (async function (args: { type: ExplorationType; name?: string; category?: string }) {
+  const { type, name, category } = args;
   const floor = this.floor;
 
   const existing = await prisma.exploration.findMany({
@@ -33,7 +27,7 @@ export default (async function (args: {
   });
 
   game.send({
-    message,
-    content: `*New ${type} discovered!\nSee your discoveries with \`${server.prefix}region\`*`,
+    player: this,
+    content: `*New ${type} discovered!\nSee your discoveries with \`${this.server.prefix}region\`*`,
   });
 } satisfies PlayerFunction);

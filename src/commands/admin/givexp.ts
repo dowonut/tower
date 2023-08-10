@@ -14,7 +14,7 @@ export default {
     player = args.user;
 
     await game.send({
-      message,
+      player,
       content: `Gave **${args.quantity} XP** to ${player.ping}`,
     });
 

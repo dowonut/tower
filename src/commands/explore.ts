@@ -46,25 +46,29 @@ export default {
     let { item } = game.weightedRandom(options, weights);
 
     // // Unlock region command
-    player.unlockCommands(message, ["region"]);
+    player.unlockCommands(["region"]);
 
     // Log output
     switch (item) {
       case "enemies":
         // Start random enemy encounter in region
-        await game.enemyEncounter({ message, player, server });
+        await game.enemyEncounter({ player, server });
         break;
       case "loot":
         // Give the player some random loot from that region
-        const reply = await player.giveRandomLoot(message, server);
+        const botMessage = await player.giveRandomLoot();
         // Unlock new commands
-        player.unlockCommands(message, ["inventory"]);
+        player.unlockCommands(["inventory"]);
         // Add an explore button
-        game.commandButton({ command: "explore", message, reply, server });
+        game.commandButton({
+          player,
+          botMessage,
+          commands: [{ name: "explore" }],
+        });
         break;
       case "merchants":
         // Unlock a new random merchant from that region
-        await player.unlockRandomMerchant(message, server);
+        await player.unlockRandomMerchant();
         break;
     }
   },

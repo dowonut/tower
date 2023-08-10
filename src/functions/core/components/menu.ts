@@ -11,7 +11,6 @@ const MenuBase = class<T> {
 
 /** Menu class to handle complex Discord components. */
 export default class Menu<T> extends MenuBase<T> {
-  botMessage?: Message;
   currentBoard?: string;
   currentCollector?: InteractionCollector<any>;
   collectorArgs?: CollectorOptions;
@@ -33,12 +32,19 @@ export default class Menu<T> extends MenuBase<T> {
       const messageOptions = await this.getMessage(board).function(this);
       // const messageOptions = await board.message();
       const { messageComponents, components } = await this.getComponents(board);
-      this.botMessage = await game.send({
-        ...messageOptions,
-        message: this?.message,
-        channel: this?.channel,
-        components: messageComponents,
-      });
+      if (!this.botMessage) {
+        this.botMessage = await game.send({
+          ...messageOptions,
+          player: this.player,
+          components: messageComponents,
+        });
+      } else {
+        this.botMessage = (await this.botMessage.edit({ ...messageOptions, components: messageComponents })) as Message;
+      }
+      this.createCollector(components);
+    } else if (this.botMessage) {
+      const { messageComponents, components } = await this.getComponents(board);
+      this.botMessage = (await this.botMessage.edit({ components: messageComponents })) as Message;
       this.createCollector(components);
     } else throw new Error("Initial board must contain a message function.");
     if (this.onLoad) this.onLoad(this);
@@ -133,9 +139,8 @@ export default class Menu<T> extends MenuBase<T> {
     }
     // console.log("> Creating new collector.");
     const collector = await game.componentCollector({
-      message: this?.message,
-      channel: this?.channel,
-      reply: this.botMessage,
+      player: this.player,
+      botMessage: this.botMessage,
       components,
       menu: this,
       options: args,

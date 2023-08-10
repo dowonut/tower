@@ -6,11 +6,12 @@ export default class OldMenu {
   buttons: Button[];
   row: ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>;
   type: RowType;
+  player: Player;
 
-  constructor(buttons: () => Button[], type: RowType = "buttons") {
+  constructor(buttons: () => Button[], type: RowType = "buttons", player: Player) {
     this.buttons = buttons();
     this.type = type;
-
+    this.player = player;
     this.row = game.actionRow(this.type, this.buttons);
   }
 
@@ -30,6 +31,6 @@ export default class OldMenu {
   async collector(message: Message, reply: Message) {
     let components: Component[] = this.buttons;
     if (this.type == "menu") components = [...this.buttons];
-    return await game.componentCollector({ message, reply, components });
+    return await game.componentCollector({ player: this.player, botMessage: reply, components });
   }
 }

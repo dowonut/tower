@@ -9,7 +9,7 @@ export default {
     await player.update({ user: { update: { unlockedCommands: [] } } });
 
     game.send({
-      message,
+      player,
       content: "**Forgot all commands** :white_check_mark:",
       reply: true,
     });

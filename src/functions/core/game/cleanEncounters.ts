@@ -31,7 +31,7 @@ export default async function cleanEncounters() {
       });
       const players = await Promise.all(
         encounter.players.map(async (x) => {
-          return await game.getPlayer({ discordId: x.user.discordId, server });
+          return await game.getPlayer({ discordId: x.user.discordId, server, channel });
         })
       );
 

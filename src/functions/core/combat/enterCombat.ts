@@ -1,15 +1,14 @@
 import { config, game, prisma } from "../../../tower.js";
 
 /** Enter a combat encounter with an enemy. */
-export default async function enterCombat(args: { player: Player; enemies: Enemy[]; message: Message }) {
-  let { player, message } = args;
-  let { enemies } = args;
+export default async function enterCombat(args: { player: Player; enemies: Enemy[] }) {
+  let { enemies, player } = args;
   // Update player
   player = await player.refresh();
 
   // Check if already in combat
   if (player.encounter) {
-    return game.error({ message, content: `You are already engaged in combat.` });
+    return game.error({ player, content: `You are already engaged in combat.` });
   }
 
   // Handle party
@@ -18,7 +17,7 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
     // If not leader
     if (!player.isPartyLeader) {
       return game.error({
-        message,
+        player,
         content: `only the party leader can initiate a combat encounter.`,
       });
     }
@@ -31,25 +30,26 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
       const invitee = await game.getPlayer({
         discordId: newPlayer.user.discordId,
         server: player.server,
+        channel: player.getChannel(),
       });
       // If player doesn't exist
       if (!invitee) {
         return game.error({
-          message,
+          player,
           content: `something went wrong trying to find <@${newPlayer.user.discordId}>`,
         });
       }
       // If player is already in combat
       if (invitee.inCombat) {
         return game.error({
-          message,
+          player,
           content: `can't start encounter because ${invitee.ping} is already in combat.`,
         });
       }
       // If player is on a different floor
       if (invitee.floor !== player.floor) {
         return game.error({
-          message,
+          player,
           content: `can't start encounter because ${invitee.ping} is on a different floor than the party leader.`,
         });
       }
@@ -76,7 +76,7 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
 
   // Set starting SV for players
   for (const [i, player] of players.entries()) {
-    const SV = await player.baseSV;
+    const SV = player.baseSV;
     players[i] = await player.update({ SV });
   }
 
@@ -84,12 +84,6 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
   let turnOrder = game.getTurnOrder({ players, enemies });
   turnOrder = await game.updateTurnOrder(turnOrder);
   const firstPlayer: Player = game.getNextPlayer(turnOrder);
-
-  // console.log(
-  //   turnOrder.map((x) => {
-  //     return { id: x.id, SV: x.SV, isPlayer: x.isPlayer };
-  //   })
-  // );
 
   // Create new encounter
   const enemyIds = enemies.map((x) => {
@@ -108,5 +102,5 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
   });
 
   // Handle encounter
-  game.handleEncounter({ players, enemies, encounter, turnOrder, channel: message.channel });
+  game.handleEncounter({ players, enemies, encounter, turnOrder, channel: player.channel });
 }

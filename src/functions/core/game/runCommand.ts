@@ -14,13 +14,19 @@ export default async function runCommand(
     /** Fetch player using Discord ID. */
     discordId?: string;
     /** Message required for channel and player information. */
-    message: Message;
+    message?: Message;
+    /** Channel backup if no message. */
+    channel?: Channel;
     server: Server;
     args?: string[];
   }
 ) {
   // Extract variables
   const { discordId, message, server, args = [] } = object;
+  const { channel = message?.channel } = object;
+
+  if (!message && !channel) throw new Error("Must provide either Message or Channel when running command.");
+
   const userId = discordId || message.author.id;
 
   return new Promise(async (resolve) => {
@@ -62,17 +68,12 @@ export default async function runCommand(
     // Fetch player object
     let player: Player;
     if (discordId) {
-      player = await game.getPlayer({ discordId, server });
+      player = await game.getPlayer({ discordId, server, message, channel });
     } else if (message) {
-      player = await game.getPlayer({ message, server });
+      player = await game.getPlayer({ message, server, channel });
     } else {
-      return game.error({
-        content: `something went wrong trying to find player.`,
-      });
+      return message?.channel?.send(`${config.emojis.error} Something went wrong trying to fetch player.`);
     }
-
-    // Override message author id for special cases
-    if (message) message.user = player?.user;
 
     // If command has no player requirement
     if (command.needChar == false) {
@@ -80,18 +81,14 @@ export default async function runCommand(
     }
     // Check if user has player character
     else if (!player) {
-      return game.send({
-        message,
-        ping: true,
-        content: `get started with \`${server.prefix}begin\``,
-      });
+      return message?.channel?.send(`<@${message.author.id}> get started with \`${server.prefix}begin\``);
     }
     // Make object null if no player data
     else if (player) {
       // Check if user is Dowonut
       if (command.dev && userId !== config.developerId) {
         return game.error({
-          message,
+          player,
           content: `this command is only for Dowonut. `,
         });
       }
@@ -99,7 +96,7 @@ export default async function runCommand(
       // Check if user is admin
       if (command.category == "admin" && player.user.discordId !== config.developerId) {
         return game.error({
-          message,
+          player,
           content: `this command requires admin permissions.`,
         });
       }
@@ -107,7 +104,7 @@ export default async function runCommand(
       // Check if command is unlocked
       if (!player.user.unlockedCommands.includes(command.name) && command.mustUnlock !== false) {
         return game.error({
-          message,
+          player,
           content: `you haven't unlocked this command yet.`,
         });
       }
@@ -115,7 +112,7 @@ export default async function runCommand(
       // Check if user is in combat
       if (player.inCombat == false && command.useInCombatOnly == true) {
         return game.error({
-          message,
+          player,
           content: `this command can only be used in combat.`,
         });
       }
@@ -123,7 +120,7 @@ export default async function runCommand(
       // Check if user is allowed to attack in combat
       if (player.canAttack == false && command.useInTurnOnly == true) {
         return game.error({
-          message,
+          player,
           content: `you can't do this right now.`,
         });
       }
@@ -135,7 +132,7 @@ export default async function runCommand(
         command.category !== "admin"
       ) {
         return game.error({
-          message,
+          player,
           content: `this command can't be used while in combat.`,
         });
       }
@@ -143,7 +140,7 @@ export default async function runCommand(
       // Check party
       if (!player.party && command.partyOnly) {
         return game.error({
-          message,
+          player,
           content: `this command can only be used while in a party.`,
         });
       }
@@ -153,7 +150,7 @@ export default async function runCommand(
         const expirationTime = timestamps.get(userId) + cooldownAmount;
         if (now < expirationTime) {
           return game.send({
-            message,
+            player,
             content: `:hourglass_flowing_sand: **${player.user.username}**, wait a moment before using this command again.`,
           });
         }
@@ -192,7 +189,7 @@ export default async function runCommand(
 
           const messageContent = `${errorTitle}\n${errorMessage}`; //`${errorTitle}\`\`\`\n${errorMessage}\n\`\`\``;
 
-          game.send({ reply: true, message, content: messageContent });
+          game.send({ reply: true, player, content: messageContent });
         } else {
           console.error(object);
         }

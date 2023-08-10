@@ -16,18 +16,17 @@ import { game } from "../../../tower.js";
  * Create a collector for Discord message components.
  */
 export default async function componentCollector<T>(args: CollectorArgs<T>): Promise<InteractionCollector<any>> {
-  const { message, reply, components, menu, options = {} } = args;
+  const { player, botMessage, components, menu, options = {} } = args;
   const { unique = true, max } = options;
-  const channel = message?.channel || args.channel;
+  const channel = player.getChannel();
 
   if (!components || !components[0]) return undefined;
-  if (!message && !args.channel) return;
 
   return new Promise((resolve, reject) => {
-    let filter = (i: any) => i.message.id == reply.id;
+    let filter = (i: any) => i.message.id == botMessage.id;
 
     if (unique) {
-      filter = (i: any) => i.user.id == message?.user.discordId && i.message.id == reply.id;
+      filter = (i: any) => i.user.id == player.user.discordId && i.message.id == botMessage.id;
     }
 
     if (options.filter) {
@@ -81,7 +80,7 @@ export default async function componentCollector<T>(args: CollectorArgs<T>): Pro
           selection = i.values ? i.values[0] : undefined;
         }
         // Get response as return from component function
-        await component.function(reply, i, selection);
+        await component.function(botMessage, i, selection);
       }
       // If component is a modal then open it and delete message
       else if (component.modal) {

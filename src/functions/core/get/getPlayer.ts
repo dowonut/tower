@@ -2,18 +2,28 @@ import { game, prisma, playerFunctions } from "../../../tower.js";
 import PlayerClass from "../../../game/_classes/players.js";
 
 /** Get player. */
-export default async function getPlayer(args: { message?: Message; discordId?: string; server: Server }) {
-  const { message, discordId, server } = args;
+export default async function getPlayer(
+  args: {
+    discordId?: string;
+    server: Server;
+  } & MessageOrChannel
+) {
+  const { channel, message, discordId, server } = args;
 
-  // Check if id provided
-  if (!args.message && !args.discordId) throw new Error("Must provide either message or Discord id.");
+  // console.log("MESSAGE: ", message ? true : false);
+  // console.log("CHANNEL: ", channel ? true : false);
+  // console.log("DISCORD ID: ", discordId ? true : false);
+  // console.log("====================================");
+
+  // Check if valid arguments provided
+  if (!message && !discordId) throw new Error("Must provide either Message or Discord ID when getting player.");
+  if (!channel && !message) throw new Error("Must provide either a Message or Channel when getting player.");
 
   // Set player id
-  const playerId = discordId ? discordId : message.author.id;
+  const playerId = discordId || message.author.id;
 
   // Get user
   const user = await game.getUser({ discordId: playerId });
-
   if (!user) return;
 
   // Get player from database
@@ -31,7 +41,11 @@ export default async function getPlayer(args: { message?: Message; discordId?: s
 
   let playerObj: PlayerBase = { ...playerData, ...playerFunctions };
 
-  if (message) playerObj.message = message;
+  if (message) {
+    playerObj.message = message;
+    playerObj.channel = message.channel;
+  }
+  if (channel) playerObj.channel = channel;
   if (server) playerObj.server = server;
   playerObj.user = user;
 

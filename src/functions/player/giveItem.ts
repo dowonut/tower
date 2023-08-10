@@ -11,9 +11,6 @@ export default (async function (name: string, quantity: number = 1) {
     },
   });
 
-  // Emit event for item received
-  game.events.emit("itemReceive", { item: item, player: this });
-
   // If item already exists, increment
   if (playerItem[0]) {
     // Update existing item
@@ -51,6 +48,11 @@ export default (async function (name: string, quantity: number = 1) {
         },
       });
     }
+  }
+
+  // Give new skill
+  if (item?.weaponType) {
+    await this.giveSkillXP({ skillName: item.weaponType + " combat", amount: 0 });
   }
 
   const newItem = await this.getItem(item.name);

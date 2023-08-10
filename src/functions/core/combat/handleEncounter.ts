@@ -19,7 +19,6 @@ export default async function handleEncounter(args: {
 
   // Create menu
   const menu = new game.Menu({
-    channel,
     player: firstPlayer,
     variables: {
       players,
@@ -80,11 +79,7 @@ export default async function handleEncounter(args: {
               label: "Flee",
               emoji: "💨",
               function: async (r, i) => {
-                const response = await game.runCommand("flee", {
-                  discordId: m.player.user.discordId,
-                  message: m.botMessage,
-                  server: m.player.server,
-                });
+                const response = await m.player.runCommand({ name: "flee" });
                 if (response !== "success") return;
                 m.botMessage.delete();
               },
@@ -202,7 +197,6 @@ ${turnOrderList}
 
           // Return with message
           return game.fastEmbed({
-            message: m.botMessage,
             player: m.player,
             title,
             description,
@@ -338,7 +332,7 @@ ${turnOrderList}
       // Send player death message
       if (dead && menu.variables.players.length > 1) {
         const deathMessage = `:skull: ${player.ping} **has died!**`;
-        await game.send({ channel, content: deathMessage, reply: true });
+        await game.send({ player, content: deathMessage, reply: true });
       }
 
       // Next turn
@@ -405,7 +399,10 @@ ${turnOrderList}
           description += `\n${player.ping} returned to ${f(player.region)}`;
         }
       }
-      await game.fastEmbed({ channel, description, pingParty: true, player: menu.player, color: "red" });
+      const botMessage = await game.fastEmbed({ description, pingParty: true, player: menu.player, color: "red" });
+      if (players.length < 2) {
+        await game.commandButton({ player: players[0], botMessage, commands: [{ name: "explore" }] });
+      }
     }
 
     // Send success message
@@ -418,7 +415,16 @@ ${turnOrderList}
         }
         description += `\n${f("+" + playerXP[0])} **XP**`;
       }
-      await game.fastEmbed({ channel, description, pingParty: true, player: players[0], color: "gold" });
+      const botMessage = await game.fastEmbed({
+        description,
+        pingParty: true,
+        reply: false,
+        player: players[0],
+        color: "gold",
+      });
+      if (players.length < 2) {
+        await game.commandButton({ player: players[0], botMessage, commands: [{ name: "explore" }] });
+      }
 
       // Send individiual reward messages
       if (players.length > 1) {
@@ -429,13 +435,22 @@ ${turnOrderList}
             description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
           }
           description += `\n${f("+" + playerXP[i])} **XP**`;
-          await game.fastEmbed({ channel, description, title, reply: true, color: "gold", player });
+          await game.fastEmbed({
+            description,
+            title,
+            ping: true,
+            color: "gold",
+            player,
+            reply: false,
+            thumbnail: player.user.pfp,
+          });
         }
       }
     }
 
     // Give player XP
     for (const [i, player] of players.entries()) {
+      console.log("health: ", player.health);
       if (playerXP[i]) await player.giveXP({ amount: playerXP[i], message: menu.botMessage });
     }
   }
@@ -452,7 +467,7 @@ ${turnOrderList}
       }, 10000);
     }
 
-    const botMsg = await game.send({ channel, reply: false, content: message });
+    const botMsg = await game.send({ player: players[0], reply: false, content: message });
     encounter = await prisma.encounter.update({
       where: { id: encounter.id },
       data: { lastAttackMessageId: botMsg.id },

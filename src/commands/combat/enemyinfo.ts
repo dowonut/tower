@@ -10,6 +10,6 @@ export default {
   async execute(message, args, player, server) {
     const messageOptions = await game.enemyInfo({ message, player });
 
-    game.send({ message, ...messageOptions });
+    game.send({ player, ...messageOptions });
   },
 } as Command;

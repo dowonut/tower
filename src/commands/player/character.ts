@@ -19,7 +19,6 @@ export default {
     };
 
     const menu = new game.Menu({
-      message,
       player,
       variables: {
         currentCategory: undefined,
@@ -38,20 +37,12 @@ export default {
         },
         {
           name: "categorySelectType",
-          rows: [
-            "categoryButtons",
-            "categoryActionButtons",
-            "categoryTypeSelectMenu",
-          ],
+          rows: ["categoryButtons", "categoryActionButtons", "categoryTypeSelectMenu"],
           message: "contents",
         },
         {
           name: "categorySelectColor",
-          rows: [
-            "categoryButtons",
-            "categoryActionButtons",
-            "categoryColorButton",
-          ],
+          rows: ["categoryButtons", "categoryActionButtons", "categoryColorButton"],
           message: "contents",
         },
       ],
@@ -91,8 +82,7 @@ export default {
                 label: "Type",
                 style: "primary",
                 board: "categorySelectType",
-                disable:
-                  m.variables.currentCategoryAction == "type" ? true : false,
+                disable: m.variables.currentCategoryAction == "type" ? true : false,
                 function() {
                   m.variables.currentCategoryAction = "type";
                 },
@@ -102,8 +92,7 @@ export default {
                 label: "Color",
                 style: "primary",
                 board: "categorySelectColor",
-                disable:
-                  m.variables.currentCategoryAction == "color" ? true : false,
+                disable: m.variables.currentCategoryAction == "color" ? true : false,
                 function() {
                   m.variables.currentCategoryAction = "color";
                 },
@@ -120,15 +109,13 @@ export default {
             const optionNames: string[] = [];
             const options: SelectMenuOption[] = [];
             try {
-              fs.readdirSync(path + m.variables.currentCategory).forEach(
-                (file) => {
-                  if (file.endsWith(".png")) {
-                    const name = file.slice(0, -4);
-                    optionNames.push(name);
-                    options.push({ label: game.titleCase(name), value: name });
-                  }
+              fs.readdirSync(path + m.variables.currentCategory).forEach((file) => {
+                if (file.endsWith(".png")) {
+                  const name = file.slice(0, -4);
+                  optionNames.push(name);
+                  options.push({ label: game.titleCase(name), value: name });
                 }
-              );
+              });
             } catch (e) {
               options.push({ label: "No options yet!", value: "undefined" });
             }
@@ -157,9 +144,7 @@ export default {
                   title: "Input Color",
                   id: "inputColorModal",
                   function(response) {
-                    m.variables.configuration[
-                      m.variables.currentCategory
-                    ].color = response[0].value;
+                    m.variables.configuration[m.variables.currentCategory].color = response[0].value;
                     m.refresh();
                   },
                   components: [
@@ -180,7 +165,7 @@ export default {
           name: "title",
           function: (m) =>
             game.send({
-              message,
+              player,
               send: false,
               content: "**Character**",
             }),
@@ -189,10 +174,9 @@ export default {
           name: "contents",
           function: (m) =>
             game.send({
-              message,
+              player,
               send: false,
-              content:
-                "**Character**\n" + JSON.stringify(m.variables.configuration),
+              content: "**Character**\n" + JSON.stringify(m.variables.configuration),
             }),
         },
       ],

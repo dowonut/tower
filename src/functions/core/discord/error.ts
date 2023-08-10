@@ -4,35 +4,28 @@ import { game, config } from "../../../tower.js";
 /**
  * Send error message to Discord.
  */
-export default async function error(object: {
-  content: string;
-  message?: Message;
-  channel?: TextChannel;
-}) {
-  if (!object.content || !object.message) return;
+export default async function error(object: { content: string; player: Player }) {
+  const { content, player } = object;
 
-  const { content, message, channel } = object;
-
-  const reply = message.author.id == message.user.discordId;
-
-  const emoji = config.emojis.error;
+  const emoji = config.emojis.red_x;
   let text: string;
+  let finalText: string;
+  let reply = true;
 
   // Format text based on whether to reply directly or not
-  if (reply) {
-    text = content.charAt(0).toUpperCase() + content.slice(1);
-  } else {
-    text = `<@${message.user.discordId}> ${content}`;
-  }
+  text = content.charAt(0).toUpperCase() + content.slice(1);
 
   // Format reply contents
-  const uContent = `${emoji} ${text}`;
-  //const uContent = `${config.emojis.error} <@${message.author.id}> ${content}`;
+  if (player.isMessageAuthor) {
+    finalText = `${emoji} ${text}`;
+  } else {
+    finalText = `${emoji} ${player.ping} ${content}`;
+    reply = false;
+  }
 
   return await game.send({
-    message,
-    channel,
-    content: uContent,
+    player,
+    content: finalText,
     reply,
   });
 }

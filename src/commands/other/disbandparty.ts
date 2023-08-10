@@ -10,7 +10,7 @@ export default {
     return new Promise(async (resolve) => {
       if (!player.isPartyLeader)
         return game.error({
-          message,
+          player,
           content: `you're not the party leader silly.`,
         });
 
@@ -40,15 +40,15 @@ export default {
       const row = game.actionRow("buttons", buttons);
 
       const reply = await game.send({
-        message,
+        player,
         reply: true,
         components: [row],
         content: `Are you sure you want to disband the party?`,
       });
 
       game.componentCollector({
-        message,
-        reply,
+        player,
+        botMessage: reply,
         components: buttons,
         options: {
           max: 1,

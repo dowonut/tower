@@ -30,18 +30,8 @@ export default (async function (args: { amount: number; message: Message }) {
     levelUp++;
   }
 
-  // Update health to new max
-  await player.update({ health: player.maxHP });
-
   // Unlock new commands
-  this.unlockCommands(message, [
-    "traits",
-    "traitup",
-    "floor",
-    "region",
-    "breakdown",
-    "leaderboard",
-  ]);
+  this.unlockCommands(["traits", "traitup", "floor", "region", "breakdown", "leaderboard"]);
 
   if (levelUp > 0) {
     const { gold_arrow, green_side_arrow } = config.emojis;
@@ -50,10 +40,7 @@ export default (async function (args: { amount: number; message: Message }) {
 New level: ${f(player.level)}
 New trait points: ${f(levelUp)}
 `;
-    for (const [stat, value] of Object.entries(previousStats) as [
-      PlayerStat,
-      number
-    ][]) {
+    for (const [stat, value] of Object.entries(previousStats) as [PlayerStat, number][]) {
       let name: string = stat;
       if (stat == "maxHP") name = "HP";
       name = titleCase(name);
@@ -62,8 +49,10 @@ New trait points: ${f(levelUp)}
       description += `\n${config.emojis.stats[stat]} \`${value} ${name}\` ${green_side_arrow} **\`${newStat} ${name}\`**`;
     }
 
+    // Update health to new max
+    await player.update({ health: player.maxHP });
+
     await game.fastEmbed({
-      message,
       player,
       description,
       color: "gold",

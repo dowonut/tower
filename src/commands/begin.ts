@@ -9,11 +9,9 @@ export default {
   async execute(message, args, player, server) {
     const auth = message.author;
 
-    if (player) return game.error({ message, content: "you already have a character." });
+    if (player) return game.error({ player, content: "you already have a character." });
 
-    player = await game.createPlayer(auth, server);
-
-    message.user = player.user;
+    player = await game.createPlayer({ user: auth, server, message });
 
     const embed = {
       thumbnail: { url: player.user.pfp },
@@ -31,14 +29,14 @@ export default {
 
     // Send reply
     const botMsg = (await game.send({
-      message,
+      player,
       embeds: [embed],
       components: [row],
       reply: true,
     })) as Message;
 
     // Create collector
-    await game.componentCollector({ message, reply: botMsg, components: buttons });
+    await game.componentCollector({ player, botMessage: botMsg, components: buttons });
 
     // Function for getting buttons
     function getButtons() {

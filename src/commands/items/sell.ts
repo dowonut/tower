@@ -15,11 +15,11 @@ export default {
     // Fetch item data
     const { item } = args;
 
-    if (!item.value) return game.error({ message, content: "you can't sell this item." });
+    if (!item.value) return game.error({ player, content: "you can't sell this item." });
 
     if (item.equipped)
       return game.error({
-        message,
+        player,
         content: "you can't sell an item while it's equipped.",
       });
 
@@ -29,7 +29,7 @@ export default {
 
     if (+quantity > item.quantity)
       return game.error({
-        message,
+        player,
         content: "you don't have enough items to do that.",
       });
 
@@ -40,14 +40,14 @@ export default {
     });
 
     game.send({
-      message,
+      player,
       reply: true,
       content: `Sold \`${quantity}x\` **${item.getName()}** for \`${item.value * +quantity}\` ${
         config.emojis.mark
       } (\`${playerData.marks}\` ${config.emojis.mark})`,
     });
 
-    player.unlockCommands(message, ["merchants"]);
+    player.unlockCommands(["merchants"]);
 
     return;
   },

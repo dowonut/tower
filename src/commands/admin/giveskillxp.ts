@@ -28,10 +28,10 @@ export default {
   async execute(message, args: { player: Player; skill: Skill; amount: number }, player, server) {
     player = args.player;
 
-    await player.giveSkillXP({ skillName: args.skill.name, amount: args.amount, message });
+    await player.giveSkillXP({ skillName: args.skill.name, amount: args.amount });
 
     game.send({
-      message,
+      player,
       reply: true,
       content: `Gave ${game.f(args.amount + ` XP`)} to ${player.ping}'s **${args.skill.getName()}** skill.`,
     });

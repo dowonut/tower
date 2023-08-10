@@ -6,7 +6,7 @@ declare global {
   export type AttackData = {
     name: string;
     /** Attack type. Dictates the requirements for being able to use it. For example: "sword" can only be uses when wielding a sword type weapon. */
-    weaponType: AttackType[];
+    weaponType: WeaponType[];
     description: string;
     /** All damage dealt by the attack. */
     damage: AttackDamage[];

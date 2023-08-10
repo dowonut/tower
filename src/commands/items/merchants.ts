@@ -18,13 +18,12 @@ export default {
     // Check if player has unlocked any merchants
     if (!merchants[0])
       return game.error({
-        message,
+        player,
         content: `you haven't met any merchants yet. Try exploring the village...`,
       });
 
     const menu = new game.Menu({
       player,
-      message,
       variables: {
         currentMerchant: undefined as Merchant,
         currentItem: undefined as MerchantItemMerged,
@@ -164,7 +163,6 @@ export default {
             description += `\n\n${balanceText}`;
 
             return game.fastEmbed({
-              message: m.message,
               fullSend: false,
               reply: true,
               description,
@@ -218,7 +216,6 @@ export default {
 
             return game.fastEmbed({
               player: m.player,
-              message: m.message,
               fullSend: false,
               reply: true,
               description,
@@ -237,6 +234,6 @@ export default {
       menu.init("merchant");
     }
 
-    player.unlockCommands(message, ["buy"]);
+    player.unlockCommands(["buy"]);
   },
 } as Command;

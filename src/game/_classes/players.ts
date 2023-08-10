@@ -38,6 +38,16 @@ export class PlayerClass extends PlayerBaseClass {
     return this.encounter.currentPlayer == this.id;
   }
 
+  /** Get currently active Discord channel. */
+  getChannel() {
+    return this.channel || this.message.channel;
+  }
+
+  /** Check if the player is the author of the message attached to them. */
+  get isMessageAuthor() {
+    return this.message && this?.message?.author.id == this.user.discordId;
+  }
+
   // STATS =================================================================
 
   /** Get a specific evaluated stat. */

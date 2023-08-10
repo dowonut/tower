@@ -8,10 +8,9 @@ export default {
   category: "admin",
   needChar: false,
   async execute(message, args, player, server) {
-    const guilds: { id: string; name: string; emojis: any }[] =
-      client.guilds.cache.map((x) => {
-        return { id: x.id, name: x.name, emojis: x.emojis };
-      });
+    const guilds: { id: string; name: string; emojis: any }[] = client.guilds.cache.map((x) => {
+      return { id: x.id, name: x.name, emojis: x.emojis };
+    });
 
     for (let guild of guilds) {
       guild.emojis = (await guild.emojis.fetch()).map((x) => {
@@ -32,12 +31,9 @@ export default {
       //   emojiList += emojiFormat;
     }
 
-    if (emojiList.length > 4000)
-      emojiList =
-        emojiList.slice(0, 4000) + "...\nToo many emojis for one embed :(";
+    if (emojiList.length > 4000) emojiList = emojiList.slice(0, 4000) + "...\nToo many emojis for one embed :(";
 
     game.fastEmbed({
-      message,
       player,
       title: "Emojis",
       description: `\`\`\`json\n${emojiList}\`\`\``,

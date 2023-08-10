@@ -10,7 +10,7 @@ export default {
   async execute(message, args, player, server) {
     if (player.party) {
       return game.error({
-        message,
+        player,
         content: `you can't erase your player while in a party.`,
       });
     }
@@ -48,12 +48,12 @@ export default {
     const row = game.actionRow("buttons", buttons);
 
     const reply = await game.send({
-      message,
+      player,
       content: "⚠️ **Are you sure you want to permanently erase your character?**",
       components: [row],
       reply: true,
     });
 
-    await game.componentCollector({ message, reply, components: buttons });
+    await game.componentCollector({ player, botMessage: reply, components: buttons });
   },
 } as Command;
