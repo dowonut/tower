@@ -30,6 +30,9 @@ ${game.fastProgressBar("health", player)}
 ${markE} ${f(marks)}
 ${floorE} ${f(floor)} | ${f(region)}`;
 
+    // Get the player's character image
+    const characterImage = await player.getCharacterImage();
+
     // Add traits
     if (player.level > 0) {
       description += `\n\n${strength} ${f(ps)} ${defense} ${f(pd)} ${arcane} ${f(pa)} ${vitality} ${f(pv)}`;
@@ -44,7 +47,7 @@ ${floorE} ${f(floor)} | ${f(region)}`;
 
     // Create embed
     const color = player.user.embed_color;
-    const embed = {
+    const embed: Embed = {
       color: parseInt("0x" + color),
       // author: {
       //   name: player.user.username + "#" + player.user.discriminator,
@@ -54,6 +57,9 @@ ${floorE} ${f(floor)} | ${f(region)}`;
         url: player.user.pfp,
       },
       description: description,
+      image: {
+        url: characterImage ? `attachment://${player.user.discordId}.png` : undefined,
+      },
     };
 
     // Check if player is same as the message author
@@ -65,6 +71,7 @@ ${floorE} ${f(floor)} | ${f(region)}`;
     const botMessage = await game.send({
       player,
       embeds: [embed],
+      files: [characterImage],
     });
 
     await game.commandButton({

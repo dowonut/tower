@@ -2,6 +2,7 @@ import { createCanvas, loadImage } from "canvas";
 import type { CanvasRenderingContext2D, Image, Canvas } from "canvas";
 import { AttachmentBuilder } from "discord.js";
 import { game } from "../../tower.js";
+import fs from "fs";
 
 const path = "./assets/character/";
 
@@ -37,6 +38,7 @@ export default {
     //await drawImage(ctx, { name: "afro", category: "shadow" });
 
     const finalRenderedImage = canvas.toBuffer();
+    fs.writeFileSync(`./assets/player_characters/${player.user.discordId}.png`, finalRenderedImage);
 
     const attachment = new AttachmentBuilder(finalRenderedImage, {
       name: "image.png",
