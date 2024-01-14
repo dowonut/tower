@@ -245,12 +245,14 @@ ${turnOrderList}
   // On player move
   game.emitter.on("playerMove", async (args: EmitterArgs) => {
     if (args.encounterId !== encounter.id) return;
-    const { attackMessage } = args;
+    const { attackMessage, enemy } = args;
 
     // Send and store attack message
     if (attackMessage) {
       await sendAttackMessage(attackMessage);
     }
+
+    // Update enemy
 
     // Initiate next turn
     await nextTurn();
