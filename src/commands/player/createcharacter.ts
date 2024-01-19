@@ -38,7 +38,7 @@ export default {
     //await drawImage(ctx, { name: "afro", category: "shadow" });
 
     const finalRenderedImage = canvas.toBuffer();
-    fs.writeFileSync(`./assets/player_characters/${player.user.discordId}.png`, finalRenderedImage);
+    fs.writeFileSync(`./static/characters/${player.user.discordId}.png`, finalRenderedImage);
 
     const attachment = new AttachmentBuilder(finalRenderedImage, {
       name: "image.png",
