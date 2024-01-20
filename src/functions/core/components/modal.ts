@@ -44,14 +44,10 @@ export default async function modal(
     }
 
     // Return if wrong interaction type
-    if (
-      interaction instanceof ModalSubmitInteraction ||
-      interaction instanceof AutocompleteInteraction
-    )
-      return;
+    if (interaction instanceof ModalSubmitInteraction || interaction instanceof AutocompleteInteraction) return;
 
     try {
-      console.log("showing modal...");
+      // console.log("showing modal...");
       await interaction.showModal(modal);
     } catch (err) {
       console.log("failed to show modal");

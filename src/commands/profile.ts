@@ -77,7 +77,7 @@ ${floorE} ${f(floor)} | ${f(region)}`;
     await game.commandButton({
       player,
       botMessage,
-      commands: [{ name: "inventory" }, { name: "equipment" }],
+      commands: [{ name: "inventory" }, { name: "equipment" }, { name: "wardrobe" }],
     });
   },
 } as Command;

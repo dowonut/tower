@@ -6,7 +6,7 @@ import { config, game, prisma } from "../../../tower.js";
  */
 export default async function createPlayer(args: { user: DiscordUser; server: Server } & MessageOrChannel) {
   const { user, server, message, channel } = args;
-  const defaultCommands = ["erase", "begin", "profile", "explore", "help", "unlockallcommands", "settings"];
+  const defaultCommands = ["erase", "begin", "profile", "explore", "help", "unlockallcommands", "settings", "wardrobe"];
 
   // Check if unlocked commands
   const unlockedCommands = defaultCommands;

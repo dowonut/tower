@@ -83,6 +83,9 @@ declare global {
 
   /** Embed colors. */
   export type EmbedColor = keyof typeof config.embedColors;
+
+  /** Colors. */
+  export type HEX = `#${string}`;
 }
 
 export {};

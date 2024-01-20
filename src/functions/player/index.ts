@@ -37,3 +37,5 @@ export { default as updateEnemy } from "./updateEnemy.js";
 export { default as updatePassives } from "./updatePassives.js";
 export { default as runCommand } from "./runCommand.js";
 export { default as getCharacterImage } from "./getCharacterImage.js";
+export { default as createCharacterImage } from "./createCharacterImage.js";
+export { default as getCosmetics } from "./getCosmetics.js";

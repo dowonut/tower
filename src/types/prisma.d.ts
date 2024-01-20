@@ -1,5 +1,7 @@
 declare global {
   namespace PrismaJson {
-    type MyType = "hello" | "nothello";
+    type Wardrobe = PlayerWardrobe;
   }
 }
+
+export {};

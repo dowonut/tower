@@ -10,7 +10,7 @@ export default {
   description: "Edit your character's appearance.",
   dev: true,
   async execute(message, args, player, server) {
-    let appearance: PlayerAppearance = {
+    let appearance: PlayerWardrobe = {
       hair: { name: undefined, color: undefined },
       torso: { name: undefined, color: undefined },
       legs: { name: undefined, color: undefined },

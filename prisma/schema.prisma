@@ -44,6 +44,8 @@ model Player {
   floor         Int             @default(1)
   region        String          @default("slime fields")
   // Inventory and character
+  /// [Wardrobe]
+  wardrobe      Json?
   inventory     Inventory[]
   attacks       Attack[]
   merchantStock MerchantStock[]

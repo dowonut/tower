@@ -168,15 +168,16 @@ declare global {
   /**
    * Player appearance configuration.
    */
-  export type PlayerAppearance = {
-    hair: PlayerAppearanceType;
-    torso: PlayerAppearanceType;
-    legs: PlayerAppearanceType;
+  export type PlayerWardrobe = {
+    hair?: PlayerWardrobeType;
+    torso?: PlayerWardrobeType;
+    legs?: PlayerWardrobeType;
+    feet?: PlayerWardrobeType;
     skin: string;
     eyes: string;
   };
 
-  export type PlayerAppearanceType = {
+  export type PlayerWardrobeType = {
     name: string;
     color?: string;
   };
