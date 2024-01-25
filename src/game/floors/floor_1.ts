@@ -3,6 +3,7 @@ export default {
     {
       name: "slime fields",
       description: "Lush rolling fields... with strange slimy creatures everywhere.",
+      environment: "world",
       enemies: [
         { name: "small slime", weight: 100 },
         { name: "big slime", weight: 60 },
@@ -14,6 +15,7 @@ export default {
     {
       name: "goblin caves",
       description: "Dark and gloomy caves filled with pesky goblins. You have been warned.",
+      environment: "world",
       enemies: [
         { name: "baby goblin", weight: 100 },
         { name: "hungry goblin", weight: 100 },
@@ -25,6 +27,7 @@ export default {
     {
       name: "lush forest",
       description: "A pleasant forest with a shallow pond. Perfect place to get some wood or do some fishing.",
+      environment: "protected",
       activities: [
         { name: "fishing", fish: [{ name: "fish", weight: 100 }] },
         { name: "woodcutting", trees: [{ name: "birch", weight: 100 }] },
@@ -37,6 +40,7 @@ export default {
     {
       name: "frog lake",
       description: "An unassuming lake swarming with frogs of all shapes and sizes.",
+      environment: "world",
       enemies: [
         { name: "brown frog", weight: 100 },
         { name: "evil frog", weight: 20 },
@@ -46,6 +50,7 @@ export default {
     {
       name: "village",
       description: "A cozy village with kind people. Might they know something of the floor dungeons?",
+      environment: "protected",
       merchants: [
         { category: "general goods" },
         { category: "blacksmith" },

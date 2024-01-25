@@ -85,6 +85,8 @@ export default async function runCommand(
     }
     // Make object null if no player data
     else if (player) {
+      // COMMAND CONDITION HANDLING =========================================================================
+
       // Check if user is Dowonut
       if (command.dev && userId !== config.developerId) {
         return game.error({
@@ -142,6 +144,29 @@ export default async function runCommand(
         return game.error({
           player,
           content: `this command can only be used while in a party.`,
+        });
+      }
+
+      // Check environment
+      if (command.environment && !command.environment.includes(player.environment)) {
+        let info = ``;
+        for (const environment of command.environment) {
+          switch (environment) {
+            case "protected":
+              info += `\nProtected regions are regions without monsters or other dangers, usually towns.`;
+              break;
+            case "dungeon":
+              info += `\nDungeons are special regions unlocked using dungeon keys.`;
+              break;
+            case "world":
+              info += `\nThe world refers to any region outside of dungeons or protected areas. It's the wild west out there.`;
+              break;
+          }
+        }
+        return game.error({
+          player,
+          content:
+            `this command can only be used in a region of type **\`${command.environment.join(", ")}\`**.` + info,
         });
       }
 

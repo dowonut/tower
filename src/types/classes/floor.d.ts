@@ -31,6 +31,8 @@ declare global {
     merchants?: {
       category: string;
     }[];
+    /** Environment type. */
+    environment: Environment;
   };
 
   /**

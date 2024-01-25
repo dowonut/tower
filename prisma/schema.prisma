@@ -43,8 +43,10 @@ model Player {
   // Location
   floor         Int             @default(1)
   region        String          @default("slime fields")
+  /// [PrismaEnvironment]
+  environment   String          @default("world")
   // Inventory and character
-  /// [Wardrobe]
+  /// [PrismaPlayerWadrobe]
   wardrobe      Json?
   inventory     Inventory[]
   attacks       Attack[]

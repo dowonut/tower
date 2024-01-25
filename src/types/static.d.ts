@@ -86,6 +86,9 @@ declare global {
 
   /** Colors. */
   export type HEX = `#${string}`;
+
+  /** Environments. */
+  export type Environment = "world" | "dungeon" | "protected";
 }
 
 export {};

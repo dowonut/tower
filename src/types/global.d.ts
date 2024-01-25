@@ -52,6 +52,8 @@ declare global {
     partyOnly?: boolean;
     /** The command can only be used once unlocked. Default: true. */
     mustUnlock?: boolean;
+    /** Specify a specific environment(s) in which the command can be used. Default: any.*/
+    environment?: Environment[];
     /** The main command function. */
     execute: Execute;
   }

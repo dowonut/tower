@@ -6,6 +6,7 @@ export default {
   aliases: ["wd"],
   description: "Customize your character's appearance.",
   category: "player",
+  environment: ["protected"],
   async execute(message, args, player, server) {
     const data: PlayerWardrobe = player.wardrobe || {
       eyes: "black",

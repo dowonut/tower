@@ -24,7 +24,7 @@ export default {
       });
 
     // Update player region
-    await player.update({ region: region.name });
+    await player.update({ region: region.name, environment: region.environment });
 
     // Send message
     const botMessage = await game.send({
