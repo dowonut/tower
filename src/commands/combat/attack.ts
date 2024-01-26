@@ -88,11 +88,12 @@ export default {
 
       // Get damage from attack
       const damage = await game.evaluateAttack({ attack, source: player, target });
+      const totalDamage = damage.total;
       const previousEnemyHealth = target.health;
 
       // Update enemy
-      const dead = target.health - damage < 1 ? true : false;
-      target = await target.update({ health: { increment: -damage }, dead });
+      const dead = target.health - totalDamage < 1 ? true : false;
+      target = await target.update({ health: { increment: -totalDamage }, dead });
 
       const attackMessage = game.getAttackMessage({
         attack,

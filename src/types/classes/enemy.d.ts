@@ -103,7 +103,7 @@ declare global {
   /**
    * Enemy attack with evaluated damage.
    */
-  export type EvaluatedEnemyAttack = Modify<EnemyAttack, { damage: number }>;
+  export type EvaluatedEnemyAttack = Modify<EnemyAttack, { damage: EvaluatedDamage }>;
 }
 
 export {};

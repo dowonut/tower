@@ -8,7 +8,8 @@ import {
   f,
   random,
 } from "../../functions/core/index.js";
-import { config, prisma } from "../../tower.js";
+import { config, prisma, game } from "../../tower.js";
+import emojis from "../../emojis.js";
 import fs from "fs";
 
 const EnemyBaseClass = createClassFromType<EnemyBase>();
@@ -82,7 +83,7 @@ export class EnemyClass extends EnemyBaseClass {
     const attacks = await this.getAttacks(player);
 
     // Sort by damage descending
-    attacks.sort((a, b) => (a.damage > b.damage ? 1 : -1));
+    attacks.sort((a, b) => (a.damage.total > b.damage.total ? 1 : -1));
 
     // Define chosen attack
     let chosenAttack = attacks[0];
@@ -96,7 +97,7 @@ export class EnemyClass extends EnemyBaseClass {
 
     let message = getRandom(attack.messages);
 
-    const damageText = f(attack.damage);
+    const damageText = attack.damage.instances.map((x) => `${emojis.damage[x.type]}${game.f(x.total)}`).join(", ");
 
     message = message.replaceAll("ENEMY", `**${this.getName()}**`);
     message = message.replaceAll("DAMAGE", damageText + " damage");

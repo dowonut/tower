@@ -66,6 +66,11 @@ export default {
         data: { equipped: true },
       });
 
+      // Add item skill
+      if (item.category == "weapon") {
+        await player.giveSkillXP({ skillName: item.weaponType + " combat", amount: 0 });
+      }
+
       // Unequip existing item
       if (equippedItem) {
         await prisma.inventory.updateMany({

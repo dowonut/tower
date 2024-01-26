@@ -12,6 +12,7 @@ export default (async function (
   } = {}
 ) {
   const { onlyAvailable, name } = args;
+
   const skills = await this.getSkills();
 
   // Get unlocked attacks from skills

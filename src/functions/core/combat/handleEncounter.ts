@@ -318,11 +318,13 @@ ${turnOrderList}
       let player = enemy.getTargetPlayer(menu.variables.players);
       // Get evaluated attack
       const attack = await enemy.getBestAttack(player);
+      const damage = attack.damage;
+      const totalDamage = damage.total;
       const previousPlayerHealth = player.health;
 
       // Update player
-      const dead = player.health - attack.damage < 1 ? true : false;
-      player = await player.update({ health: { increment: -attack.damage }, dead });
+      const dead = player.health - totalDamage < 1 ? true : false;
+      player = await player.update({ health: { increment: -totalDamage }, dead });
 
       // Send attack message
       const attackMessage = game.getAttackMessage({

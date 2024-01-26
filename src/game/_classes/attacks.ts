@@ -1,5 +1,6 @@
 import { createClassFromType, loadFiles, f } from "../../functions/core/index.js";
 import { game, config } from "../../tower.js";
+import emojis from "../../emojis.js";
 
 const AttackClassBase = createClassFromType<AttackBase>();
 
@@ -46,12 +47,12 @@ export class AttackClass extends AttackClassBase {
   }
 
   /** Format attack message. */
-  getMessage(player: Player, enemy: Enemy, damage: number) {
+  getMessage(player: Player, enemy: Enemy, damage: EvaluatedDamage) {
     if (!this.messages) return undefined;
 
     let message = game.getRandom(this.messages);
 
-    const damageText = game.f(damage);
+    const damageText = damage.instances.map((x) => `${emojis.damage[x.type]}${game.f(x.total)}`).join(", ");
 
     message = message.replaceAll("ENEMY", `**${enemy.getName()}**`);
     message = message.replaceAll("DAMAGE", damageText + " damage");

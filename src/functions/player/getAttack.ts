@@ -16,6 +16,8 @@ export default (async function (attackName: string) {
 
   const attackClass = attacks.find((x) => x.name == attackName);
 
+  if (!attackClass) return;
+
   const finalAttack = game.createClassObject<Attack>(attackClass, attackData);
 
   return finalAttack;

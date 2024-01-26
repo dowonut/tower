@@ -34,7 +34,7 @@ export default (async function <T, A extends string = undefined>(args: {
   }
 
   // Return if no items
-  if (items.length < 1 || !items[0]) return;
+  if (items.length < 1 || !items[0]) return undefined as any;
 
   // Create all item instances from their classes
   for (const item of items) {
@@ -49,6 +49,6 @@ export default (async function <T, A extends string = undefined>(args: {
   if (array.length > 0) {
     return array as any;
   } else {
-    return [] as any;
+    return undefined as any;
   }
 } satisfies PlayerFunction);

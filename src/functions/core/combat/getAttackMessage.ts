@@ -6,11 +6,11 @@ export default function getAttackMessage(args: {
   source: "enemy" | "player";
   player: Player;
   enemy: Enemy;
-  damage?: number;
+  damage?: EvaluatedDamage;
   attack: Attack | EvaluatedEnemyAttack;
   previousHealth?: number;
 }) {
-  const { source, player, enemy, damage = 0, attack, previousHealth = 0 } = args;
+  const { source, player, enemy, damage = { instances: [], total: 0 }, attack, previousHealth = 0 } = args;
 
   let attackMessage: string;
   let healthText: string;

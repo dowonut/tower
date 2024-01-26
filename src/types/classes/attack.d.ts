@@ -31,6 +31,14 @@ declare global {
   export type AttackBase = AttackData & Prisma.Attack;
 
   export type Attack = AttackClass;
+
+  /**
+   * Evaluated damage towards a target.
+   */
+  export type EvaluatedDamage = {
+    instances: { type: DamageType; total: number }[];
+    total: number;
+  };
 }
 
 export {};

@@ -7,7 +7,7 @@ declare global {
     /** Skill category. */
     category: "combat" | "crafting";
     /** If combat skill, which weapon type does it belong to. */
-    weaponType?: AttackType;
+    weaponType?: WeaponType;
     /** Things to unlock as the skill levels up. */
     levels: SkillLevel[];
   };
