@@ -42,6 +42,11 @@ export default async function handleEncounter(args: {
         rows: [],
         message: "main",
       },
+      {
+        name: "end",
+        rows: [],
+        message: "main",
+      },
     ],
     rows: [
       // Select enemy
@@ -345,11 +350,14 @@ ${turnOrderList}
     // Delete messages
     setTimeout(async () => {
       try {
-        menu.botMessage.delete();
-        const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
-        lastMessage.delete();
+        // menu.botMessage.delete();
+        // const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
+        // lastMessage.delete();
       } catch (err) {}
     }, 10000);
+
+    // Switch to end board
+    menu.switchBoard("end");
 
     // Delete encounter
     await prisma.encounter.delete({ where: { id: encounter.id } });
@@ -457,15 +465,16 @@ ${turnOrderList}
 
   /** Send or update last attack message. */
   async function sendAttackMessage(message: string) {
-    if (encounter.lastAttackMessageId) {
-      const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
+    // Delete attack messages
+    // if (encounter.lastAttackMessageId) {
+    //   const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
 
-      setTimeout(async () => {
-        try {
-          await lastMessage.delete();
-        } catch (err) {}
-      }, 10000);
-    }
+    //   setTimeout(async () => {
+    //     try {
+    //       await lastMessage.delete();
+    //     } catch (err) {}
+    //   }, 10000);
+    // }
 
     const botMsg = await game.send({ player: players[0], reply: false, content: message });
     encounter = await prisma.encounter.update({
