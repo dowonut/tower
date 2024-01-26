@@ -8,13 +8,13 @@ export default (async function () {
   const encounter = this.encounter;
   const enemiesData = encounter.enemies;
 
-  let enemies: Enemy[] = [];
+  let finalEnemies: Enemy[] = [];
   for (const enemyData of enemiesData) {
     const enemyClass = enemies.find((x) => x.name == enemyData.name);
 
     const enemy = game.createClassObject<Enemy>(enemyClass, enemyData);
-    enemies.push(enemy);
+    finalEnemies.push(enemy);
   }
 
-  return enemies;
+  return finalEnemies;
 } satisfies PlayerFunction);

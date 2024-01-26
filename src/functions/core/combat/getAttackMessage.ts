@@ -1,3 +1,4 @@
+import emojis from "../../../emojis.js";
 import { game, config } from "../../../tower.js";
 
 /** Get an attack message. */
@@ -17,7 +18,7 @@ export default function getAttackMessage(args: {
   // From player
   if (source == "player") {
     attackMessage = (attack as Attack).getMessage(player, enemy, damage);
-    healthText = `${config.emojis.health} ` + game.f(`${enemy.health} / ${enemy.maxHP}`);
+    healthText = `**${enemy.displayName}** | ${config.emojis.health} ` + game.f(`${enemy.health} / ${enemy.maxHP}`);
     healthBar = game.progressBar({
       type: "orange",
       min: enemy.health,
@@ -29,7 +30,7 @@ export default function getAttackMessage(args: {
   // From enemy
   else if (source == "enemy") {
     attackMessage = enemy.getAttackMessage(attack as EvaluatedEnemyAttack, player);
-    healthText = `${config.emojis.health} ` + game.f(`${player.health} / ${player.maxHP}`);
+    healthText = `${player.ping} | ${config.emojis.health} ` + game.f(`${player.health} / ${player.maxHP}`);
     healthBar = game.progressBar({
       type: "red",
       min: player.health,
@@ -38,7 +39,7 @@ export default function getAttackMessage(args: {
       count: 16,
     });
   }
-
-  const finalMessage = `${attackMessage}\n\n${healthText}\n${healthBar}`;
+  const separatorLine = ""; //emojis.line.repeat(16);
+  const finalMessage = `${healthText}\n${healthBar}\n${attackMessage}\n${separatorLine}`;
   return finalMessage;
 }

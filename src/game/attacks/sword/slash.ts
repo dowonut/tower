@@ -12,8 +12,8 @@ export default {
   // ENEMY = enemy name
   // DAMAGE = damage dealt
   messages: [
-    "You slash elegantly at ENEMY and deal DAMAGE",
-    "Your sword cuts cleanly through ENEMY, dealing DAMAGE",
-    "You gracefully slice at ENEMY with your blade, dealing DAMAGE",
+    "PLAYER slashes elegantly at ENEMY and deals DAMAGE",
+    "PLAYER's sword cuts cleanly through ENEMY, dealing DAMAGE",
+    "PLAYER gracefully slices at ENEMY with their blade, dealing DAMAGE",
   ],
 } satisfies AttackData;

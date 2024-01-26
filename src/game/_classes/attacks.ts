@@ -55,7 +55,7 @@ export class AttackClass extends AttackClassBase {
 
     message = message.replaceAll("ENEMY", `**${enemy.getName()}**`);
     message = message.replaceAll("DAMAGE", damageText + " damage");
-    message = message.replaceAll("PLAYER", `<@${player.user.discordId}>`);
+    message = message.replaceAll("PLAYER", `${player.ping}`);
 
     return message;
   }

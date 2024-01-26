@@ -15,6 +15,5 @@ export default async function updateTurnOrder(turnOrder: TurnOrder) {
       turnOrder[i] = await (entity as Player).update({ SV: { increment: -decreaseSV } });
     }
   }
-
   return turnOrder;
 }

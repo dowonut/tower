@@ -7,29 +7,35 @@ export default {
   arguments: [
     { name: "attackName", type: "playerAvailableAttack", required: false },
     {
-      name: "enemy",
+      name: "targetEnemy",
       required: false,
       async filter(i, p) {
-        const enemyData = p.encounter.enemies.find((x) => {
+        const enemies = await p.getEnemies();
+
+        const target = enemies.find((x) => {
           return x.name == i.toLowerCase() || parseInt(i) == x.number;
         });
 
-        if (!enemyData) {
+        if (!target) {
           return { success: false, message: `No enemy found with name or number ${game.f(i)}` };
         }
 
-        const enemy = game.getEnemy(enemyData.name);
-
-        return { success: true, content: game.createClassObject(enemy, enemyData) };
+        return { success: true, content: { enemies, target } };
       },
     },
   ],
   category: "combat",
   useInCombat: true,
   cooldown: "2",
-  async execute(message, args: { attackName: string; enemy: Enemy }, player, server) {
+  async execute(
+    message,
+    args: { attackName: string; targetEnemy: { enemies: Enemy[]; target: Enemy } },
+    player,
+    server
+  ) {
     // Format imput
-    let { attackName, enemy } = args;
+    let { attackName, targetEnemy } = args;
+    let { enemies, target } = targetEnemy;
 
     const attacks = await player.getAttacks();
 
@@ -75,22 +81,23 @@ export default {
       // Check if player can attack
       if (!player.canAttack) return game.error({ player, content: `you can't attack right now.` });
       // Check if enemy provided
-      if (!enemy) return game.error({ player, content: `provide the name or number of the enemy you want to attack.` });
+      if (!target)
+        return game.error({ player, content: `provide the name or number of the enemy you want to attack.` });
 
       const attack = await player.getAttack(attackName);
 
       // Get damage from attack
-      const damage = await game.evaluateAttack({ attack, source: player, target: enemy });
-      const previousEnemyHealth = enemy.health;
+      const damage = await game.evaluateAttack({ attack, source: player, target });
+      const previousEnemyHealth = target.health;
 
       // Update enemy
-      const dead = enemy.health - damage < 1 ? true : false;
-      enemy = await enemy.update({ health: { increment: -damage }, dead });
+      const dead = target.health - damage < 1 ? true : false;
+      target = await target.update({ health: { increment: -damage }, dead });
 
       const attackMessage = game.getAttackMessage({
         attack,
         damage,
-        enemy,
+        enemy: target,
         player,
         source: "player",
         previousHealth: previousEnemyHealth,
@@ -100,7 +107,7 @@ export default {
       game.emitter.emit("playerMove", {
         encounterId: player.encounterId,
         player,
-        enemy,
+        enemies,
         attackMessage,
       } satisfies EmitterArgs);
 
