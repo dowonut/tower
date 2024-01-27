@@ -1,6 +1,7 @@
 import { createClassFromType, loadFiles, f } from "../../functions/core/index.js";
-import { game, config } from "../../tower.js";
+import { game, config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
+import { Prisma } from "@prisma/client";
 
 const AttackClassBase = createClassFromType<AttackBase>();
 
@@ -59,6 +60,12 @@ export class AttackClass extends AttackClassBase {
     message = message.replaceAll("PLAYER", `${player.ping}`);
 
     return message;
+  }
+
+  /** Update attack in database. */
+  async update(args: Prisma.AttackUncheckedUpdateInput | Prisma.AttackUpdateInput) {
+    const attackInfo = await prisma.attack.update({ where: { id: this.id }, data: args });
+    return Object.assign(this, attackInfo);
   }
 
   // Calculate base attack damage

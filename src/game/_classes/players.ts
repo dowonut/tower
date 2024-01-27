@@ -123,6 +123,11 @@ export class PlayerClass extends PlayerBaseClass {
     return object;
   }
 
+  /** Get remaining Xp required to reach next level. */
+  get remainingXp() {
+    return config.nextLevelXp(this.level) - this.xp;
+  }
+
   /** Base Speed Value */
   get baseSV() {
     const gauge = config.speedGauge;

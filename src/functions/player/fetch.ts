@@ -46,7 +46,9 @@ export default (async function <T, A extends string = undefined>(args: {
     array.push(finalItem);
   }
 
-  if (array.length > 0) {
+  if (name && array.length > 0) {
+    return array[0] as any;
+  } else if (array.length > 0) {
     return array as any;
   } else {
     return undefined as any;

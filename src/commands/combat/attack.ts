@@ -84,7 +84,15 @@ export default {
       if (!target)
         return game.error({ player, content: `provide the name or number of the enemy you want to attack.` });
 
-      const attack = await player.getAttack(attackName);
+      let attack = await player.getAttack(attackName);
+
+      // Check if attack is on cooldown
+      if (attack?.remCooldown > 0) {
+        return game.error({
+          player,
+          content: `this attack is still on cooldown!\n${game.f(attack.remCooldown)} turns remaining.`,
+        });
+      }
 
       // Get damage from attack
       const damage = await game.evaluateAttack({ attack, source: player, target });
@@ -93,7 +101,15 @@ export default {
 
       // Update enemy
       const dead = target.health - totalDamage < 1 ? true : false;
+      console.log("target health: ", target.health);
+      console.log("total damage: ", totalDamage);
+      console.log("dead? ", dead);
       target = await target.update({ health: { increment: -totalDamage }, dead });
+
+      // Update remaining cooldown
+      if (attack.cooldown) {
+        attack = await attack.update({ remCooldown: attack.cooldown });
+      }
 
       const attackMessage = game.getAttackMessage({
         attack,

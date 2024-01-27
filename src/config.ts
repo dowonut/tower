@@ -17,7 +17,7 @@ export const integerLimit = 2147483647;
 
 export const speedGauge = 10000;
 export const baseStats = {
-  maxHP: 10,
+  maxHP: 20,
   ATK: 10,
   MAG: 10,
   RES: 10,
@@ -39,10 +39,10 @@ export const baseEnemyStats = {
   SPD: 80,
 };
 export const baseWeaponStats = {
-  ATK: 0,
-  MAG: 0,
-  RES: 0,
-  SPD: 0,
+  ATK: 5,
+  MAG: 5,
+  RES: 5,
+  SPD: 1,
 };
 
 // export const subStats = {
@@ -219,7 +219,7 @@ export const weapon_SPD = (lvl: number, factor: number) => {
 
 // Get XP dropped by enemy.
 export const enemy_XP = (lvl: number, boss = false) => {
-  let v = 5 * (Math.pow(lvl, 2) / 30);
+  let v = Math.pow(lvl, 2) + lvl * 5;
   return Math.floor(v);
 };
 

@@ -423,7 +423,7 @@ ${turnOrderList}
         for (const loot of playerLoot[0] as Item[]) {
           description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
         }
-        description += `\n${f("+" + playerXP[0])} **XP**`;
+        description += `\n${f("+" + playerXP[0])} **XP** (${f(players[0].remainingXp - playerXP[0])} until next level)`;
       }
       const botMessage = await game.fastEmbed({
         description,
@@ -444,7 +444,7 @@ ${turnOrderList}
           for (const loot of playerLoot[i] as Item[]) {
             description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
           }
-          description += `\n${f("+" + playerXP[i])} **XP**`;
+          description += `\n${f("+" + playerXP[i])} **XP** (${f(player.remainingXp - playerXP[i])} until next level)`;
           await game.fastEmbed({
             description,
             title,

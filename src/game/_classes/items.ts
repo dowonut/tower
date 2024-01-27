@@ -84,9 +84,10 @@ export class ItemClass extends ItemBaseClass {
   getStat(stat: WeaponStat) {
     if (this.category !== "weapon") return;
 
-    const baseStat = config.baseWeaponStats?.[stat] || 0;
-
     const factor = config.weapons[this.weaponType]?.[stat] || 0;
+
+    const baseStat = config.baseWeaponStats?.[stat] * factor || 0;
+
     const levelBonusFunction = config["weapon_" + stat];
     const level = this.getLevel();
     const levelBonus = levelBonusFunction ? levelBonusFunction(level, factor) : 0;

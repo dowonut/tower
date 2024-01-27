@@ -23,14 +23,14 @@ export default {
   description: "See all your skills or one specific skill.",
   category: "player",
   useInCombat: true,
-  async execute(message, args, player, server) {
-    const skill = (args.skill as Skill) || undefined;
+  async execute(message, args: { skill: Skill }, player, server) {
+    const { skill } = args;
     const skills = await player.getSkills();
     const { f } = game;
 
     const menu = new game.Menu({
       player,
-      variables: { currentSkill: skill as Skill },
+      variables: { currentSkill: skill || undefined },
       boards: [
         { name: "list", message: "listSkills", rows: ["skills"] },
         { name: "selected", message: "skillSelected", rows: ["skills", "return"] },
