@@ -17,7 +17,7 @@ export default {
     // define all variables
     const { level, xp, health, maxHP, floor, marks } = player;
     const nextXp = config.nextLevelXp(level);
-    const { health: healthE, staircase: floorE, mark: markE, blank, side_arrow } = config.emojis;
+    const { health: healthE, floor: floorE, mark: markE, blank, side_arrow } = config.emojis;
     const region = game.titleCase(player.getRegion().name);
     const { strength, defense, arcane, vitality } = config.emojis.traits;
     const { strength: ps, defense: pd, arcane: pa, vitality: pv } = player;

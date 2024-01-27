@@ -4,7 +4,7 @@ const emojis = {
   mark: "<:mark:1137785360005468322>",
   silver_mark: "<:silver_mark:986634284355969026>",
   xp: "<:xp:987750164481597480>",
-  staircase: "<:staircase:1137785361850957995>",
+  floor: "<:staircase:1137785361850957995>",
   plus: "<:plus:987810098183303208>",
   health: "<:health:1137785046804213870>",
   error: "<:error:1093637241215144006>",

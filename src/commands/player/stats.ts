@@ -5,11 +5,16 @@ export default {
   name: "stats",
   aliases: ["s"],
   description: "See all of your stats.",
+  arguments: [{ name: "user", type: "user", required: false }],
   category: "player",
   useInCombat: true,
-  async execute(message, args, player, server) {
+  async execute(message, args: { user: Player }, player, server) {
+    if (args.user) {
+      player = args.user;
+    }
+
     let description = ``;
-    let title = `Stats`;
+    let title = `${player.user.username}'s Stats`;
 
     for (let statName of Object.keys(config.baseStats) as PlayerStat[]) {
       const { stats } = config.emojis;
@@ -28,6 +33,6 @@ export default {
       if (weaponLevelBonus) description += ` ${f(weapon)}`;
     }
 
-    game.fastEmbed({ player, description, title });
+    game.fastEmbed({ player, description, title, thumbnail: player.user.pfp, reply: false });
   },
 } satisfies Command;

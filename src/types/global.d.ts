@@ -84,7 +84,14 @@ declare global {
    * Object to return for command argument filters.
    */
   type CommandArgumentFilterResult =
-    | { success: true; content?: any; message?: void }
+    | {
+        /** Whether or not the filter succeeded. */
+        success: true;
+        /** The content to pass to the command. */
+        content: any;
+        /** Error message to display. */
+        message?: void;
+      }
     | { success: false; message: string; content?: void };
 
   /**

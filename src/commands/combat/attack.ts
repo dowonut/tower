@@ -16,7 +16,7 @@ export default {
           return x.name == i.toLowerCase() || parseInt(i) == x.number;
         });
 
-        if (!target) {
+        if (!target || !enemies) {
           return { success: false, message: `No enemy found with name or number ${game.f(i)}` };
         }
 
@@ -29,13 +29,13 @@ export default {
   cooldown: "2",
   async execute(
     message,
-    args: { attackName: string; targetEnemy: { enemies: Enemy[]; target: Enemy } },
+    args: { attackName: string; targetEnemy?: { enemies?: Enemy[]; target: Enemy } },
     player,
     server
   ) {
     // Format imput
     let { attackName, targetEnemy } = args;
-    let { enemies, target } = targetEnemy;
+    let { enemies = undefined, target = undefined } = targetEnemy;
 
     const attacks = await player.getAttacks();
 
@@ -81,7 +81,7 @@ export default {
       // Check if player can attack
       if (!player.canAttack) return game.error({ player, content: `you can't attack right now.` });
       // Check if enemy provided
-      if (!target)
+      if (!target || !enemies)
         return game.error({ player, content: `provide the name or number of the enemy you want to attack.` });
 
       let attack = await player.getAttack(attackName);
