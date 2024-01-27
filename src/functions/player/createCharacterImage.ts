@@ -1,6 +1,6 @@
 import { game } from "../../tower.js";
-import { createCanvas, loadImage } from "canvas";
-import type { CanvasRenderingContext2D, Image, Canvas } from "canvas";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
+import type { Image, Canvas, SKRSContext2D } from "@napi-rs/canvas";
 import { AttachmentBuilder } from "discord.js";
 import fs from "fs";
 
@@ -28,7 +28,7 @@ export default (async function (data: PlayerWardrobe) {
   if (data.feet && data.feet.name !== "nothing")
     await drawImage(ctx, { category: "feet", name: data.feet.name, color: data.feet.color });
 
-  const finalRenderedImage = canvas.toBuffer();
+  const finalRenderedImage = await canvas.encode("png");
   fs.writeFileSync(`./static/characters/${this.user.discordId}.png`, finalRenderedImage);
 
   // Create Discord attachment
@@ -103,7 +103,7 @@ async function getImageCanvas(args: {
 //---------------------------------------------------
 /** Draw an image onto the canvas. */
 async function drawImage(
-  ctx: CanvasRenderingContext2D,
+  ctx: SKRSContext2D,
   args: {
     name: string;
     color?: string;

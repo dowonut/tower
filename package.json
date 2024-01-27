@@ -9,11 +9,9 @@
   "type": "module",
   "dependencies": {
     "@mermaid-js/mermaid-cli": "^10.2.4",
-    "canvas": "^2.11.2",
+    "@napi-rs/canvas": "^0.1.44",
     "discord.js": "^14.8.0",
     "dotenv": "^16.0.1",
-    "firebase-admin": "^11.0.1",
-    "fireorm": "^0.23.3",
     "fs": "^0.0.1-security",
     "loot-table": "github:jotson/LootTable.js",
     "npm": "^9.8.1",
