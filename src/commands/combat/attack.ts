@@ -101,9 +101,6 @@ export default {
 
       // Update enemy
       const dead = target.health - totalDamage < 1 ? true : false;
-      console.log("target health: ", target.health);
-      console.log("total damage: ", totalDamage);
-      console.log("dead? ", dead);
       target = await target.update({ health: { increment: -totalDamage }, dead });
 
       // Update remaining cooldown

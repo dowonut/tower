@@ -216,7 +216,7 @@ export default async function runCommand(
 
           game.send({ reply: true, player, content: messageContent });
         } else {
-          console.error(object);
+          console.error("Command Error: ", object);
         }
         resolve("ERROR");
       }

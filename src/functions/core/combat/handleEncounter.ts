@@ -59,13 +59,15 @@ export default async function handleEncounter(args: {
           return {
             id: "selectEnemy",
             placeholder: "Select an enemy for more options...",
-            options: enemies.map((x) => {
-              return {
-                label: x.displayName,
-                value: x.number.toString(),
-                default: selected == x.number ? true : false,
-              };
-            }),
+            options: enemies
+              .filter((x) => !x.dead)
+              .map((x) => {
+                return {
+                  label: x.displayName,
+                  value: x.number.toString(),
+                  default: selected == x.number ? true : false,
+                };
+              }),
             function: (r, i, s) => {
               m.variables.selectedEnemy = parseInt(s);
               m.switchBoard("enemySelected");
@@ -161,7 +163,8 @@ export default async function handleEncounter(args: {
           const enemies = m.variables.enemies;
           const players = m.variables.players;
           const partyName = players.length > 1 ? "Party" : `${players[0].user.username}`;
-          const title = `${partyName} fighting ${enemies.map((x) => x.getName()).join(", ")}`;
+          const enemyName = enemies.length > 1 ? "multiple enemies" : enemies[0].displayName;
+          const title = `${partyName} fighting ${enemyName}`;
 
           // Format enemy list
           let description = ``;
@@ -169,12 +172,15 @@ export default async function handleEncounter(args: {
             const enemyName = enemies.length > 1 ? `**${enemy.displayName}** | ` : ``;
             const healthBar = game.fastProgressBar("health", enemy);
             description += `
-${enemyName}${healthBar}
-`;
+${enemyName}${healthBar}`;
           }
 
           // Get enemy image
-          let image = enemies.length == 1 ? enemies[0].getImage() : undefined;
+          let image = await game.createEncounterImage({
+            enemies,
+            verbose: true,
+            selectedEnemy: m.variables.selectedEnemy,
+          });
 
           // Format turn order list
           let turnOrderList = ``;
@@ -207,7 +213,7 @@ ${turnOrderList}
             description,
             fullSend: false,
             reply: false,
-            thumbnail: image ? `attachment://${image.name}` : null,
+            embed: { image: { url: `attachment://encounter.png` } },
             files: image ? [image] : [],
             pingParty: true,
           });
@@ -460,7 +466,6 @@ ${turnOrderList}
 
     // Give player XP
     for (const [i, player] of players.entries()) {
-      console.log("health: ", player.health);
       if (playerXP[i]) await player.giveXP({ amount: playerXP[i], message: menu.botMessage });
     }
   }

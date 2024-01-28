@@ -1,7 +1,7 @@
 // auto-barrel-ignore
 
 // Discord packages
-import Discord from "discord.js";
+import Discord, { TextChannel } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { ContextMenuCommandBuilder, ApplicationCommandType, Routes, ActivityType } from "discord.js";
 // File handling
@@ -82,13 +82,20 @@ client.on("messageCreate", async (message) => {
         server,
       });
     } catch (e) {
-      console.error(e);
+      console.error("Command Handler Error: ", e);
     }
   }
 });
 
+// Error handling
+process.on("uncaughtException", (err) => {
+  console.log("--------------------------------------------------");
+  console.log("> Uncaught Exception");
+  console.error(err.stack);
+});
+
 // On bot ready
-client.on("ready", () => {
+client.on("ready", async () => {
   if (client.user) {
     // Set user activity
     client.user.setActivity(config.status, {
@@ -96,6 +103,10 @@ client.on("ready", () => {
     });
 
     console.log(`> ${client.user.username} has logged in.`);
+
+    // Send logged in mesage
+    const channel = (await client.channels.fetch("855648154169638952")) as TextChannel;
+    await channel.send(`✅ **Tower is back online.**`);
 
     // Handle cleaners
     cleanEncounters();

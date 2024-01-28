@@ -51,3 +51,4 @@ export { default as handleEncounter } from "./combat/handleEncounter.js";
 export { default as enterCombat } from "./combat/enterCombat.js";
 export { default as evaluateAttack } from "./combat/evaluateAttack.js";
 export { default as getAttackMessage } from "./combat/getAttackMessage.js";
+export { default as createEncounterImage } from "./combat/createEncounterImage.js";

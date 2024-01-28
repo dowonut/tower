@@ -59,7 +59,7 @@ model Player {
   level         Int             @default(0)
   xp            Int             @default(0)
   marks         Int             @default(0)
-  health        Int             @default(10)
+  health        Int             @default(20)
   // Equipment
   head          String?
   torso         String?

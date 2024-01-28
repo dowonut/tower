@@ -7,6 +7,7 @@ export default {
   arguments: [{ name: "merchant", type: "playerAvailableMerchant", required: false }],
   description: "See all merchants on this floor and the items they sell.",
   category: "item",
+  environment: ["protected"],
   async execute(message, args, player, server) {
     const input = args.merchant;
     let merchant: Merchant;

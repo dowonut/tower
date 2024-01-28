@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "npx tsx --watch ./src/index.ts",
-    "dev": "nodemon ./src/index.ts"
+    "dev": "npx tsx --watch ./src/index.ts",
+    "start": "npx tsx ./src/index.ts"
   },
   "type": "module",
   "dependencies": {

@@ -1,8 +1,8 @@
 import enemies from "../../../game/_classes/enemies.js";
 import { game, config, prisma } from "../../../tower.js";
 
-export default async function enemyEncounter(args: { player: Player; server: Server }) {
-  let { player, server } = args;
+export default async function enemyEncounter(args: { player: Player }) {
+  let { player } = args;
 
   // Get player region
   const region = player.getRegion();
@@ -10,14 +10,32 @@ export default async function enemyEncounter(args: { player: Player; server: Ser
   // Get all enemies on the current floor
   const floorEnemies = region.enemies;
 
-  // Select enemy randomly based on weights
-  const chosenEnemy = game.getWeightedArray<(typeof floorEnemies)[number]>(floorEnemies);
+  // Pick number of enemies to spawn
+  let numberOfEnemies = game.random(1, 4);
+  if (player.party) {
+    numberOfEnemies += Math.floor(player.party.players.length / 2);
+    numberOfEnemies = Math.min(numberOfEnemies, 4);
+  }
 
-  // Get enemy
-  const enemyData = game.getEnemy(chosenEnemy.name);
+  let enemies: Enemy[] = [];
+  for (let i = 0; i < numberOfEnemies; i++) {
+    // Choose enemies randomly based on weights
+    const chosenEnemy = game.getWeightedArray<(typeof floorEnemies)[number]>(floorEnemies);
 
-  // Get image
-  const image = enemyData.getImage();
+    // Get enemy
+    const enemyData = game.getEnemy(chosenEnemy.name);
+
+    // Add new enemy to player explored
+    player.addExploration({
+      type: "enemy",
+      name: enemyData.name,
+    });
+
+    enemies.push(enemyData);
+  }
+
+  // Generate enemy image
+  const image = await game.createEncounterImage({ enemies });
 
   // Create menu
   const menu = new game.Menu({
@@ -50,7 +68,7 @@ export default async function enemyEncounter(args: { player: Player; server: Ser
                 await m.botMessage.delete();
                 const botMessage = await game.send({
                   player,
-                  content: `You ran away from **${enemyData.getName()}**!`,
+                  content: `You ran away from the encounter!`,
                   reply: true,
                 });
                 await game.commandButton({
@@ -79,14 +97,10 @@ export default async function enemyEncounter(args: { player: Player; server: Ser
           game.fastEmbed({
             send: false,
             player: m.player,
-            description: `
-*${enemyData.description}*
-
-Level: **\`${enemyData.level}\`**
-${game.fastProgressBar("health", enemyData)}`,
-            title: `${enemyData.getName()} has appeared!`,
-            thumbnail: image ? `attachment://${image.name}` : null,
-            files: image ? [image] : [],
+            description: ``,
+            title: `Some enemies have appeared!`,
+            files: [image],
+            embed: { image: { url: "attachment://encounter.png" } },
           }),
       },
       {
@@ -95,7 +109,7 @@ ${game.fastProgressBar("health", enemyData)}`,
           await game.enemyInfo({
             message: player.message,
             player: m.player,
-            enemyData,
+            enemyData: enemies[0],
           }),
       },
     ],
@@ -103,18 +117,12 @@ ${game.fastProgressBar("health", enemyData)}`,
 
   menu.init("encounter");
 
-  // Add new enemy to player explored
-  await player.addExploration({
-    type: "enemy",
-    name: enemyData.name,
-  });
-
   // Unlock new commands
   await player.unlockCommands(["attack", "flee", "enemyinfo", "invite"]);
 
   // Enter combat
   async function enterCombat() {
-    await game.enterCombat({ player, enemies: [enemyData] });
+    await game.enterCombat({ player, enemies });
   }
 
   //   // Create enemy in database

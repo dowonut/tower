@@ -44,7 +44,7 @@ export class EnemyClass extends EnemyBaseClass {
   }
 
   /** Get enemy image attachment. */
-  getImage() {
+  getImageAttachment() {
     // Format item name
     const enemyName = this.name.split(" ").join("_").toLowerCase();
 
@@ -60,6 +60,21 @@ export class EnemyClass extends EnemyBaseClass {
       };
 
       return file;
+    }
+  }
+
+  /** Get the path for the enemy image. */
+  getImagePath() {
+    // Format file name
+    const enemyName = this.name.split(" ").join("_").toLowerCase();
+
+    // Create path and check if item image exists
+    const path = `./assets/enemies/${enemyName}.png`;
+
+    if (!fs.existsSync(path)) {
+      return `./assets/enemies/placeholder.png`;
+    } else {
+      return path;
     }
   }
 

@@ -9,6 +9,7 @@ export default {
   ],
   description: "Purchase items from merchants.",
   category: "item",
+  environment: ["protected"],
   async execute(message, args, player, server) {
     const itemNameInput = args.item_name;
     let quantity = args.quantity;

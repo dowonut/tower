@@ -12,7 +12,7 @@ const leaderboardCategories: { [key in string]: { key: string; aliases: string[]
   arcane: { key: "arcane", aliases: ["ar", "arc"], emoji: emojis.traits.arcane },
   vitality: { key: "vitality", aliases: ["v", "vi"], emoji: emojis.traits.vitality },
   // Stats
-  maxhp: { key: "maxHP", aliases: ["max hp", "mhp"], emoji: emojis.stats.maxHP },
+  maxhp: { key: "maxHP", aliases: ["max hp", "mhp", "hp", "health"], emoji: emojis.stats.maxHP },
   atk: { key: "ATK", aliases: ["attack", "a"], emoji: emojis.stats.ATK },
   mag: { key: "MAG", aliases: ["magic", "m"], emoji: emojis.stats.MAG },
   res: { key: "RES", aliases: ["resistance", "r"], emoji: emojis.stats.RES },
@@ -72,7 +72,7 @@ export default {
           function: async (m) =>
             await game.fastEmbed({
               player,
-              title: `Server Leaderboard (${game.titleCase(category)})`,
+              title: `Server Leaderboard (${game.titleCase(leaderboardCategories[category].key)})`,
               fullSend: false,
               reply: true,
               description: await (async () => {
@@ -105,7 +105,6 @@ export default {
             function: (r, i, s: LeaderboardCategory) => {
               category = s;
               sortedPlayers = sortPlayers();
-              console.log(category);
               m.refresh();
             },
           }),

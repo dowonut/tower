@@ -44,6 +44,7 @@ export default {
       enemies: [
         { name: "brown frog", weight: 100 },
         { name: "evil frog", weight: 20 },
+        { name: "salty frog", weight: 50 },
       ],
       loot: [{ name: "frog tongue", weight: 100 }],
     },
