@@ -20,7 +20,7 @@ export default async function parseCommandArguments(options: {
   // console.log("> INITIAL ARGS:", playerArgs);
 
   for (const [i, argument] of command.arguments.entries()) {
-    const input = playerArgs[i];
+    let input = playerArgs[i];
 
     // Format command arguments
     let commandArguments = game.formatCommandArguments(command, server, argument.name);
@@ -40,6 +40,9 @@ export default async function parseCommandArguments(options: {
       errorContent = `Input can't be longer than \`100\` characters.`;
       error();
     }
+
+    // Format underscores
+    input = input?.replaceAll("_", " ") || undefined;
 
     // if (!playerArgs[i]) continue;
     argsObject[argument.name] = input || undefined;

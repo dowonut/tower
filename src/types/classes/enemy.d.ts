@@ -97,7 +97,7 @@ declare global {
     messages?: string[];
     /** How many combat rounds the attack takes to cooldown. */
     cooldown?: number;
-    damage: AttackDamage[];
+    damage: DamageInstance[];
   };
 
   /**

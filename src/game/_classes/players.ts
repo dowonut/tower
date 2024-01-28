@@ -32,8 +32,8 @@ export class PlayerClass extends PlayerBaseClass {
     return true;
   }
 
-  /** Can currently attack. */
-  get canAttack() {
+  /** Can currently take an action. */
+  get canTakeAction() {
     if (!this.encounter) return false;
     return this.encounter.currentPlayer == this.id;
   }

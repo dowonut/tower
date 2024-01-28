@@ -57,6 +57,7 @@ export default {
   ],
   description: "Get top 10 leaderboard for any category.",
   category: "other",
+  useInCombat: true,
   async execute(message, args: { category: LeaderboardCategory }, player, server) {
     let { category = "level" } = args;
 

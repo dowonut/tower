@@ -120,7 +120,7 @@ export default async function runCommand(
       }
 
       // Check if user is allowed to attack in combat
-      if (player.canAttack == false && command.useInTurnOnly == true) {
+      if (player.canTakeAction == false && command.useInTurnOnly == true) {
         return game.error({
           player,
           content: `you can't do this right now.`,

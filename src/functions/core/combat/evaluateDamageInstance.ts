@@ -1,17 +1,13 @@
 import { game } from "../../../tower.js";
 
-/** Evaluate the damage of an attack against a single target. */
-export default async function evaluateAttack(args: {
-  attack: Attack | EnemyAttack;
-  source: Enemy | Player;
-  target: Enemy | Player;
-}): Promise<EvaluatedDamage> {
-  const { attack, source, target } = args;
+/** Evaluate a single attack instance against a single target. */
+export default async function evaluateDamageInstance(args: { damage: DamageInstance; source: Enemy | Player }) {
+  const { damage, source } = args;
 
-  const evaluatedDamage: EvaluatedDamage = { instances: [], total: 0 };
+  const evaluatedDamageInstance: EvaluatedDamageInstance = { targets: [] };
 
-  // Iterate through damage instances of attack
-  for (const damage of attack.damage) {
+  // Iterate through targets
+  for (const target of damage.targets) {
     // Define flat damage
     let flatDamage = 0;
 
@@ -31,9 +27,8 @@ export default async function evaluateAttack(args: {
     const roundedDamage = Math.floor(totalDamage);
 
     // Add to evaluated damage object
-    evaluatedDamage.instances.push({ type: damage.type, total: roundedDamage });
-    evaluatedDamage.total += roundedDamage;
+    evaluatedDamageInstance.targets.push({ type: damage.type, total: roundedDamage, target });
   }
 
-  return evaluatedDamage;
+  return evaluatedDamageInstance;
 }

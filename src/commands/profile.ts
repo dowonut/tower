@@ -40,7 +40,7 @@ ${floorE} ${f(floor)} | ${f(region)}`;
     }
 
     // Check if player is currently in combat
-    if (player.inCombat == true) description += `\n\n${config.emojis.weapons.sword} **Currently in combat.**\n`;
+    if (player.inCombat == true) description += `\n\n${config.emojis.weapons.sword} **Currently in combat.**`;
 
     // Check if player has unused trait points
     if (player.traitPoints > 0)

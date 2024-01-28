@@ -63,6 +63,7 @@ export default async function handleEncounter(args: {
             id: "selectEnemy",
             placeholder: "Select an enemy for more options...",
             options: enemies
+              .sort((a, b) => a.number - b.number)
               .filter((x) => !x.dead)
               .map((x) => {
                 return {
@@ -189,7 +190,7 @@ ${enemyName}${healthBar}`;
           // Get enemy image
           if (!m.variables.encounterImage) {
             m.variables.encounterImage = await game.createEncounterImage({
-              enemies,
+              enemies: enemies.sort((a, b) => a.number - b.number),
               verbose: true,
               selectedEnemy: m.variables.selectedEnemy,
             });
@@ -544,6 +545,9 @@ ${turnOrderList}
       if (menu.variables.enemies.length < 2) {
         board = "enemySelected";
         menu.variables.selectedEnemy = menu.variables.enemies[0].number;
+      } else if (menu.variables.enemies.filter((x) => !x.dead).length < 2) {
+        board = "enemySelected";
+        menu.variables.selectedEnemy = menu.variables.enemies.filter((x) => !x.dead)[0].number;
       }
 
       // Define collector filter

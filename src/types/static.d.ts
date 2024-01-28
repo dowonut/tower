@@ -89,6 +89,9 @@ declare global {
 
   /** Environments. */
   export type Environment = "world" | "dungeon" | "protected";
+
+  /** Action target type. */
+  export type TargetType = "single" | "adjacent" | "all" | "choose";
 }
 
 export {};
