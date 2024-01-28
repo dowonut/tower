@@ -128,7 +128,7 @@ export const traitInfo = {
 export const strongRate = 0.2;
 export const weakRate = 0.2;
 
-export const marksLostOnDeath = 0.8;
+export const marksLostOnDeath = 0.5;
 
 export const embedColors = {
   green: 0x00ff66,

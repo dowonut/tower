@@ -14,6 +14,8 @@ export default async function createEncounterImage(object: {
   const width = 640;
   const height = verbose ? 220 : 160;
 
+  const heightOffset = verbose ? 20 : 0;
+
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
@@ -26,7 +28,7 @@ export default async function createEncounterImage(object: {
     if (enemy.dead) {
       tempCtx.filter = "grayscale(100%)";
     }
-    tempCtx.drawImage(image, 160 * i, 20, 160, 160);
+    tempCtx.drawImage(image, 160 * i, heightOffset, 160, 160);
     tempCtx.filter = "none";
     if (verbose) {
       tempCtx.fillStyle = "#1a1a1a";

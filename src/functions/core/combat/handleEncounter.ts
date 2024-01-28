@@ -254,7 +254,14 @@ ${turnOrderList}
   }
 
   // On player move
-  game.emitter.on("playerMove", async (args: EmitterArgs) => {
+  game.emitter.on("playerMove", onPlayerMove);
+
+  // FUNCTIONS ===============================================================================
+
+  /** Function called by emitter when a player move is detected. */
+  async function onPlayerMove(args: EmitterArgs) {
+    console.log("playerMove event listeners: ", game.emitter.listenerCount("playerMove"));
+
     if (args.encounterId !== encounter.id) return;
     const { attackMessage } = args;
 
@@ -265,9 +272,7 @@ ${turnOrderList}
 
     // Initiate next turn
     await nextTurn();
-  });
-
-  // FUNCTIONS ===============================================================================
+  }
 
   /** Initiate the next turn. */
   async function nextTurn() {
@@ -355,6 +360,9 @@ ${turnOrderList}
 
   /** Exit combat. */
   async function exitCombat(reason: "allPlayersDead" | "allEnemiesDead") {
+    // Kill emitter listener
+    game.emitter.removeListener("playerMove", onPlayerMove);
+
     // Delete messages
     setTimeout(async () => {
       try {
@@ -404,13 +412,13 @@ ${turnOrderList}
       // Solo
       if (players.length < 2) {
         const player = players[0];
-        description += `\nYou have died...\n${f(`-20%`)} ${mark} (Remaining: ${f(player.marks)})\nReturned to ${f(
+        description += `\nYou have died...\n${f(`-50%`)} ${mark} (Remaining: ${f(player.marks)})\nReturned to ${f(
           player.region
         )}`;
       }
       // With party
       else {
-        description += `\nAll players have died...\nAll players ${f(`-20%`)} ${mark}`;
+        description += `\nAll players have died...\nAll players ${f(`-50%`)} ${mark}`;
         for (const player of players) {
           description += `\n${player.ping} returned to ${f(player.region)}`;
         }
@@ -509,8 +517,16 @@ ${turnOrderList}
         return i.user.id == menu.player.user.discordId;
       };
 
-      // Update/create menu
-      await menu[menuFunction](board, {
+      // Re-send encounter menu
+      if (menu.botMessage) {
+        try {
+          await menu.botMessage.delete();
+          menu.botMessage = undefined;
+        } catch (err) {
+          throw game.error({ content: `Failed to reinitialize encounter message.`, player: menu.player });
+        }
+      }
+      await menu.init(board, {
         filter,
       });
     }
