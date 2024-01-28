@@ -4,7 +4,7 @@ import { config, game } from "../../../tower.js";
  * Attach a button component to a message that triggers a command.
  */
 export default async function commandButton(obj: {
-  commands: { name: string; args?: string[] }[];
+  commands: { name: string; args?: string[]; emoji?: string }[];
   player: Player;
   botMessage: Message;
 }) {
@@ -23,7 +23,7 @@ export default async function commandButton(obj: {
             return {
               id: x.name,
               label: game.titleCase(x.name),
-              emoji: config.emojis.side_arrow,
+              emoji: x.emoji ? x.emoji : config.emojis.side_arrow,
               function: async () => {
                 await player.runCommand({ name: x.name, args: x?.args });
               },

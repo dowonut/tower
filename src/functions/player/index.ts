@@ -40,3 +40,4 @@ export { default as getCharacterImage } from "./getCharacterImage.js";
 export { default as createCharacterImage } from "./createCharacterImage.js";
 export { default as getCosmetics } from "./getCosmetics.js";
 export { default as getPlayers } from "./getPlayers.js";
+export { default as evaluateTurnStart } from "./evaluateTurnStart.js";

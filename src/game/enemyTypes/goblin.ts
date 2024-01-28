@@ -32,7 +32,7 @@ export default {
         },
       ],
       // Attack message to send in chat
-      messages: ["ENEMY runs behind PLAYER and punches them in the nuts, dealing DAMAGE"],
+      messages: ["ENEMY runs behind PLAYER and strikes them in the back, dealing DAMAGE"],
       // Attack round cooldown
       cooldown: 0,
     },

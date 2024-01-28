@@ -1,4 +1,5 @@
 import { game, config, prisma, client } from "../tower.js";
+import emojis from "../emojis.js";
 
 export default {
   name: "profile",
@@ -43,7 +44,7 @@ ${floorE} ${f(floor)} | ${f(region)}`;
 
     // Check if player has unused trait points
     if (player.traitPoints > 0)
-      description += `\n\n${side_arrow} **You have \`${player.traitPoints}\` unassigned trait points! \n${side_arrow} Check your traits with \`${server.prefix}traits\`**`;
+      description += `\n\n${side_arrow} **You have \`${player.traitPoints}\` unassigned trait points!**`;
 
     // Create embed
     const color = player.user.embed_color;
@@ -74,10 +75,13 @@ ${floorE} ${f(floor)} | ${f(region)}`;
       files: [characterImage],
     });
 
+    let commandButtons: any = [{ name: "inventory" }, { name: "wardrobe" }];
+    if (player.traitPoints > 0) commandButtons.unshift({ name: "traits", emoji: emojis.gold_side_arrow });
+
     await game.commandButton({
       player,
       botMessage,
-      commands: [{ name: "inventory" }, { name: "equipment" }, { name: "wardrobe" }],
+      commands: commandButtons,
     });
   },
 } as Command;

@@ -15,6 +15,7 @@ const emojis = {
   gold_arrow: "<:gold_arrow:1138473885457715230>",
   green_arrow: "<:green_arrow:1138476227653533706>",
   green_side_arrow: "<:green_side_arrow:1138477150362669086>",
+  gold_side_arrow: "<:side_arrow_gold:1201151365381107732>",
   side_arrow: "<:side_arrow:1138477540302921780>",
   red_x: "<:x_:1138786810584125440>",
   star: "<:star:1138789465675026472>",

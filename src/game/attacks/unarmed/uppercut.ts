@@ -6,8 +6,8 @@ export default {
   // Attack description shown in attack command
   description: "An upwards swing of your fist.",
   // Attack damages
-  damage: [{ type: "bludgeoning", source: "ATK", basePercent: 35 }],
-  cooldown: 1,
+  damage: [{ type: "bludgeoning", source: "ATK", basePercent: 50 }],
+  cooldown: 2,
   // Attack message to send in chat. Multiple strings will choose a random one.
   // You can input variables in the string:
   // ENEMY = enemy name

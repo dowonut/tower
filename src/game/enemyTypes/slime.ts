@@ -12,7 +12,7 @@ export default {
         {
           type: "bludgeoning",
           source: "ATK",
-          basePercent: 80,
+          basePercent: 60,
         },
       ],
       messages: ["ENEMY tries to swallow PLAYER, dealing DAMAGE"],
@@ -24,7 +24,7 @@ export default {
         {
           type: "bludgeoning",
           source: "ATK",
-          basePercent: 50,
+          basePercent: 30,
         },
       ],
       messages: ["ENEMY bounces on PLAYER, dealing DAMAGE"],

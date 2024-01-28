@@ -152,7 +152,8 @@ declare global {
     moveType?: "attack";
     moveOutcome?: "playerDeath" | "enemyDeath";
     player: Player;
-    enemies: Enemy[];
+    enemies?: Enemy[];
+    players?: Player[];
     attackMessage?: string;
   }
 }

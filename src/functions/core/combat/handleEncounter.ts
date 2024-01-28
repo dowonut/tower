@@ -1,6 +1,8 @@
 import { Interaction, TextChannel } from "discord.js";
 import { game, prisma, config } from "../../../tower.js";
 import { f } from "../index.js";
+import PlayerClass from "../../../game/_classes/players.js";
+import { EnemyClass } from "../../../game/_classes/enemies.js";
 
 /** handleEncounter */
 export default async function handleEncounter(args: {
@@ -25,6 +27,7 @@ export default async function handleEncounter(args: {
       enemies,
       turnOrder,
       selectedEnemy: undefined as number,
+      encounterImage: undefined,
     },
     boards: [
       { name: "main", rows: ["enemies", "actions"], message: "main" },
@@ -69,6 +72,7 @@ export default async function handleEncounter(args: {
                 };
               }),
             function: (r, i, s) => {
+              m.variables.encounterImage = undefined;
               m.variables.selectedEnemy = parseInt(s);
               m.switchBoard("enemySelected");
             },
@@ -135,12 +139,19 @@ export default async function handleEncounter(args: {
               { id: "return", board: "enemySelected" },
             ];
           return attacks.map((x) => {
+            let extraInfo = ``;
+            if (!x.remCooldown) {
+              extraInfo = `(${x.damage[0].basePercent}% ${x.damage[0].source})`;
+            } else {
+              extraInfo = `(⏳${x.remCooldown} turns)`;
+            }
             return {
               id: x.name,
-              label: `${x.getName()}` + (x.remCooldown ? ` (${x.remCooldown})` : ""),
+              label: `${x.getName()} ` + extraInfo,
               style: "success",
               stop: true,
               emoji: x.getEmoji(),
+              disable: x.remCooldown > 0,
               async function() {
                 // Attack
                 await game.runCommand("attack", {
@@ -176,11 +187,13 @@ ${enemyName}${healthBar}`;
           }
 
           // Get enemy image
-          let image = await game.createEncounterImage({
-            enemies,
-            verbose: true,
-            selectedEnemy: m.variables.selectedEnemy,
-          });
+          if (!m.variables.encounterImage) {
+            m.variables.encounterImage = await game.createEncounterImage({
+              enemies,
+              verbose: true,
+              selectedEnemy: m.variables.selectedEnemy,
+            });
+          }
 
           // Format turn order list
           let turnOrderList = ``;
@@ -214,7 +227,7 @@ ${turnOrderList}
             fullSend: false,
             reply: false,
             embed: { image: { url: `attachment://encounter.png` } },
-            files: image ? [image] : [],
+            files: [m.variables.encounterImage],
             pingParty: true,
           });
         },
@@ -260,7 +273,9 @@ ${turnOrderList}
 
   /** Function called by emitter when a player move is detected. */
   async function onPlayerMove(args: EmitterArgs) {
-    console.log("playerMove event listeners: ", game.emitter.listenerCount("playerMove"));
+    const { enemies = [], players = [] } = args;
+
+    // console.log("playerMove event listeners: ", game.emitter.listenerCount("playerMove"));
 
     if (args.encounterId !== encounter.id) return;
     const { attackMessage } = args;
@@ -270,13 +285,21 @@ ${turnOrderList}
       await sendAttackMessage(attackMessage);
     }
 
+    // Update turnorder data
+    updateTurnOrder({ enemies, players });
+
     // Initiate next turn
     await nextTurn();
   }
 
   /** Initiate the next turn. */
   async function nextTurn() {
+    // Clear encounter image
+    menu.variables.encounterImage = undefined;
+
+    // Update the turn order
     const turnOrder = await game.updateTurnOrder(menu.variables.turnOrder);
+
     menu.variables.turnOrder = turnOrder;
     menu.variables.selectedEnemy = undefined;
     menu.variables.enemies = turnOrder.filter((x) => !x.isPlayer) as Enemy[];
@@ -288,8 +311,8 @@ ${turnOrderList}
     if (menu.variables.enemies.every((x) => x.dead)) return exitCombat("allEnemiesDead");
 
     // Handle player
-    if (nextEntity.isPlayer) {
-      const player = nextEntity as Player;
+    if (nextEntity instanceof PlayerClass) {
+      const player = await nextEntity.evaluateTurnStart();
 
       // Skip player if dead
       if (player.dead) {
@@ -303,8 +326,8 @@ ${turnOrderList}
       await updateMenu("player");
     }
     // Handle enemy
-    else {
-      const enemy = nextEntity as Enemy;
+    else if (nextEntity instanceof EnemyClass) {
+      const enemy = await nextEntity.evaluateTurnStart();
 
       // Skip enemy if dead
       if (enemy.dead) {
@@ -349,13 +372,16 @@ ${turnOrderList}
 
       // Send player death message
       if (dead && menu.variables.players.length > 1) {
-        const deathMessage = `:skull: ${player.ping} **has died!**`;
-        await game.send({ player, content: deathMessage, reply: true });
+        const deathMessage = `## :skull: ${player.ping} **has died!**`;
+        await game.send({ player, content: deathMessage, reply: false });
       }
+
+      // Update turnorder
+      updateTurnOrder({ players: [player] });
 
       // Next turn
       await nextTurn();
-    }, game.random(2, 5) * 1000);
+    }, game.random(1, 4) * 1000);
   }
 
   /** Exit combat. */
@@ -404,6 +430,14 @@ ${turnOrderList}
         playerLoot[i] = loot;
         playerXP[i] = xp;
       }
+      // Reset attack cooldowns
+      await prisma.attack.updateMany({
+        where: {
+          playerId: player.id,
+          remCooldown: { gt: 0 },
+        },
+        data: { remCooldown: 0 },
+      });
     }
 
     // Send failure message
@@ -534,5 +568,18 @@ ${turnOrderList}
     else if (next == "enemy") {
       await menu[menuFunction]("enemyTurn");
     }
+  }
+
+  /** Update the turn order given an array of enemies or players. */
+  function updateTurnOrder(args: { enemies?: Enemy[]; players: Player[] }) {
+    const { enemies = [], players = [] } = args;
+
+    menu.variables.turnOrder = menu.variables.turnOrder.map((entity) => {
+      if (entity instanceof EnemyClass) {
+        return enemies.find((x) => x.id == entity.id) || entity;
+      } else if (entity instanceof PlayerClass) {
+        return players.find((x) => x.id == entity.id) || entity;
+      }
+    });
   }
 }

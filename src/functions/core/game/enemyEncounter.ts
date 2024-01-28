@@ -11,7 +11,7 @@ export default async function enemyEncounter(args: { player: Player }) {
   const floorEnemies = region.enemies;
 
   // Pick number of enemies to spawn
-  let numberOfEnemies = game.random(1, 4);
+  let numberOfEnemies = game.random(1, 3);
   if (player.party) {
     numberOfEnemies += Math.floor(player.party.players.length / 2);
     numberOfEnemies = Math.min(numberOfEnemies, 4);

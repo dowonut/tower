@@ -43,6 +43,12 @@ export class EnemyClass extends EnemyBaseClass {
     return Object.assign(this, enemyInfo);
   }
 
+  /** Refresh the enemy with info from the database. */
+  async refresh() {
+    const enemyInfo = await prisma.enemy.findUnique({ where: { id: this.id } });
+    return Object.assign(this, enemyInfo);
+  }
+
   /** Get enemy image attachment. */
   getImageAttachment() {
     // Format item name
@@ -133,6 +139,11 @@ export class EnemyClass extends EnemyBaseClass {
       })
     );
     return chosen.player;
+  }
+
+  /** Evaluate the enemy at the start of the turn. */
+  async evaluateTurnStart() {
+    return await this.refresh();
   }
 
   get isPlayer() {

@@ -1,3 +1,5 @@
+import { EnemyClass } from "../../../game/_classes/enemies.js";
+import PlayerClass from "../../../game/_classes/players.js";
 import { game } from "../../../tower.js";
 
 /** Update the current encounter turn order. */

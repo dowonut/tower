@@ -127,7 +127,7 @@ export default {
 
       // Give skill xp
       for (const weaponType of attack.weaponType) {
-        await player.giveSkillXP({ skillName: weaponType + " combat", amount: game.random(20, 30) });
+        await player.giveSkillXP({ skillName: weaponType + " combat", amount: game.random(10, 20) });
       }
     }
 
