@@ -4,7 +4,7 @@ import { AttachmentBuilder } from "discord.js";
 
 /** Get the player's character image from local file storage. */
 export default (async function () {
-  const path = `./static/characters/${this.user.discordId}.png`;
+  const path = `./static/characters/${this.server.serverId}/${this.user.discordId}.png`;
 
   if (!fs.existsSync(path)) return;
 

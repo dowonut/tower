@@ -10,12 +10,14 @@ type ImageCategory = "hair" | "torso" | "legs" | "feet" | "background";
 
 /** Generate a character image based on input parameters. */
 export default (async function (data: PlayerWardrobe) {
+  const characterPath = `./static/characters/${this.server.serverId}`;
+
   const canvas = createCanvas(320, 320);
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
   // Draw layers
-  await drawImage(ctx, { category: "background", name: "cave" });
+  // await drawImage(ctx, { category: "background", name: "cave" });
   await drawImage(ctx, { name: "body", color: data.skin });
   await drawImage(ctx, { name: "eyes_whites" });
   await drawImage(ctx, { name: "eyes_pupils", color: data.eyes });
@@ -29,7 +31,12 @@ export default (async function (data: PlayerWardrobe) {
     await drawImage(ctx, { category: "feet", name: data.feet.name, color: data.feet.color });
 
   const finalRenderedImage = await canvas.encode("png");
-  fs.writeFileSync(`./static/characters/${this.user.discordId}.png`, finalRenderedImage);
+
+  // Check if character image directory exists
+  if (!fs.existsSync(characterPath)) {
+    fs.mkdirSync(characterPath, { recursive: true });
+  }
+  fs.writeFileSync(characterPath + `/${this.user.discordId}.png`, finalRenderedImage);
 
   // Create Discord attachment
   const attachment = new AttachmentBuilder(finalRenderedImage, {

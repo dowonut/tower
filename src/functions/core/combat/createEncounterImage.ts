@@ -42,7 +42,7 @@ export default async function createEncounterImage(object: {
     }
   }
 
-  ctx.drawImage(tempCanvas, (640 - tempCanvas.width) / 2, 0);
+  ctx.drawImage(tempCanvas, (width - tempCanvas.width) / 2, 0);
 
   const finalRenderedImage = await canvas.encode("png");
 

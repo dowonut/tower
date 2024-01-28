@@ -91,6 +91,7 @@ export default {
           name: "list",
           function: async (m) => {
             const party = await game.getParty(partyId);
+            const image = await m.player.createPartyImage();
             let description = ``;
             for (let i = 0; i < party.players.length; i++) {
               const player = await game.getPlayer({
@@ -115,6 +116,8 @@ export default {
               player: m.player,
               description,
               title: `Party (\`${party.players.length}/4\`)`,
+              files: [image],
+              embed: { image: { url: "attachment://party.png" } },
             });
           },
         },
