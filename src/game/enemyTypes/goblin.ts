@@ -17,7 +17,7 @@ export default {
             {
               type: "slashing",
               source: "ATK",
-              basePercent: 70,
+              basePercent: 60,
             },
           ],
           messages: ["SOURCE viciously scratches TARGET dealing DAMAGE"],
@@ -44,6 +44,7 @@ export default {
     {
       name: "club",
       type: "ability",
+      cooldown: 1,
       effects: [
         {
           type: "damage",
@@ -51,7 +52,7 @@ export default {
             {
               type: "bludgeoning",
               source: "ATK",
-              basePercent: 80,
+              basePercent: 70,
             },
           ],
           messages: ["SOURCE swings a massive club into TARGET, dealing DAMAGE"],
