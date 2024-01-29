@@ -32,6 +32,7 @@ export default class Menu<T> extends MenuBase<T> {
       const messageOptions = await this.getMessage(board).function(this);
       // const messageOptions = await board.message();
       const { messageComponents, components } = await this.getComponents(board);
+      // console.log(JSON.stringify(messageComponents, null, 4));
       if (!this.botMessage) {
         this.botMessage = await game.send({
           ...messageOptions,
@@ -39,7 +40,10 @@ export default class Menu<T> extends MenuBase<T> {
           components: messageComponents,
         });
       } else {
-        this.botMessage = (await this.botMessage.edit({ ...messageOptions, components: messageComponents })) as Message;
+        this.botMessage = (await this.botMessage.edit({
+          ...messageOptions,
+          components: messageComponents,
+        })) as Message;
       }
       this.createCollector(components);
     } else if (this.botMessage) {
@@ -53,7 +57,8 @@ export default class Menu<T> extends MenuBase<T> {
   //------------------------------------------------------------
   /** Refresh the current board. */
   async refresh(args: CollectorOptions = undefined) {
-    if (!this.currentBoard || !this.botMessage) throw new Error("Cannot refresh before initialized.");
+    if (!this.currentBoard || !this.botMessage)
+      throw new Error("Cannot refresh before initialized.");
 
     await this.switchBoard(this.currentBoard, args);
   }
@@ -64,7 +69,8 @@ export default class Menu<T> extends MenuBase<T> {
     if (args) {
       this.collectorArgs = args;
     }
-    if (!this.currentBoard || !this.botMessage) throw new Error("Cannot switch board before initialized.");
+    if (!this.currentBoard || !this.botMessage)
+      throw new Error("Cannot switch board before initialized.");
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
@@ -92,6 +98,8 @@ export default class Menu<T> extends MenuBase<T> {
       if (boardRow.type == "buttons") {
         // Format custom component presets.
         boardComponents = (boardComponents as Button[]).map((component) => {
+          if (component?.label?.length > 100)
+            component.label = component.label.slice(0, 97) + "...";
           switch (component.id) {
             // Return button
             case "return":

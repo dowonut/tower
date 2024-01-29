@@ -6,12 +6,12 @@ export default {
   // Attack description shown in attack command
   description: "An upwards swing of your fist.",
   type: "weapon_attack",
-  cooldown: 2,
+  cooldown: 1,
   effects: [
     {
       type: "damage",
       damage: [{ type: "bludgeoning", source: "ATK", basePercent: 50 }],
-      messages: ["PLAYER's fist connects with the underside of ENEMY and deals DAMAGE"],
+      messages: ["SOURCE's fist connects with the underside of TARGET and deals DAMAGE"],
     },
   ],
 } satisfies ActionData;

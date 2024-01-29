@@ -16,10 +16,10 @@ declare global {
     /** For weapon attacks. Dictates the requirements for being able to use the action. For example: "sword" can only be uses when wielding a sword type weapon. */
     requiredWeapon?: WeaponType[];
     /** Action description. */
-    description: string;
+    description?: string;
     /** All effects caused by the action. */
     effects: ActionEffect[];
-    /** How many combat rounds between uses. */
+    /** How many rounds until next available. Default = 0.*/
     cooldown?: number;
   };
 
@@ -55,10 +55,10 @@ declare global {
      *
      * Default: single. */
     targetType?: TargetType;
-    /** Target for damage instance. */
-    targets?: (Enemy | Player)[];
-    /** Message sent for this effect instance. Variables: TARGET, DAMAGE, STATUS, PLAYER. */
+    /** Message sent for this effect instance. Variables: TARGET, DAMAGE, STATUS, SOURCE. */
     messages: string[];
+    /** Target for action effect. DO NOT DEFINE. */
+    targets?: (Enemy | Player)[];
   };
 
   /** All action effect data. */

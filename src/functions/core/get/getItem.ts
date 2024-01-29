@@ -1,5 +1,6 @@
 import items from "../../../game/_classes/items.js";
 import { game, prisma } from "../../../tower.js";
+import _ from "lodash";
 
 /**
  * Get an item class instance given a name.
@@ -9,5 +10,5 @@ export default function getItem(itemName: string) {
 
   if (!item) return;
 
-  return item;
+  return _.cloneDeep(item);
 }

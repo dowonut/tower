@@ -12,8 +12,8 @@ declare global {
     description: string;
     /** Enemy level. */
     level: number;
-    /** Attacks the enemy can perform. Inherited from enemy type. */
-    attacks: string[];
+    /** Actions the enemy can perform. Inherited from enemy type. */
+    actions: string[];
     /** Enemy resistances. */
     strong?: DamageType[];
     /** Enemy weaknesses. */
@@ -50,8 +50,8 @@ declare global {
     strong?: DamageType[];
     /** Class weaknesses. */
     weak?: DamageType[];
-    /** Attacks available to this type. Inherited by specific enemies. */
-    attacks: EnemyAttack[];
+    /** Actions available to this type. Inherited by specific enemies. */
+    actions: ActionData[];
     /** Optionally define base stats for type. */
     stats?: EnemyStats;
     /** Optionally define base loot for type. */
@@ -88,22 +88,13 @@ declare global {
     base_SPD?: number;
   };
 
-  /**
-   * Enemy attack.
-   */
-  export type EnemyAttack = {
-    name: string;
-    /** Message(s) to send when attack is performed. Variables: ENEMY, PLAYER, DAMAGE. */
-    messages?: string[];
-    /** How many combat rounds the attack takes to cooldown. */
-    cooldown?: number;
-    damage: DamageInstance[];
-  };
+  /** Enemy action without class properties. */
+  export type EnemyAction = EnemyActionBase;
 
-  /**
-   * Enemy attack with evaluated damage.
-   */
-  export type EvaluatedEnemyAttack = Modify<EnemyAttack, { damage: EvaluatedDamage }>;
+  export type EnemyActionBase = ActionData & Prisma.EnemyAction;
+
+  /** Evaluated action with total damage from all effects. */
+  export type EvaluatedAction = Modify<EnemyAction, { totalDamage: number }>;
 }
 
 export {};

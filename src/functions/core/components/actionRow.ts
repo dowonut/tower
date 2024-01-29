@@ -49,8 +49,7 @@ export default function actionRow<K, T extends RowType>(
 
       const button = new ButtonBuilder();
 
-      if (component.disable && component.disable == true)
-        button.setDisabled(true);
+      if (component.disable && component.disable == true) button.setDisabled(true);
 
       if (component.label) button.setLabel(component.label);
       if (component.emoji) button.setEmoji(component.emoji);

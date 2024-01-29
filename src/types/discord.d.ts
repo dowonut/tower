@@ -57,6 +57,9 @@ declare global {
   /** Discord component row. */
   export type Row = Button[] | SelectMenu;
 
+  /** Discord button style. */
+  export type ButtonStyle = "primary" | "secondary" | "success" | "danger" | "link";
+
   /**
    * Discord button component.
    */
@@ -64,7 +67,7 @@ declare global {
     id: string;
     label?: string;
     emoji?: string;
-    style?: "primary" | "secondary" | "success" | "danger" | "link";
+    style?: ButtonStyle;
     /** Button is not able to be pressed. Default: false. */
     disable?: boolean;
     url?: string;

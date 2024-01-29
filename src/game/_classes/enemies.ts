@@ -1,12 +1,14 @@
 import { Prisma } from "@prisma/client";
+import _ from "lodash";
 import {
   createClassFromType,
   loadFiles,
   getRandom,
   getWeightedArray,
-  evaluateAttack,
+  evaluateDamage,
   f,
   random,
+  evaluateAction,
 } from "../../functions/core/index.js";
 import { config, prisma, game } from "../../tower.js";
 import emojis from "../../emojis.js";
@@ -84,47 +86,82 @@ export class EnemyClass extends EnemyBaseClass {
     }
   }
 
-  /** Get all attacks evaluated. */
-  async getAttacks(player: Player, evaluated: boolean = true) {
-    // Fetch all class attacks available to the enemy
-    let attacks = this.type.attacks.filter((x) => this.attacks.includes(x.name));
+  /** Get an action. */
+  async getAction(actionName: string) {
+    actionName = actionName.toLowerCase();
+    const actionData = await prisma.enemyAction.findUnique({
+      where: {
+        enemyId_name: {
+          enemyId: this.id,
+          name: actionName,
+        },
+      },
+    });
 
-    let evaluatedAttacks: EvaluatedEnemyAttack[] = [];
+    if (!actionData) return;
 
-    for (const attack of attacks) {
-      const damage = await evaluateAttack({ attack, source: this, target: player });
-      evaluatedAttacks.push({ ...attack, damage });
-    }
+    const actionClass = this.type.actions.find((x) => x.name == actionName);
 
-    return evaluatedAttacks;
+    if (!actionClass) return;
+
+    const finalAction: EnemyAction = Object.assign(_.cloneDeep(actionData), actionClass);
+    return finalAction;
   }
 
-  /** Calculate best attack against player. */
-  async getBestAttack(player: Player) {
-    const attacks = await this.getAttacks(player);
+  /** Get all actions available to the enemy. */
+  async getActions<T extends boolean = false>(args: {
+    player: Player;
+    players: Player[];
+    evaluated: T;
+  }): Promise<T extends true ? EvaluatedAction[] : ActionData[]> {
+    const { player, players, evaluated = false } = args;
+
+    // Fetch all class attacks available to the enemy
+    let actions = this.type.actions.filter((x) => this.actions.includes(x.name));
+
+    if (!evaluated) return actions as any;
+
+    let evaluatedActions: EvaluatedAction[] = [];
+
+    // Iterate through all available actions and evaluate
+    for (const action of actions) {
+      let finalAction = await this.getAction(action.name);
+
+      // Create action if it doesn't exist yet
+      if (!finalAction) {
+        await prisma.enemyAction.create({
+          data: { enemyId: this.id, name: action.name },
+        });
+        finalAction = await this.getAction(action.name);
+      }
+
+      const { actionTotalDamage } = await evaluateAction({
+        source: this,
+        target: player,
+        players,
+        action: finalAction,
+        simulate: true,
+      });
+      evaluatedActions.push({ ...finalAction, totalDamage: actionTotalDamage });
+    }
+
+    return evaluatedActions as any;
+  }
+
+  /** Calculate strongest action against a player. */
+  async getStrongestAction(args: { player: Player; players: Player[] }) {
+    const { player, players } = args;
+
+    let attacks = await this.getActions({ player, players, evaluated: true });
+    console.log(attacks.map((x) => x.name + " " + x.totalDamage));
 
     // Sort by damage descending
-    attacks.sort((a, b) => (a.damage.total > b.damage.total ? 1 : -1));
+    attacks = _.orderBy(attacks, ["totalDamage"], "desc");
 
     // Define chosen attack
     let chosenAttack = attacks[0];
 
     return chosenAttack;
-  }
-
-  /** Format attack message. */
-  getAttackMessage(attack: EvaluatedEnemyAttack, player: Player) {
-    if (!attack.messages) return undefined;
-
-    let message = getRandom(attack.messages);
-
-    const damageText = attack.damage.instances.map((x) => `${emojis.damage[x.type]}${game.f(x.total)}`).join(", ");
-
-    message = message.replaceAll("ENEMY", `**${this.getName()}**`);
-    message = message.replaceAll("DAMAGE", damageText + " damage");
-    message = message.replaceAll("PLAYER", `<@${player.user.discordId}>`);
-
-    return message;
   }
 
   /** Get a target to attack. */
@@ -143,6 +180,15 @@ export class EnemyClass extends EnemyBaseClass {
 
   /** Evaluate the enemy at the start of the turn. */
   async evaluateTurnStart() {
+    // Update attack cooldowns
+    await prisma.enemyAction.updateMany({
+      where: {
+        enemyId: this.id,
+        remCooldown: { gt: 0 },
+      },
+      data: { remCooldown: { increment: -1 } },
+    });
+
     return await this.refresh();
   }
 
@@ -158,7 +204,10 @@ export class EnemyClass extends EnemyBaseClass {
 
   /** Get a specific evaluated stat. */
   getStat(stat: EnemyStat) {
-    const baseStat = this?.stats?.["base_" + stat] || this.type?.stats?.["base_" + stat] || config.baseEnemyStats[stat];
+    const baseStat =
+      this?.stats?.["base_" + stat] ||
+      this.type?.stats?.["base_" + stat] ||
+      config.baseEnemyStats[stat];
 
     // Get flat bonus from level
     const levelBonusFunction = config["enemy_" + stat];

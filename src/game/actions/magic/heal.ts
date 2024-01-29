@@ -6,7 +6,7 @@ export default {
     {
       type: "custom",
       targetMode: "allies",
-      messages: ["PLAYER heals TARGET for STATUS"],
+      messages: ["SOURCE heals TARGET for STATUS"],
       async evaluate(args) {
         const { source } = args;
 

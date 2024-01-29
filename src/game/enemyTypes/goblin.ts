@@ -5,51 +5,58 @@ export default {
   strong: ["earth"],
   weak: ["water"],
   // All attacks available to the class
-  attacks: [
+  actions: [
     {
-      // Attack name
       name: "scratch",
-      damage: [
-        {
-          type: "slashing",
-          source: "ATK",
-          basePercent: 70,
-        },
-      ],
-      // Attack message to send in chat
-      messages: ["ENEMY viciously scratches PLAYER dealing DAMAGE"],
-      // Attack round cooldown
       cooldown: 1,
+      type: "ability",
+      effects: [
+        {
+          type: "damage",
+          damage: [
+            {
+              type: "slashing",
+              source: "ATK",
+              basePercent: 70,
+            },
+          ],
+          messages: ["SOURCE viciously scratches TARGET dealing DAMAGE"],
+        },
+      ],
     },
     {
-      // Attack name
       name: "punch",
-      damage: [
+      type: "ability",
+      effects: [
         {
-          type: "bludgeoning",
-          source: "ATK",
-          basePercent: 50,
+          type: "damage",
+          damage: [
+            {
+              type: "bludgeoning",
+              source: "ATK",
+              basePercent: 50,
+            },
+          ],
+          messages: ["SOURCE runs behind TARGET and strikes them in the back, dealing DAMAGE"],
         },
       ],
-      // Attack message to send in chat
-      messages: ["ENEMY runs behind PLAYER and strikes them in the back, dealing DAMAGE"],
-      // Attack round cooldown
-      cooldown: 0,
     },
     {
-      // Attack name
       name: "club",
-      damage: [
+      type: "ability",
+      effects: [
         {
-          type: "bludgeoning",
-          source: "ATK",
-          basePercent: 80,
+          type: "damage",
+          damage: [
+            {
+              type: "bludgeoning",
+              source: "ATK",
+              basePercent: 80,
+            },
+          ],
+          messages: ["SOURCE swings a massive club into TARGET, dealing DAMAGE"],
         },
       ],
-      // Attack message to send in chat
-      messages: ["ENEMY swings a massive club into PLAYER, dealing DAMAGE"],
-      // Attack round cooldown
-      cooldown: 0,
     },
   ],
 } satisfies EnemyType;

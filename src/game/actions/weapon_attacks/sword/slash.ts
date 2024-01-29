@@ -11,9 +11,9 @@ export default {
       type: "damage",
       damage: [{ type: "slashing", source: "ATK", basePercent: 50 }],
       messages: [
-        "PLAYER slashes elegantly at ENEMY and deals DAMAGE",
-        "PLAYER's sword cuts cleanly through ENEMY, dealing DAMAGE",
-        "PLAYER gracefully slices at ENEMY with their blade, dealing DAMAGE",
+        "SOURCE slashes elegantly at TARGET and deals DAMAGE",
+        "SOURCE's sword cuts cleanly through TARGET, dealing DAMAGE",
+        "SOURCE gracefully slices at TARGET with their blade, dealing DAMAGE",
       ],
     },
   ],

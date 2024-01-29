@@ -122,7 +122,7 @@ export default {
 
       if (attack.cooldown) {
         // Update remaining cooldown
-        attack = await attack.update({ remCooldown: attack.cooldown });
+        attack = await attack.update({ remCooldown: attack.cooldown + 1 });
       }
 
       // Send emitter

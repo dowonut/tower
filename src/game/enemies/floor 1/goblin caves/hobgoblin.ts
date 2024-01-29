@@ -8,7 +8,7 @@ export default {
   // Enemy level. Used to scale attack power.
   level: 4,
   // All anime attacks. Available attacks can be seen in enemy class.
-  attacks: ["scratch", "punch", "club"],
+  actions: ["scratch", "punch", "club"],
   // Enemy loot table. Item names and drops.
   loot: [{ name: "goblin skin", dropChance: 100, min: 2, max: 3 }],
 } satisfies EnemyData;

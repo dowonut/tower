@@ -1,6 +1,7 @@
 import * as Prisma from "@prisma/client";
 import { game, prisma } from "../../tower.js";
 import items from "../../game/_classes/items.js";
+import _ from "lodash";
 
 type SortOptions = "name" | "quantity" | "damage";
 
@@ -35,7 +36,7 @@ export default (async function (
   for (const item of itemData) {
     const itemClass = items.find((x) => x.name == item.name.toLowerCase());
 
-    const finalItem = Object.assign(itemClass, item) satisfies Item;
+    const finalItem = Object.assign(_.cloneDeep(itemClass), item) satisfies Item;
 
     finalItems.push(finalItem);
   }

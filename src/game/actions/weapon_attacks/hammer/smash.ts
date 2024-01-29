@@ -7,7 +7,7 @@ export default {
     {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 50 },
-      messages: ["PLAYER smashes ENEMY with their hammer, dealing DAMAGE"],
+      messages: ["SOURCE smashes TARGET with their hammer, dealing DAMAGE"],
     },
   ],
 } satisfies ActionData;

@@ -189,7 +189,7 @@ export default async function enemyEncounter(args: { player: Player }) {
   //             const results = await performAttack(attack);
 
   //             // Check if enemy or player idead and update components
-  //             if (results == "KILLED_ENEMY" || results == "KILLED_PLAYER") {
+  //             if (results == "KILLED_TARGET" || results == "KILLED_SOURCE") {
   //               await reply.edit({ components: [] });
   //             } else {
   //               await updateAttacks();

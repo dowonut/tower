@@ -26,7 +26,8 @@ export default {
     },
     {
       name: "lush forest",
-      description: "A pleasant forest with a shallow pond. Perfect place to get some wood or do some fishing.",
+      description:
+        "A pleasant forest with a shallow pond. Perfect place to get some wood or do some fishing.",
       environment: "protected",
       activities: [
         { name: "fishing", fish: [{ name: "fish", weight: 100 }] },
@@ -44,13 +45,14 @@ export default {
       enemies: [
         { name: "brown frog", weight: 100 },
         { name: "evil frog", weight: 20 },
-        { name: "salty frog", weight: 50 },
+        { name: "milky frog", weight: 50 },
       ],
       loot: [{ name: "frog tongue", weight: 100 }],
     },
     {
       name: "village",
-      description: "A cozy village with kind people. Might they know something of the floor dungeons?",
+      description:
+        "A cozy village with kind people. Might they know something of the floor dungeons?",
       environment: "protected",
       merchants: [
         { category: "general goods" },

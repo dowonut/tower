@@ -8,8 +8,8 @@ export default {
       type: "damage",
       damage: { type: "piercing", source: "ATK", basePercent: 50 },
       messages: [
-        "PLAYER shoots a piercing arrow at ENEMY, dealing DAMAGE",
-        "PLAYER makes a beautiful shot at ENEMY and deals DAMAGE",
+        "SOURCE shoots a piercing arrow at TARGET, dealing DAMAGE",
+        "SOURCE makes a beautiful shot at TARGET and deals DAMAGE",
       ],
     },
   ],

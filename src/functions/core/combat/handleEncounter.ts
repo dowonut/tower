@@ -3,6 +3,8 @@ import { game, prisma, config } from "../../../tower.js";
 import { f } from "../index.js";
 import PlayerClass from "../../../game/_classes/players.js";
 import { EnemyClass } from "../../../game/_classes/enemies.js";
+import emojis from "../../../emojis.js";
+import _ from "lodash";
 
 /** handleEncounter */
 export default async function handleEncounter(args: {
@@ -16,6 +18,9 @@ export default async function handleEncounter(args: {
   let { encounter, turnOrder } = args;
   // Handle edge cases
   if (encounter.enemies.length < 1 || encounter.players.length < 1) return;
+
+  // Check if all enemies are already dead
+  if (_.isEmpty(enemies) || enemies.every((x) => x?.dead)) return await killEncounter();
 
   const firstPlayer: Player = game.getNextPlayer(turnOrder);
 
@@ -142,7 +147,7 @@ export default async function handleEncounter(args: {
           return attacks.map((x) => {
             let extraInfo = ``;
             if (!x.remCooldown) {
-              //extraInfo = `(${x.damage[0].basePercent}% ${x.damage[0].source})`;
+              extraInfo = `(${x.getBriefDamageText()})`;
             } else {
               extraInfo = `(⏳${x.remCooldown} turns)`;
             }
@@ -295,11 +300,13 @@ ${turnOrderList}
     // }
 
     const botMsg = await game.send({ player: players[0], reply: false, content: message });
-    encounter = await prisma.encounter.update({
-      where: { id: encounter.id },
-      data: { lastActionMessageId: botMsg.id },
-      include: { players: true, enemies: true },
-    });
+    try {
+      encounter = await prisma.encounter.update({
+        where: { id: encounter.id },
+        data: { lastActionMessageId: botMsg.id },
+        include: { players: true, enemies: true },
+      });
+    } catch (err) {}
   }
 
   /** Function called by emitter when a player move is detected. */
@@ -379,36 +386,35 @@ ${turnOrderList}
       // Get player
       let player = enemy.getTargetPlayer(menu.variables.players);
       // Get evaluated attack
-      const attack = await enemy.getBestAttack(player);
-      const damage = attack.damage;
-      const totalDamage = damage.total;
-      const previousPlayerHealth = player.health;
-
-      // Update player
-      const dead = player.health - totalDamage < 1 ? true : false;
-      player = await player.update({ health: { increment: -totalDamage }, dead });
-
-      // Send attack message
-      const attackMessage = game.getAttackMessage({
-        source: "enemy",
-        player,
-        enemy,
-        attack,
-        previousHealth: previousPlayerHealth,
+      const action = await enemy.getStrongestAction({ player, players: menu.variables.players });
+      console.log("> chosen enemy action: ", action.name, action.totalDamage);
+      // Evaluate action
+      const { players, enemies } = await game.evaluateAction({
+        enemies: menu.variables.enemies,
+        players: menu.variables.players,
+        source: enemy,
+        target: player,
+        action,
       });
-      game.emitter.emit("actionMessage", {
-        message: attackMessage,
-        encounterId: encounter.id,
-      } satisfies ActionMessageEmitter);
 
-      // Send player death message
-      if (dead && menu.variables.players.length > 1) {
-        const deathMessage = `## :skull: ${player.ping} **has died!**`;
-        await game.send({ player, content: deathMessage, reply: false });
+      // Update action cooldowns
+      if (action.cooldown) {
+        await prisma.enemyAction.update({
+          where: { enemyId_name: { name: action.name, enemyId: enemy.id } },
+          data: { remCooldown: action.cooldown + 1 },
+        });
       }
 
-      // Update turnorder
-      updateTurnOrder({ players: [player] });
+      // Update the turn order
+      updateTurnOrder({ players, enemies });
+
+      // Send player death message
+      for (const player of players) {
+        if (player.dead && menu.variables.players.length > 1) {
+          const deathMessage = `## :skull: ${player.ping} **has died!**`;
+          await game.send({ player, content: deathMessage, reply: false });
+        }
+      }
 
       // Next turn
       await nextTurn();
@@ -422,28 +428,19 @@ ${turnOrderList}
     game.emitter.removeListener("actionMessage", onActionMessage);
 
     // Delete messages
-    setTimeout(async () => {
-      try {
-        // menu.botMessage.delete();
-        // const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
-        // lastMessage.delete();
-      } catch (err) {}
-    }, 10000);
+    // setTimeout(async () => {
+    //   try {
+    //     menu.botMessage.delete();
+    //     const lastMessage = await channel.messages.fetch(encounter.lastActionMessageId);
+    //     lastMessage.delete();
+    //   } catch (err) {}
+    // }, 10000);
 
     // Switch to end board
     menu.switchBoard("end");
 
-    // Delete encounter
-    await prisma.encounter.delete({ where: { id: encounter.id } });
-
-    // Delete all enemies
-    prisma.enemy.deleteMany({
-      where: {
-        OR: menu.variables.enemies.map((x) => {
-          return { id: x.id };
-        }),
-      },
-    });
+    // Delete encounter and enemies()
+    await killEncounter();
 
     let players = menu.variables.players;
     let playerLoot: Item[][] = [];
@@ -615,5 +612,23 @@ ${turnOrderList}
         return players.find((x) => x.id == entity.id) || entity;
       }
     });
+  }
+
+  /** Delete the encounter and all enemies. */
+  async function killEncounter() {
+    // Delete encounter
+    await prisma.encounter.delete({ where: { id: encounter.id } });
+
+    // Delete all enemies
+    const enemiesRemaining = menu ? menu.variables.enemies : enemies;
+    await prisma.enemy.deleteMany({
+      where: {
+        OR: enemiesRemaining.map((x) => {
+          return { id: x.id };
+        }),
+      },
+    });
+
+    return;
   }
 }

@@ -1,7 +1,10 @@
+import _ from "lodash";
+
 /**
  * Combine a class instance with object properties.
  */
 export default function createClassObject<T>(baseClass: any, baseInfo: any) {
-  const source = Object.assign(Object.create(Object.getPrototypeOf(baseClass)), baseClass, baseInfo) satisfies T as T;
+  if (!baseClass) return;
+  const source = Object.assign(_.cloneDeep(baseClass), baseInfo);
   return source;
 }

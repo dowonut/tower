@@ -7,7 +7,7 @@ export default {
     {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 50 },
-      messages: ["PLAYER bashes ENEMY with their shield, dealing DAMAGE"],
+      messages: ["SOURCE bashes TARGET with their shield, dealing DAMAGE"],
     },
   ],
 } satisfies ActionData;

@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { EnemyClass } from "../../../game/_classes/enemies.js";
 import PlayerClass from "../../../game/_classes/players.js";
 import { game } from "../../../tower.js";
@@ -8,14 +9,19 @@ export default async function evaluateAction(args: {
   players?: Player[];
   source: Enemy | Player;
   target?: Player | Enemy;
-  action: Action;
-}): Promise<{ enemies?: Enemy[]; players?: Player[] }> {
-  let { enemies = [], players = [], source, action, target } = args;
+  action: Action | EnemyAction;
+  /** Don't update sources or targets. Only return information about the action. Default: false. */
+  simulate?: boolean;
+}) {
+  let { enemies = [], players = [], source, action, target, simulate = false } = args;
 
+  let actionTotalDamage = 0;
+
+  // Iterate through action effects
   for (let effect of action.effects) {
     const entities = target instanceof EnemyClass ? enemies : players;
     // Define targets per effect
-    if (!effect.targets) effect.targets = [];
+    effect.targets = [];
     if (!effect.targetType) effect.targetType = "single";
     switch (effect.targetType) {
       // Single target
@@ -41,6 +47,7 @@ export default async function evaluateAction(args: {
       case "choose":
         break;
     }
+    if (!effect.targets || effect.targets.length < 1) effect.targets = [];
 
     switch (effect.type) {
       case "damage":
@@ -53,16 +60,48 @@ export default async function evaluateAction(args: {
     }
   }
 
-  return {};
+  return { enemies, players, actionTotalDamage };
 
   /** Evaluate effect of type = damage. */
   async function evaluateDamage(effect: ActionEffect<"damage">) {
     const damage = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
+    for (let target of effect.targets) {
+      if (!target) continue;
 
-    const evaluatedDamage = game.evaluateDamage({
-      damageInstances: damage,
-      source,
-      target: damage,
-    });
+      // Evaluate damage of effect against target
+      const evaluatedDamage = game.evaluateDamage({
+        damageInstances: damage,
+        source,
+        target,
+      });
+      const totalDamage = evaluatedDamage.total;
+      const previousEnemyHealth = target.health;
+
+      // Pass total damage if simulating
+      if (simulate) {
+        actionTotalDamage += totalDamage;
+        continue;
+      }
+
+      // Update enemy
+      const dead = target.health - totalDamage < 1 ? true : false;
+      target = await (target as Player).update({ health: { increment: -totalDamage }, dead });
+
+      // Get attack message
+      const message = game.getEffectMessage({
+        effect,
+        damage: evaluatedDamage,
+        source,
+        target,
+        previousHealth: previousEnemyHealth,
+      });
+
+      // Send attack message
+      game.emitter.emit("actionMessage", {
+        encounterId: source.encounterId,
+        message,
+      } satisfies ActionMessageEmitter);
+    }
+    return;
   }
 }

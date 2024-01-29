@@ -96,6 +96,8 @@ export const damageTypes = [
   "earth",
   "fire",
   "water",
+  "void",
+  "light",
 ] as const;
 // Types of shards
 export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] as const;
@@ -128,7 +130,7 @@ export const commandCategoryDescriptions = {
   admin: "Hands off! Admins only.",
 };
 
-export const defaultAttackMessage = "ENEMY attacks PLAYER and deals DAMAGE";
+export const defaultAttackMessage = "TARGET attacks SOURCE and deals DAMAGE";
 
 export const traitInfo = {
   strength: `Increases ${allEmojis.stats.ATK}\`ATK\` by \`+1%\``,

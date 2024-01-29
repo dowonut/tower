@@ -5,7 +5,7 @@ export default {
   level: 2,
   strong: ["fire"],
   weak: ["water"],
-  attacks: ["swallow", "bounce", "burn"],
+  actions: ["swallow", "bounce", "burn"],
   loot: [{ name: "slimeball", dropChance: 50, min: 1, max: 2 }],
   shard: { dropChance: 20, type: "grey" },
 } satisfies EnemyData;

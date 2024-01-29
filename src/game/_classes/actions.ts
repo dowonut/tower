@@ -20,6 +20,19 @@ export class ActionClass extends ActionClassBase {
     // return text;
   }
 
+  /** Get short damage text for buttons. */
+  getBriefDamageText() {
+    let text: string[] = [];
+    const effects = this.effects.filter((x) => x.type == "damage");
+    for (const effect of effects as ActionEffect<"damage">[]) {
+      const damages = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
+      for (const damage of damages) {
+        text.push(`${damage.basePercent}% ${damage.source}`);
+      }
+    }
+    return text.join(", ");
+  }
+
   /** Get cooldown text. */
   getCooldownText() {
     let text = ``;
@@ -63,9 +76,9 @@ export class ActionClass extends ActionClassBase {
         .map((x) => `${emojis.damage[x.type]}${game.f(x.total)}`)
         .join(", ");
 
-      message = message.replaceAll("ENEMY", `**${enemy.getName()}**`);
+      message = message.replaceAll("TARGET", `**${enemy.getName()}**`);
       message = message.replaceAll("DAMAGE", damageText + " damage");
-      message = message.replaceAll("PLAYER", `${player.ping}`);
+      message = message.replaceAll("SOURCE", `${player.ping}`);
 
       messages.push(message);
     }

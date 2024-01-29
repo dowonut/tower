@@ -8,8 +8,8 @@ export default {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 70 },
       messages: [
-        "PLAYER sprints and slams into ENEMY, dealing DAMAGE",
-        "PLAYER leaps into the air and lands on ENEMY with their shield, dealing DAMAGE",
+        "SOURCE sprints and slams into TARGET, dealing DAMAGE",
+        "SOURCE leaps into the air and lands on TARGET with their shield, dealing DAMAGE",
       ],
     },
   ],

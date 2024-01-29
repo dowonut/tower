@@ -5,23 +5,27 @@ export default {
   strong: ["bludgeoning", "piercing", "slashing", "earth", "fire", "air", "water"],
   weak: [],
   // All attacks available to the class
-  attacks: [
+  actions: [
     {
-      // Attack name
       name: "smash",
-      damage: [
+      cooldown: 0,
+      type: "ability",
+      effects: [
         {
-          type: "bludgeoning",
-          source: "ATK",
-          basePercent: 80,
+          type: "damage",
+          targetType: "all",
+          damage: [
+            {
+              type: "bludgeoning",
+              source: "ATK",
+              basePercent: 80,
+            },
+          ],
+          messages: [
+            "SOURCE somehow rises several meters above ground before violently smashing down on TARGET, dealing DAMAGE",
+          ],
         },
       ],
-      // Attack message to send in chat
-      messages: [
-        "ENEMY somehow rises several meters above ground before violently smashing down on PLAYER, dealing DAMAGE",
-      ],
-      // Attack round cooldown
-      cooldown: 0,
     },
   ],
 } satisfies EnemyType;

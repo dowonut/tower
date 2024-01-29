@@ -7,8 +7,8 @@ export default {
     {
       damage: [{ type: "piercing", source: "ATK", basePercent: 50 }],
       messages: [
-        "PLAYER pokes ENEMY with the pointy end of their spear, dealing a massive DAMAGE",
-        "ENEMY receives a thorough poking by PLAYER, taking DAMAGE",
+        "SOURCE pokes TARGET with the pointy end of their spear, dealing a massive DAMAGE",
+        "TARGET receives a thorough poking by SOURCE, taking DAMAGE",
       ],
       type: "damage",
     },

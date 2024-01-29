@@ -11,9 +11,9 @@ export default {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 200 },
       messages: [
-        "Rock in hand, you brutally smash it against ENEMY, dealing DAMAGE",
-        "You channel the energy of your caveman ancestors, brutally crushing the rock against ENEMY and dealing DAMAGE",
-        "ENEMY is completely annihilated by the rock and takes DAMAGE",
+        "Rock in hand, you brutally smash it against TARGET, dealing DAMAGE",
+        "You channel the energy of your caveman ancestors, brutally crushing the rock against TARGET and dealing DAMAGE",
+        "TARGET is completely annihilated by the rock and takes DAMAGE",
       ],
     },
   ],

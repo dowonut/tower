@@ -202,14 +202,14 @@ model Enemy {
   name        String
   number      Int           @default(0)
   health      Int
-  attacks     enemyAttack[]
+  actions     EnemyAction[]
   encounter   Encounter?    @relation(fields: [encounterId], references: [id], onDelete: Cascade)
   encounterId Int?
   SV          Int?
   dead        Boolean       @default(false)
 }
 
-model enemyAttack {
+model EnemyAction {
   id          Int    @id @default(autoincrement())
   enemy       Enemy  @relation(fields: [enemyId], references: [id], onDelete: Cascade)
   enemyId     Int

@@ -36,11 +36,14 @@ ${floorE} ${f(floor)} | ${f(region)}`;
 
     // Add traits
     if (player.level > 0) {
-      description += `\n\n${strength} ${f(ps)} ${defense} ${f(pd)} ${arcane} ${f(pa)} ${vitality} ${f(pv)}`;
+      description += `\n\n${strength} ${f(ps)} ${defense} ${f(pd)} ${arcane} ${f(
+        pa
+      )} ${vitality} ${f(pv)}`;
     }
 
     // Check if player is currently in combat
-    if (player.inCombat == true) description += `\n\n${config.emojis.weapons.sword} **Currently in combat.**`;
+    if (player.inCombat == true)
+      description += `\n\n${config.emojis.weapons.sword} **Currently in combat.**`;
 
     // Check if player has unused trait points
     if (player.traitPoints > 0)
@@ -76,7 +79,8 @@ ${floorE} ${f(floor)} | ${f(region)}`;
     });
 
     let commandButtons: any = [{ name: "inventory" }, { name: "wardrobe" }];
-    if (player.traitPoints > 0) commandButtons.unshift({ name: "traits", emoji: emojis.gold_side_arrow });
+    if (player.traitPoints > 0)
+      commandButtons.unshift({ name: "traits", emoji: emojis.gold_side_arrow, style: "primary" });
 
     await game.commandButton({
       player,

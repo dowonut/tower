@@ -19,6 +19,5 @@ export default (async function (actionName: string) {
   if (!actionClass) return;
 
   const finalAction = game.createClassObject<Action>(actionClass, actionData);
-
   return finalAction;
 } satisfies PlayerFunction);
