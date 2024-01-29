@@ -8,6 +8,11 @@ export class PlayerClass extends PlayerBaseClass {
     super(player);
   }
 
+  /** Get number in party */
+  get number() {
+    return this?.party?.players.findIndex((p) => p.id == this.id) + 1 || 1;
+  }
+
   /** Currently in combat? */
   get inCombat() {
     return this.encounterId ? true : false;

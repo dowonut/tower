@@ -107,7 +107,11 @@ export default async function parseCommandArguments(options: {
 
         // Must be the name of an attack available to the player
         case "playerAvailableAttack":
-          const attack = await player.getAttacks({ onlyAvailable: true, name: input });
+          const attack = await player.getActions({
+            onlyAvailable: true,
+            name: input,
+            type: "weapon_attack",
+          });
           if (!attack[0]) {
             errorContent = `No attack found with name **\`${input}\`**`;
             error();

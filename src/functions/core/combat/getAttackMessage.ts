@@ -10,15 +10,24 @@ export default function getAttackMessage(args: {
   attack: Attack | EvaluatedEnemyAttack;
   previousHealth?: number;
 }) {
-  const { source, player, enemy, damage = { instances: [], total: 0 }, attack, previousHealth = 0 } = args;
+  const {
+    source,
+    player,
+    enemy,
+    damage = { instances: [], total: 0 },
+    attack,
+    previousHealth = 0,
+  } = args;
 
   let attackMessage: string;
   let healthText: string;
   let healthBar: string;
   // From player
   if (source == "player") {
-    attackMessage = (attack as Attack).getMessage(player, enemy, damage);
-    healthText = `**${enemy.displayName}** | ${config.emojis.health} ` + game.f(`${enemy.health} / ${enemy.maxHP}`);
+    attackMessage = (attack as Action).getMessages(player, enemy, damage);
+    healthText =
+      `**${enemy.displayName}** | ${config.emojis.health} ` +
+      game.f(`${enemy.health} / ${enemy.maxHP}`);
     healthBar = game.progressBar({
       type: "orange",
       min: enemy.health,
@@ -30,7 +39,8 @@ export default function getAttackMessage(args: {
   // From enemy
   else if (source == "enemy") {
     attackMessage = enemy.getAttackMessage(attack as EvaluatedEnemyAttack, player);
-    healthText = `${player.ping} | ${config.emojis.health} ` + game.f(`${player.health} / ${player.maxHP}`);
+    healthText =
+      `${player.ping} | ${config.emojis.health} ` + game.f(`${player.health} / ${player.maxHP}`);
     healthBar = game.progressBar({
       type: "red",
       min: player.health,

@@ -11,7 +11,7 @@ export default {
 
     if (player.inCombat) {
       // Check if player can take an action
-      if (!player.canTakeAction) return game.error({ player, content: `you can't flee right now.` });
+      // if (!player.canTakeAction) retursn game.error({ player, content: `you can't flee right now.` });
 
       const response = await player.exitCombat();
 

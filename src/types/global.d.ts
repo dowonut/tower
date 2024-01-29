@@ -112,7 +112,12 @@ declare global {
    * Main command function without player requirement.
    */
   interface ExecuteNoPlayer {
-    (message: Message, args: CommandParsedArguments, player: Player | void, server: Server): Promise<any>;
+    (
+      message: Message,
+      args: CommandParsedArguments,
+      player: Player | void,
+      server: Server
+    ): Promise<any>;
   }
 
   /**
@@ -141,7 +146,7 @@ declare global {
   /** Player Prisma Model */
   type PlayerModel = PrismaClient.PlayerGetPayload<{
     include: {
-      encounter: { include: { players: true; enemies: true } };
+      encounter: { include: { players: { include: { user: true } }; enemies: true } };
       party: { include: { players: { include: { user: true } } } };
       passives: true;
       inventory: true;
@@ -216,5 +221,7 @@ declare global {
   /**
    * Combat encounter.
    */
-  export type Encounter = PrismaClient.EncounterGetPayload<{ include: { players: true; enemies: true } }>;
+  export type Encounter = PrismaClient.EncounterGetPayload<{
+    include: { players: true; enemies: true };
+  }>;
 }

@@ -49,7 +49,7 @@ model Player {
   /// [PrismaPlayerWadrobe]
   wardrobe      Json?
   inventory     Inventory[]
-  attacks       Attack[]
+  actions       Action[]
   merchantStock MerchantStock[]
   skills        Skill[]
   recipes       Recipe[]
@@ -167,8 +167,8 @@ model Exploration {
   restocked Int?
 }
 
-// Player attacks
-model Attack {
+// Player actions
+model Action {
   id          Int    @id @default(autoincrement())
   player      Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId    Int
@@ -228,7 +228,7 @@ model Encounter {
   currentPlayer       Int?
   discordMessageId    String?
   discordChannelId    String?
-  lastAttackMessageId String?
+  lastActionMessageId String?
 }
 
 // Player parties

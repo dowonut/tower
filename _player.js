@@ -113,9 +113,7 @@ const player = {
         continue;
       }
 
-      const tutorial = tutorials.find(
-        (x) => x.name == commandName.toLowerCase()
-      );
+      const tutorial = tutorials.find((x) => x.name == commandName.toLowerCase());
 
       if (tutorial) {
         tutorialRefs.push(tutorial);
@@ -183,9 +181,7 @@ const player = {
 
     let itemArray = [];
     for (const playerItem of playerItems) {
-      const itemData = items.find(
-        (x) => x.name == playerItem.name.toLowerCase()
-      );
+      const itemData = items.find((x) => x.name == playerItem.name.toLowerCase());
       const item = { ...playerItem, ...itemData };
 
       itemArray.push(item);
@@ -333,11 +329,9 @@ const player = {
     });
     if (!attackRef[0]) return undefined;
 
-    const attackData = attacks.find(
-      (x) => x.name == attackRef[0].name.toLowerCase()
-    );
+    const ActionData = attacks.find((x) => x.name == attackRef[0].name.toLowerCase());
 
-    let attack = { ...attackData, ...attackRef[0] };
+    let attack = { ...ActionData, ...attackRef[0] };
 
     if (this.hand) {
       const item = await this.getItem(this.hand);
@@ -366,13 +360,11 @@ const player = {
     let attackArray = [];
 
     for (const playerAttack of playerAttacks) {
-      const attackData = attacks.find(
-        (x) => x.name == playerAttack.name.toLowerCase()
-      );
+      const ActionData = attacks.find((x) => x.name == playerAttack.name.toLowerCase());
 
-      if (!attackData) continue;
+      if (!ActionData) continue;
 
-      const attack = { ...playerAttack, ...attackData };
+      const attack = { ...playerAttack, ...ActionData };
 
       attackArray.push(attack);
     }
@@ -453,10 +445,7 @@ const player = {
       },
     });
 
-    return await game.reply(
-      this.message,
-      `New skill unlocked: **${game.titleCase(skillName)}**`
-    );
+    return await game.reply(this.message, `New skill unlocked: **${game.titleCase(skillName)}**`);
   },
 
   // Get all recipes or a specific recipe
@@ -582,9 +571,7 @@ const player = {
 
     if (!enemyInfo) return undefined;
 
-    const enemyType = enemies.find(
-      (x) => x.name == enemyInfo.name.toLowerCase()
-    );
+    const enemyType = enemies.find((x) => x.name == enemyInfo.name.toLowerCase());
 
     const enemy = { ...enemyInfo, ...enemyType };
 
@@ -651,12 +638,7 @@ const player = {
 
     // Send death message
     await game.reply(message, `you killed **${enemy.getName()}** :skull:`);
-    const reply = await game.fastEmbed(
-      message,
-      this,
-      embed,
-      `Loot from ${enemy.getName()}`
-    );
+    const reply = await game.fastEmbed(message, this, embed, `Loot from ${enemy.getName()}`);
 
     // Give xp to player
     const levelReply = await this.giveXp(xp, message, server, game);
@@ -906,9 +888,7 @@ const player = {
       merchantC = game.getRandom(merchantCategories);
     }
 
-    const merchant = merchants.find(
-      (x) => x.category == merchantC && x.floor == this.floor
-    );
+    const merchant = merchants.find((x) => x.category == merchantC && x.floor == this.floor);
 
     const mName = game.titleCase(merchant.name);
     const mCategory = game.titleCase(merchant.category + " merchant");

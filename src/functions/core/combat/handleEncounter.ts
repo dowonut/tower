@@ -133,7 +133,7 @@ export default async function handleEncounter(args: {
         name: "attacks",
         type: "buttons",
         async components(m) {
-          const attacks = await m.player.getAttacks({ onlyAvailable: true });
+          const attacks = await m.player.getActions({ onlyAvailable: true, type: "weapon_attack" });
           if (!attacks[0])
             return [
               { id: "noAttacks", label: "No attacks available...", disable: true },
@@ -142,7 +142,7 @@ export default async function handleEncounter(args: {
           return attacks.map((x) => {
             let extraInfo = ``;
             if (!x.remCooldown) {
-              extraInfo = `(${x.damage[0].basePercent}% ${x.damage[0].source})`;
+              //extraInfo = `(${x.damage[0].basePercent}% ${x.damage[0].source})`;
             } else {
               extraInfo = `(⏳${x.remCooldown} turns)`;
             }
@@ -248,7 +248,10 @@ ${turnOrderList}
       // Add message to database
       encounter = await prisma.encounter.update({
         where: { id: encounter.id },
-        data: { discordMessageId: menu.botMessage?.id, discordChannelId: menu.botMessage?.channelId },
+        data: {
+          discordMessageId: menu.botMessage?.id,
+          discordChannelId: menu.botMessage?.channelId,
+        },
         include: { players: true, enemies: true },
       });
     },
@@ -269,22 +272,43 @@ ${turnOrderList}
 
   // On player move
   game.emitter.on("playerMove", onPlayerMove);
+  // On action message
+  game.emitter.on("actionMessage", onActionMessage);
 
   // FUNCTIONS ===============================================================================
 
+  /** Send attack message when received. */
+  async function onActionMessage(args: ActionMessageEmitter) {
+    const { message, encounterId } = args;
+
+    if (encounterId !== encounter.id) return;
+
+    // Delete attack messages
+    // if (encounter.lastAttackMessageId) {
+    //   const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
+
+    //   setTimeout(async () => {
+    //     try {
+    //       await lastMessage.delete();
+    //     } catch (err) {}
+    //   }, 10000);
+    // }
+
+    const botMsg = await game.send({ player: players[0], reply: false, content: message });
+    encounter = await prisma.encounter.update({
+      where: { id: encounter.id },
+      data: { lastActionMessageId: botMsg.id },
+      include: { players: true, enemies: true },
+    });
+  }
+
   /** Function called by emitter when a player move is detected. */
-  async function onPlayerMove(args: EmitterArgs) {
+  async function onPlayerMove(args: PlayerMoveEmitter) {
     const { enemies = [], players = [] } = args;
 
     // console.log("playerMove event listeners: ", game.emitter.listenerCount("playerMove"));
 
     if (args.encounterId !== encounter.id) return;
-    const { attackMessage } = args;
-
-    // Send and store attack message
-    if (attackMessage) {
-      await sendAttackMessage(attackMessage);
-    }
 
     // Update turnorder data
     updateTurnOrder({ enemies, players });
@@ -322,7 +346,10 @@ ${turnOrderList}
 
       menu.player = player;
       // Update current player
-      await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: player.id } });
+      await prisma.encounter.update({
+        where: { id: encounter.id },
+        data: { currentPlayer: player.id },
+      });
       // Refresh menu
       await updateMenu("player");
     }
@@ -369,7 +396,10 @@ ${turnOrderList}
         attack,
         previousHealth: previousPlayerHealth,
       });
-      await sendAttackMessage(attackMessage);
+      game.emitter.emit("actionMessage", {
+        message: attackMessage,
+        encounterId: encounter.id,
+      } satisfies ActionMessageEmitter);
 
       // Send player death message
       if (dead && menu.variables.players.length > 1) {
@@ -387,8 +417,9 @@ ${turnOrderList}
 
   /** Exit combat. */
   async function exitCombat(reason: "allPlayersDead" | "allEnemiesDead") {
-    // Kill emitter listener
+    // Kill all emitters
     game.emitter.removeListener("playerMove", onPlayerMove);
+    game.emitter.removeListener("actionMessage", onActionMessage);
 
     // Delete messages
     setTimeout(async () => {
@@ -432,7 +463,7 @@ ${turnOrderList}
         playerXP[i] = xp;
       }
       // Reset attack cooldowns
-      await prisma.attack.updateMany({
+      await prisma.action.updateMany({
         where: {
           playerId: player.id,
           remCooldown: { gt: 0 },
@@ -447,9 +478,9 @@ ${turnOrderList}
       // Solo
       if (players.length < 2) {
         const player = players[0];
-        description += `\nYou have died...\n${f(`-50%`)} ${mark} (Remaining: ${f(player.marks)})\nReturned to ${f(
-          player.region
-        )}`;
+        description += `\nYou have died...\n${f(`-50%`)} ${mark} (Remaining: ${f(
+          player.marks
+        )})\nReturned to ${f(player.region)}`;
       }
       // With party
       else {
@@ -458,9 +489,18 @@ ${turnOrderList}
           description += `\n${player.ping} returned to ${f(player.region)}`;
         }
       }
-      const botMessage = await game.fastEmbed({ description, pingParty: true, player: menu.player, color: "red" });
+      const botMessage = await game.fastEmbed({
+        description,
+        pingParty: true,
+        player: menu.player,
+        color: "red",
+      });
       if (players.length < 2) {
-        await game.commandButton({ player: players[0], botMessage, commands: [{ name: "explore" }] });
+        await game.commandButton({
+          player: players[0],
+          botMessage,
+          commands: [{ name: "explore" }],
+        });
       }
     }
 
@@ -472,7 +512,9 @@ ${turnOrderList}
         for (const loot of playerLoot[0] as Item[]) {
           description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
         }
-        description += `\n${f("+" + playerXP[0])} **XP** (${f(players[0].remainingXp - playerXP[0])} until next level)`;
+        description += `\n${f("+" + playerXP[0])} **XP** (${f(
+          players[0].remainingXp - playerXP[0]
+        )} until next level)`;
       }
       const botMessage = await game.fastEmbed({
         description,
@@ -482,7 +524,11 @@ ${turnOrderList}
         color: "gold",
       });
       if (players.length < 2) {
-        await game.commandButton({ player: players[0], botMessage, commands: [{ name: "explore" }] });
+        await game.commandButton({
+          player: players[0],
+          botMessage,
+          commands: [{ name: "explore" }],
+        });
       }
 
       // Send individiual reward messages
@@ -493,7 +539,9 @@ ${turnOrderList}
           for (const loot of playerLoot[i] as Item[]) {
             description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
           }
-          description += `\n${f("+" + playerXP[i])} **XP** (${f(player.remainingXp - playerXP[i])} until next level)`;
+          description += `\n${f("+" + playerXP[i])} **XP** (${f(
+            player.remainingXp - playerXP[i]
+          )} until next level)`;
           await game.fastEmbed({
             description,
             title,
@@ -511,27 +559,6 @@ ${turnOrderList}
     for (const [i, player] of players.entries()) {
       if (playerXP[i]) await player.giveXP({ amount: playerXP[i], message: menu.botMessage });
     }
-  }
-
-  /** Send or update last attack message. */
-  async function sendAttackMessage(message: string) {
-    // Delete attack messages
-    // if (encounter.lastAttackMessageId) {
-    //   const lastMessage = await channel.messages.fetch(encounter.lastAttackMessageId);
-
-    //   setTimeout(async () => {
-    //     try {
-    //       await lastMessage.delete();
-    //     } catch (err) {}
-    //   }, 10000);
-    // }
-
-    const botMsg = await game.send({ player: players[0], reply: false, content: message });
-    encounter = await prisma.encounter.update({
-      where: { id: encounter.id },
-      data: { lastAttackMessageId: botMsg.id },
-      include: { players: true, enemies: true },
-    });
   }
 
   /** Update or initialise the encounter menu. */
@@ -561,7 +588,10 @@ ${turnOrderList}
           await menu.botMessage.delete();
           menu.botMessage = undefined;
         } catch (err) {
-          throw game.error({ content: `Failed to reinitialize encounter message.`, player: menu.player });
+          throw game.error({
+            content: `Failed to reinitialize encounter message.`,
+            player: menu.player,
+          });
         }
       }
       await menu.init(board, {

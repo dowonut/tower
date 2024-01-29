@@ -2,7 +2,7 @@ import { game, prisma } from "../../tower.js";
 
 /** Unlock a new attack. */
 export default (async function (attackName: string) {
-  const existingAttacks = await prisma.attack.findMany({
+  const existingAttacks = await prisma.action.findMany({
     where: {
       playerId: this.id,
       name: { equals: attackName, mode: "insensitive" },
@@ -10,7 +10,7 @@ export default (async function (attackName: string) {
   });
   if (existingAttacks[0]) return;
 
-  await prisma.attack.create({
+  await prisma.action.create({
     data: { playerId: this.id, name: attackName.toLowerCase() },
   });
 } satisfies PlayerFunction);

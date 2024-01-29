@@ -1,7 +1,9 @@
 import emojis from "../../emojis.js";
 import { game, config, client, prisma } from "../../tower.js";
 
-const leaderboardCategories: { [key in string]: { key: string; aliases: string[]; emoji?: string } } = {
+const leaderboardCategories: {
+  [key in string]: { key: string; aliases: string[]; emoji?: string };
+} = {
   // Basic
   level: { key: "level", aliases: ["lvl", "l"] },
   floor: { key: "floor", aliases: ["fl", "f"], emoji: emojis.floor },
@@ -47,7 +49,8 @@ export default {
           };
         } else {
           const key = Object.keys(leaderboardCategories).find(
-            (key) => key == s.toLowerCase() || leaderboardCategories[key].aliases.includes(s.toLowerCase())
+            (key) =>
+              key == s.toLowerCase() || leaderboardCategories[key].aliases.includes(s.toLowerCase())
           );
           const content = key; //leaderboardCategories[key].key;
           return { success: true, content } satisfies CommandArgumentFilterResult;
@@ -61,7 +64,7 @@ export default {
   async execute(message, args: { category: LeaderboardCategory }, player, server) {
     let { category = "level" } = args;
 
-    const players = await player.getPlayers();
+    const players = await player.getGuildPlayers();
 
     let sortedPlayers = sortPlayers();
 

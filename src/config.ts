@@ -88,9 +88,21 @@ export const traits = ["strength", "defense", "arcane", "vitality"] as const;
 // Possible equipment slots
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
 // Types of damage
-export const damageTypes = ["slashing", "piercing", "bludgeoning", "air", "earth", "fire", "water"] as const;
+export const damageTypes = [
+  "slashing",
+  "piercing",
+  "bludgeoning",
+  "air",
+  "earth",
+  "fire",
+  "water",
+] as const;
 // Types of shards
 export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] as const;
+// Action types
+export const actionTypes = ["weapon_attack", "magic", "ability"] as const;
+// Action effect types
+export const actionEffectTypes = ["apply_status", "damage", "custom"] as const;
 // Command categories
 export const commandCategories = [
   "general",

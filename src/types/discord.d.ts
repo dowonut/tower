@@ -30,7 +30,9 @@ declare global {
   /**
    * Discord message.
    */
-  export type Message<T = Discord.TextChannel> = Modify<Discord.Message, { channel: T }> & { user?: User };
+  export type Message<T = Discord.TextChannel> = Modify<Discord.Message, { channel: T }> & {
+    user?: User;
+  };
 
   /**
    * Discord text channel.
@@ -147,14 +149,17 @@ declare global {
   }
 
   /** Argument type for event emitter. */
-  export interface EmitterArgs {
+  export interface PlayerMoveEmitter {
     encounterId: number;
-    moveType?: "attack";
-    moveOutcome?: "playerDeath" | "enemyDeath";
     player: Player;
     enemies?: Enemy[];
     players?: Player[];
-    attackMessage?: string;
+  }
+
+  /** Argument type for event emitter. */
+  export interface ActionMessageEmitter {
+    encounterId: number;
+    message: string;
   }
 }
 export {};

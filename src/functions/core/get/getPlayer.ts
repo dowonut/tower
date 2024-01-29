@@ -16,8 +16,10 @@ export default async function getPlayer(
   // console.log("====================================");
 
   // Check if valid arguments provided
-  if (!message && !discordId) throw new Error("Must provide either Message or Discord ID when getting player.");
-  if (!channel && !message) throw new Error("Must provide either a Message or Channel when getting player.");
+  if (!message && !discordId)
+    throw new Error("Must provide either Message or Discord ID when getting player.");
+  if (!channel && !message)
+    throw new Error("Must provide either a Message or Channel when getting player.");
 
   // Set player id
   const playerId = discordId || message.author.id;
@@ -27,15 +29,16 @@ export default async function getPlayer(
   if (!user) return;
 
   // Get player from database
-  let playerData = await prisma.player.findUnique({
+  const playerData = await prisma.player.findUnique({
     where: { guildId_userId: { guildId: server.serverId, userId: user.id } },
     include: {
-      encounter: { include: { enemies: true, players: true } },
+      encounter: { include: { enemies: true, players: { include: { user: true } } } },
       party: { include: { players: { include: { user: true } } } },
       passives: true,
       inventory: true,
     },
   });
+
   // Check if player has entry in database-
   if (!playerData) return; //throw new Error("No player found.");
 

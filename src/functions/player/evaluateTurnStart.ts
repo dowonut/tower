@@ -3,7 +3,7 @@ import { game, prisma } from "../../tower.js";
 /** Evaluate the player at the start of the turn. */
 export default (async function () {
   // Update attack cooldowns
-  await prisma.attack.updateMany({
+  await prisma.action.updateMany({
     where: {
       playerId: this.id,
       remCooldown: { gt: 0 },

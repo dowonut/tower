@@ -92,6 +92,12 @@ declare global {
 
   /** Action target type. */
   export type TargetType = "single" | "adjacent" | "all" | "choose";
+
+  /** Action type.*/
+  export type ActionType = (typeof config.actionTypes)[number];
+
+  /** Action effect types. */
+  export type ActionEffectType = (typeof config.actionEffectTypes)[number];
 }
 
 export {};

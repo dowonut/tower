@@ -3,7 +3,12 @@
 // Discord packages
 import Discord, { TextChannel } from "discord.js";
 import { REST } from "@discordjs/rest";
-import { ContextMenuCommandBuilder, ApplicationCommandType, Routes, ActivityType } from "discord.js";
+import {
+  ContextMenuCommandBuilder,
+  ApplicationCommandType,
+  Routes,
+  ActivityType,
+} from "discord.js";
 // File handling
 import fs from "fs";
 import path from "path";
@@ -89,7 +94,7 @@ client.on("messageCreate", async (message) => {
 
 // Error handling
 process.on("uncaughtException", (err) => {
-  console.log("--------------------------------------------------");
+  console.log("-----------------------------------");
   console.log("> Uncaught Exception");
   console.error(err.stack);
 });
