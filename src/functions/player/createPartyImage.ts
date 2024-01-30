@@ -2,6 +2,7 @@ import { game, config } from "../../tower.js";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import type { Image, Canvas, SKRSContext2D } from "@napi-rs/canvas";
 import { AttachmentBuilder } from "discord.js";
+import fs from "fs";
 
 /** Create the party image using player characters. */
 export default (async function () {
@@ -21,7 +22,11 @@ export default (async function () {
   const tempCtx = tempCanvas.getContext("2d");
 
   for (const [i, player] of players.entries()) {
-    const image = await loadImage(`./static/characters/${this.server.serverId}/${player.user.discordId}.png`);
+    const characterPath = `./static/characters/${this.server.serverId}/${player.user.discordId}.png`;
+    if (!fs.existsSync(characterPath)) continue;
+    const image = await loadImage(
+      `./static/characters/${this.server.serverId}/${player.user.discordId}.png`
+    );
     tempCtx.drawImage(image, characterWidth * i - 25, 0, 160, 160);
   }
 

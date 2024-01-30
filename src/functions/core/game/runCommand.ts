@@ -25,7 +25,8 @@ export default async function runCommand(
   const { discordId, message, server, args = [] } = object;
   const { channel = message?.channel } = object;
 
-  if (!message && !channel) throw new Error("Must provide either Message or Channel when running command.");
+  if (!message && !channel)
+    throw new Error("Must provide either Message or Channel when running command.");
 
   const userId = discordId || message.author.id;
 
@@ -72,7 +73,9 @@ export default async function runCommand(
     } else if (message) {
       player = await game.getPlayer({ message, server, channel });
     } else {
-      return message?.channel?.send(`${config.emojis.error} Something went wrong trying to fetch player.`);
+      return message?.channel?.send(
+        `${config.emojis.error} Something went wrong trying to fetch player.`
+      );
     }
 
     // If command has no player requirement
@@ -81,7 +84,9 @@ export default async function runCommand(
     }
     // Check if user has player character
     else if (!player) {
-      return message?.channel?.send(`<@${message.author.id}> get started with \`${server.prefix}begin\``);
+      return message?.channel?.send(
+        `<@${message.author.id}> get started with \`${server.prefix}begin\``
+      );
     }
     // Make object null if no player data
     else if (player) {
@@ -166,17 +171,20 @@ export default async function runCommand(
         return game.error({
           player,
           content:
-            `this command can only be used in a region of type **\`${command.environment.join(", ")}\`**.` + info,
+            `this command can only be used in a region of type **\`${command.environment.join(
+              ", "
+            )}\`**.` + info,
         });
       }
 
       // Check if the user is on cooldown for that command
-      if (timestamps.has(userId) && userId !== config.developerId) {
+      if (timestamps.has(userId)) {
         const expirationTime = timestamps.get(userId) + cooldownAmount;
+        const remainingSeconds = Math.ceil((expirationTime - now) / 1000);
         if (now < expirationTime) {
           return game.send({
             player,
-            content: `:hourglass_flowing_sand: **${player.user.username}**, wait a moment before using this command again.`,
+            content: `:hourglass_flowing_sand: **${player.user.username}**, wait a moment before using this command again \`(${remainingSeconds} seconds)\``,
           });
         }
       }

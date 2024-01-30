@@ -20,7 +20,16 @@ export default async function send<B extends boolean = true>(args: {
   /** Send the message or return object with message create options. Default: true. */
   send?: B;
 }): Promise<B extends true ? Message : MessageOptions> {
-  const { ping = false, reply = false, player, content, embeds, components, files, send = true } = args;
+  const {
+    ping = false,
+    reply = false,
+    player,
+    content,
+    embeds,
+    components,
+    files,
+    send = true,
+  } = args;
   const channel = player.channel;
   const message = player.message;
   const shouldReply = message?.author?.id == player.user.discordId;
@@ -45,7 +54,8 @@ export default async function send<B extends boolean = true>(args: {
   // Format message content for pings
   if (ping || (reply && !shouldReply)) {
     if (content) {
-      messageObject.content = `${player.ping}, ` + content.charAt(0).toLowerCase() + content.slice(1);
+      messageObject.content =
+        `${player.ping}, ` + content.charAt(0).toLowerCase() + content.slice(1);
     } else {
       messageObject.content = `${player.ping}`;
     }

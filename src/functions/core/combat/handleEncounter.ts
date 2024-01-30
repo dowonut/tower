@@ -147,7 +147,7 @@ export default async function handleEncounter(args: {
           return attacks.map((x) => {
             let extraInfo = ``;
             if (!x.remCooldown) {
-              extraInfo = `(${x.getBriefDamageText()})`;
+              extraInfo = `(${x.getBriefDamageText(menu.variables.enemies.length)})`;
             } else {
               extraInfo = `(⏳${x.remCooldown} turns)`;
             }
@@ -179,6 +179,8 @@ export default async function handleEncounter(args: {
         function: async (m) => {
           const enemies = m.variables.enemies;
           const players = m.variables.players;
+          const currentEntity = m.variables.turnOrder[0];
+          const isPlayer = currentEntity instanceof PlayerClass ? true : false;
           const partyName = players.length > 1 ? "Party" : `${players[0].user.username}`;
           const enemyName = enemies.length > 1 ? "multiple enemies" : enemies[0].displayName;
           const title = `${partyName} fighting ${enemyName}`;
@@ -232,9 +234,10 @@ ${turnOrderList}
             description,
             fullSend: false,
             reply: false,
+            content: isPlayer ? m.player.ping : "",
             embed: { image: { url: `attachment://encounter.png` } },
             files: [m.variables.encounterImage],
-            pingParty: true,
+            pingParty: !isPlayer,
           });
         },
       },

@@ -5,9 +5,9 @@ export default {
   aliases: ["a"],
   description: "Attack the enemy you're fighting.",
   arguments: [
-    { name: "attackName", type: "playerAvailableAttack", required: false },
+    { name: "attack_name", type: "playerAvailableAttack", required: false },
     {
-      name: "targetName",
+      name: "target_name",
       required: false,
       async filter(i, p) {
         const enemies = await p.getEnemies();
@@ -31,13 +31,13 @@ export default {
   async execute(
     message,
     args: {
-      attackName: string;
-      targetName?: { players?: Player[]; enemies?: Enemy[]; target: Enemy | Player };
+      attack_name: string;
+      target_name?: { players?: Player[]; enemies?: Enemy[]; target: Enemy | Player };
     },
     player
   ) {
     // Format imput
-    let { attackName, targetName } = args;
+    let { attack_name: attackName, target_name: targetName } = args;
     let { players = [], enemies = [], target = undefined } = targetName;
 
     const attacks = await player.getActions({ type: "weapon_attack" });
@@ -137,7 +137,7 @@ export default {
       for (const weaponType of attack.requiredWeapon) {
         await player.giveSkillXP({
           skillName: weaponType + " combat",
-          amount: game.random(10, 20),
+          amount: game.random(config.skillXpPerAction[0], config.skillXpPerAction[1]),
         });
       }
     }

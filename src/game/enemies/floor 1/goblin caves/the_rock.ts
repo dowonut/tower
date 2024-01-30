@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "Rock.",
   // Enemy level. Used to scale attack power.
-  level: 8,
+  level: 6,
   // All anime attacks. Available attacks can be seen in enemy class.
   actions: ["smash"],
   // Enemy loot table. Item names and drops.

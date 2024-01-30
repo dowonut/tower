@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "Do not be fooled by its cute appearance. It will gladly eat you alive.",
   // Enemy level. Used to scale attack power.
-  level: 2,
+  level: 3,
   // All anime attacks. Available attacks can be seen in enemy class.
   actions: ["scratch", "punch"],
   // Enemy loot table. Item names and drops.

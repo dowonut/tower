@@ -8,8 +8,8 @@ export default {
     {
       type: "damage",
       targetType: "all",
-      damage: { type: "bludgeoning", source: "ATK", basePercent: 17 },
-      messages: ["SOURCE spins around and whacks TARGET with their staff, dealings DAMAGE"],
+      damage: { type: "bludgeoning", source: "ATK", basePercent: 20 },
+      messages: ["SOURCE spins around and whacks TARGET with their staff, dealing DAMAGE"],
     },
   ],
 } satisfies ActionData;

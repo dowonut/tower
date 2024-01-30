@@ -46,6 +46,8 @@ declare global {
     type: T;
     /** Allow action to target allies or enemies. Default: enemies. */
     targetMode?: "allies" | "enemies";
+    /** The selected target this effect applies to. If greater than 1, player will be asked to select additional enemies. Default = 1.*/
+    targetNumber?: number;
     /** What type of targeting the effect uses.
      *
      * - single = one enemy.

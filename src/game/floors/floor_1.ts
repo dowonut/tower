@@ -2,6 +2,7 @@ export default {
   regions: [
     {
       name: "slime fields",
+      aliases: ["sf", "slime field"],
       description: "Lush rolling fields... with strange slimy creatures everywhere.",
       environment: "world",
       enemies: [
@@ -14,6 +15,7 @@ export default {
     },
     {
       name: "goblin caves",
+      aliases: ["gc", "goblin cave"],
       description: "Dark and gloomy caves filled with pesky goblins. You have been warned.",
       environment: "world",
       enemies: [
@@ -26,6 +28,7 @@ export default {
     },
     {
       name: "lush forest",
+      aliases: ["lf", "lush forests"],
       description:
         "A pleasant forest with a shallow pond. Perfect place to get some wood or do some fishing.",
       environment: "protected",
@@ -40,10 +43,12 @@ export default {
     },
     {
       name: "frog lake",
+      aliases: ["fl", "frog lakes"],
       description: "An unassuming lake swarming with frogs of all shapes and sizes.",
       environment: "world",
       enemies: [
         { name: "brown frog", weight: 100 },
+        { name: "green frog", weight: 80 },
         { name: "evil frog", weight: 20 },
         { name: "milky frog", weight: 50 },
       ],
@@ -51,6 +56,7 @@ export default {
     },
     {
       name: "village",
+      aliases: ["v"],
       description:
         "A cozy village with kind people. Might they know something of the floor dungeons?",
       environment: "protected",

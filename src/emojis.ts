@@ -32,6 +32,7 @@ const emojis = {
     hammer: "<:hammer:1137757795429658664>",
     shield: "<:shield:1137757799829487706>",
     staff: "<:staff:1137757802488668170>",
+    halberd: "<:halberd:1201860524011425822>",
   },
   traits: {
     strength: "<:strength:1137785050176430301>",

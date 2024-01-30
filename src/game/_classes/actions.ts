@@ -21,13 +21,30 @@ export class ActionClass extends ActionClassBase {
   }
 
   /** Get short damage text for buttons. */
-  getBriefDamageText() {
+  getBriefDamageText(totalEnemies?: number) {
     let text: string[] = [];
     const effects = this.effects.filter((x) => x.type == "damage");
     for (const effect of effects as ActionEffect<"damage">[]) {
+      let targetText: string = "";
+      switch (effect.targetType) {
+        case "single":
+          targetText = "|❙|";
+          break;
+        case "adjacent":
+          targetText = "❙|❙";
+          break;
+        case "all":
+          targetText = "|" + "❙".repeat(totalEnemies || 3) + "|";
+          break;
+        default:
+          targetText = "|❙|";
+          break;
+      }
       const damages = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
-      for (const damage of damages) {
-        text.push(`${damage.basePercent}% ${damage.source}`);
+      for (const [i, damage] of damages.entries()) {
+        let finalText = `${damage.basePercent}% ${damage.source}`;
+        if (i === damages.length - 1) finalText += ` ${targetText}`;
+        text.push(finalText);
       }
     }
     return text.join(", ");

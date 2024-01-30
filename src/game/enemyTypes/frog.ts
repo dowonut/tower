@@ -31,7 +31,7 @@ export default {
           damage: {
             type: "water",
             source: "MAG",
-            basePercent: 20,
+            basePercent: 30,
           },
           messages: ["SOURCE opens their mouth and splashes milk all over TARGET, dealing DAMAGE"],
         },

@@ -37,7 +37,7 @@ export default (async function (args: { skillName: string; amount: number }) {
     const { green_arrow } = config.emojis;
     let levelMsg = `
 # ${green_arrow} Skill Level Up! ${green_arrow}
-Your **${skillNameCase}** skill has reached level ${game.f(skill.level)}`;
+Your ${skill.emoji} **${skillNameCase}** skill has reached level ${game.f(skill.level)}`;
     let skillLevelMsg = ``;
 
     // Fetch data about skill and check if next level exists
@@ -48,7 +48,12 @@ Your **${skillNameCase}** skill has reached level ${game.f(skill.level)}`;
       skillLevelMsg = skill.getRewardInfo(skill.level);
     }
 
-    await game.fastEmbed({ player: this, reply: true, description: `${levelMsg}\n\n${skillLevelMsg}`, color: "green" });
+    await game.fastEmbed({
+      player: this,
+      reply: true,
+      description: `${levelMsg}\n\n${skillLevelMsg}`,
+      color: "green",
+    });
 
     // Get required xp for next level
     nextLevelXp = config.nextLevelXpSkill(skill.level);

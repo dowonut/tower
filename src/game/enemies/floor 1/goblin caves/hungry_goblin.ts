@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "Careful... they're dangerous when they're hungry.",
   // Enemy level. Used to scale attack power.
-  level: 3,
+  level: 4,
   // All anime attacks. Available attacks can be seen in enemy class.
   actions: ["scratch", "punch"],
   // Enemy loot table. Item names and drops.

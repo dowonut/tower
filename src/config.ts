@@ -32,16 +32,16 @@ export const baseStats = {
 export const baseEnemyStats = {
   XP: 20,
   maxHP: 0,
-  ATK: 10,
-  MAG: 10,
-  RES: 10,
-  MAG_RES: 10,
-  SPD: 80,
-};
-export const baseWeaponStats = {
   ATK: 5,
   MAG: 5,
   RES: 5,
+  MAG_RES: 5,
+  SPD: 80,
+};
+export const baseWeaponStats = {
+  ATK: 2,
+  MAG: 2,
+  RES: 2,
   SPD: 1,
 };
 
@@ -75,12 +75,13 @@ export const weapons = {
   sword: { ATK: 2, MAG: 0, RES: 1, SPD: 2 },
   spear: { ATK: 3, MAG: 0, RES: 0, SPD: 2 },
   staff: { ATK: 2, MAG: 0, RES: 0, SPD: 3 },
-  amplifier: { ATK: 0, MAG: 4, RES: 0, SPD: 1 },
   axe: { ATK: 3, MAG: 0, RES: 1, SPD: 1 },
   hammer: { ATK: 3, MAG: 0, RES: 2, SPD: 0 },
+  halberd: { ATK: 2, MAG: 0, RES: 3, SPD: 0 },
   bow: { ATK: 1, MAG: 0, RES: 2, SPD: 2 },
-  shield: { ATK: 1, MAG: 0, RES: 4, SPD: 0 },
   unarmed: { ATK: 1, MAG: 1, RES: 0, SPD: 3 },
+  shield: { ATK: 1, MAG: 0, RES: 4, SPD: 0 },
+  amplifier: { ATK: 0, MAG: 4, RES: 0, SPD: 1 },
 };
 
 // Player traits
@@ -144,6 +145,9 @@ export const weakRate = 0.2;
 
 export const marksLostOnDeath = 0.5;
 
+/** Range of XP gained for a skill per action. */
+export const skillXpPerAction = [10, 20];
+
 export const embedColors = {
   green: 0x00ff66,
   gold: 0xf6cd26,
@@ -162,26 +166,26 @@ export const nextLevelXp = (lvl: number) => {
 
 // Required XP for next skill level.
 export const nextLevelXpSkill = (lvl: number) => {
-  let v = 2 * Math.pow(lvl, 1.2) + 20 * lvl + 100;
-  if (lvl >= 90) v = 2 * Math.pow(lvl - 42, 2);
+  let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 60;
+  if (lvl >= 25) v = 5 * Math.pow(lvl - 14, 2.9);
   return Math.floor(v);
 };
 
 // Get ATK based on level.
 export const level_ATK = (lvl: number) => {
-  let v = 3 * lvl + Math.pow(lvl, 1.5);
+  let v = 3 * lvl + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
 // Get MAG based on level.
 export const level_MAG = (lvl: number) => {
-  let v = 3 * lvl + Math.pow(lvl, 1.5);
+  let v = 3 * lvl + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
 // Get maxHP based on level.
 export const level_maxHP = (lvl: number) => {
-  let v = lvl * 5 + Math.pow(lvl, 1.6);
+  let v = lvl * 5 + Math.pow(lvl, 1.5);
   return Math.floor(v);
 };
 

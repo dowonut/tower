@@ -54,6 +54,6 @@ export default function getEffectMessage(args: {
   });
 
   const separatorLine = ""; //emojis.line.repeat(16);
-  const finalMessage = `${healthText}\n${healthBar}\n${actionMessage}\n${separatorLine}`;
+  const finalMessage = `_ _\n${healthText}\n${healthBar}\n${actionMessage}\n${separatorLine}`;
   return finalMessage;
 }

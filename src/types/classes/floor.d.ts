@@ -11,6 +11,8 @@ declare global {
    */
   export type RegionData = {
     name: string;
+    /** Aliases for the region. */
+    aliases?: string[];
     description: string;
     /** Region enemies. */
     enemies?: {

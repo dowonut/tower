@@ -6,7 +6,7 @@ export default {
   // Description shown in "enemyinfo".
   description: "Do not enrage the hobgoblin. Bad idea.",
   // Enemy level. Used to scale attack power.
-  level: 4,
+  level: 5,
   // All anime attacks. Available attacks can be seen in enemy class.
   actions: ["scratch", "punch", "club"],
   // Enemy loot table. Item names and drops.

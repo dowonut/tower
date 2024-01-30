@@ -1,11 +1,19 @@
 import { config } from "../../tower.js";
 import { createClassFromType, loadFiles, titleCase } from "../../functions/core/index.js";
+import _ from "lodash";
 
 const SkillBaseClass = createClassFromType<SkillBase>();
 
 export class SkillClass extends SkillBaseClass {
   constructor(object: Generic<SkillBase>) {
     super(object);
+  }
+
+  /** Get emoji for the skill */
+  get emoji() {
+    let emoji = config.emojis.blank;
+    if (!_.isEmpty(this.weaponType)) emoji = config.emojis.weapons[this.weaponType];
+    return emoji;
   }
 
   /** Get level info for skill. */

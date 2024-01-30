@@ -4,7 +4,7 @@ export default {
   name: "explore",
   description: "Explore your current floor.",
   aliases: ["e"],
-  cooldown: "0",
+  cooldown: "5",
   async execute(message, args, player, server) {
     // Get current region
     const region = player.getRegion();

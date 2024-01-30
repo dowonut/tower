@@ -9,6 +9,7 @@ export default {
     { name: "rusty hammer", stock: 1, price: 10 },
     { name: "rusty shield", stock: 1, price: 10 },
     { name: "rusty spear", stock: 1, price: 10 },
+    { name: "rusty halberd", stock: 1, price: 10 },
     { name: "crooked bow", stock: 1, price: 10 },
     { name: "sturdy sword", stock: 1, price: 50 },
     // { name: "sword handle recipe", stock: 1, price: 5 },

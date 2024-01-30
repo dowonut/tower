@@ -11,7 +11,7 @@ export default async function createEncounterImage(object: {
 }) {
   const { enemies, verbose = false, selectedEnemy } = object;
 
-  const width = 640;
+  const width = enemies.length <= 4 ? 640 : 160 * enemies.length;
   const height = verbose ? 220 : 160;
 
   const heightOffset = verbose ? 20 : 0;
@@ -34,7 +34,12 @@ export default async function createEncounterImage(object: {
       tempCtx.fillStyle = "#1a1a1a";
       tempCtx.fillRect(160 * i + 10, 200, 140, 10);
       tempCtx.fillStyle = "#ff3838";
-      tempCtx.fillRect(160 * i + 10, 200, Math.floor((Math.max(enemy.health, 0) / enemy.maxHP) * 140), 10);
+      tempCtx.fillRect(
+        160 * i + 10,
+        200,
+        Math.floor((Math.max(enemy.health, 0) / enemy.maxHP) * 140),
+        10
+      );
     }
     if (verbose && selectedEnemy && enemy.number == selectedEnemy) {
       const arrow = await loadImage("./assets/icons/selection_arrow.png");

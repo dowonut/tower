@@ -3,6 +3,7 @@ export default {
   requiredWeapon: ["shield"],
   description: "Slam into the enemy with your shield.",
   type: "weapon_attack",
+  cooldown: 1,
   effects: [
     {
       type: "damage",

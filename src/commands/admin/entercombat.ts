@@ -9,11 +9,17 @@ export default {
     { name: "enemy2", required: false },
     { name: "enemy3", required: false },
     { name: "enemy4", required: false },
+    { name: "enemy5", required: false },
   ],
   dev: true,
-  async execute(message, args: { enemy1: string; enemy2: string; enemy3: string; enemy4: string }, player, server) {
-    const { enemy1 = "small slime", enemy2, enemy3, enemy4 } = args;
-    const enemyNames = [enemy1, enemy2, enemy3, enemy4];
+  async execute(
+    message,
+    args: { enemy1: string; enemy2: string; enemy3: string; enemy4: string; enemy5: string },
+    player,
+    server
+  ) {
+    const { enemy1 = "small slime", enemy2, enemy3, enemy4, enemy5 } = args;
+    const enemyNames = [enemy1, enemy2, enemy3, enemy4, enemy5];
 
     let enemies: Enemy[] = [];
     for (const name of enemyNames) {

@@ -10,5 +10,5 @@ export default {
   // All anime attacks. Available attacks can be seen in enemy class.
   actions: ["lick", "milky splash"],
   // Enemy loot table. Item names and drops.
-  loot: [{ name: "frog tongue", dropChance: 100, min: 1, max: 2 }],
+  loot: [{ name: "frog tongue", dropChance: 80, min: 1, max: 2 }],
 } satisfies EnemyData;
