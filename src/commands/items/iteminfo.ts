@@ -194,6 +194,9 @@ export default {
           },
         },
       ],
+      async onRefresh(m) {
+        item = await player.getItem(item.name);
+      },
     });
 
     menu.init("main");

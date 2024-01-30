@@ -19,7 +19,9 @@ export default async function evaluateAction(args: {
 
   // Iterate through action effects
   for (let effect of action.effects) {
-    const entities = target instanceof EnemyClass ? enemies : players;
+    // Remove dead entities from possible targets
+    let entities = target instanceof EnemyClass ? enemies : players;
+    entities = entities.filter((x) => !x.dead) as PlayerClass[] | EnemyClass[];
     // Define targets per effect
     effect.targets = [];
     if (!effect.targetType) effect.targetType = "single";
@@ -35,8 +37,8 @@ export default async function evaluateAction(args: {
         } else if (target.number == entities.length) {
           effect.targets.push(entities.find((x) => x.number == target.number - 1));
         } else {
-          effect.targets.push(entities.find((x) => x.number == target.number + 1));
-          effect.targets.push(entities.find((x) => x.number == target.number - 1));
+          effect.targets.push(entities.find((x) => x.number < target.number));
+          effect.targets.push(entities.find((x) => x.number > target.number));
         }
         break;
       // All targets
@@ -60,6 +62,11 @@ export default async function evaluateAction(args: {
     }
   }
 
+  console.log(
+    [...enemies, ...players].map(
+      (x) => `name: ${x.displayName}. health: ${x.health}. dead: ${x.dead}.`
+    )
+  );
   return { enemies, players, actionTotalDamage };
 
   /** Evaluate effect of type = damage. */

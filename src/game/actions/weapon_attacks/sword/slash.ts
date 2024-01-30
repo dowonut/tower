@@ -9,12 +9,18 @@ export default {
   effects: [
     {
       type: "damage",
-      damage: [{ type: "slashing", source: "ATK", basePercent: 50 }],
+      damage: [{ type: "slashing", source: "ATK", basePercent: 30 }],
       messages: [
         "SOURCE slashes elegantly at TARGET and deals DAMAGE",
         "SOURCE's sword cuts cleanly through TARGET, dealing DAMAGE",
         "SOURCE gracefully slices at TARGET with their blade, dealing DAMAGE",
       ],
+    },
+    {
+      type: "damage",
+      targetType: "adjacent",
+      damage: [{ type: "slashing", source: "ATK", basePercent: 10 }],
+      messages: ["SOURCE's slash also hits TARGET, dealing DAMAGE"],
     },
   ],
 } satisfies ActionData;

@@ -9,6 +9,7 @@ export default {
   description: "Unlock all commands in the game.",
   category: "other",
   mustUnlock: false,
+  useInCombat: true,
   async execute(message, args, player, server) {
     const buttons: Button[] = [
       {

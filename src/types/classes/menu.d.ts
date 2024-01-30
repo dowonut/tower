@@ -18,6 +18,8 @@ declare global {
     botMessage?: Message;
     /** Optional function to run once menu is initialized. */
     onLoad?(m: Menu<T>): void;
+    /** Optional function to run every time the menu is refreshed. */
+    onRefresh?(m: Menu<T>): void;
   };
 
   export type TowerBoard<T> = {

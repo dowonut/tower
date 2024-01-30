@@ -42,7 +42,7 @@ export default async function parseCommandArguments(options: {
     }
 
     // Format underscores
-    input = input?.replaceAll("_", " ") || undefined;
+    input = input?.replaceAll("_", " ").toLowerCase() || undefined;
 
     // if (!playerArgs[i]) continue;
     argsObject[argument.name] = input || undefined;

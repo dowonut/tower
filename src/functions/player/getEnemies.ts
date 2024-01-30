@@ -15,10 +15,5 @@ export default (async function () {
     const enemy = game.createClassObject<Enemy>(enemyClass, enemyData);
     finalEnemies.push(enemy);
   }
-
-  console.log(
-    "> CURRENT ENCOUNTER ENEMIES: ",
-    finalEnemies.map((x) => x.displayName + " " + x.id)
-  );
   return finalEnemies;
 } satisfies PlayerFunction);

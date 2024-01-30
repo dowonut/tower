@@ -50,7 +50,7 @@ export default {
         { name: "brown frog", weight: 100 },
         { name: "green frog", weight: 80 },
         { name: "evil frog", weight: 20 },
-        { name: "milky frog", weight: 50 },
+        { name: "milky frog", weight: 60 },
       ],
       loot: [{ name: "frog tongue", weight: 100 }],
     },

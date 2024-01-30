@@ -59,7 +59,7 @@ export default class Menu<T> extends MenuBase<T> {
   async refresh(args: CollectorOptions = undefined) {
     if (!this.currentBoard || !this.botMessage)
       throw new Error("Cannot refresh before initialized.");
-
+    if (this.onRefresh) this.onRefresh(this);
     await this.switchBoard(this.currentBoard, args);
   }
 

@@ -282,8 +282,20 @@ ${turnOrderList}
   game.emitter.on("playerMove", onPlayerMove);
   // On action message
   game.emitter.on("actionMessage", onActionMessage);
+  // Skip current player
+  game.emitter.on("skipPlayer", onSkipPlayer);
 
   // FUNCTIONS ===============================================================================
+
+  /** Skip the current player. */
+  async function onSkipPlayer(args: { encounterId: number }) {
+    const { encounterId } = args;
+    if (encounterId !== encounter.id) return;
+
+    if (!(turnOrder[0] instanceof PlayerClass)) return;
+
+    nextTurn();
+  }
 
   /** Send attack message when received. */
   async function onActionMessage(args: ActionMessageEmitter) {
@@ -429,6 +441,7 @@ ${turnOrderList}
     // Kill all emitters
     game.emitter.removeListener("playerMove", onPlayerMove);
     game.emitter.removeListener("actionMessage", onActionMessage);
+    game.emitter.removeListener("skipPlayer", onSkipPlayer);
 
     // Delete messages
     // setTimeout(async () => {

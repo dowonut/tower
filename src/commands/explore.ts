@@ -4,7 +4,7 @@ export default {
   name: "explore",
   description: "Explore your current floor.",
   aliases: ["e"],
-  cooldown: "5",
+  cooldown: "3",
   async execute(message, args, player, server) {
     // Get current region
     const region = player.getRegion();
@@ -64,6 +64,7 @@ export default {
           player,
           botMessage,
           commands: [{ name: "explore" }],
+          wait: true,
         });
         break;
       case "merchants":

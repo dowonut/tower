@@ -19,6 +19,8 @@ export default async function send<B extends boolean = true>(args: {
   files?: any[];
   /** Send the message or return object with message create options. Default: true. */
   send?: B;
+  /** Ping all members of the party in the message. Default: false. */
+  pingParty?: boolean;
 }): Promise<B extends true ? Message : MessageOptions> {
   const {
     ping = false,
@@ -29,6 +31,7 @@ export default async function send<B extends boolean = true>(args: {
     components,
     files,
     send = true,
+    pingParty = false,
   } = args;
   const channel = player.channel;
   const message = player.message;
@@ -59,6 +62,15 @@ export default async function send<B extends boolean = true>(args: {
     } else {
       messageObject.content = `${player.ping}`;
     }
+  }
+
+  // Ping party members
+  if (pingParty && player.party) {
+    const pingText = player.party.players.map((x) => `<@${x.user.discordId}>`).join(" ");
+    messageObject.content = pingText + " " + content;
+  } else if (pingParty) {
+    const pingText = player.ping;
+    messageObject.content = pingText + " " + content;
   }
 
   // Add components

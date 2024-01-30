@@ -58,15 +58,6 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   // Embed color
   embedInfo.color = parseInt("0x" + player.user.embed_color);
 
-  // Ping party members
-  if (pingParty && player.party) {
-    const pingText = player.party.players.map((x) => `<@${x.user.discordId}>`).join(" ");
-    fullContent = pingText + " " + content;
-  } else if (pingParty) {
-    const pingText = player.ping;
-    fullContent = pingText + " " + content;
-  }
-
   // Override embed color
   if (color) {
     embedInfo.color = config.embedColors[color];
@@ -86,6 +77,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
     reply,
     ping,
     content: fullContent,
+    pingParty,
   };
 
   if (!fullSend) return messageOptions as any;

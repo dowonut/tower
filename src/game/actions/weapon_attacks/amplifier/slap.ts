@@ -12,7 +12,7 @@ export default {
         basePercent: 10,
       },
       messages: [
-        "SOURCE walks up and slaps ENEMY on the head with their amplifier, dealing DAMAGE",
+        "SOURCE walks up and slaps TARGET on the head with their amplifier, dealing DAMAGE",
       ],
     },
   ],

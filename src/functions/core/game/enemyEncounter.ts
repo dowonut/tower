@@ -11,7 +11,7 @@ export default async function enemyEncounter(args: { player: Player }) {
   const floorEnemies = region.enemies;
 
   // Adjust enemy weights according to player level
-  console.log("base weights: ", floorEnemies);
+  // console.log("base weights: ", floorEnemies);
   for (const floorEnemy of floorEnemies) {
     const enemyData = game.getEnemy(floorEnemy.name);
     const levelDifference = Math.max(0, enemyData.level - player.level);
@@ -21,7 +21,7 @@ export default async function enemyEncounter(args: { player: Player }) {
     }
     floorEnemy.weight = Math.max(0, floorEnemy.weight);
   }
-  console.log("adjusted weights: ", floorEnemies);
+  // console.log("adjusted weights: ", floorEnemies);
 
   // Pick number of enemies to spawn
   let numberOfEnemies = game.random(1, 3);

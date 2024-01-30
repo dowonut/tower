@@ -31,6 +31,7 @@ export default (async function () {
     player: this,
     botMessage: reply,
     commands: [{ name: "explore" }],
+    wait: true,
   });
   await this.addExploration({
     type: "merchant",

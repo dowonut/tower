@@ -159,8 +159,10 @@ export const embedColors = {
 
 // Required XP for next player level.
 export const nextLevelXp = (lvl: number) => {
-  let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
-  if (lvl >= 90) v = 5 * Math.pow(lvl - 79, 4);
+  // let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
+  // if (lvl >= 90) v = 5 * Math.pow(lvl - 79, 4);
+  let v = 5 * Math.pow(lvl, 2.2) + 100 * lvl + 100;
+  if (lvl >= 90) v = 5 * Math.pow(lvl - 76, 3.8);
   return Math.floor(v);
 };
 
@@ -237,7 +239,7 @@ export const weapon_SPD = (lvl: number, factor: number) => {
 
 // Get XP dropped by enemy.
 export const enemy_XP = (lvl: number, boss = false) => {
-  let v = Math.pow(lvl, 2) + lvl * 5;
+  let v = Math.pow(lvl, 1.2) + lvl * 3;
   return Math.floor(v);
 };
 

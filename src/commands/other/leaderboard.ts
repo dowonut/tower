@@ -5,7 +5,7 @@ const leaderboardCategories: {
   [key in string]: { key: string; aliases: string[]; emoji?: string };
 } = {
   // Basic
-  level: { key: "level", aliases: ["lvl", "l"] },
+  level: { key: "level", aliases: ["lvl", "l"], emoji: emojis.gold_arrow },
   floor: { key: "floor", aliases: ["fl", "f"], emoji: emojis.floor },
   marks: { key: "marks", aliases: ["ma", "mrk", "mar"], emoji: emojis.mark },
   // Traits
@@ -104,6 +104,7 @@ export default {
               label: game.titleCase(leaderboardCategories[key].key),
               value: key,
               default: category == key,
+              emoji: leaderboardCategories[key].emoji || config.emojis.blank,
             })),
             placeholder: "Select a category to view leaderboard...",
             function: (r, i, s: LeaderboardCategory) => {
