@@ -15,6 +15,10 @@ export default async function evaluateAction(args: {
 }) {
   let { enemies = [], players = [], source, action, target, simulate = false } = args;
 
+  // Refresh source
+  if (!simulate) source = await (source as Player).refresh();
+
+  // Track total damage done by action
   let actionTotalDamage = 0;
 
   // Iterate through action effects
@@ -49,7 +53,7 @@ export default async function evaluateAction(args: {
       case "choose":
         break;
     }
-    if (!effect.targets || effect.targets.length < 1) effect.targets = [];
+    // console.log(effect?.targets?.map((x) => ({ name: x.displayName, health: x.health })));
 
     switch (effect.type) {
       case "damage":
@@ -61,12 +65,6 @@ export default async function evaluateAction(args: {
         break;
     }
   }
-
-  console.log(
-    [...enemies, ...players].map(
-      (x) => `name: ${x.displayName}. health: ${x.health}. dead: ${x.dead}.`
-    )
-  );
   return { enemies, players, actionTotalDamage };
 
   /** Evaluate effect of type = damage. */
@@ -82,7 +80,7 @@ export default async function evaluateAction(args: {
         target,
       });
       const totalDamage = evaluatedDamage.total;
-      const previousEnemyHealth = target.health;
+      const previousTargetHealth = target.health;
 
       // Pass total damage if simulating
       if (simulate) {
@@ -100,7 +98,7 @@ export default async function evaluateAction(args: {
         damage: evaluatedDamage,
         source,
         target,
-        previousHealth: previousEnemyHealth,
+        previousHealth: previousTargetHealth,
       });
 
       // Send attack message

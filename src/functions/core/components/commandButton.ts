@@ -16,7 +16,7 @@ export default async function commandButton(obj: {
   } else {
     setTimeout(async () => {
       await addButton();
-    }, 3000);
+    }, 2000);
   }
 
   async function addButton() {

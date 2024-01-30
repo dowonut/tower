@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { game } from "../../../tower.js";
 
 /** Get turn order based on current Speed Values */
@@ -10,18 +11,10 @@ export default function getTurnOrder(args?: {
 
   let array = entities ? entities : [...players, ...enemies];
 
-  const turnOrder = array.sort((a, b) => {
-    const nameA = a.displayName;
-    const nameB = b.displayName;
-
-    if (a.SV > b.SV) return 1;
-    if (a.SV < b.SV) return -1;
-    if (a.SPD < b.SPD) return 1;
-    if (a.SPD > b.SPD) return -1;
-    if (!a.isPlayer) return 1;
-    if (a.isPlayer) return -1;
-    if (nameA > nameB) return 1;
-    if (nameA < nameB) return -1;
-  });
+  const turnOrder = _.orderBy(
+    array,
+    ["SV", "SPD", "isPlayer", "displayName"],
+    ["asc", "desc", "desc", "desc"]
+  );
   return turnOrder;
 }

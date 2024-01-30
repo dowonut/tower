@@ -1,3 +1,5 @@
+import { EnemyClass } from "../../../game/_classes/enemies.js";
+import PlayerClass from "../../../game/_classes/players.js";
 import { config, game, prisma } from "../../../tower.js";
 
 /** Enter a combat encounter with an enemy. */
@@ -100,6 +102,10 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
     },
     include: { players: true, enemies: true },
   });
+
+  // Update enemies and players
+  enemies = turnOrder.filter((x) => x instanceof EnemyClass) as Enemy[];
+  players = turnOrder.filter((x) => x instanceof PlayerClass) as Player[];
 
   // Handle encounter
   game.handleEncounter({ players, enemies, encounter, turnOrder, channel: player.channel });

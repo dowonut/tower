@@ -92,6 +92,14 @@ export default async function runCommand(
     else if (player) {
       // COMMAND CONDITION HANDLING =========================================================================
 
+      // Check if server is locked
+      if (server.locked && player.user.discordId !== config.developerId) {
+        return game.error({
+          player,
+          content: `this server has been locked by an administrator. `,
+        });
+      }
+
       // Check if user is Dowonut
       if (command.dev && userId !== config.developerId) {
         return game.error({

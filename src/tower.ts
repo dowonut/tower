@@ -11,6 +11,8 @@ const baseGame = functions;
 export const game = baseGame;
 let configObject = { ...configData, emojis: emojis };
 export const config = configObject;
-export const prisma = new PrismaClient();
+
+export const prisma = new PrismaClient().$extends({});
+
 const discordClient = new Client({ intents: new IntentsBitField(36363) });
 export const client: TowerClient = discordClient;

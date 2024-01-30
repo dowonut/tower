@@ -1,4 +1,5 @@
 import Prisma from "@prisma/client";
+import { Prisma as PrismaClient } from "@prisma/client";
 import { EnemyClass } from "../../game/_classes/enemies.ts";
 
 declare global {
@@ -32,7 +33,10 @@ declare global {
   /**
    * Base enemy type.
    */
-  export type EnemyBase = EnemyDataWithType & Prisma.Enemy;
+  export type EnemyBase = EnemyDataWithType & EnemyModel;
+
+  /** Player Enemy Model */
+  type EnemyModel = PrismaClient.EnemyGetPayload<{}>;
 
   /**
    * Enemy class.

@@ -267,11 +267,11 @@ ${turnOrderList}
 
   // Initiate encounter message
   // If player
-  if (turnOrder[0].isPlayer) {
+  if (turnOrder[0] instanceof PlayerClass) {
     await updateMenu("player", true);
   }
   // If enemy
-  else {
+  else if (turnOrder[0] instanceof EnemyClass) {
     // Remove current player
     await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: null } });
     await updateMenu("enemy", true);
@@ -285,7 +285,7 @@ ${turnOrderList}
   // Skip current player
   game.emitter.on("skipPlayer", onSkipPlayer);
 
-  // FUNCTIONS ===============================================================================
+  // EMITTER FUNCTIONS ===============================================================================
 
   /** Skip the current player. */
   async function onSkipPlayer(args: { encounterId: number }) {
@@ -333,11 +333,13 @@ ${turnOrderList}
     if (args.encounterId !== encounter.id) return;
 
     // Update turnorder data
-    updateTurnOrder({ enemies, players });
+    updateTurnOrderList({ enemies, players });
 
     // Initiate next turn
     await nextTurn();
   }
+
+  // MAIN FUNCTIONS ===============================================================================
 
   /** Initiate the next turn. */
   async function nextTurn() {
@@ -402,7 +404,6 @@ ${turnOrderList}
       let player = enemy.getTargetPlayer(menu.variables.players);
       // Get evaluated attack
       const action = await enemy.getStrongestAction({ player, players: menu.variables.players });
-      console.log("> chosen enemy action: ", action.name, action.totalDamage);
       // Evaluate action
       const { players, enemies } = await game.evaluateAction({
         enemies: menu.variables.enemies,
@@ -421,7 +422,7 @@ ${turnOrderList}
       }
 
       // Update the turn order
-      updateTurnOrder({ players, enemies });
+      updateTurnOrderList({ players, enemies });
 
       // Send player death message
       for (const player of players) {
@@ -618,7 +619,7 @@ ${turnOrderList}
   }
 
   /** Update the turn order given an array of enemies or players. */
-  function updateTurnOrder(args: { enemies?: Enemy[]; players: Player[] }) {
+  function updateTurnOrderList(args: { enemies?: Enemy[]; players: Player[] }) {
     const { enemies = [], players = [] } = args;
 
     menu.variables.turnOrder = menu.variables.turnOrder.map((entity) => {

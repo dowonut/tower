@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { f } from "../../functions/core/index.js";
 import { game, config, client, prisma } from "../../tower.js";
 
@@ -11,13 +12,16 @@ export default {
     const menu = new game.Menu({
       player,
       variables: { selectedTrait: undefined as PlayerTrait },
-      boards: [{ name: "main", rows: ["traits"], message: "main" }],
+      boards: [
+        { name: "main", rows: ["traits"], message: "main" },
+        { name: "options", rows: ["options"], message: "main" },
+      ],
       rows: [
         {
           name: "traits",
           type: "buttons",
           components: (m) => {
-            return config.traits.map((x) => {
+            let buttons: Button[] = config.traits.map((x) => {
               const hasPoints = m.player.traitPoints > 0;
               return {
                 id: x,
@@ -25,16 +29,83 @@ export default {
                 disable: !hasPoints,
                 style: hasPoints ? "primary" : "secondary",
                 function: async () => {
-                  await game.runCommand("traitup", {
-                    message,
-                    server,
-                    args: [x],
-                  });
-                  m.refresh();
+                  if (m.player.traitPoints > 1) {
+                    m.variables.selectedTrait = x;
+                    m.switchBoard("options");
+                  } else {
+                    await game.runCommand("traitup", {
+                      message,
+                      server,
+                      args: [x],
+                    });
+                    m.refresh();
+                  }
                 },
               };
             });
+            buttons.push({
+              id: "refund",
+              style: "danger",
+              label: "Refund",
+              function: async () => {
+                await game.runCommand("traitrefund", { message, server });
+                m.refresh();
+              },
+            });
+            return buttons;
           },
+        },
+        {
+          name: "options",
+          type: "buttons",
+          components: (m) => [
+            {
+              id: "1",
+              label: "+1",
+              style: "success",
+              function: async () => {
+                await game.runCommand("traitup", {
+                  message,
+                  server,
+                  args: [m.variables.selectedTrait, "1"],
+                });
+                m.refresh();
+              },
+            },
+            {
+              id: "10",
+              label: "+10",
+              style: "success",
+              function: async () => {
+                await game.runCommand("traitup", {
+                  message,
+                  server,
+                  args: [m.variables.selectedTrait, "10"],
+                });
+                m.refresh();
+              },
+            },
+            {
+              id: "all",
+              label: "All",
+              style: "success",
+              function: async () => {
+                await game.runCommand("traitup", {
+                  message,
+                  server,
+                  args: [m.variables.selectedTrait, "all"],
+                });
+                m.refresh();
+              },
+            },
+            {
+              id: "return",
+              board: "main",
+              function() {
+                m.variables.selectedTrait = undefined;
+              },
+            },
+          ],
         },
       ],
       messages: [
@@ -43,10 +114,13 @@ export default {
           function: async (m) => {
             let description = ``;
             // Format embed description
+            const useEmoji = m.variables.selectedTrait ? true : false;
             for (const trait of config.traits) {
-              description += `${config.emojis.traits[trait]} ${game.titleCase(trait)}: ${f(m.player[trait])} | ${
-                config.traitInfo[trait]
-              }\n`;
+              const selectEmoji = trait == m.variables.selectedTrait ? "👉" : config.emojis.blank;
+              description += useEmoji ? selectEmoji : "";
+              description += ` ${config.emojis.traits[trait]} ${game.titleCase(trait)}: ${f(
+                m.player[trait]
+              )} | ${config.traitInfo[trait]}\n`;
             }
             // Remind player of stat points
             if (m.player.traitPoints > 0)

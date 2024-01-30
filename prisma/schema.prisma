@@ -17,9 +17,10 @@ datasource db {
 }
 
 model Server {
-  id       Int    @id @default(autoincrement())
-  serverId String @unique
-  prefix   String @default("-")
+  id       Int     @id @default(autoincrement())
+  serverId String  @unique
+  prefix   String  @default("-")
+  locked   Boolean @default(false)
 }
 
 model User {

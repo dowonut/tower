@@ -32,7 +32,6 @@ export class EnemyClass extends EnemyBaseClass {
     }
     // Throw error if enemy doesn't belong to any type
     else {
-      console.log(this);
       throw new Error(
         `Enemy must belong to an enemy type. No enemy type found by name ${this.type} on enemy ${this.name}`
       );
@@ -41,7 +40,11 @@ export class EnemyClass extends EnemyBaseClass {
 
   /** Update enemy in database. */
   async update(args: Prisma.EnemyUncheckedUpdateInput | Prisma.EnemyUpdateInput) {
-    const enemyInfo = await prisma.enemy.update({ where: { id: this.id }, data: args });
+    const enemyInfo = await prisma.enemy.update({
+      where: { id: this.id },
+      data: args,
+      include: {},
+    });
     return Object.assign(this, enemyInfo);
   }
 
@@ -153,7 +156,7 @@ export class EnemyClass extends EnemyBaseClass {
     const { player, players } = args;
 
     let attacks = await this.getActions({ player, players, evaluated: true });
-    console.log(attacks.map((x) => x.name + " " + x.totalDamage));
+    // console.log(attacks.map((x) => x.name + " " + x.totalDamage));
 
     // Sort by damage descending
     attacks = _.orderBy(attacks, ["totalDamage"], "desc");
