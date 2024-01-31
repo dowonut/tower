@@ -4,4 +4,4 @@
 Development server:
 **https://discord.gg/ShvMgmpcbv**
 
-Read about how the game works on our [**wiki**](https://github.com/dowonut/tower/wiki).
+Read about how the game works on our [**wiki**](https://github.com/dowonut/tower/wiki)
