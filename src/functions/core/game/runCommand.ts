@@ -117,7 +117,11 @@ export default async function runCommand(
       }
 
       // Check if command is unlocked
-      if (!player.user.unlockedCommands.includes(command.name) && command.mustUnlock !== false) {
+      if (
+        !player.user.unlockedCommands.includes(command.name) &&
+        command.mustUnlock !== false &&
+        command.category !== "admin"
+      ) {
         return game.error({
           player,
           content: `you haven't unlocked this command yet.`,
@@ -215,6 +219,10 @@ export default async function runCommand(
         resolve(response || "SUCCESS");
         const afterCommand = Date.now();
         console.log(`> Command "${command.name}" executed in ${afterCommand - beforeCommand}ms`);
+        // Unlock new commands
+        if (command.unlockCommands) {
+          await player.unlockCommands(command.unlockCommands);
+        }
       } catch (object) {
         if (object instanceof game.cmdError) {
           const errorMessage = object.message;

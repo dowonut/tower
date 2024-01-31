@@ -3,7 +3,8 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "region",
   aliases: ["r"],
-  description: "Get information about your current region.",
+  unlockCommands: ["floor", "travel"],
+  description: "View information about the current region.",
   category: "location",
   useInCombat: true,
   async execute(message, args, player, server) {
@@ -32,7 +33,8 @@ export default {
         for (const value of region[key]) {
           let name = value.name ? value.name : value.category;
 
-          let emoji = config.emojis[key] && config.emojis[key][name] ? config.emojis[key][name] : ``;
+          let emoji =
+            config.emojis[key] && config.emojis[key][name] ? config.emojis[key][name] : ``;
 
           if (exploredArr.includes(name) || key == "activities") {
             if (key == "merchants") {
@@ -56,8 +58,5 @@ export default {
     };
 
     game.fastEmbed({ player, embed, title });
-
-    // Unlock floor command
-    player.unlockCommands(["floor", "travel"]);
   },
 } as Command;

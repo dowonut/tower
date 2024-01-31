@@ -20,7 +20,7 @@ export class ItemClass extends ItemBaseClass {
 
     // Change path for weapons
     if (this.category == "weapon") {
-      path = `./assets/icons/${this.weaponType}.png`;
+      path = `./assets/icons/weapons/${this.weaponType}.png`;
     }
 
     // Attach image
@@ -72,7 +72,9 @@ export class ItemClass extends ItemBaseClass {
     // Weapon
     if (this.category == "weapon") {
       text += `\nWeapon Type: ${f(this.weaponType)}`;
-      text += `\n\n${ATK} ${f(this.ATK)} | ${MAG} ${f(this.MAG)} | ${RES} ${f(this.RES)} | ${SPD} ${f(this.SPD)}`;
+      text += `\n\n${ATK} ${f(this.ATK)} | ${MAG} ${f(this.MAG)} | ${RES} ${f(
+        this.RES
+      )} | ${SPD} ${f(this.SPD)}`;
     }
 
     return text;

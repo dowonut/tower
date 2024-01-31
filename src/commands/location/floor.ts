@@ -4,8 +4,9 @@ import floors from "../../game/_classes/floors.js";
 export default {
   name: "floor",
   aliases: ["f"],
+  unlockCommands: ["travel", "region"],
   category: "location",
-  description: "Show information about your current floor.",
+  description: "View information about the current floor.",
   useInCombat: true,
   async execute(message, args, player, server) {
     // Get player floor information
@@ -24,9 +25,6 @@ export default {
       title,
       components: [row],
     });
-
-    // Unlock the travel command
-    player.unlockCommands(["travel"]);
 
     // Create collector
     await game.componentCollector({ player, botMessage: reply, components: [menu] });

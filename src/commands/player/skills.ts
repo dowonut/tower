@@ -21,7 +21,7 @@ export default {
       },
     },
   ],
-  description: "See all your skills or one specific skill.",
+  description: "View all your skills or one specific skill.",
   category: "player",
   useInCombat: true,
   async execute(message, args: { skill: Skill }, player, server) {

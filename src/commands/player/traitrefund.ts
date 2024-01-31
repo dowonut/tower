@@ -1,8 +1,8 @@
 import { game, config, client, prisma } from "../../tower.js";
 
 export default {
-  name: "traitrefund",
-  aliases: ["trr"],
+  name: "traitsrefund",
+  aliases: ["trr", "traitrefund", "refundtraits"],
   description: "Refund all your trait points.",
   category: "player",
   async execute(message, args: { trait: PlayerTrait; amount: number | "all" }, player, server) {

@@ -3,7 +3,8 @@ import { config, game } from "../../tower.js";
 export default {
   name: "party",
   aliases: ["pa"],
-  description: "Check your current party.",
+  description: "View your current party.",
+  unlockCommands: ["invite", "setpartyowner", "kick", "leaveparty", "disbandparty", "voteskip"],
   category: "other",
   useInCombat: true,
   async execute(message, args, player, server) {
@@ -28,7 +29,9 @@ export default {
                 label: "Invite Player",
                 emoji: "✉️",
                 disable:
-                  m.player.isPartyLeader && m.player.party.players.length < 4 && !m.player.inCombat ? false : true,
+                  m.player.isPartyLeader && m.player.party.players.length < 4 && !m.player.inCombat
+                    ? false
+                    : true,
                 style: "primary",
                 modal: {
                   id: "player",

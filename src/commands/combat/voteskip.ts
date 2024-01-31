@@ -4,7 +4,7 @@ import { game, prisma } from "../../tower.js";
 export default {
   name: "voteskip",
   aliases: ["vs"],
-  description: "Vote to skip a player's turn when in a multiplayer encounter.",
+  description: "Vote to skip a player's turn in a multiplayer encounter.",
   category: "combat",
   cooldown: "0",
   partyOnly: true,

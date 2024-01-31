@@ -5,13 +5,14 @@ export default {
   name: "drink",
   aliases: ["d"],
   arguments: [{ name: "item", type: "playerOwnedItem" }],
-  description: "Drink a potion.",
+  description: "Drink a potion from your inventory.",
   category: "item",
   useInCombat: true,
   async execute(message, args, player, server) {
     const item = await player.getItem(args.item);
 
-    if (item.category !== "potion") return game.error({ player, content: `you can't drink this idiot.` });
+    if (item.category !== "potion")
+      return game.error({ player, content: `you can't drink this idiot.` });
 
     // Iterate through item effects
     let effectMessage = ``;

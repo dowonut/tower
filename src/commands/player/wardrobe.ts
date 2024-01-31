@@ -4,7 +4,7 @@ import emojis from "../../emojis.js";
 export default {
   name: "wardrobe",
   aliases: ["wd"],
-  description: "Customize your character's appearance.",
+  description: "Customize your appearance.",
   category: "player",
   environment: ["protected"],
   async execute(message, args, player, server) {
@@ -26,8 +26,20 @@ export default {
           name: "skin_and_eyes",
           type: "buttons",
           components: (m) => [
-            { id: "skin", label: "Skin", style: "primary", emoji: emojis.eye_dropper, modal: getColorModal(m, "skin") },
-            { id: "eyes", label: "Eyes", style: "primary", emoji: emojis.eye_dropper, modal: getColorModal(m, "eyes") },
+            {
+              id: "skin",
+              label: "Skin",
+              style: "primary",
+              emoji: emojis.eye_dropper,
+              modal: getColorModal(m, "skin"),
+            },
+            {
+              id: "eyes",
+              label: "Eyes",
+              style: "primary",
+              emoji: emojis.eye_dropper,
+              modal: getColorModal(m, "eyes"),
+            },
           ],
         },
         // Clothing

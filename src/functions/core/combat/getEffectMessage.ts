@@ -36,7 +36,11 @@ export default function getEffectMessage(args: {
   let actionMessage = game.getRandom(effect.messages);
 
   const damageText = damage.instances
-    .map((x) => `${emojis.damage[x.type]}${game.f(x.total)}`)
+    .map((x) => {
+      const critEmoji = x.crit ? emojis.stats.CD : "";
+      const acuteEmoji = x.acute ? emojis.stats.AD : "";
+      return `${critEmoji}${acuteEmoji}${emojis.damage[x.type]}${game.f(x.total)}`;
+    })
     .join(", ");
 
   actionMessage = actionMessage.replaceAll("TARGET", `**${targetName}**`);

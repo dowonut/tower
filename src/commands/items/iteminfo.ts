@@ -5,8 +5,9 @@ import { f } from "../../functions/core/index.js";
 export default {
   name: "iteminfo",
   aliases: ["ii"],
+  unlockCommands: ["sell", "eat", "drink", "buy", "equipment"],
   arguments: [{ name: "item", type: "playerOwnedItem" }],
-  description: "Get detailed information about an item.",
+  description: "View detailed information about an item.",
   category: "item",
   useInCombat: true,
   async execute(message, args: { item: Item }, player, server) {
@@ -200,9 +201,6 @@ export default {
     });
 
     menu.init("main");
-
-    // Unlock commands
-    player.unlockCommands(["sell", "eat", "drink"]);
 
     // FUNCTIONS ===============================================================
 

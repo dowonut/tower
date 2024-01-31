@@ -4,6 +4,7 @@ export default {
   name: "invite",
   aliases: ["in", "inv"],
   description: "Invite one or more players to your party.",
+  unlockCommands: ["setpartyowner", "kick", "leaveparty", "disbandparty", "voteskip", "party"],
   category: "other",
   cooldown: "5",
   arguments: [
@@ -122,8 +123,5 @@ export default {
         data: { leader: player.id, players: { connect: [{ id: player.id }] } },
       });
     }
-
-    // Unlock new commands
-    player.unlockCommands(["party", "disbandparty", "leaveparty", "setpartyowner", "kick"]);
   },
 } satisfies Command;

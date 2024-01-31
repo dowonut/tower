@@ -109,4 +109,7 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
 
   // Handle encounter
   game.handleEncounter({ players, enemies, encounter, turnOrder, channel: player.channel });
+
+  // Unlock new commands
+  await player.unlockCommands(["attack", "flee", "enemyinfo", "status"]);
 }

@@ -58,7 +58,7 @@ export default {
       },
     },
   ],
-  description: "Get top 10 leaderboard for any category.",
+  description: "Get the top 10 leaderboard for any category.",
   category: "other",
   useInCombat: true,
   async execute(message, args: { category: LeaderboardCategory }, player, server) {

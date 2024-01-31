@@ -4,7 +4,7 @@ import { config, game } from "../../tower.js";
 export default {
   name: "stats",
   aliases: ["s"],
-  description: "See all of your stats.",
+  description: "View all your stats.",
   arguments: [{ name: "user", type: "user", required: false }],
   category: "player",
   useInCombat: true,
@@ -25,8 +25,8 @@ export default {
       let percent = ``;
       if (["CR", "CD", "AR", "AD"].includes(name)) percent = `%`;
 
-      const base = baseStat;
-      const weapon = "+" + weaponLevelBonus + percent;
+      const base = baseStat + percent;
+      const weapon = "+" + weaponLevelBonus;
 
       description += `\n${stats[statName]} ${game.titleCase(name)}: ${f(base)}`;
 

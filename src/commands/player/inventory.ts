@@ -3,7 +3,8 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "inventory",
   aliases: ["i"],
-  description: "List all your items.",
+  unlockCommands: ["iteminfo", "buy", "sell", "drink", "eat", "merchants", "equipment"],
+  description: "View all your items.",
   category: "player",
   useInCombat: true,
   async execute(message, args, player, server) {
@@ -45,10 +46,11 @@ export default {
       components: [row, row2],
     })) as Message;
 
-    await game.componentCollector({ player, botMessage: reply, components: [...buttons, ...buttons2] });
-
-    // Unlock new commands
-    player.unlockCommands(["iteminfo"]);
+    await game.componentCollector({
+      player,
+      botMessage: reply,
+      components: [...buttons, ...buttons2],
+    });
 
     // Function for getting embed
     function getEmbed(page: number = 1, sort?: string, filter?: string) {
@@ -304,7 +306,11 @@ export default {
 
         await reply.edit({ components: [row, row3] });
 
-        await game.componentCollector({ player, botMessage: reply, components: [menu, ...buttons] });
+        await game.componentCollector({
+          player,
+          botMessage: reply,
+          components: [menu, ...buttons],
+        });
       }
       // Switch back to inventory menu
       else {
@@ -327,7 +333,11 @@ export default {
         await reply.edit(messageRef);
 
         // Create a new collector
-        await game.componentCollector({ player, botMessage: reply, components: [...buttons, ...buttons2] });
+        await game.componentCollector({
+          player,
+          botMessage: reply,
+          components: [...buttons, ...buttons2],
+        });
       }
     }
 

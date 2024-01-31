@@ -28,6 +28,6 @@ export default (async function (args: { type: ExplorationType; name?: string; ca
 
   game.send({
     player: this,
-    content: `*New ${type} discovered!\nSee your discoveries with \`${this.server.prefix}region\`*`,
+    content: `*New ${type} discovered!*`,
   });
 } satisfies PlayerFunction);

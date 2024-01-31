@@ -8,6 +8,7 @@ import * as Prisma from "@prisma/client";
 import { Prisma as PrismaClient } from "@prisma/client";
 
 import PlayerClass from "../game/_classes/players.ts";
+import { CommandButtonCommand } from "../functions/core/components/commandButton.ts";
 
 declare global {
   /**
@@ -26,6 +27,13 @@ declare global {
     name: string;
     /** Description of the command. */
     description: string;
+    /** Message to send when the command is unlocked by the player. */
+    tutorial?: {
+      content: string;
+      buttons: CommandButtonCommand[];
+    };
+    /** Optionally unlock new commands when this command is used. */
+    unlockCommands?: string[];
     /** Aliases of the command. */
     aliases?: string[];
     /** User arguments for the command. */

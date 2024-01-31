@@ -1,8 +1,10 @@
-import { prisma, config } from "../../tower.js";
+import { prisma, config, game } from "../../tower.js";
 import tutorials from "../../game/_classes/tutorials.js";
 
 export default (async function (commandNames: string[]) {
-  let tutorialRefs = [];
+  const allCommands = await game.getCommands();
+
+  let newCommands: Command[] = [];
   for (const commandName of commandNames) {
     if (!this.user.unlockedCommands.includes(commandName)) {
       await prisma.user.update({
@@ -11,40 +13,27 @@ export default (async function (commandNames: string[]) {
           unlockedCommands: { push: commandName },
         },
       });
+      const newCommand = allCommands.find((x) => x.name == commandName);
+      newCommands.push(newCommand);
     } else {
       continue;
     }
-
-    // const tutorial = tutorials.find((x) => x.name == commandName.toLowerCase());
-
-    // if (tutorial) {
-    //   tutorialRefs.push(tutorial);
-    // } else {
-    //   tutorialRefs.push({ name: commandName });
-    // }
   }
 
-  if (tutorialRefs.length < 1) return;
+  // Send tutorial and unlock messages
+  for (const newCommand of newCommands) {
+    const title = `*New command unlocked: **\`-${newCommand.name}\`***`;
+    let description = newCommand?.tutorial?.content
+      ? newCommand.tutorial.content
+      : newCommand.description;
 
-  const infos = tutorialRefs.map((x) => {
-    let info = ``;
-    info += `\n\n${config.emojis.bullet} **${x.name.toUpperCase()}**`;
-    if (x.info) {
-      info += `${x.info}`;
-    } else {
-      info += ``;
-    }
-    return info;
-  });
+    const botMessage = await game.send({
+      player: this,
+      content: title + "\n" + description,
+      reply: false,
+    });
 
-  const nameText = `New Commands Unlocked!`;
-  const description = infos.join("");
-
-  const embed = {
-    title: nameText,
-    color: config.towerColor,
-    description: description,
-  };
-
-  return this.message.author.send({ embeds: [embed] });
+    if (newCommand?.tutorial?.buttons)
+      game.commandButton({ commands: newCommand.tutorial.buttons, botMessage, player: this });
+  }
 } satisfies PlayerFunction);

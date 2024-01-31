@@ -5,7 +5,8 @@ export default {
   name: "merchants",
   aliases: ["m", "merchant"],
   arguments: [{ name: "merchant", type: "playerAvailableMerchant", required: false }],
-  description: "See all merchants on this floor and the items they sell.",
+  description: "View all merchants you've discovered on the current floor.",
+  unlockCommands: ["sell", "buy"],
   category: "item",
   environment: ["protected"],
   async execute(message, args, player, server) {
@@ -58,7 +59,10 @@ export default {
                 label: x.getName(),
                 value: x.name,
                 description: x.description || "A friendly merchant.",
-                default: m.variables.currentMerchant && m.variables.currentMerchant.name == x.name ? true : false,
+                default:
+                  m.variables.currentMerchant && m.variables.currentMerchant.name == x.name
+                    ? true
+                    : false,
               };
             });
             return {
@@ -76,12 +80,15 @@ export default {
           name: "selectItem",
           type: "menu",
           components: async (m) => {
-            const options: SelectMenuOption[] = (await m.variables.currentMerchant.getItems(player)).map((x) => {
+            const options: SelectMenuOption[] = (
+              await m.variables.currentMerchant.getItems(player)
+            ).map((x) => {
               return {
                 label: x.getName(),
                 value: x.name,
                 emoji: x.getEmoji(),
-                default: m.variables.currentItem && m.variables.currentItem.name == x.name ? true : false,
+                default:
+                  m.variables.currentItem && m.variables.currentItem.name == x.name ? true : false,
               };
             });
 
@@ -156,7 +163,9 @@ export default {
             let description = merchants
               .map(
                 (x) =>
-                  `**${x.getName()}** (\`${game.titleCase(x.category)}\`) *${x.description || "A friendly merchant."}*`
+                  `**${x.getName()}** (\`${game.titleCase(x.category)}\`) *${
+                    x.description || "A friendly merchant."
+                  }*`
               )
               .join("\n");
 
@@ -234,7 +243,5 @@ export default {
       menu.variables.currentMerchant = merchant;
       menu.init("merchant");
     }
-
-    player.unlockCommands(["buy"]);
   },
 } as Command;

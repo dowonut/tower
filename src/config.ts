@@ -26,7 +26,7 @@ export const baseStats = {
   CR: 10,
   CD: 40,
   AR: 10,
-  AD: 20,
+  AD: 40,
   AGR: 100,
 };
 export const baseEnemyStats = {
@@ -44,6 +44,21 @@ export const baseWeaponStats = {
   RES: 2,
   SPD: 1,
 };
+
+export const defaultCommands = [
+  "erase",
+  "begin",
+  "explore",
+  "profile",
+  "help",
+  "unlockallcommands",
+  "forgetallcommands",
+  "unlockedcommands",
+  "settings",
+  "patchmissing",
+  "leaderboard",
+  "ping",
+];
 
 // export const subStats = {
 //   bludgeoning: 0,
@@ -153,6 +168,7 @@ export const embedColors = {
   gold: 0xf6cd26,
   default: 0x2b2d31,
   red: 0xff1d1d,
+  tower: towerColor,
 };
 
 // PLAYER LEVEL FORMULAS =======================================

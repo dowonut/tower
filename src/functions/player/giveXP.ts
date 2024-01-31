@@ -30,9 +30,6 @@ export default (async function (args: { amount: number; message: Message }) {
     levelUp++;
   }
 
-  // Unlock new commands
-  this.unlockCommands(["traits", "traitup", "floor", "region", "breakdown", "leaderboard"]);
-
   if (levelUp > 0) {
     const { gold_arrow, green_side_arrow } = config.emojis;
     let description = `
@@ -58,5 +55,8 @@ New trait points: ${f(levelUp)}
       color: "gold",
       reply: true,
     });
+
+    // Unlock new commands
+    this.unlockCommands(["traits", "traitup"]);
   }
 } satisfies PlayerFunction);

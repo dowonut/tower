@@ -109,6 +109,8 @@ const emojis = {
     slimeball: "<:slimeball:1137785911619362857>",
     stick: "<:stick:1137785914190483467>",
     sword_handle: "<:sword_handle:1137785916136628244>",
+    leather: "<:leather:1202205924299915314>",
+    frog_tongue: "<:frog_tongue:1202205927315611698>",
   },
 };
 export default emojis;

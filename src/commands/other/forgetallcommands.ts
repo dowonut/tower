@@ -4,9 +4,9 @@ export default {
   name: "forgetallcommands",
   aliases: ["fac"],
   description: "Forget all commands in the game.",
-  category: "admin",
+  category: "other",
   async execute(message, args, player, server) {
-    await player.update({ user: { update: { unlockedCommands: [] } } });
+    await player.update({ user: { update: { unlockedCommands: config.defaultCommands } } });
 
     game.send({
       player,

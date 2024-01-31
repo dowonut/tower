@@ -24,7 +24,8 @@ export default {
 
     let heal = item.health * quantity;
 
-    if (player.health == maxHP) return game.error({ player, content: `you're already at max health!` });
+    if (player.health == maxHP)
+      return game.error({ player, content: `you're already at max health!` });
 
     if (player.health + heal > maxHP) heal = maxHP - player.health;
 
@@ -35,9 +36,9 @@ export default {
     game.send({
       player,
       reply: true,
-      content: `Ate \`${quantity}x\` **${item.getName()}** and healed \`${heal}\` points (${config.emojis.health}\`${
-        playerData.health
-      }/${maxHP}\`)`,
+      content: `Ate \`${quantity}x\` **${item.getName()}** ${item.getEmoji()} and healed \`${heal}\` points (${
+        config.emojis.health
+      }\`${playerData.health}/${maxHP}\`)`,
     });
   },
 } as Command;

@@ -3,8 +3,8 @@ import { game } from "../../tower.js";
 export default {
   name: "unlockedcommands",
   aliases: ["uc"],
-  description: "Check unlocked commands.",
-  category: "admin",
+  description: "Check your unlocked commands.",
+  category: "other",
   async execute(message, args, player, server) {
     const commands = await game.getCommands();
 

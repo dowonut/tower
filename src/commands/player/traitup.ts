@@ -22,7 +22,7 @@ export default {
       type: "number",
     },
   ],
-  description: "Level up a stat using stat points.",
+  description: "Increase a trait using trait points.",
   category: "player",
   async execute(message, args: { trait: PlayerTrait; amount: number | "all" }, player, server) {
     let { trait, amount } = args;
@@ -49,10 +49,9 @@ export default {
     game.send({
       player,
       reply: true,
-      content: `Increased ${config.emojis.traits[trait]} **${traitName}** to ${game.f(player[trait])}`,
+      content: `Increased ${config.emojis.traits[trait]} **${traitName}** to ${game.f(
+        player[trait]
+      )}`,
     });
-
-    // Unlock breakdown command
-    player.unlockCommands(["breakdown"]);
   },
 } satisfies Command;

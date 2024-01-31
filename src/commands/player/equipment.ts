@@ -4,7 +4,7 @@ export default {
   name: "equipment",
   aliases: ["eq", "equip"],
   arguments: [{ name: "item", type: "playerOwnedItem", required: false }],
-  description: "Check your current equipment or equip a new item.",
+  description: "View your current equipment or equip a new item.",
   category: "player",
   async execute(message, args: { item: Item }, player, server) {
     const { item } = args;

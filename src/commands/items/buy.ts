@@ -7,7 +7,8 @@ export default {
     { name: "item_name", type: "item" },
     { name: "quantity", required: false, type: "number" },
   ],
-  description: "Purchase items from merchants.",
+  unlockCommands: ["eat", "drink", "equipment"],
+  description: "Purchase an item from a merchant.",
   category: "item",
   environment: ["protected"],
   async execute(message, args, player, server) {
@@ -89,27 +90,20 @@ export default {
     game.send({
       player,
       reply: true,
-      content: `you bought \`${quantity}x\` **${item.getName()}** for \`${merchantItem.price * quantity}\` ${
-        config.emojis.mark
-      }`,
+      content: `you bought \`${quantity}x\` **${item.getName()}** ${item.getEmoji()} for \`${
+        merchantItem.price * quantity
+      }\` ${config.emojis.mark}`,
     });
-
-    // Unlock equipment
-    if (["weapon", "armor"].includes(item.category)) {
-      player.unlockCommands(["equipment"]);
-    }
 
     // Unlock recipe
     if (item.category == "recipe") {
       game.send({
         player,
         reply: true,
-        content: `you unlocked a new recipe: **${game.titleCase(item.recipeItem)}**\nSee all your recipes with \`${
-          server.prefix
-        }recipes\``,
+        content: `you unlocked a new recipe: **${game.titleCase(
+          item.recipeItem
+        )}**\nSee all your recipes with \`${server.prefix}recipes\``,
       });
-
-      player.unlockCommands(["recipes"]);
     }
   },
 } as Command;

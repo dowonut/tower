@@ -20,7 +20,11 @@ export default (async function (args: { enemies: Enemy[] }) {
         await this.giveItem(loot.name, quantity);
         let item = game.getItem(loot.name);
         item.quantity = quantity;
-        loots.push(item);
+        if (loots.find((x) => x.name == item.name)) {
+          loots.find((x) => x.name == item.name).quantity += quantity;
+        } else {
+          loots.push(item);
+        }
       }
     }
     // Get XP

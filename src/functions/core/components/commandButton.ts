@@ -1,10 +1,17 @@
 import { config, game } from "../../../tower.js";
 
+export type CommandButtonCommand = {
+  name: string;
+  args?: string[];
+  emoji?: string;
+  style?: ButtonStyle;
+};
+
 /**
  * Attach a button component to a message that triggers a command.
  */
 export default async function commandButton(obj: {
-  commands: { name: string; args?: string[]; emoji?: string; style?: ButtonStyle }[];
+  commands: CommandButtonCommand[];
   player: Player;
   botMessage: Message;
   wait?: boolean;

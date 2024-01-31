@@ -5,7 +5,8 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "traits",
   aliases: ["tr"],
-  description: "Check your traits.",
+  unlockCommands: ["traitup", "traitsrefund"],
+  description: "View your traits.",
   category: "player",
   useInCombat: true,
   async execute(message, args, player, server) {

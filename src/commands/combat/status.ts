@@ -3,7 +3,7 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "status",
   aliases: ["st"],
-  description: "Show your current status during combat.",
+  description: "View your current status during combat.",
   category: "combat",
   useInCombatOnly: true,
   async execute(message, args, player, server) {

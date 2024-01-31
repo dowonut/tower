@@ -130,9 +130,6 @@ export default async function enemyEncounter(args: { player: Player }) {
 
   menu.init("encounter");
 
-  // Unlock new commands
-  await player.unlockCommands(["attack", "flee", "enemyinfo", "invite"]);
-
   // Enter combat
   async function enterCombat() {
     await game.enterCombat({ player, enemies });

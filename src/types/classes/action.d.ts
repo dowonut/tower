@@ -109,7 +109,16 @@ declare global {
    * Evaluated damage towards a target.
    */
   export type EvaluatedDamage = {
-    instances: { type: DamageType; total: number }[];
+    instances: {
+      /** The type of damage. */
+      type: DamageType;
+      /** The total amount of damage. */
+      total: number;
+      /** Is the damage instance a critical hit. Default = false.*/
+      crit: boolean;
+      /** Is the damage instance an acute hit. Default = false. */
+      acute: boolean;
+    }[];
     total: number;
   };
 }

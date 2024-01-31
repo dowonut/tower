@@ -7,9 +7,9 @@ export default {
     { name: "item", type: "playerOwnedItem" },
     { name: "quantity", type: "number", required: false },
   ],
-  description: "Sell items in your inventory.",
+  description: "Sell an item in your inventory.",
   category: "item",
-  async execute(message, args, player, server) {
+  async execute(message, args: { item: Item; quantity: any }, player, server) {
     let quantity: string | number = args.quantity;
 
     // Fetch item data
@@ -42,12 +42,10 @@ export default {
     game.send({
       player,
       reply: true,
-      content: `Sold \`${quantity}x\` **${item.getName()}** for \`${item.value * +quantity}\` ${
-        config.emojis.mark
-      } (\`${playerData.marks}\` ${config.emojis.mark})`,
+      content: `Sold \`${quantity}x\` **${item.getName()}** ${item.getEmoji()} for \`${
+        item.value * +quantity
+      }\` ${config.emojis.mark} (\`${playerData.marks}\` ${config.emojis.mark})`,
     });
-
-    player.unlockCommands(["merchants"]);
 
     return;
   },

@@ -5,7 +5,7 @@ export default {
   name: "travel",
   aliases: ["t"],
   arguments: [{ name: "region_name", type: "region" }],
-  description: "Travel to a different region on your floor.",
+  description: "Travel to a different region on your current floor.",
   category: "location",
   async execute(message, args, player, server) {
     const input = args.region_name;

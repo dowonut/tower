@@ -2,7 +2,8 @@ import { game, config, client, prisma } from "../tower.js";
 
 export default {
   name: "explore",
-  description: "Explore your current floor.",
+  description: "Explore your current region.",
+  unlockCommands: ["region", "floor", "travel"],
   aliases: ["e"],
   cooldown: "2",
   async execute(message, args, player, server) {
@@ -45,9 +46,6 @@ export default {
     // Get random output from weights
     let { item } = game.weightedRandom(options, weights);
 
-    // // Unlock region command
-    player.unlockCommands(["region"]);
-
     // Log output
     switch (item) {
       case "enemies":
@@ -57,8 +55,6 @@ export default {
       case "loot":
         // Give the player some random loot from that region
         const botMessage = await player.giveRandomLoot();
-        // Unlock new commands
-        player.unlockCommands(["inventory"]);
         // Add an explore button
         game.commandButton({
           player,
@@ -66,10 +62,12 @@ export default {
           commands: [{ name: "explore" }],
           wait: true,
         });
+        player.unlockCommands(["inventory"]);
         break;
       case "merchants":
         // Unlock a new random merchant from that region
         await player.unlockRandomMerchant();
+        player.unlockCommands(["merchants"]);
         break;
     }
   },
