@@ -140,7 +140,7 @@ export class EnemyClass extends EnemyBaseClass {
 
       const { actionTotalDamage } = await evaluateAction({
         source: this,
-        target: player,
+        targets: { 1: player },
         players,
         action: finalAction,
         simulate: true,

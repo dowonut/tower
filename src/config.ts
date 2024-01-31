@@ -23,14 +23,14 @@ export const baseStats = {
   RES: 10,
   MAG_RES: 10,
   SPD: 80,
-  CR: 10,
+  CR: 20,
   CD: 40,
-  AR: 10,
+  AR: 20,
   AD: 40,
   AGR: 100,
 };
 export const baseEnemyStats = {
-  XP: 20,
+  XP: 10,
   maxHP: 0,
   ATK: 5,
   MAG: 5,
@@ -177,7 +177,7 @@ export const embedColors = {
 export const nextLevelXp = (lvl: number) => {
   // let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
   // if (lvl >= 90) v = 5 * Math.pow(lvl - 79, 4);
-  let v = 5 * Math.pow(lvl, 2.2) + 100 * lvl + 100;
+  let v = 5 * Math.pow(lvl, 2.2) + 100 * lvl + 50;
   if (lvl >= 90) v = 5 * Math.pow(lvl - 76, 3.8);
   return Math.floor(v);
 };

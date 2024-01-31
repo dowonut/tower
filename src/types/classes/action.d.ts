@@ -53,7 +53,6 @@ declare global {
      * - single = one enemy.
      * - adjacent = one enemy and adjacent enemies.
      * - all = all enemies.
-     * - choose = player can choose targets.
      *
      * Default: single. */
     targetType?: TargetType;
@@ -120,6 +119,11 @@ declare global {
       acute: boolean;
     }[];
     total: number;
+  };
+
+  /** Object containing selected targets. */
+  export type Targets = {
+    [key: number]: Enemy | Player;
   };
 }
 

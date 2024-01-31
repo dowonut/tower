@@ -20,12 +20,18 @@ export class ActionClass extends ActionClassBase {
     // return text;
   }
 
+  /** Get number of required targets. */
+  getRequiredTargets() {
+    return Math.max(...this.effects.map((x) => x.targetNumber || 1));
+  }
+
   /** Get short damage text for buttons. */
   getBriefDamageText(totalEnemies?: number) {
     let text: string[] = [];
     const effects = this.effects.filter((x) => x.type == "damage");
     for (const effect of effects as ActionEffect<"damage">[]) {
       let targetText: string = "";
+      // If first target
       switch (effect.targetType) {
         case "single":
           targetText = "|❙|";
@@ -40,9 +46,15 @@ export class ActionClass extends ActionClassBase {
           targetText = "|❙|";
           break;
       }
+
+      // If additional targets
+      if (effect?.targetNumber > 1) {
+        targetText = "[❙]";
+      }
+
       const damages = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
       for (const [i, damage] of damages.entries()) {
-        let finalText = `${damage.basePercent}% ${damage.source}`;
+        let finalText = `${damage.basePercent}%`;
         if (i === damages.length - 1) finalText += ` ${targetText}`;
         text.push(finalText);
       }

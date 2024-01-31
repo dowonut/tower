@@ -8,22 +8,19 @@ export default {
   arguments: [
     { name: "attack_name", type: "playerAvailableAttack", required: false },
     {
-      name: "target_name",
+      name: "target_one",
       required: false,
-      async filter(i, p) {
-        const enemies = await p.getEnemies();
-        const players = await p.getPartyPlayers();
-
-        const target = enemies.find((x) => {
-          return x.name == i.toLowerCase() || parseInt(i) == x.number;
-        });
-
-        if (!target || !enemies) {
-          return { success: false, message: `No enemy found with name or number ${game.f(i)}` };
-        }
-
-        return { success: true, content: { players, enemies, target } };
-      },
+      type: "target",
+    },
+    {
+      name: "target_two",
+      required: false,
+      type: "target",
+    },
+    {
+      name: "target_three",
+      required: false,
+      type: "target",
     },
   ],
   category: "combat",
@@ -33,16 +30,29 @@ export default {
     message,
     args: {
       attack_name: string;
-      target_name?: { players?: Player[]; enemies?: Enemy[]; target: Enemy | Player };
+      target_one?: Enemy;
+      target_two?: Enemy;
+      target_three?: Enemy;
     },
     player
   ) {
     // Format imput
-    let { attack_name: attackName, target_name: targetName } = args;
-    let { players = [], enemies = [], target = undefined } = targetName;
+    let { attack_name: attackName, target_one, target_two, target_three } = args;
 
+    // Get enemies and players
+    const enemies = await player.getEnemies();
+
+    // Define target object
+    let targets: Targets = {
+      1: target_one,
+      2: target_two,
+      3: target_three,
+    };
+
+    // Get weapon attacks for the player
     const attacks = await player.getActions({ type: "weapon_attack" });
 
+    // Define menu
     const menu = new game.Menu({
       player,
       boards: [{ name: "attacks", rows: [], message: "attacks" }],
@@ -92,14 +102,16 @@ export default {
       // Check if player can attack
       if (!player.canTakeAction)
         return game.error({ player, content: `you can't attack right now.` });
+
+      // Fetch attack
+      let attack = await player.getAction(attackName);
+
       // Check if enemy provided
-      if (!target || (!enemies && !players))
+      if (!targets[1] && attack.effects.some((x) => x.targetType !== "all"))
         return game.error({
           player,
           content: `provide the name or number of the enemy you want to attack.`,
         });
-
-      let attack = await player.getAction(attackName);
 
       // Check if attack is on cooldown
       if (attack?.remCooldown > 0) {
@@ -111,15 +123,26 @@ export default {
         });
       }
 
+      // Check if enough targets provided
+      if (
+        !targets[attack.getRequiredTargets()] &&
+        attack.effects.some((x) => x.targetType !== "all")
+      ) {
+        return game.error({
+          player,
+          content: `this attack requires that you choose **${attack.getRequiredTargets()}** targets.`,
+        });
+      }
+
       // Evaluate attack
       const evaluatedAction = await game.evaluateAction({
         action: attack,
         enemies,
         source: player,
-        target,
+        targets,
       });
       if (evaluatedAction.enemies) Object.assign(enemies, evaluatedAction.enemies);
-      if (evaluatedAction.players) Object.assign(players, evaluatedAction.players);
+      // if (evaluatedAction.players) Object.assign(players, evaluatedAction.players);
 
       if (attack.cooldown) {
         // Update remaining cooldown
@@ -131,7 +154,6 @@ export default {
         encounterId: player.encounterId,
         player,
         enemies,
-        players,
       } satisfies PlayerMoveEmitter);
 
       // Give skill xp

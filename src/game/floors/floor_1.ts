@@ -7,9 +7,9 @@ export default {
       environment: "world",
       enemies: [
         { name: "small slime", weight: 100 },
-        { name: "big slime", weight: 50 },
-        { name: "wet slime", weight: 30 },
-        { name: "burning slime", weight: 30 },
+        { name: "big slime", weight: 60 },
+        { name: "wet slime", weight: 40 },
+        { name: "burning slime", weight: 40 },
       ],
       loot: [{ name: "slimeball", weight: 100, min: 1, max: 2 }],
     },
@@ -20,8 +20,8 @@ export default {
       environment: "world",
       enemies: [
         { name: "baby goblin", weight: 100 },
-        { name: "hungry goblin", weight: 100 },
-        { name: "hobgoblin", weight: 50 },
+        { name: "hungry goblin", weight: 80 },
+        { name: "hobgoblin", weight: 60 },
         { name: "the rock", weight: 10 },
       ],
       loot: [{ name: "rock", weight: 100 }],

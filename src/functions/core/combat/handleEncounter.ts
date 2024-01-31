@@ -1,10 +1,10 @@
 import { Interaction, TextChannel } from "discord.js";
 import { game, prisma, config } from "../../../tower.js";
-import { f } from "../index.js";
+import { Menu, f } from "../index.js";
 import PlayerClass from "../../../game/_classes/players.js";
 import { EnemyClass } from "../../../game/_classes/enemies.js";
 import emojis from "../../../emojis.js";
-import _ from "lodash";
+import _, { add } from "lodash";
 
 /** handleEncounter */
 export default async function handleEncounter(args: {
@@ -22,29 +22,42 @@ export default async function handleEncounter(args: {
   // Check if all enemies are already dead
   if (_.isEmpty(enemies) || enemies.every((x) => x?.dead)) return await killEncounter();
 
+  // Get first player
   const firstPlayer: Player = game.getNextPlayer(turnOrder);
+
+  // Define menu variables
+  const variables = {
+    players,
+    enemies,
+    turnOrder,
+    targets: [] as number[],
+    encounterImage: undefined,
+    pendingAction: undefined as Action,
+  };
 
   // Create menu
   const menu = new game.Menu({
     player: firstPlayer,
-    variables: {
-      players,
-      enemies,
-      turnOrder,
-      selectedEnemy: undefined as number,
-      encounterImage: undefined,
-    },
+    variables,
     boards: [
+      // Select enemies and pick action
       { name: "main", rows: ["enemies", "actions"], message: "main" },
+      // Enemy selected and pick action category
       {
         name: "enemySelected",
         rows: ["enemies", "enemyActions", "actions"],
         message: "main",
       },
+      // Enemy selected and pick attack
       {
         name: "selectAttack",
         rows: ["enemies", "attacks"],
       },
+      {
+        name: "selectAdditionalTargets",
+        rows: ["targetsMultiple"],
+      },
+      // Enemy turn ----------------------------
       {
         name: "enemyTurn",
         rows: [],
@@ -61,29 +74,7 @@ export default async function handleEncounter(args: {
       {
         name: "enemies",
         type: "menu",
-        components: (m) => {
-          const enemies = m.variables.enemies;
-          const selected = m.variables.selectedEnemy;
-          return {
-            id: "selectEnemy",
-            placeholder: "Select an enemy for more options...",
-            options: enemies
-              .sort((a, b) => a.number - b.number)
-              .filter((x) => !x.dead)
-              .map((x) => {
-                return {
-                  label: x.displayName,
-                  value: x.number.toString(),
-                  default: selected == x.number ? true : false,
-                };
-              }),
-            function: (r, i, s) => {
-              m.variables.encounterImage = undefined;
-              m.variables.selectedEnemy = parseInt(s);
-              m.switchBoard("enemySelected");
-            },
-          };
-        },
+        components: (m) => getSelectTargetMenu(m),
       },
       // Non-combat actions
       {
@@ -147,6 +138,7 @@ export default async function handleEncounter(args: {
               { id: "return", board: "enemySelected" },
             ];
           return attacks.map((x) => {
+            const requiredTargets = x.getRequiredTargets();
             let extraInfo = ``;
             if (!x.remCooldown) {
               extraInfo = `(${x.getBriefDamageText(menu.variables.enemies.length)})`;
@@ -161,17 +153,42 @@ export default async function handleEncounter(args: {
               emoji: x.getEmoji(),
               disable: x.remCooldown > 0,
               async function() {
-                // Attack
-                await game.runCommand("attack", {
-                  message: m.botMessage,
-                  discordId: m.player.user.discordId,
-                  server: m.player.server,
-                  args: [x.name, m.variables.selectedEnemy.toString()],
-                });
+                // Automatically select remaining living enemy as target
+                if (requiredTargets > 1 && getAliveEnemies().length < 2) {
+                  await game.runCommand("attack", {
+                    message: m.botMessage,
+                    discordId: m.player.user.discordId,
+                    server: m.player.server,
+                    args: [
+                      x.name,
+                      ...Array(requiredTargets).fill(getAliveEnemies()[0].number.toString(), 0),
+                    ],
+                  });
+                }
+                // Prompt user to select additional targets
+                else if (requiredTargets > 1) {
+                  m.variables.pendingAction = x;
+                  m.switchBoard("selectAdditionalTargets");
+                }
+                // Attack selected enemy
+                else {
+                  await game.runCommand("attack", {
+                    message: m.botMessage,
+                    discordId: m.player.user.discordId,
+                    server: m.player.server,
+                    args: [x.name, ...m.variables.targets.map(String)],
+                  });
+                }
               },
             };
           });
         },
+      },
+      // Select multiple targets
+      {
+        name: "targetsMultiple",
+        type: "menu",
+        components: (m) => getSelectTargetMenu(m, m.variables.pendingAction.getRequiredTargets()),
       },
     ],
     messages: [
@@ -201,7 +218,7 @@ ${enemyName}${healthBar}`;
             m.variables.encounterImage = await game.createEncounterImage({
               enemies: enemies.sort((a, b) => a.number - b.number),
               verbose: true,
-              selectedEnemy: m.variables.selectedEnemy,
+              selectedEnemy: m.variables.targets[0],
             });
           }
 
@@ -352,7 +369,7 @@ ${turnOrderList}
     const turnOrder = await game.updateTurnOrder(menu.variables.turnOrder);
 
     menu.variables.turnOrder = turnOrder;
-    menu.variables.selectedEnemy = undefined;
+    menu.variables.targets = [];
     menu.variables.enemies = turnOrder.filter((x) => !x.isPlayer) as Enemy[];
     menu.variables.players = turnOrder.filter((x) => x.isPlayer) as Player[];
     const nextEntity = turnOrder[0];
@@ -411,7 +428,7 @@ ${turnOrderList}
         enemies: menu.variables.enemies,
         players: menu.variables.players,
         source: enemy,
-        target: player,
+        targets: { 1: player },
         action,
       });
 
@@ -587,10 +604,10 @@ ${turnOrderList}
       let board = "main";
       if (menu.variables.enemies.length < 2) {
         board = "enemySelected";
-        menu.variables.selectedEnemy = menu.variables.enemies[0].number;
+        menu.variables.targets = [menu.variables.enemies[0].number];
       } else if (menu.variables.enemies.filter((x) => !x.dead).length < 2) {
         board = "enemySelected";
-        menu.variables.selectedEnemy = menu.variables.enemies.filter((x) => !x.dead)[0].number;
+        menu.variables.targets = [menu.variables.enemies.filter((x) => !x.dead)[0].number];
       }
 
       // Define collector filter
@@ -639,7 +656,7 @@ ${turnOrderList}
     await prisma.encounter.delete({ where: { id: encounter.id } });
 
     // Delete all enemies
-    const enemiesRemaining = menu ? menu.variables.enemies : enemies;
+    const enemiesRemaining = menu ? menu?.variables?.enemies : enemies;
     await prisma.enemy.deleteMany({
       where: {
         OR: enemiesRemaining.map((x) => {
@@ -649,5 +666,69 @@ ${turnOrderList}
     });
 
     return;
+  }
+
+  /** Get menu for selecting targets. */
+  async function getSelectTargetMenu(m: Menu<typeof variables>, total: number = 1) {
+    const targets = m.variables.targets;
+    let placeholder = "Select an enemy for more options...";
+    // If selecting additional enemies, change text
+    if (total > 1) {
+      switch (targets.length) {
+        case 1:
+          placeholder = "Select 2nd target...";
+          break;
+        case 2:
+          placeholder = "Select 3rd target...";
+          break;
+        case 3:
+          placeholder = "Select 4th target...";
+          break;
+      }
+    }
+    // Return with menu
+    return {
+      id: "selectEnemy",
+      placeholder,
+      options: m.variables.enemies
+        .sort((a, b) => a.number - b.number)
+        .filter((x) => !x.dead)
+        .map((x) => {
+          return {
+            label: x.displayName,
+            value: x.number.toString(),
+            default: total > 1 ? false : targets[0] == x.number ? true : false,
+          };
+        }),
+      function: async (r, i, s) => {
+        m.variables.encounterImage = undefined;
+        m.variables.targets.push(parseInt(s));
+        // Selecting first target
+        if (total <= 1) {
+          m.switchBoard("enemySelected");
+        }
+        // Finished selecting all required targets
+        else if (m.variables.targets.length == total) {
+          // Perform weapon attack
+          if (m.variables.pendingAction.type == "weapon_attack") {
+            await game.runCommand("attack", {
+              message: m.botMessage,
+              discordId: m.player.user.discordId,
+              server: m.player.server,
+              args: [m.variables.pendingAction.name, ...m.variables.targets.map(String)],
+            });
+          }
+        }
+        // More targets remaining to select
+        else {
+          m.refresh();
+        }
+      },
+    };
+  }
+
+  /** Get enemies that are still alive. */
+  function getAliveEnemies() {
+    return menu.variables.enemies.filter((x) => !x.dead);
   }
 }

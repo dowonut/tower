@@ -1,3 +1,4 @@
+import emojis from "../../emojis.js";
 import { game, config } from "../../tower.js";
 import { f, titleCase } from "../core/index.js";
 
@@ -49,11 +50,17 @@ New trait points: ${f(levelUp)}
     // Update health to new max
     await player.update({ health: player.maxHP });
 
-    await game.fastEmbed({
+    const botMessage = await game.fastEmbed({
       player,
       description,
       color: "gold",
       reply: true,
+    });
+
+    game.commandButton({
+      botMessage,
+      player,
+      commands: [{ name: "traits", style: "primary", emoji: emojis.gold_side_arrow }],
     });
 
     // Unlock new commands

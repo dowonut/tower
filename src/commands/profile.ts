@@ -4,7 +4,7 @@ import emojis from "../emojis.js";
 export default {
   name: "profile",
   description: "Show all relevant information about your character.",
-  unlockCommands: ["inventory", "skills", "traits", "equipment", "stats", "wardrobe"],
+  unlockCommands: ["inventory", "skills", "traits", "equipment", "stats", "wardrobe", "party"],
   aliases: ["pr", "p"],
   arguments: [{ name: "user", type: "user", required: false }],
   //  category: "General",

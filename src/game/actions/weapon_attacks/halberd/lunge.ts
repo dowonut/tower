@@ -3,6 +3,7 @@ export default {
   type: "weapon_attack",
   requiredWeapon: ["halberd"],
   description: "Lunge towards your enemies and hit them with your halberd.",
+  cooldown: 1,
   effects: [
     {
       type: "damage",
@@ -21,7 +22,7 @@ export default {
       damage: {
         type: "slashing",
         source: "ATK",
-        basePercent: 20,
+        basePercent: 15,
       },
       messages: ["SOURCE swiftly makes an extra swing at TARGET, dealing DAMAGE"],
     },

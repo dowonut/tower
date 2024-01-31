@@ -194,6 +194,22 @@ export default async function parseCommandArguments(options: {
             argsObject[argument.name] = playerReference;
           }
           break;
+        case "target":
+          if (!player.inCombat) {
+            errorContent = `Targets can only be provided during combat.`;
+            error();
+          }
+          const enemies = await player.getEnemies();
+          const target = enemies?.find((x) => {
+            return x.name == input.toLowerCase() || parseInt(input) == x.number;
+          });
+          if (!target) {
+            errorContent = `No target found with number or name **\`${input}\`**`;
+            error();
+          } else {
+            argsObject[argument.name] = target;
+          }
+          break;
       }
     }
 

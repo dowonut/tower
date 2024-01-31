@@ -8,12 +8,12 @@ export default async function evaluateAction(args: {
   enemies?: Enemy[];
   players?: Player[];
   source: Enemy | Player;
-  target?: Player | Enemy;
+  targets?: Targets;
   action: Action | EnemyAction;
   /** Don't update sources or targets. Only return information about the action. Default: false. */
   simulate?: boolean;
 }) {
-  let { enemies = [], players = [], source, action, target, simulate = false } = args;
+  let { enemies = [], players = [], source, action, targets, simulate = false } = args;
 
   // Refresh source
   if (!simulate) source = await (source as Player).refresh();
@@ -23,8 +23,11 @@ export default async function evaluateAction(args: {
 
   // Iterate through action effects
   for (let effect of action.effects) {
+    // Define target
+    const target = targets[effect.targetNumber || 1] || undefined;
+    // Define entities as same as the target
+    let entities = target ? (target instanceof EnemyClass ? enemies : players) : enemies;
     // Remove dead entities from possible targets
-    let entities = target instanceof EnemyClass ? enemies : players;
     entities = entities.filter((x) => !x.dead) as PlayerClass[] | EnemyClass[];
     // Define targets per effect
     effect.targets = [];
@@ -32,7 +35,7 @@ export default async function evaluateAction(args: {
     switch (effect.targetType) {
       // Single target
       case "single":
-        effect.targets.push(target);
+        effect.targets.push(entities.find((x) => x.number == target.number));
         break;
       // Adjacent targets
       case "adjacent":
@@ -49,9 +52,6 @@ export default async function evaluateAction(args: {
       case "all":
         effect.targets.push(...entities);
         break;
-      // Specific targets
-      case "choose":
-        break;
     }
     // console.log(effect?.targets?.map((x) => ({ name: x.displayName, health: x.health })));
 
@@ -65,7 +65,13 @@ export default async function evaluateAction(args: {
         break;
     }
   }
-  return { enemies, players, actionTotalDamage };
+
+  // Returned with modified entities
+  return {
+    enemies,
+    players,
+    actionTotalDamage,
+  };
 
   /** Evaluate effect of type = damage. */
   async function evaluateDamage(effect: ActionEffect<"damage">) {
@@ -90,7 +96,10 @@ export default async function evaluateAction(args: {
 
       // Update enemy
       const dead = target.health - totalDamage < 1 ? true : false;
-      target = await (target as Player).update({ health: { increment: -totalDamage }, dead });
+      target = await (target as Player).update({
+        health: { increment: -totalDamage },
+        dead,
+      });
 
       // Get attack message
       const message = game.getEffectMessage({
@@ -107,6 +116,5 @@ export default async function evaluateAction(args: {
         message,
       } satisfies ActionMessageEmitter);
     }
-    return;
   }
 }

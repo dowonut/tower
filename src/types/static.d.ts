@@ -71,7 +71,8 @@ declare global {
     | "user"
     | "commandCategory"
     | "item"
-    | "region";
+    | "region"
+    | "target";
 
   export type ProgressBarColor = "red" | "green" | "orange" | "white";
 
@@ -91,7 +92,7 @@ declare global {
   export type Environment = "world" | "dungeon" | "protected";
 
   /** Action target type. */
-  export type TargetType = "single" | "adjacent" | "all" | "choose";
+  export type TargetType = "single" | "adjacent" | "all";
 
   /** Action type.*/
   export type ActionType = (typeof config.actionTypes)[number];
