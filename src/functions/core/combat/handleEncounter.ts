@@ -238,7 +238,7 @@ ${enemyName}${healthBar}`;
             m.variables.encounterImage = await game.createEncounterImage({
               enemies: enemies.sort((a, b) => a.number - b.number),
               verbose: true,
-              selectedEnemy: m.variables.targets[0],
+              targets: m.variables.targets,
             });
           }
 

@@ -19,7 +19,8 @@
     "npm": "^10.4.0",
     "npm-check-updates": "^16.0.5",
     "reflect-metadata": "^0.1.13",
-    "require-dir": "^1.2.0"
+    "require-dir": "^1.2.0",
+    "skia-canvas": "^1.0.1"
   },
   "devDependencies": {
     "@prisma/client": "^5.8.0",

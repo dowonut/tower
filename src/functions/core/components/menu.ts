@@ -52,6 +52,7 @@ export default class Menu<T> extends MenuBase<T> {
       this.createCollector(components);
     } else throw new Error("Initial board must contain a message function.");
     if (this.onLoad) this.onLoad(this);
+    return;
   }
 
   //------------------------------------------------------------

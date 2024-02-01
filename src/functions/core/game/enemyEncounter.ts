@@ -138,12 +138,17 @@ export default async function enemyEncounter(args: { player: Player }) {
     ],
   });
 
-  menu.init("encounter");
+  await menu.init("encounter");
+
+  console.log(menu.botMessage.id);
 
   // Enter combat
   async function enterCombat() {
     await game.enterCombat({ player, enemies });
   }
+
+  // Kill encounter
+  async function denyEncounter() {}
 
   //   // Create enemy in database
   //   const enemy = await prisma.enemy.create({
