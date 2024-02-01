@@ -2,6 +2,7 @@ export default {
   name: "multishot",
   type: "weapon_attack",
   requiredWeapon: ["bow"],
+  description: "Shoot multiple enemies with your bow.",
   cooldown: 1,
   effects: [
     {

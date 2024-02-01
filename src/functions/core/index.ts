@@ -54,3 +54,4 @@ export { default as evaluateDamageInstance } from "./combat/evaluateDamageInstan
 export { default as evaluateAction } from "./combat/evaluateAction.js";
 export { default as evaluateDamage } from "./combat/evaluateDamage.js";
 export { default as getEffectMessage } from "./combat/getEffectMessage.js";
+export { default as displayNumber } from "./display/displayNumber.js";

@@ -95,6 +95,16 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
+        // Must be a valid action in the game.
+        case "playerAction":
+          const action = await player.getAction(input);
+          if (!action) {
+            errorContent = `No action found with name **\`${input}\`**`;
+            error();
+          }
+          argsObject[argument.name] = action;
+          break;
+
         // Must be the name of an item owned by the player
         case "playerOwnedItem":
           const playerItem = await player.getItem(input);

@@ -7,11 +7,17 @@ export default {
   effects: [
     {
       type: "damage",
-      damage: { type: "bludgeoning", source: "ATK", basePercent: 70 },
+      damage: { type: "bludgeoning", source: "ATK", basePercent: 50 },
       messages: [
         "SOURCE sprints and slams into TARGET, dealing DAMAGE",
         "SOURCE leaps into the air and lands on TARGET with their shield, dealing DAMAGE",
       ],
+    },
+    {
+      type: "damage",
+      targetType: "adjacent",
+      damage: { type: "bludgeoning", source: "ATK", basePercent: 10 },
+      messages: ["SOURCE's slam also knocks over TARGET, dealing DAMAGE"],
     },
   ],
 } satisfies ActionData;

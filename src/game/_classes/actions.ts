@@ -2,6 +2,7 @@ import { createClassFromType, loadFiles, f } from "../../functions/core/index.js
 import { game, config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
 import { Prisma } from "@prisma/client";
+import fs from "fs";
 
 const ActionClassBase = createClassFromType<ActionBase>();
 
@@ -25,8 +26,36 @@ export class ActionClass extends ActionClassBase {
     return Math.max(...this.effects.map((x) => x.targetNumber || 1));
   }
 
+  /** Get image attachment. */
+  getImage() {
+    // Create path and check if item image exists
+    let path = `./assets/items/placeholder.png`;
+    let file: any;
+
+    // Change path for weapons
+    if (this.type == "weapon_attack") {
+      path = `./assets/icons/weapons/${this.requiredWeapon[0]}.png`;
+    }
+
+    // Attach image
+    if (fs.existsSync(path)) {
+      // Get image file
+      file = {
+        attachment: path,
+        name: `image.png`,
+      };
+    }
+
+    return file;
+  }
+
   /** Get short damage text for buttons. */
-  getBriefDamageText(totalEnemies?: number) {
+  getBriefDamageText(args: {
+    totalEnemies?: number;
+    useFormatting?: boolean;
+    useEmojis?: boolean;
+  }) {
+    const { totalEnemies = 1, useFormatting = false, useEmojis = false } = args;
     let text: string[] = [];
     const effects = this.effects.filter((x) => x.type == "damage");
     for (const effect of effects as ActionEffect<"damage">[]) {
@@ -40,7 +69,8 @@ export class ActionClass extends ActionClassBase {
           targetText = "❙|❙";
           break;
         case "all":
-          targetText = "|" + "❙".repeat(totalEnemies || 3) + "|";
+          // targetText = "|" + "❙".repeat(totalEnemies || 3) + "|";
+          targetText = useFormatting ? "|⋯|" : "|" + "❙".repeat(totalEnemies || 3) + "|";
           break;
         default:
           targetText = "|❙|";
@@ -54,12 +84,67 @@ export class ActionClass extends ActionClassBase {
 
       const damages = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
       for (const [i, damage] of damages.entries()) {
-        let finalText = `${damage.basePercent}%`;
+        const emoji = useEmojis ? emojis.damage[damage.type] : "";
+        let finalText = useFormatting
+          ? emoji + `**\`${damage.basePercent}%\`**`
+          : `${damage.basePercent}%`;
         if (i === damages.length - 1) finalText += ` ${targetText}`;
         text.push(finalText);
       }
     }
     return text.join(", ");
+  }
+
+  /** Get short damage text for buttons. */
+  getInfo() {
+    let text: string[] = [];
+    const effects = this.effects.filter((x) => x.type == "damage");
+    for (const [i, effect] of (effects as ActionEffect<"damage">[]).entries()) {
+      let targetText: string = "";
+      // If first target
+      switch (effect.targetType) {
+        case "single":
+          targetText = "a single target";
+          break;
+        case "adjacent":
+          targetText = "adjacent targets";
+          break;
+        case "all":
+          targetText = "all targets";
+          break;
+        default:
+          targetText = "a single target";
+          break;
+      }
+
+      // If additional targets
+      if (effect?.targetNumber > 1) {
+        targetText = `a ${game.displayNumber(effect.targetNumber)} target`;
+      }
+
+      let damageText: string[] = [];
+      const damages = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
+      for (const [i, damage] of damages.entries()) {
+        const emoji = emojis.damage[damage.type];
+        let prefix = ``;
+        if (i == damages.length - 1 && damages.length > 1) prefix = `and `;
+        let text = `${prefix}**\`${damage.basePercent}%\`** of **\`${damage.source}\`** as ${emoji}`;
+        damageText.push(text);
+      }
+      let prefix = `Deals`;
+      let suffix = ``;
+      if (i > 0 && i !== this.effects.length - 1 && this.effects.length > 1) {
+        prefix = `,`;
+      } else if (i == this.effects.length - 1 && this.effects.length > 1) {
+        prefix = `, and`;
+        suffix = ".";
+      } else if (i == this.effects.length - 1) {
+        suffix = ".";
+      }
+      let finalText = `${prefix} ${damageText.join(", ")} to **${targetText}**${suffix}`;
+      text.push(finalText);
+    }
+    return text.join("");
   }
 
   /** Get cooldown text. */

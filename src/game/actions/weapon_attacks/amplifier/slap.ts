@@ -6,11 +6,28 @@ export default {
   effects: [
     {
       type: "damage",
-      damage: {
-        type: "bludgeoning",
-        source: "ATK",
-        basePercent: 10,
-      },
+      damage: [
+        {
+          type: "earth",
+          source: "ATK",
+          basePercent: 10,
+        },
+        {
+          type: "fire",
+          source: "ATK",
+          basePercent: 10,
+        },
+        {
+          type: "air",
+          source: "ATK",
+          basePercent: 10,
+        },
+        {
+          type: "water",
+          source: "ATK",
+          basePercent: 10,
+        },
+      ],
       messages: [
         "SOURCE walks up and slaps TARGET on the head with their amplifier, dealing DAMAGE",
       ],

@@ -68,6 +68,7 @@ declare global {
     | "playerOwnedItem"
     | "playerAvailableMerchant"
     | "playerAvailableAttack"
+    | "playerAction"
     | "user"
     | "commandCategory"
     | "item"

@@ -55,7 +55,7 @@ export default async function handleEncounter(args: {
       },
       {
         name: "selectAdditionalTargets",
-        rows: ["targetsMultiple"],
+        rows: ["targetsMultiple", "cancelAction"],
       },
       // Enemy turn ----------------------------
       {
@@ -141,7 +141,9 @@ export default async function handleEncounter(args: {
             const requiredTargets = x.getRequiredTargets();
             let extraInfo = ``;
             if (!x.remCooldown) {
-              extraInfo = `(${x.getBriefDamageText(menu.variables.enemies.length)})`;
+              extraInfo = `(${x.getBriefDamageText({
+                totalEnemies: getAliveEnemies().length,
+              })})`;
             } else {
               extraInfo = `(⏳${x.remCooldown} turns)`;
             }
@@ -189,6 +191,24 @@ export default async function handleEncounter(args: {
         name: "targetsMultiple",
         type: "menu",
         components: (m) => getSelectTargetMenu(m, m.variables.pendingAction.getRequiredTargets()),
+      },
+      // Cancel action
+      {
+        name: "cancelAction",
+        type: "buttons",
+        components: (m) => [
+          {
+            id: "cancelAction",
+            label: "Cancel Action",
+            style: "danger",
+            function: async () => {
+              console.log("cancelled");
+              m.variables.pendingAction = undefined;
+              m.variables.targets = [...m.variables.targets.slice(0, 1)];
+              await m.switchBoard("enemySelected");
+            },
+          },
+        ],
       },
     ],
     messages: [
@@ -702,7 +722,16 @@ ${turnOrderList}
         }),
       function: async (r, i, s) => {
         m.variables.encounterImage = undefined;
-        m.variables.targets.push(parseInt(s));
+
+        // Define first target
+        if (total <= 1) {
+          m.variables.targets = [parseInt(s)];
+        }
+        // Push new target
+        else {
+          m.variables.targets.push(parseInt(s));
+        }
+
         // Selecting first target
         if (total <= 1) {
           m.switchBoard("enemySelected");

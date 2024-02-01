@@ -50,41 +50,94 @@ export default {
     };
 
     // Get weapon attacks for the player
-    const attacks = await player.getActions({ type: "weapon_attack" });
+    let attacks = await player.getActions({ type: "weapon_attack", onlyAvailable: true });
+
+    let filterOptions = ["current weapon", "all"];
 
     // Define menu
     const menu = new game.Menu({
       player,
-      boards: [{ name: "attacks", rows: [], message: "attacks" }],
-      rows: [],
+      boards: [{ name: "attacks", rows: ["selectAttack", "options"], message: "attacks" }],
+      rows: [
+        {
+          name: "selectAttack",
+          type: "menu",
+          components: (m) => ({
+            id: "selectAttack",
+            placeholder: "Select attack for more information...",
+            options: attacks.map((a) => ({
+              value: a.name,
+              label: a.getName(),
+              emoji: a.getEmoji(),
+              description: a?.description,
+            })),
+            async function(r, i, s) {
+              await game.runCommand("actioninfo", {
+                args: [s],
+                channel: player.channel,
+                server: player.server,
+                discordId: player.user.discordId,
+              });
+            },
+          }),
+        },
+        {
+          name: "options",
+          type: "buttons",
+          components: (m) => [
+            {
+              id: "filter",
+              label: `Filter: ${game.titleCase(filterOptions[0])}`,
+              function: async () => {
+                filterOptions.push(filterOptions.shift());
+                switch (filterOptions[0]) {
+                  case "current weapon":
+                    attacks = await player.getActions({
+                      type: "weapon_attack",
+                      onlyAvailable: true,
+                    });
+                    break;
+                  case "all":
+                    attacks = await player.getActions({ type: "weapon_attack" });
+                    break;
+                }
+                m.refresh();
+              },
+            },
+          ],
+        },
+      ],
       messages: [
         {
           name: "attacks",
-          function: (m) => {
-            const title = `Attacks`;
-            let fields: Embed["fields"] = [];
-            let i = 1;
+          function: async (m) => {
+            let titlePrefix: string;
+            switch (filterOptions[0]) {
+              case "current weapon":
+                titlePrefix = game.titleCase((await player.getEquipped("hand")).weaponType);
+                break;
+              case "all":
+                titlePrefix = "All";
+                break;
+            }
+            const title = `${titlePrefix} Attacks`;
+            let description = ``;
             for (const attack of attacks) {
-              let description = "└ " + attack.getDamageText();
-              if (attack.cooldown) {
-                description += `└ ` + attack.getCooldownText();
-              }
-
-              fields.push({
-                name: `${attack.getEmoji()} **${attack.getName()}** | ${game.f(
-                  `Lvl. ${attack.level}`
-                )}`,
-                value: description,
-                inline: true,
-              });
-              if (i % 2 == 0) fields.push({ name: "** **", value: "** **" });
-              i++;
+              const isCooldown = attack.remCooldown > 0;
+              const attackName = isCooldown ? `${attack.getName()}` : `**${attack.getName()}**`;
+              const cooldownText = isCooldown ? ` ⏳\`${attack.remCooldown} turns remaining\`` : ``;
+              const damageText = `(${attack.getBriefDamageText({
+                useEmojis: true,
+                useFormatting: true,
+              })})`;
+              description += `
+${attack.getEmoji()} ${attackName} ${isCooldown ? cooldownText : damageText}`;
             }
 
             return game.fastEmbed({
               player,
               title,
-              embed: { fields },
+              description,
               fullSend: false,
               reply: true,
             });

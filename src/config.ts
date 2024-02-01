@@ -23,9 +23,9 @@ export const baseStats = {
   RES: 10,
   MAG_RES: 10,
   SPD: 80,
-  CR: 20,
+  CR: 10,
   CD: 40,
-  AR: 20,
+  AR: 10,
   AD: 40,
   AGR: 100,
 };
