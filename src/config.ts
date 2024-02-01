@@ -175,8 +175,6 @@ export const embedColors = {
 
 // Required XP for next player level.
 export const nextLevelXp = (lvl: number) => {
-  // let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 100;
-  // if (lvl >= 90) v = 5 * Math.pow(lvl - 79, 4);
   let v = 5 * Math.pow(lvl, 2.2) + 100 * lvl + 50;
   if (lvl >= 90) v = 5 * Math.pow(lvl - 76, 3.8);
   return Math.floor(v);
@@ -203,7 +201,7 @@ export const level_MAG = (lvl: number) => {
 
 // Get maxHP based on level.
 export const level_maxHP = (lvl: number) => {
-  let v = lvl * 5 + Math.pow(lvl, 1.5);
+  let v = lvl * 10 + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
@@ -221,7 +219,7 @@ export const level_MAG_RES = (lvl: number) => {
 
 // Get SPD based on level.
 export const level_SPD = (lvl: number) => {
-  let v = lvl / 4 + Math.pow(lvl, 1.5) / 50;
+  let v = lvl / 4 + Math.pow(lvl, 1.3) / 50;
   return Math.floor(v);
 };
 
@@ -229,25 +227,25 @@ export const level_SPD = (lvl: number) => {
 
 // Get weapon ATK.
 export const weapon_ATK = (lvl: number, factor: number) => {
-  let v = (lvl * 5 + Math.pow(lvl, 1.8)) * 0.2 * factor;
+  let v = (lvl * 8 + Math.pow(lvl, 1.4)) * 0.2 * factor;
   return Math.floor(v);
 };
 
 // Get weapon MAG.
 export const weapon_MAG = (lvl: number, factor: number) => {
-  let v = (lvl * 5 + Math.pow(lvl, 1.8)) * 0.2 * factor;
+  let v = (lvl * 8 + Math.pow(lvl, 1.4)) * 0.2 * factor;
   return Math.floor(v);
 };
 
 // Get weapon RES
 export const weapon_RES = (lvl: number, factor: number) => {
-  let v = (lvl * 5 + Math.pow(lvl, 1.5)) * 0.2 * factor;
+  let v = (lvl * 6 + Math.pow(lvl, 1.4)) * 0.2 * factor;
   return Math.floor(v);
 };
 
 // Get weapon SPD
 export const weapon_SPD = (lvl: number, factor: number) => {
-  let v = (lvl / 2 + Math.pow(lvl, 1.5) / 20) * 0.2 * factor;
+  let v = (lvl / 2 + Math.pow(lvl, 1.4) / 20) * 0.2 * factor;
   return Math.floor(v);
 };
 
@@ -255,7 +253,7 @@ export const weapon_SPD = (lvl: number, factor: number) => {
 
 // Get XP dropped by enemy.
 export const enemy_XP = (lvl: number, boss = false) => {
-  let v = Math.pow(lvl, 1.2) + lvl * 3;
+  let v = Math.pow(lvl, 1.5) * 2 + lvl * 5;
   return Math.floor(v);
 };
 
@@ -268,30 +266,30 @@ export const enemy_maxHP = (lvl: number, boss = false) => {
 
 // Get enemy ATK.
 export const enemy_ATK = (lvl: number, boss = false) => {
-  let v = Math.pow(lvl, 1.5) + lvl;
+  let v = Math.pow(lvl, 1.5) + lvl * 5;
   return Math.floor(v);
 };
 
 // Get enemy MAG.
 export const enemy_MAG = (lvl: number, boss = false) => {
-  let v = Math.pow(lvl, 1.5) + lvl;
+  let v = Math.pow(lvl, 1.5) + lvl * 5;
   return Math.floor(v);
 };
 
 // Get enemy RES.
 export const enemy_RES = (lvl: number, boss = false) => {
-  let v = Math.pow(lvl, 1.3) + lvl * 5;
+  let v = Math.pow(lvl, 1.4) + lvl * 10;
   return Math.floor(v);
 };
 
 // Get enemy MAG RES.
 export const enemy_MAG_RES = (lvl: number, boss = false) => {
-  let v = Math.pow(lvl, 1.3) + lvl * 5;
+  let v = Math.pow(lvl, 1.4) + lvl * 10;
   return Math.floor(v);
 };
 
 // Get enemy SPD.
 export const enemy_SPD = (lvl: number, boss = false) => {
-  let v = lvl / 10 + Math.pow(lvl, 1.5) / 50;
+  let v = lvl / 4 + Math.pow(lvl, 1.4) / 50;
   return Math.floor(v);
 };

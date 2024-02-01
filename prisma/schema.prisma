@@ -182,19 +182,12 @@ model Action {
 
 // Player passive stat modifiers
 model Passive {
-  id       Int    @id @default(autoincrement())
-  player   Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  playerId Int
-  /// Source of the passive. ("weapon", "consumable", etc)
-  source   String
-  /// Player stat to target. ("ATK", "MAG", etc)
-  target   String
-  /// How to apply the value. ("flat" or "percent")
-  type     String @default("flat")
-  /// Value to apply.
-  value    Int
-  /// How long the passive lasts, defined as combat turns.
-  duration Int?
+  id          Int    @id @default(autoincrement())
+  player      Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId    Int
+  // Remaining duration, defined in combat turns
+  remDuration Int
+  data        Json
 }
 
 // Enemy tracking
@@ -239,51 +232,3 @@ model Party {
   leader  Int
   name    String?  @unique
 }
-
-// OUTDATED 
-// model Item {
-//   id            Int       @id @default(autoincrement())
-//   name          String
-//   category      String
-//   description   String
-//   price         Int?
-// }
-
-// OUTDATED
-// model enemyType {
-//   id            Int     @id @default(autoincrement())
-//   name          String
-//   health        Int     @default(1)
-//   strength      Int     @default(1)
-//   defense       Int     @default(1)
-//   attribute     String[]
-//   weak          String[]
-// }
-
-//model Region {
-//  id            Int       @id @default(autoincrement())
-//  areas         Area[]
-//  name          String    @unique
-//  minLevel      Int       @default(0)
-//}
-
-// model Exploration {
-//   id            Int       @id @default(autoincrement())
-//   //player        Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
-//   playerId      Int
-//   areaId        Int
-//   found         Json
-// }
-
-// model Area {
-//   id            Int       @id @default(autoincrement())
-//   region        Region    @relation(fields: [regionId], references: [id])
-//   regionId      Int
-//   name          String    @unique
-//   minLevel      Int       @default(0)
-//   danger        Boolean   @default(false)
-//   shop          Boolean   @default(false)
-//   activities    Json
-//   enemies       Json
-//   exploration   Json
-// }
