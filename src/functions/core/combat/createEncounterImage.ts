@@ -14,9 +14,9 @@ export default async function createEncounterImage(object: {
   const { enemies, verbose = false, targets } = object;
 
   const width = enemies.length <= 4 ? 640 : 160 * enemies.length;
-  const height = verbose ? 220 : 160;
+  const height = verbose ? 240 : 160;
 
-  const heightOffset = verbose ? 20 : 0;
+  const heightOffset = verbose ? 40 : 0;
 
   const canvas = new Canvas(width, height);
   const ctx = canvas.getContext("2d");
@@ -36,7 +36,7 @@ export default async function createEncounterImage(object: {
     // Draw enemy image
     tempCtx.drawImage(image, 160 * i, heightOffset, 160, 160);
     // Draw text
-    const enemyName = enemy.displayName;
+    const enemyName = enemy.getName();
     const textY = 160 * i + 80;
     tempCtx.textBaseline = "top";
     tempCtx.textAlign = "center";
@@ -61,7 +61,7 @@ export default async function createEncounterImage(object: {
     // Draw select arrow
     if (verbose && targets.includes(enemy.number)) {
       const arrow = await loadImage("./assets/icons/selection_arrow.png");
-      tempCtx.drawImage(arrow, 160 * i, 0);
+      tempCtx.drawImage(arrow, 160 * i, 20);
     }
   }
 
