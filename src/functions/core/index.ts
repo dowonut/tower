@@ -56,3 +56,5 @@ export { default as evaluateDamage } from "./combat/evaluateDamage.js";
 export { default as getEffectMessage } from "./combat/getEffectMessage.js";
 export { default as displayNumber } from "./display/displayNumber.js";
 export { default as getDiscordMessage } from "./get/getDiscordMessage.js";
+export { default as getStatusEffect } from "./get/getStatusEffect.js";
+export { default as evaluateStatusEffect } from "./combat/evaluateStatusEffect.js";

@@ -156,7 +156,7 @@ declare global {
     include: {
       encounter: { include: { players: { include: { user: true } }; enemies: true } };
       party: { include: { players: { include: { user: true } } } };
-      passives: true;
+      statusEffects: true;
       inventory: true;
     };
   }>;

@@ -51,12 +51,12 @@ model Player {
   wardrobe      Json?
   inventory     Inventory[]
   actions       Action[]
+  statusEffects StatusEffect[]
   merchantStock MerchantStock[]
   skills        Skill[]
   recipes       Recipe[]
   crafts        Craft[]
   exploration   Exploration[]
-  passives      Passive[]
   level         Int             @default(0)
   xp            Int             @default(0)
   marks         Int             @default(0)
@@ -182,27 +182,42 @@ model Action {
   @@unique([playerId, name])
 }
 
-// Passive stat modifiers
-model Passive {
+// Status effects
+model StatusEffect {
   id          Int    @id @default(autoincrement())
   player      Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId    Int
-  // Remaining duration, defined in combat turns
-  remDuration Int    @default(0)
+  sourceType  String @default("enemy")
+  sourceId    Int
+  name        String
+  remDuration Int?
+  data        Json?
+}
+
+// Enemy status effects
+model EnemyStatusEffect {
+  id          Int    @id @default(autoincrement())
+  enemy       Enemy  @relation(fields: [enemyId], references: [id], onDelete: Cascade)
+  enemyId     Int
+  sourceType  String @default("player")
+  sourceId    Int
+  name        String
+  remDuration Int?
   data        Json?
 }
 
 // Enemy tracking
 model Enemy {
-  id          Int           @id @default(autoincrement())
-  name        String
-  number      Int           @default(0)
-  health      Int
-  actions     EnemyAction[]
-  encounter   Encounter?    @relation(fields: [encounterId], references: [id], onDelete: Cascade)
-  encounterId Int?
-  SV          Int?
-  dead        Boolean       @default(false)
+  id            Int                 @id @default(autoincrement())
+  name          String
+  number        Int                 @default(0)
+  health        Int
+  actions       EnemyAction[]
+  statusEffects EnemyStatusEffect[]
+  encounter     Encounter?          @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  encounterId   Int?
+  SV            Int?
+  dead          Boolean             @default(false)
 }
 
 model EnemyAction {

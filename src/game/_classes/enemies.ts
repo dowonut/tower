@@ -9,10 +9,13 @@ import {
   f,
   random,
   evaluateAction,
+  createClassObject,
+  evaluateStatusEffect,
 } from "../../functions/core/index.js";
 import { config, prisma, game } from "../../tower.js";
 import emojis from "../../emojis.js";
 import fs from "fs";
+import statusEffects from "./statusEffects.js";
 
 const EnemyBaseClass = createClassFromType<EnemyBase>();
 
@@ -86,6 +89,36 @@ export class EnemyClass extends EnemyBaseClass {
       return `./assets/enemies/placeholder.png`;
     } else {
       return path;
+    }
+  }
+
+  /** Get current status effects. */
+  async getStatusEffects() {
+    let finalStatusEffects: StatusEffect[] = [];
+    const statusEffectsData = await prisma.enemyStatusEffect.findMany({
+      where: { enemyId: this.id },
+    });
+    for (const statusEffectData of statusEffectsData) {
+      const statusEffectClass = statusEffects.find((x) => x.name == statusEffectData.name);
+      const finalStatusEffect = createClassObject<StatusEffect>(
+        statusEffectClass,
+        statusEffectData
+      );
+      finalStatusEffects.push(finalStatusEffect);
+    }
+    return finalStatusEffects;
+  }
+
+  /** Evaluate all status effects. */
+  async evaluateStatusEffects(args: {
+    currently: "turn_end" | "turn_start" | "immediate";
+    enemies: Enemy[];
+    players: Player[];
+  }) {
+    const { currently, enemies, players } = args;
+    const statusEffects = (await this.getStatusEffects()).filter((x) => x.evaluateOn == currently);
+    for (const statusEffect of statusEffects) {
+      await evaluateStatusEffect({ host: this, statusEffect, enemies, players });
     }
   }
 

@@ -34,7 +34,7 @@ export default async function getPlayer(
     include: {
       encounter: { include: { enemies: true, players: { include: { user: true } } } },
       party: { include: { players: { include: { user: true } } } },
-      passives: true,
+      statusEffects: true,
       inventory: true,
     },
   });

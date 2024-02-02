@@ -187,6 +187,14 @@ ${attack.getEmoji()} ${attackName} ${isCooldown ? cooldownText : damageText}`;
         });
       }
 
+      // Check if targeting dead
+      if ([target_one, target_three, target_three].some((x) => x?.dead)) {
+        return game.error({
+          player,
+          content: `you can't target dead enemies.`,
+        });
+      }
+
       // Evaluate attack
       const evaluatedAction = await game.evaluateAction({
         action: attack,

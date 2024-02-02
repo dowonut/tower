@@ -44,6 +44,11 @@ declare global {
   export type EnemyStat = keyof typeof config.baseEnemyStats;
 
   /**
+   * General stats.
+   */
+  export type Stat = keyof typeof config.baseStats | "health" | "SV";
+
+  /**
    * Weapon stat.
    */
   export type WeaponStat = keyof typeof config.baseWeaponStats;

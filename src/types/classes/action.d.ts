@@ -29,14 +29,14 @@ declare global {
     : ActionEffectDefault<T>;
 
   /** Possible action effect types. */
-  export type ActionEffectTypes = {
+  type ActionEffectTypes = {
     damage: "damage";
     apply_status: "status";
     custom: "evaluate";
   };
 
   /** Default action effect data. */
-  export type ActionEffectDefault<T> = {
+  type ActionEffectDefault<T> = {
     /** Type of effect inflicted by the action.
      *
      * - damage = deal damage to the target.
@@ -63,19 +63,23 @@ declare global {
   };
 
   /** All action effect data. */
-  export type ActionEffectAll = {
-    /** If type = damage then define damage type. */
+  type ActionEffectAll = {
+    /** Define damage type. */
     damage?: ActionEffectDamage[] | ActionEffectDamage;
-    /** If type = apply_status then define status type. */
+    /** Define status type. */
     status?: {
+      /** Type of status. Default = "fixed". */
       type: "fixed" | "custom";
+      /** Name of status effect. */
       name: string;
+      /** If type = "custom" then provide data. */
+      data?: any;
     };
-    /** If type = change_stat then define stat type and change. */
+    /** Define stat type and change. */
     changeStat?: {
       stat: "HP" | "";
     };
-    /** Optional function to evaluate effect. */
+    /** Function to evaluate effect. */
     evaluate?: (
       this: ActionEffect,
       args: { source: Enemy | Player }

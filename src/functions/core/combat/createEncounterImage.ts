@@ -13,7 +13,7 @@ export default async function createEncounterImage(object: {
 }) {
   const { enemies, verbose = false, targets } = object;
 
-  const width = enemies.length <= 4 ? 640 : 160 * enemies.length;
+  const width = enemies.length <= 3 ? 160 * 3 : 160 * enemies.length;
   const height = verbose ? 260 : 200;
 
   const heightOffset = verbose ? 60 : 40;

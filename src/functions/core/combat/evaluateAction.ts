@@ -1,7 +1,8 @@
 import _ from "lodash";
 import { EnemyClass } from "../../../game/_classes/enemies.js";
 import PlayerClass from "../../../game/_classes/players.js";
-import { game } from "../../../tower.js";
+import { game, prisma } from "../../../tower.js";
+import { Prisma } from "@prisma/client";
 
 /** Evaluate an action in combat and return all enemies and players. */
 export default async function evaluateAction(args: {
@@ -28,7 +29,6 @@ export default async function evaluateAction(args: {
     // Define entities as same as the target
     let entities = target ? (target instanceof EnemyClass ? enemies : players) : enemies;
     // Remove dead entities from possible targets
-    let allEntities = entities;
     entities = entities.filter((x) => !x.dead) as PlayerClass[] | EnemyClass[];
     // Define targets per effect
     effect.targets = [];
@@ -61,6 +61,7 @@ export default async function evaluateAction(args: {
         await evaluateDamage(effect);
         break;
       case "apply_status":
+        await applyStatusEffect(effect);
         break;
       case "custom":
         break;
@@ -74,7 +75,7 @@ export default async function evaluateAction(args: {
     actionTotalDamage,
   };
 
-  /** Evaluate effect of type = damage. */
+  /** Evaluate damage for effect. */
   async function evaluateDamage(effect: ActionEffect<"damage">) {
     const damage = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
     for (let target of effect.targets) {
@@ -116,6 +117,54 @@ export default async function evaluateAction(args: {
         encounterId: source.encounterId,
         message,
       } satisfies ActionMessageEmitter);
+    }
+  }
+
+  /** Apply status effect. */
+  async function applyStatusEffect(effect: ActionEffect<"apply_status">) {
+    // Get fixed status effect
+    let statusEffect: StatusEffect;
+    let statusEffectData: any;
+    let isFixedStatusEffect: boolean;
+    let sourceType: "enemy" | "player";
+    if (effect.status?.type == "fixed" || !effect.status.type) {
+      statusEffect = game.getStatusEffect(effect.status.name);
+      isFixedStatusEffect = true;
+    } else {
+      statusEffectData = effect.status.data;
+      isFixedStatusEffect = false;
+    }
+    if (source instanceof PlayerClass) {
+      sourceType = "player";
+    } else if (source instanceof EnemyClass) {
+      sourceType = "enemy";
+    }
+    // Define prisma creation data
+    let data:
+      | Prisma.StatusEffectCreateWithoutPlayerInput
+      | Prisma.EnemyStatusEffectCreateWithoutEnemyInput;
+    if (isFixedStatusEffect) {
+      data = {
+        name: statusEffect.name,
+        remDuration: statusEffect.duration,
+        sourceId: source.id,
+        sourceType,
+      };
+    } else {
+      data = {
+        name: effect.status.name,
+        data: effect.status.data,
+        sourceId: source.id,
+        sourceType,
+      };
+    }
+    // Iterate through targets
+    for (const target of effect.targets) {
+      if (target instanceof PlayerClass) {
+        await target.update({ statusEffects: { create: data } });
+      } else if (target instanceof EnemyClass) {
+        await target.update({ statusEffects: { create: data } });
+      }
     }
   }
 }

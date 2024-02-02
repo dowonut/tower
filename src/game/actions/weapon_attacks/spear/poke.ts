@@ -12,5 +12,13 @@ export default {
       ],
       type: "damage",
     },
+    {
+      type: "apply_status",
+      status: {
+        type: "fixed",
+        name: "bleed",
+      },
+      messages: ["SOURCE inflicts TARGET with grave wounds, inflicting them with STATUS"],
+    },
   ],
 } satisfies ActionData;

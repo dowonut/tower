@@ -419,6 +419,13 @@ ${turnOrderList}
     // Send typing indicator
     await channel.sendTyping();
     setTimeout(async () => {
+      // Evaluate status effects
+      await enemy.evaluateStatusEffects({
+        currently: "turn_start",
+        enemies: menu.variables.enemies,
+        players: menu.variables.players,
+      });
+
       // Get player
       let player = enemy.getTargetPlayer(menu.variables.players);
       // Get evaluated attack
