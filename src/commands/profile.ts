@@ -63,7 +63,7 @@ ${floorE} ${f(floor)} | ${f(region)}`;
       },
       description: description,
       image: {
-        url: characterImage ? `attachment://${player.user.discordId}.png` : undefined,
+        url: characterImage ? `attachment://character.png` : undefined,
       },
     };
 

@@ -41,25 +41,20 @@ export default async function handleEncounter(args: {
     variables,
     boards: [
       // Select enemies and pick action
-      { name: "main", rows: ["enemies", "actions"], message: "main" },
-      // Enemy selected and pick action category
-      {
-        name: "enemySelected",
-        rows: ["enemies", "enemyActions", "actions"],
-        message: "main",
-      },
+      { name: "main", rows: ["main_actions", "other_actions"], message: "main" },
       // Enemy selected and pick attack
       {
-        name: "selectAttack",
-        rows: ["enemies", "attacks"],
+        name: "select_attack",
+        rows: ["attacks"],
       },
       {
-        name: "selectAdditionalTargets",
-        rows: ["targetsMultiple", "cancelAction"],
+        name: "select_target",
+        message: "main",
+        rows: ["select_target", "cancel_action"],
       },
       // Enemy turn ----------------------------
       {
-        name: "enemyTurn",
+        name: "enemy_turn",
         rows: [],
         message: "main",
       },
@@ -78,7 +73,7 @@ export default async function handleEncounter(args: {
       },
       // Non-combat actions
       {
-        name: "actions",
+        name: "other_actions",
         type: "buttons",
         components: (m) => {
           return [
@@ -95,9 +90,9 @@ export default async function handleEncounter(args: {
           ];
         },
       },
-      // Enemy-related actions
+      // Main actions
       {
-        name: "enemyActions",
+        name: "main_actions",
         type: "buttons",
         components: (m) => {
           return [
@@ -106,7 +101,7 @@ export default async function handleEncounter(args: {
               label: "Attack",
               style: "primary",
               emoji: config.emojis.weapons.sword,
-              board: "selectAttack",
+              board: "select_attack",
             },
             {
               id: "magic",
@@ -155,8 +150,11 @@ export default async function handleEncounter(args: {
               emoji: x.getEmoji(),
               disable: x.remCooldown > 0,
               async function() {
-                // Automatically select remaining living enemy as target
-                if (requiredTargets > 1 && getAliveEnemies().length < 2) {
+                // Automatically select remaining living enemy as target, or automatically target all enemies
+                if (
+                  getAliveEnemies().length <= 1 ||
+                  !x.effects.some((x) => x.targetType !== "all")
+                ) {
                   await game.runCommand("attack", {
                     message: m.botMessage,
                     discordId: m.player.user.discordId,
@@ -167,34 +165,25 @@ export default async function handleEncounter(args: {
                     ],
                   });
                 }
-                // Prompt user to select additional targets
-                else if (requiredTargets > 1) {
-                  m.variables.pendingAction = x;
-                  m.switchBoard("selectAdditionalTargets");
-                }
-                // Attack selected enemy
+                // Prompt user to select target
                 else {
-                  await game.runCommand("attack", {
-                    message: m.botMessage,
-                    discordId: m.player.user.discordId,
-                    server: m.player.server,
-                    args: [x.name, ...m.variables.targets.map(String)],
-                  });
+                  m.variables.pendingAction = x;
+                  m.switchBoard("select_target");
                 }
               },
             };
           });
         },
       },
-      // Select multiple targets
+      // Select target
       {
-        name: "targetsMultiple",
+        name: "select_target",
         type: "menu",
         components: (m) => getSelectTargetMenu(m, m.variables.pendingAction.getRequiredTargets()),
       },
       // Cancel action
       {
-        name: "cancelAction",
+        name: "cancel_action",
         type: "buttons",
         components: (m) => [
           {
@@ -202,10 +191,9 @@ export default async function handleEncounter(args: {
             label: "Cancel Action",
             style: "danger",
             function: async () => {
-              console.log("cancelled");
               m.variables.pendingAction = undefined;
-              m.variables.targets = [...m.variables.targets.slice(0, 1)];
-              await m.switchBoard("enemySelected");
+              m.variables.targets = [];
+              await m.switchBoard("main");
             },
           },
         ],
@@ -223,15 +211,7 @@ export default async function handleEncounter(args: {
           const partyName = players.length > 1 ? "Party" : `${players[0].user.username}`;
           const enemyName = enemies.length > 1 ? "multiple enemies" : enemies[0].displayName;
           const title = `${partyName} fighting ${enemyName}`;
-
-          // Format enemy list
           let description = ``;
-          for (const enemy of enemies) {
-            const enemyName = enemies.length > 1 ? `**${enemy.displayName}** | ` : ``;
-            const healthBar = game.fastProgressBar("health", enemy);
-            description += `
-${enemyName}${healthBar}`;
-          }
 
           // Get enemy image
           if (!m.variables.encounterImage) {
@@ -622,13 +602,6 @@ ${turnOrderList}
     if (next == "player") {
       // Define board
       let board = "main";
-      if (menu.variables.enemies.length < 2) {
-        board = "enemySelected";
-        menu.variables.targets = [menu.variables.enemies[0].number];
-      } else if (menu.variables.enemies.filter((x) => !x.dead).length < 2) {
-        board = "enemySelected";
-        menu.variables.targets = [menu.variables.enemies.filter((x) => !x.dead)[0].number];
-      }
 
       // Define collector filter
       const filter = (i: Interaction) => {
@@ -653,7 +626,7 @@ ${turnOrderList}
     }
     // Enemy
     else if (next == "enemy") {
-      await menu[menuFunction]("enemyTurn");
+      await menu[menuFunction]("enemy_turn");
     }
   }
 
@@ -691,21 +664,20 @@ ${turnOrderList}
   /** Get menu for selecting targets. */
   async function getSelectTargetMenu(m: Menu<typeof variables>, total: number = 1) {
     const targets = m.variables.targets;
-    let placeholder = "Select an enemy for more options...";
-    // If selecting additional enemies, change text
-    if (total > 1) {
-      switch (targets.length) {
-        case 1:
-          placeholder = "Select 2nd target...";
-          break;
-        case 2:
-          placeholder = "Select 3rd target...";
-          break;
-        case 3:
-          placeholder = "Select 4th target...";
-          break;
-      }
+    let placeholder = "Select a target...";
+    // Change text depending on target number
+    switch (targets.length) {
+      case 1:
+        placeholder = "Select 2nd target...";
+        break;
+      case 2:
+        placeholder = "Select 3rd target...";
+        break;
+      case 3:
+        placeholder = "Select 4th target...";
+        break;
     }
+
     // Return with menu
     return {
       id: "selectEnemy",
@@ -731,13 +703,8 @@ ${turnOrderList}
         else {
           m.variables.targets.push(parseInt(s));
         }
-
-        // Selecting first target
-        if (total <= 1) {
-          m.switchBoard("enemySelected");
-        }
         // Finished selecting all required targets
-        else if (m.variables.targets.length == total) {
+        if (m.variables.targets.length == total) {
           // Perform weapon attack
           if (m.variables.pendingAction.type == "weapon_attack") {
             await game.runCommand("attack", {
@@ -750,7 +717,7 @@ ${turnOrderList}
         }
         // More targets remaining to select
         else {
-          m.refresh();
+          await m.refresh();
         }
       },
     };

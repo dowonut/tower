@@ -30,6 +30,12 @@ export default {
           player,
           content: `<@${invitee.user.discordId}> is already in the party.`,
         });
+      // Check if invitee is in another party
+      if (invitee.party)
+        return game.error({
+          player,
+          content: `<@${invitee.user.discordId}> is already in a party.`,
+        });
       // Check if inviting self
       if (invitee.id == player.id)
         return game.error({
@@ -105,6 +111,11 @@ export default {
         return game.error({
           player,
           content: `<@${invitee.user.discordId}> is already in the party.`,
+        });
+      if (invitee.party)
+        return game.error({
+          player,
+          content: `<@${invitee.user.discordId}> is already in a party.`,
         });
 
       await prisma.party.update({

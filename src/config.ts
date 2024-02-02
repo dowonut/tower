@@ -60,6 +60,15 @@ export const defaultCommands = [
   "ping",
 ];
 
+export const defaultWardrobe: PlayerWardrobe = {
+  eyes: "black",
+  skin: "white",
+  hair: { name: "short", color: "red" },
+  legs: { name: "trousers", color: "brown" },
+  torso: { name: "plain_shirt", color: "pink" },
+  feet: { name: "shoes", color: "black" },
+};
+
 // export const subStats = {
 //   bludgeoning: 0,
 //   piercing: 0,

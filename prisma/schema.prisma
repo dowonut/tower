@@ -81,6 +81,8 @@ model Player {
   encounterId   Int?
   SV            Int?
   dead          Boolean         @default(false)
+  /// [PrismaDiscordMessage]
+  preEncounter  Json?
 
   @@unique([guildId, userId])
 }
@@ -180,14 +182,14 @@ model Action {
   @@unique([playerId, name])
 }
 
-// Player passive stat modifiers
+// Passive stat modifiers
 model Passive {
   id          Int    @id @default(autoincrement())
   player      Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId    Int
   // Remaining duration, defined in combat turns
-  remDuration Int
-  data        Json
+  remDuration Int    @default(0)
+  data        Json?
 }
 
 // Enemy tracking

@@ -1,5 +1,5 @@
 import enemies from "../../../game/_classes/enemies.js";
-import { game, config, prisma } from "../../../tower.js";
+import { game, config, prisma, client } from "../../../tower.js";
 
 export default async function enemyEncounter(args: { player: Player }) {
   let { player } = args;
@@ -60,12 +60,22 @@ export default async function enemyEncounter(args: { player: Player }) {
   // Generate enemy image
   const image = await game.createEncounterImage({ enemies });
 
+  // Check if player already has pre-encounter
+  if (player.preEncounter) {
+    const message = await game.getDiscordMessage(player.preEncounter);
+    if (message) await message.edit({ components: [] });
+  }
+
+  // Check to allow explore
+  let allowKeepExploring = false;
+
   // Create menu
   const menu = new game.Menu({
     player,
     boards: [
       { name: "encounter", message: "encounter", rows: ["encounterOptions"] },
       { name: "info", message: "info", rows: ["encounterOptions"] },
+      { name: "end", message: "encounter", rows: [] },
     ],
     rows: [
       {
@@ -80,24 +90,18 @@ export default async function enemyEncounter(args: { player: Player }) {
               emoji: "⚔️",
               function: async () => {
                 await m.botMessage.delete();
+                await player.update({ preEncounter: null });
                 await enterCombat();
               },
             },
             {
-              id: "flee",
-              label: "Flee",
-              emoji: "💨",
+              id: "keep_exploring",
+              label: "Keep Exploring",
+              disable: !allowKeepExploring,
               function: async () => {
-                await m.botMessage.delete();
-                const botMessage = await game.send({
-                  player,
-                  content: `You ran away from the encounter!`,
-                  reply: true,
-                });
-                await game.commandButton({
-                  player,
-                  botMessage,
-                  commands: [{ name: "explore" }],
+                await killPreEncounter();
+                await player.runCommand({
+                  name: "explore",
                 });
               },
             },
@@ -118,7 +122,8 @@ export default async function enemyEncounter(args: { player: Player }) {
         name: "encounter",
         function: (m) =>
           game.fastEmbed({
-            send: false,
+            fullSend: false,
+            reply: true,
             player: m.player,
             description: ``,
             title: `Some enemies have appeared!`,
@@ -140,7 +145,16 @@ export default async function enemyEncounter(args: { player: Player }) {
 
   await menu.init("encounter");
 
-  console.log(menu.botMessage.id);
+  // Allow exploring after 2 seconds
+  setTimeout(() => {
+    allowKeepExploring = true;
+    menu.refresh();
+  }, 1000);
+
+  // Update player preencounter
+  await player.update({
+    preEncounter: { messageId: menu.botMessage.id, channelId: menu.botMessage.channelId },
+  });
 
   // Enter combat
   async function enterCombat() {
@@ -148,7 +162,19 @@ export default async function enemyEncounter(args: { player: Player }) {
   }
 
   // Kill encounter
-  async function denyEncounter() {}
+  async function killPreEncounter() {
+    await menu.switchBoard("end");
+    await player.update({ preEncounter: null });
+  }
+
+  // Enter combat when receive entercombat command
+  game.emitter.on("enterCombat", async (args: { playerId: number; messageId: string }) => {
+    const { playerId, messageId } = args;
+    if (playerId !== player.id || menu.botMessage.id !== messageId) return;
+    await menu.botMessage.delete();
+    await player.update({ preEncounter: null });
+    await enterCombat();
+  });
 
   //   // Create enemy in database
   //   const enemy = await prisma.enemy.create({

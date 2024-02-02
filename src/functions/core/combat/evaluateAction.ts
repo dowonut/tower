@@ -28,6 +28,7 @@ export default async function evaluateAction(args: {
     // Define entities as same as the target
     let entities = target ? (target instanceof EnemyClass ? enemies : players) : enemies;
     // Remove dead entities from possible targets
+    let allEntities = entities;
     entities = entities.filter((x) => !x.dead) as PlayerClass[] | EnemyClass[];
     // Define targets per effect
     effect.targets = [];
@@ -40,9 +41,9 @@ export default async function evaluateAction(args: {
       // Adjacent targets
       case "adjacent":
         if (target.number == 1) {
-          effect.targets.push(entities.find((x) => x.number == target.number + 1));
-        } else if (target.number == entities.length) {
-          effect.targets.push(entities.find((x) => x.number == target.number - 1));
+          effect.targets.push(entities.find((x) => x.number < target.number));
+        } else if (target.number == allEntities.length) {
+          effect.targets.push(entities.find((x) => x.number > target.number));
         } else {
           effect.targets.push(entities.find((x) => x.number < target.number));
           effect.targets.push(entities.find((x) => x.number > target.number));

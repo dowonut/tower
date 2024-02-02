@@ -14,9 +14,9 @@ export default async function createEncounterImage(object: {
   const { enemies, verbose = false, targets } = object;
 
   const width = enemies.length <= 4 ? 640 : 160 * enemies.length;
-  const height = verbose ? 240 : 160;
+  const height = verbose ? 260 : 200;
 
-  const heightOffset = verbose ? 40 : 0;
+  const heightOffset = verbose ? 60 : 40;
 
   const canvas = new Canvas(width, height);
   const ctx = canvas.getContext("2d");
@@ -35,33 +35,48 @@ export default async function createEncounterImage(object: {
     }
     // Draw enemy image
     tempCtx.drawImage(image, 160 * i, heightOffset, 160, 160);
-    // Draw text
+    // Draw name
     const enemyName = enemy.getName();
-    const textY = 160 * i + 80;
+    const textX = 160 * i + 80;
     tempCtx.textBaseline = "top";
     tempCtx.textAlign = "center";
     tempCtx.strokeStyle = "black";
     tempCtx.lineWidth = 4;
+    tempCtx.fillStyle = enemy.dead ? "#9c9c9c" : "white";
+    tempCtx.strokeText(enemyName, textX, 0);
+    tempCtx.fillText(enemyName, textX, 0);
+    // Draw level
+    const enemyLevel = `Lvl. ${enemy.level}`;
+    tempCtx.fillStyle = "#9c9c9c";
+    tempCtx.strokeText(enemyLevel, textX, 16);
+    tempCtx.fillText(enemyLevel, textX, 16);
     tempCtx.fillStyle = "white";
-    tempCtx.strokeText(enemyName, textY, 0);
-    tempCtx.fillText(enemyName, textY, 0);
     // Draw health bar
     tempCtx.filter = "none";
     if (verbose) {
-      tempCtx.fillStyle = "#1a1a1a";
-      tempCtx.fillRect(160 * i + 10, 200, 140, 10);
-      tempCtx.fillStyle = "#ff3838";
+      // Draw health bar
+      tempCtx.fillStyle = "#212121";
+      tempCtx.fillRect(160 * i + 10, heightOffset + 170, 140, 10);
+      tempCtx.fillStyle = "#000000";
+      tempCtx.lineWidth = 2;
+      tempCtx.strokeRect(160 * i + 10 - 1, heightOffset + 170 - 1, 140 + 2, 10 + 2);
+      tempCtx.fillStyle = enemy.dead ? "#9c9c9c" : "#ed3f3f";
+      tempCtx.lineWidth = 4;
       tempCtx.fillRect(
         160 * i + 10,
-        200,
+        heightOffset + 170,
         Math.floor((Math.max(enemy.health, 0) / enemy.maxHP) * 140),
         10
       );
+      // Draw health text
+      const healthText = `${Math.max(enemy.health, 0)}/${enemy.maxHP}`;
+      tempCtx.strokeText(healthText, textX, heightOffset + 180);
+      tempCtx.fillText(healthText, textX, heightOffset + 180);
     }
     // Draw select arrow
     if (verbose && targets.includes(enemy.number)) {
       const arrow = await loadImage("./assets/icons/selection_arrow.png");
-      tempCtx.drawImage(arrow, 160 * i, 20);
+      tempCtx.drawImage(arrow, 160 * i, heightOffset - 20);
     }
   }
 

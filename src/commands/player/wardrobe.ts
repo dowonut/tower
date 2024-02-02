@@ -1,4 +1,4 @@
-import { game, prisma } from "../../tower.js";
+import { config, game, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
 
 export default {
@@ -8,14 +8,7 @@ export default {
   category: "player",
   environment: ["protected"],
   async execute(message, args, player, server) {
-    const data: PlayerWardrobe = player.wardrobe || {
-      eyes: "black",
-      skin: "white",
-      hair: { name: "short", color: "red" },
-      legs: { name: "trousers", color: "brown" },
-      torso: { name: "plain_shirt", color: "pink" },
-      feet: { name: "shoes", color: "black" },
-    };
+    const data: PlayerWardrobe = player.wardrobe || config.defaultWardrobe;
 
     const menu = new game.Menu({
       variables: { currentCategory: undefined, data, previousData: undefined },
@@ -143,7 +136,7 @@ export default {
                 fullSend: false,
                 files: [image],
                 title: "Wardrobe",
-                embed: { image: { url: `attachment://${m.player.user.discordId}.png` } },
+                embed: { image: { url: `attachment://character.png` } },
                 reply: true,
               });
             }

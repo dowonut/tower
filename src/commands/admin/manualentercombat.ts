@@ -1,8 +1,8 @@
 import { game } from "../../tower.js";
 
 export default {
-  name: "entercombat",
-  description: "",
+  name: "manualentercombat",
+  description: "mec",
   category: "admin",
   arguments: [
     { name: "enemy1", required: false },

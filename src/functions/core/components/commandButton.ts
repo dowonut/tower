@@ -23,7 +23,7 @@ export default async function commandButton(obj: {
   } else {
     setTimeout(async () => {
       await addButton();
-    }, 2000);
+    }, 1000);
   }
 
   async function addButton() {

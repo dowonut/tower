@@ -1,6 +1,6 @@
-import { game } from "../../tower.js";
-import { createCanvas, loadImage } from "@napi-rs/canvas";
-import type { Image, Canvas, SKRSContext2D } from "@napi-rs/canvas";
+import { config, game } from "../../tower.js";
+import { Canvas, loadImage } from "skia-canvas";
+import type { Image, CanvasRenderingContext2D } from "skia-canvas";
 import { AttachmentBuilder } from "discord.js";
 import fs from "fs";
 
@@ -10,9 +10,10 @@ type ImageCategory = "hair" | "torso" | "legs" | "feet" | "background";
 
 /** Generate a character image based on input parameters. */
 export default (async function (data: PlayerWardrobe) {
+  if (!data) data = config.defaultWardrobe;
   const characterPath = `./static/characters/${this.server.serverId}`;
 
-  const canvas = createCanvas(320, 320);
+  const canvas = new Canvas(320, 320);
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = false;
 
@@ -30,17 +31,17 @@ export default (async function (data: PlayerWardrobe) {
   if (data.feet && data.feet.name !== "nothing")
     await drawImage(ctx, { category: "feet", name: data.feet.name, color: data.feet.color });
 
-  const finalRenderedImage = await canvas.encode("png");
+  const finalRenderedImage = await canvas.png;
 
   // Check if character image directory exists
   if (!fs.existsSync(characterPath)) {
     fs.mkdirSync(characterPath, { recursive: true });
   }
-  fs.writeFileSync(characterPath + `/${this.user.discordId}.png`, finalRenderedImage);
+  fs.writeFileSync(characterPath + `/${this.id}.png`, finalRenderedImage);
 
   // Create Discord attachment
   const attachment = new AttachmentBuilder(finalRenderedImage, {
-    name: `${this.user.discordId}.png`,
+    name: `character.png`,
   });
 
   return attachment;
@@ -76,7 +77,7 @@ async function getImageCanvas(args: {
 }) {
   const { name, color = "white", category, blendMode = "multiply" } = args;
 
-  const canvas = createCanvas(320, 320);
+  const canvas = new Canvas(320, 320);
   const ctx = canvas.getContext("2d");
 
   // Draw image with color overlay
@@ -90,7 +91,7 @@ async function getImageCanvas(args: {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Save colored image and overlay over base image again to remove background
-    const coloredImageURL = canvas.toDataURL();
+    const coloredImageURL = await canvas.toDataURL("png");
     ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(baseImage, 0, 0);
@@ -110,7 +111,7 @@ async function getImageCanvas(args: {
 //---------------------------------------------------
 /** Draw an image onto the canvas. */
 async function drawImage(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   args: {
     name: string;
     color?: string;
