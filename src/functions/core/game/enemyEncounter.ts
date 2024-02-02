@@ -66,9 +66,6 @@ export default async function enemyEncounter(args: { player: Player }) {
     if (message) await message.edit({ components: [] });
   }
 
-  // Check to allow explore
-  let allowKeepExploring = false;
-
   // Create menu
   const menu = new game.Menu({
     player,
@@ -89,15 +86,12 @@ export default async function enemyEncounter(args: { player: Player }) {
               style: "primary",
               emoji: "⚔️",
               function: async () => {
-                await m.botMessage.delete();
-                await player.update({ preEncounter: null });
                 await enterCombat();
               },
             },
             {
               id: "keep_exploring",
               label: "Keep Exploring",
-              disable: !allowKeepExploring,
               function: async () => {
                 await killPreEncounter();
                 await player.runCommand({
@@ -145,12 +139,6 @@ export default async function enemyEncounter(args: { player: Player }) {
 
   await menu.init("encounter");
 
-  // Allow exploring after 2 seconds
-  setTimeout(() => {
-    allowKeepExploring = true;
-    menu.refresh();
-  }, 1000);
-
   // Update player preencounter
   await player.update({
     preEncounter: { messageId: menu.botMessage.id, channelId: menu.botMessage.channelId },
@@ -158,23 +146,26 @@ export default async function enemyEncounter(args: { player: Player }) {
 
   // Enter combat
   async function enterCombat() {
+    await menu.botMessage.delete();
+    await player.update({ preEncounter: null });
     await game.enterCombat({ player, enemies });
+    game.emitter.removeListener("enterCombat", onEnterCombat);
   }
 
   // Kill encounter
   async function killPreEncounter() {
     await menu.switchBoard("end");
     await player.update({ preEncounter: null });
+    game.emitter.removeListener("enterCombat", onEnterCombat);
   }
 
   // Enter combat when receive entercombat command
-  game.emitter.on("enterCombat", async (args: { playerId: number; messageId: string }) => {
+  game.emitter.on("enterCombat", onEnterCombat);
+  async function onEnterCombat(args: { playerId: number; messageId: string }) {
     const { playerId, messageId } = args;
     if (playerId !== player.id || menu.botMessage.id !== messageId) return;
-    await menu.botMessage.delete();
-    await player.update({ preEncounter: null });
     await enterCombat();
-  });
+  }
 
   //   // Create enemy in database
   //   const enemy = await prisma.enemy.create({

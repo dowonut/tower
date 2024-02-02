@@ -22,7 +22,7 @@ export default {
         { name: "baby goblin", weight: 100 },
         { name: "hungry goblin", weight: 80 },
         { name: "hobgoblin", weight: 60 },
-        { name: "the rock", weight: 10 },
+        { name: "sentient rock", weight: 10 },
       ],
       loot: [{ name: "rock", weight: 100 }],
     },

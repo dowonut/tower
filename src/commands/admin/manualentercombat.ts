@@ -2,7 +2,8 @@ import { game } from "../../tower.js";
 
 export default {
   name: "manualentercombat",
-  description: "mec",
+  aliases: ["mec"],
+  description: "Manually enter combat with enemies.",
   category: "admin",
   arguments: [
     { name: "enemy1", required: false },

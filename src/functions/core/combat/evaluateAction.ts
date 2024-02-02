@@ -40,14 +40,14 @@ export default async function evaluateAction(args: {
         break;
       // Adjacent targets
       case "adjacent":
-        if (target.number == 1) {
-          effect.targets.push(entities.find((x) => x.number < target.number));
-        } else if (target.number == allEntities.length) {
-          effect.targets.push(entities.find((x) => x.number > target.number));
-        } else {
-          effect.targets.push(entities.find((x) => x.number < target.number));
-          effect.targets.push(entities.find((x) => x.number > target.number));
-        }
+        const newTargetLeft = entities
+          .sort((a, b) => b.number - a.number)
+          .find((x) => x.number < target.number);
+        const newTargetRight = entities
+          .sort((a, b) => a.number - b.number)
+          .find((x) => x.number > target.number);
+        if (newTargetLeft) effect.targets.push(newTargetLeft);
+        if (newTargetRight) effect.targets.push(newTargetRight);
         break;
       // All targets
       case "all":
