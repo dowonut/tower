@@ -61,14 +61,58 @@ export class PlayerClass extends PlayerBaseClass {
     verbose?: T
   ): T extends false
     ? number
-    : { [key in "baseStat" | "levelBonus" | "traitBonus" | "weaponLevelBonus" | "total"]: number } {
-    const baseStat = config.baseStats[stat];
+    : {
+        [key in
+          | "totalBeforeMultipliers"
+          | "levelBonus"
+          | "traitMultiplier"
+          | "weaponLevelBonus"
+          | "total"]: number;
+      } {
+    // Get status effects
+    const statusEffects = this.getStatusEffects();
+
+    // ---------------------------------------
+    // Define flat bonus
+    let flatBonus = 0;
+
+    // Get base stat
+    let baseStat = 0;
+    switch (stat) {
+      case "SV":
+        baseStat = Math.floor(this.SG / this.SPD);
+        break;
+      default:
+        baseStat = config.baseStats[stat];
+        break;
+    }
+    flatBonus += baseStat;
 
     // Get flat bonus from level
-    const levelBonusFunction = config["level_" + stat];
+    const levelBonusFunction = config["player_" + stat];
     const levelBonus = levelBonusFunction ? levelBonusFunction(this.level) : 0;
+    flatBonus += levelBonus;
 
-    // Get flat bonuses from traits
+    // Get flat bonuses from equipment
+    let weaponLevelBonus = 0;
+    for (const [key, item] of Object.entries(this.equipment)) {
+      // Get weapon stats
+      if (item?.category == "weapon") {
+        if (!item.weaponType) continue;
+        if (!Object.keys(config.baseWeaponStats).includes(stat)) continue;
+        weaponLevelBonus += item.getStat(stat as WeaponStat);
+      }
+    }
+    flatBonus += weaponLevelBonus;
+
+    // ---------------------------------------
+    // Define multipliers
+    let multipliers = {
+      traits: 1,
+      statusEffects: 1,
+    };
+
+    // Get multipliers from traits
     let trait = 0;
     switch (stat) {
       case "ATK":
@@ -85,27 +129,50 @@ export class PlayerClass extends PlayerBaseClass {
         trait = this.vitality;
         break;
     }
-    const traitBonus = Math.floor((baseStat + levelBonus) * (trait / 100));
+    const traitMultiplier = trait / 100;
+    multipliers.traits += traitMultiplier;
 
-    // Get flat bonuses from equipment
-    let weaponLevelBonus = 0;
-    for (const [key, item] of Object.entries(this.equipment)) {
-      // Get weapon stats
-      if (item?.category == "weapon") {
-        if (!item.weaponType) continue;
-        weaponLevelBonus += item.getStat(stat as WeaponStat);
+    // Evaluate status effects
+    for (const statusEffect of statusEffects) {
+      for (const outcome of statusEffect.outcomes) {
+        if (outcome.type == "modify_stat") {
+          if (outcome.modifyStat.type == "multiplier") {
+            multipliers.statusEffects += outcome.modifyStat.basePercent / 100;
+          } else if (outcome.modifyStat.type == "flat") {
+            flatBonus += outcome.modifyStat.baseFlat;
+          }
+        }
       }
     }
 
-    const total = baseStat + levelBonus + traitBonus + weaponLevelBonus;
-    if (verbose) return { baseStat, levelBonus, traitBonus, weaponLevelBonus, total } as any;
-    return total;
+    // ---------------------------------------
+    // Evaluate multipliers
+    let totalBeforeMultipliers = flatBonus;
+    let total = totalBeforeMultipliers;
+    for (const [key, multiplier] of Object.entries(multipliers)) {
+      total *= multiplier;
+    }
+
+    // Return all details
+    if (verbose) {
+      return {
+        totalBeforeMultipliers,
+        levelBonus,
+        traitMultiplier,
+        weaponLevelBonus,
+        total,
+      } as any;
+    }
+    // Return total value
+    else {
+      return Math.max(0, Math.floor(total)) as any;
+    }
   }
 
-  /** Get base stat. */
+  /** Get base stat before multipliers. */
   getBaseStat(stat: PlayerStat) {
-    const { baseStat, levelBonus, traitBonus } = this.getStat(stat, true);
-    return baseStat + levelBonus + traitBonus;
+    const { totalBeforeMultipliers } = this.getStat(stat, true);
+    return totalBeforeMultipliers;
   }
 
   /** Get all stats. */
@@ -134,10 +201,8 @@ export class PlayerClass extends PlayerBaseClass {
   }
 
   /** Base Speed Value */
-  get baseSV() {
-    const gauge = config.speedGauge;
-    const SV = Math.ceil(gauge / this.SPD);
-    return SV;
+  get SV() {
+    return this.getStat("SV");
   }
 
   /** Max Health */
@@ -152,6 +217,10 @@ export class PlayerClass extends PlayerBaseClass {
   get MAG() {
     return this.getStat("MAG");
   }
+  /** Special */
+  get SPC() {
+    return this.getStat("SPC");
+  }
   /** Physical Resistance */
   get RES() {
     return this.getStat("RES");
@@ -159,6 +228,10 @@ export class PlayerClass extends PlayerBaseClass {
   /** Magic Resistance */
   get MAG_RES() {
     return this.getStat("MAG_RES");
+  }
+  /** Special Resistance */
+  get SPC_RES() {
+    return this.getStat("SPC_RES");
   }
   /** Speed */
   get SPD() {
@@ -180,7 +253,6 @@ export class PlayerClass extends PlayerBaseClass {
   get AD() {
     return this.getStat("AD");
   }
-
   /** Aggro */
   get AGR() {
     return this.getStat("AGR");

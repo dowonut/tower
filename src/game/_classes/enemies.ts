@@ -46,14 +46,17 @@ export class EnemyClass extends EnemyBaseClass {
     const enemyInfo = await prisma.enemy.update({
       where: { id: this.id },
       data: args,
-      include: {},
+      include: { statusEffects: true },
     });
     return Object.assign(this, enemyInfo);
   }
 
   /** Refresh the enemy with info from the database. */
   async refresh() {
-    const enemyInfo = await prisma.enemy.findUnique({ where: { id: this.id } });
+    const enemyInfo = await prisma.enemy.findUnique({
+      where: { id: this.id },
+      include: { statusEffects: true },
+    });
     return Object.assign(this, enemyInfo);
   }
 
@@ -93,11 +96,9 @@ export class EnemyClass extends EnemyBaseClass {
   }
 
   /** Get current status effects. */
-  async getStatusEffects() {
+  getStatusEffects() {
     let finalStatusEffects: StatusEffect[] = [];
-    const statusEffectsData = await prisma.enemyStatusEffect.findMany({
-      where: { enemyId: this.id },
-    });
+    const statusEffectsData = this.statusEffects || [];
     for (const statusEffectData of statusEffectsData) {
       const statusEffectClass = statusEffects.find((x) => x.name == statusEffectData.name);
       const finalStatusEffect = createClassObject<StatusEffect>(
@@ -116,7 +117,7 @@ export class EnemyClass extends EnemyBaseClass {
     players: Player[];
   }) {
     const { currently, enemies, players } = args;
-    const statusEffects = (await this.getStatusEffects()).filter((x) => x.evaluateOn == currently);
+    const statusEffects = this.getStatusEffects().filter((x) => x.evaluateOn == currently);
     for (const statusEffect of statusEffects) {
       await evaluateStatusEffect({ host: this, statusEffect, enemies, players });
     }
@@ -240,25 +241,67 @@ export class EnemyClass extends EnemyBaseClass {
 
   /** Get a specific evaluated stat. */
   getStat(stat: EnemyStat) {
-    const baseStat =
-      this?.stats?.["base_" + stat] ||
-      this.type?.stats?.["base_" + stat] ||
-      config.baseEnemyStats[stat];
+    // Get status effects
+    const statusEffects = this.getStatusEffects();
+
+    // ---------------------------------------
+    // Define flat bonus
+    let flatBonus = 0;
+
+    // Get base stat
+    let baseStat = 0;
+    switch (stat) {
+      case "SV":
+        baseStat = Math.floor(this.SG / this.SPD);
+        break;
+      default:
+        baseStat =
+          this?.stats?.["base_" + stat] ||
+          this.type?.stats?.["base_" + stat] ||
+          config.baseEnemyStats[stat];
+        break;
+    }
+    flatBonus += baseStat;
 
     // Get flat bonus from level
     const levelBonusFunction = config["enemy_" + stat];
-    const levelBonus = levelBonusFunction ? levelBonusFunction(this.level, this.type?.isBoss) : 0;
+    const levelBonus = levelBonusFunction ? levelBonusFunction(this.level) : 0;
+    flatBonus += levelBonus;
 
-    const total = baseStat + levelBonus;
+    // ---------------------------------------
+    // Define multipliers
+    let multipliers = {
+      statusEffects: 1,
+    };
 
-    return total;
+    // Evaluate status effects
+    for (const statusEffect of statusEffects) {
+      for (const outcome of statusEffect.outcomes) {
+        if (outcome.type == "modify_stat") {
+          if (outcome.modifyStat.stat !== stat) continue;
+          if (outcome.modifyStat.type == "multiplier") {
+            multipliers.statusEffects += outcome.modifyStat.basePercent / 100;
+          } else if (outcome.modifyStat.type == "flat") {
+            flatBonus += outcome.modifyStat.baseFlat;
+          }
+        }
+      }
+    }
+
+    // ---------------------------------------
+    // Evaluate multipliers
+    let totalBeforeMultipliers = flatBonus;
+    let total = totalBeforeMultipliers;
+    for (const [key, multiplier] of Object.entries(multipliers)) {
+      total *= multiplier;
+    }
+
+    return Math.max(0, Math.floor(total));
   }
 
   /** Base Speed Value */
-  get baseSV() {
-    const gauge = config.speedGauge;
-    const SV = Math.ceil(gauge / this.SPD);
-    return SV;
+  get SV() {
+    return this.getStat("SV");
   }
 
   /** XP dropped by enemy. */
@@ -274,27 +317,30 @@ export class EnemyClass extends EnemyBaseClass {
   get maxHP() {
     return this.getStat("maxHP");
   }
-
   /** Attack */
   get ATK() {
     return this.getStat("ATK");
   }
-
   /** Magic */
   get MAG() {
     return this.getStat("MAG");
   }
-
+  /** Special */
+  get SPC() {
+    return this.getStat("SPC");
+  }
   /** Physical Resistance */
   get RES() {
     return this.getStat("RES");
   }
-
   /** Magic Resistance */
   get MAG_RES() {
     return this.getStat("MAG_RES");
   }
-
+  /** Special Resistance */
+  get SPC_RES() {
+    return this.getStat("SPC_RES");
+  }
   /** Speed */
   get SPD() {
     return this.getStat("SPD");

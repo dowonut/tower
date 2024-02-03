@@ -9,12 +9,12 @@ declare global {
   export type EnemyData = {
     name: string;
     /** Type the enemy belongs to. Must be the name of an existing enemy type. */
-    type: string;
+    type: StaticEnemyTypeName;
     description: string;
     /** Enemy level. */
     level: number;
     /** Actions the enemy can perform. Inherited from enemy type. */
-    actions: string[];
+    actions: StaticEnemyActionName[];
     /** Enemy resistances. */
     strong?: DamageType[];
     /** Enemy weaknesses. */
@@ -35,8 +35,12 @@ declare global {
    */
   export type EnemyBase = EnemyDataWithType & EnemyModel;
 
-  /** Player Enemy Model */
-  type EnemyModel = PrismaClient.EnemyGetPayload<{}>;
+  /** Enemy Prisma Model */
+  type EnemyModel = PrismaClient.EnemyGetPayload<{
+    include: {
+      statusEffects: true;
+    };
+  }>;
 
   /**
    * Enemy class.

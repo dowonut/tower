@@ -63,14 +63,14 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
   // Create enemies in database
   let enemyNumber = 1;
   for (const [i, enemy] of enemies.entries()) {
-    const SV = enemy.baseSV;
     const enemyData = await prisma.enemy.create({
       data: {
         name: enemy.name,
         health: enemy.maxHP,
-        SV,
+        SG: config.baseSpeedGauge,
         number: enemyNumber,
       },
+      include: { statusEffects: true },
     });
     enemies[i] = game.createClassObject(enemy, enemyData);
     enemyNumber++;
@@ -78,8 +78,8 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
 
   // Set starting SV for players
   for (const [i, player] of players.entries()) {
-    const SV = player.baseSV;
-    players[i] = await player.update({ SV });
+    const SG = config.baseSpeedGauge;
+    players[i] = await player.update({ SG });
   }
 
   // Calculate initial turn order

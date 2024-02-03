@@ -7,7 +7,7 @@ export default {
   description: "An upwards swing of your fist.",
   type: "weapon_attack",
   cooldown: 1,
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: [{ type: "bludgeoning", source: "ATK", basePercent: 50 }],

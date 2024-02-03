@@ -3,7 +3,7 @@ export default {
   requiredWeapon: ["shield"],
   description: "Bash the enemy with your shield.",
   type: "weapon_attack",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 50 },

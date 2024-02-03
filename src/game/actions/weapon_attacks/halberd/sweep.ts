@@ -3,7 +3,7 @@ export default {
   type: "weapon_attack",
   requiredWeapon: ["halberd"],
   description: "Make a sweeping attack towards your enemies.",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       targetType: "all",

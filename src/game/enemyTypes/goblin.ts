@@ -10,7 +10,7 @@ export default {
       name: "scratch",
       cooldown: 1,
       type: "ability",
-      effects: [
+      outcomes: [
         {
           type: "damage",
           damage: [
@@ -27,7 +27,7 @@ export default {
     {
       name: "punch",
       type: "ability",
-      effects: [
+      outcomes: [
         {
           type: "damage",
           damage: [
@@ -45,7 +45,7 @@ export default {
       name: "club",
       type: "ability",
       cooldown: 1,
-      effects: [
+      outcomes: [
         {
           type: "damage",
           damage: [
@@ -60,4 +60,4 @@ export default {
       ],
     },
   ],
-} satisfies EnemyType;
+} as const satisfies EnemyType;

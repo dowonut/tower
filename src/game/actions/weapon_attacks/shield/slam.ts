@@ -4,7 +4,7 @@ export default {
   description: "Slam into the enemy with your shield.",
   type: "weapon_attack",
   cooldown: 1,
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 50 },

@@ -3,7 +3,7 @@ export default {
   category: "potion",
   description: "Tasty life juice.",
   info: `Drink this to become alive again.`,
-  effects: [
+  outcomes: [
     {
       type: "health",
       value: 10,

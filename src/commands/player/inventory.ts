@@ -177,7 +177,7 @@ export default {
       if (!showingList) {
         buttons.push({
           id: "iteminfo",
-          emoji: "ℹ",
+          emoji: config.emojis.info,
           stop: true,
           disable: itemDisable,
           function: async (reply, i) => {

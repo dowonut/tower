@@ -6,7 +6,7 @@ export default {
     {
       name: "lick",
       type: "ability",
-      effects: [
+      outcomes: [
         {
           type: "damage",
           damage: [
@@ -24,7 +24,7 @@ export default {
       name: "milky splash",
       type: "ability",
       cooldown: 1,
-      effects: [
+      outcomes: [
         {
           type: "damage",
           targetType: "all",
@@ -41,7 +41,7 @@ export default {
       name: "malicious lick",
       type: "ability",
       cooldown: 1,
-      effects: [
+      outcomes: [
         {
           type: "damage",
           damage: {
@@ -66,4 +66,4 @@ export default {
       ],
     },
   ],
-} satisfies EnemyType;
+} as const satisfies EnemyType;

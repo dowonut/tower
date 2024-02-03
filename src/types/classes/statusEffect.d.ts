@@ -6,28 +6,50 @@ declare global {
   type StatusEffectData = {
     name: string;
     description: string;
-    /** When to evaluate the status effect. */
+    /** When to evaluate the status effect.
+     * - turn_end = when the host's turn ends.
+     * - turn_start = when the host's turn starts.
+     * - immediate = once when the status effect is inflicted.
+     */
     evaluateOn: "turn_end" | "turn_start" | "immediate";
     /** All outcomes of the status effect. */
     outcomes: StatusEffectOutcome[];
-    /** How long does the status effect lasts. */
-    duration: number;
+    /** For how many combat rounds does the status effect last. If left empty then infinite. */
+    duration?: number;
+    /** Can the status effect can stack. Default: true.*/
+    stackable?: boolean;
   };
 
   type StatusEffectOutcomeDefault<T> = {
-    /** Type of effect. */
+    /** Type of effect.
+     * damage = deal damage to the host.
+     * modify_stat = passively modify the host's stats.
+     * modify_speed_gauge = immediately modify the host's speed gauge.
+     * custom = evaluate a custom function.
+     */
     type: T;
+    /** Message to send on evaluation. Variables: HOST, SOURCE, DAMAGE. */
+    messages: string[];
   };
 
   type StatusEffectOutcomeAll = {
-    /** Information about stat change. */
+    /** Change the host's stat. */
     modifyStat: {
-      stat: PlayerStat;
+      stat: Stat;
       type: "flat" | "multiplier";
+      baseFlat?: number;
+      basePercent?: number;
+    };
+    /** Modify the host's speed gauge. */
+    modifySpeedGauge: {
+      /** Whether to advance forward or delay. */
+      type: "forward" | "delay";
+      /** Percent amount to modify speed gauge. */
+      percent: number;
     };
     /** Function to evaluate status effect. */
     evaluate?: (
-      this: ActionEffect,
+      this: StatusEffectOutcome,
       args: { host: Enemy | Player }
     ) => Promise<{
       host?: Enemy | Player;
@@ -39,14 +61,16 @@ declare global {
   type StatusEffectOutcomeTypes = {
     damage: "damage";
     modify_stat: "modifyStat";
+    modify_speed_gauge: "modifySpeedGauge";
     custom: "evaluate";
   };
 
   /** Status effect damage. */
   export type StatusEffectDamage = {
+    origin?: "status_effect";
     /** Damage type. */
     type: DamageType;
-    /** Where to scale stats from. Default = host. */
+    /** Where to scale stats from. Default = source. */
     statSource?: "host" | "source";
     /** What type of scaling to use. Default = percent. */
     scaling?: "flat" | "percent";
@@ -56,6 +80,8 @@ declare global {
     basePercent?: number;
     /** If scaling = "flat" then the base damage amount. */
     baseFlat?: number;
+    /** Which stat to use for scaling resistance. Default = equivalent to source stat. */
+    resStat?: "RES" | "MAG_RES" | "SPC_RES";
   };
 
   export type StatusEffectOutcome<T = StatusEffectOutcomeType> =
@@ -65,7 +91,7 @@ declare global {
 
   export type StatusEffectOutcomeType = keyof StatusEffectOutcomeTypes;
 
-  export type StatusEffectBase = Prisma.StatusEffect & StatusEffectData;
+  export type StatusEffectBase = Prisma.StatusEffect & Prisma.EnemyStatusEffect & StatusEffectData;
 
   export type StatusEffect = StatusEffectClass;
 }

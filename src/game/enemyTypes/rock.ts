@@ -10,7 +10,7 @@ export default {
       name: "smash",
       cooldown: 0,
       type: "ability",
-      effects: [
+      outcomes: [
         {
           type: "damage",
           targetType: "all",
@@ -28,4 +28,4 @@ export default {
       ],
     },
   ],
-} satisfies EnemyType;
+} as const satisfies EnemyType;

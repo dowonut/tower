@@ -79,7 +79,7 @@ model Player {
   // Combat
   encounter     Encounter?      @relation(fields: [encounterId], references: [id])
   encounterId   Int?
-  SV            Int?
+  SG            Int?
   dead          Boolean         @default(false)
   /// [PrismaDiscordMessage]
   preEncounter  Json?
@@ -191,7 +191,6 @@ model StatusEffect {
   sourceId    Int
   name        String
   remDuration Int?
-  data        Json?
 }
 
 // Enemy status effects
@@ -203,7 +202,6 @@ model EnemyStatusEffect {
   sourceId    Int
   name        String
   remDuration Int?
-  data        Json?
 }
 
 // Enemy tracking
@@ -216,7 +214,7 @@ model Enemy {
   statusEffects EnemyStatusEffect[]
   encounter     Encounter?          @relation(fields: [encounterId], references: [id], onDelete: Cascade)
   encounterId   Int?
-  SV            Int?
+  SG            Int?
   dead          Boolean             @default(false)
 }
 

@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { EnemyClass } from "../../../game/_classes/enemies.js";
-import PlayerClass from "../../../game/_classes/players.js";
+import { PlayerClass } from "../../../game/_classes/players.js";
 import { game, prisma } from "../../../tower.js";
 import { Prisma } from "@prisma/client";
 
@@ -15,28 +15,34 @@ export default async function evaluateAction(args: {
   simulate?: boolean;
 }) {
   let { enemies = [], players = [], source, action, targets, simulate = false } = args;
-
   // Refresh source
   if (!simulate) source = await (source as Player).refresh();
+
+  // Populate empty player and enemy list with source
+  if (_.isEmpty(players) && source instanceof PlayerClass) {
+    players = [source];
+  } else if (_.isEmpty(enemies) && source instanceof EnemyClass) {
+    enemies = [source];
+  }
 
   // Track total damage done by action
   let actionTotalDamage = 0;
 
-  // Iterate through action effects
-  for (let effect of action.effects) {
+  // Iterate through action outcomes
+  for (let outcome of action.outcomes) {
     // Define target
-    const target = targets[effect.targetNumber || 1] || undefined;
+    const target = targets[outcome.targetNumber || 1] || undefined;
     // Define entities as same as the target
     let entities = target ? (target instanceof EnemyClass ? enemies : players) : enemies;
     // Remove dead entities from possible targets
     entities = entities.filter((x) => !x.dead) as PlayerClass[] | EnemyClass[];
-    // Define targets per effect
-    effect.targets = [];
-    if (!effect.targetType) effect.targetType = "single";
-    switch (effect.targetType) {
+    // Define targets per outcome
+    outcome.targets = [];
+    if (!outcome.targetType) outcome.targetType = "single";
+    switch (outcome.targetType) {
       // Single target
       case "single":
-        effect.targets.push(entities.find((x) => x.number == target.number));
+        outcome.targets.push(entities.find((x) => x.number == target.number));
         break;
       // Adjacent targets
       case "adjacent":
@@ -46,22 +52,22 @@ export default async function evaluateAction(args: {
         const newTargetRight = entities
           .sort((a, b) => a.number - b.number)
           .find((x) => x.number > target.number);
-        if (newTargetLeft) effect.targets.push(newTargetLeft);
-        if (newTargetRight) effect.targets.push(newTargetRight);
+        if (newTargetLeft) outcome.targets.push(newTargetLeft);
+        if (newTargetRight) outcome.targets.push(newTargetRight);
         break;
       // All targets
       case "all":
-        effect.targets.push(...entities);
+        outcome.targets.push(...entities);
         break;
     }
-    // console.log(effect?.targets?.map((x) => ({ name: x.displayName, health: x.health })));
+    // console.log(outcome?.targets?.map((x) => ({ name: x.displayName, health: x.health })));
 
-    switch (effect.type) {
+    switch (outcome.type) {
       case "damage":
-        await evaluateDamage(effect);
+        await evaluateDamage(outcome);
         break;
       case "apply_status":
-        await applyStatusEffect(effect);
+        await applyStatusEffect(outcome);
         break;
       case "custom":
         break;
@@ -75,13 +81,13 @@ export default async function evaluateAction(args: {
     actionTotalDamage,
   };
 
-  /** Evaluate damage for effect. */
-  async function evaluateDamage(effect: ActionEffect<"damage">) {
-    const damage = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
-    for (let target of effect.targets) {
+  /** Evaluate damage for outcome. */
+  async function evaluateDamage(outcome: ActionOutcome<"damage">) {
+    const damage = Array.isArray(outcome.damage) ? outcome.damage : [outcome.damage];
+    for (let target of outcome.targets) {
       if (!target) continue;
 
-      // Evaluate damage of effect against target
+      // Evaluate damage of outcome against target
       const evaluatedDamage = game.evaluateDamage({
         damageInstances: damage,
         source,
@@ -104,8 +110,8 @@ export default async function evaluateAction(args: {
       });
 
       // Get attack message
-      const message = game.getEffectMessage({
-        effect,
+      const message = game.getOutcomeMessage({
+        outcome,
         damage: evaluatedDamage,
         source,
         target,
@@ -118,22 +124,15 @@ export default async function evaluateAction(args: {
         message,
       } satisfies ActionMessageEmitter);
     }
+    return;
   }
 
   /** Apply status effect. */
-  async function applyStatusEffect(effect: ActionEffect<"apply_status">) {
-    // Get fixed status effect
-    let statusEffect: StatusEffect;
-    let statusEffectData: any;
-    let isFixedStatusEffect: boolean;
+  async function applyStatusEffect(outcome: ActionOutcome<"apply_status">) {
+    if (simulate) return;
+    // Get fixed status outcome
+    let statusEffect = game.getStatusEffect(outcome.status.name);
     let sourceType: "enemy" | "player";
-    if (effect.status?.type == "fixed" || !effect.status.type) {
-      statusEffect = game.getStatusEffect(effect.status.name);
-      isFixedStatusEffect = true;
-    } else {
-      statusEffectData = effect.status.data;
-      isFixedStatusEffect = false;
-    }
     if (source instanceof PlayerClass) {
       sourceType = "player";
     } else if (source instanceof EnemyClass) {
@@ -143,28 +142,37 @@ export default async function evaluateAction(args: {
     let data:
       | Prisma.StatusEffectCreateWithoutPlayerInput
       | Prisma.EnemyStatusEffectCreateWithoutEnemyInput;
-    if (isFixedStatusEffect) {
-      data = {
-        name: statusEffect.name,
-        remDuration: statusEffect.duration,
-        sourceId: source.id,
-        sourceType,
-      };
-    } else {
-      data = {
-        name: effect.status.name,
-        data: effect.status.data,
-        sourceId: source.id,
-        sourceType,
-      };
-    }
+    data = {
+      name: statusEffect.name,
+      remDuration: statusEffect.duration,
+      sourceId: source.id,
+      sourceType,
+    };
     // Iterate through targets
-    for (const target of effect.targets) {
+    for (const target of outcome.targets) {
+      if (!target) continue;
+      // Check if stackable and skip if not
+      if (statusEffect.stackable == false) {
+        const statusEffects = (target as Player).getStatusEffects();
+        if (statusEffects.some((x) => x.name == statusEffect.name)) continue;
+      }
+      // Create status effect in database
       if (target instanceof PlayerClass) {
-        await target.update({ statusEffects: { create: data } });
+        Object.assign(
+          statusEffect,
+          await prisma.statusEffect.create({ data: { ...data, playerId: target.id } })
+        );
       } else if (target instanceof EnemyClass) {
-        await target.update({ statusEffects: { create: data } });
+        Object.assign(
+          statusEffect,
+          await prisma.enemyStatusEffect.create({ data: { ...data, enemyId: target.id } })
+        );
+      }
+      // Immediately evaluate status outcome
+      if (statusEffect.evaluateOn == "immediate") {
+        await game.evaluateStatusEffect({ host: target, statusEffect, enemies, players });
       }
     }
+    return;
   }
 }

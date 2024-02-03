@@ -21,7 +21,7 @@ declare global {
     /** Health regained if consumable. */
     health: number;
     /** Effects of item when consumed. */
-    effects: {
+    outcomes: {
       /** Type of effect. */
       type: PlayerStats | "passive";
       /** What the modifier applies to. */

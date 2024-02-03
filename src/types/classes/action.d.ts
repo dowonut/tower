@@ -17,27 +17,27 @@ declare global {
     requiredWeapon?: WeaponType[];
     /** Action description. */
     description?: string;
-    /** All effects caused by the action. */
-    effects: ActionEffect[];
+    /** All outcomes caused by the action. */
+    outcomes: ActionOutcome[];
     /** How many rounds until next available. Default = 0.*/
     cooldown?: number;
   };
 
   /** Effects caused by an action. */
-  export type ActionEffect<T = ActionEffectType> = T extends keyof ActionEffectTypes
-    ? ActionEffectDefault<T> & Pick<ActionEffectAll, ActionEffectTypes[T]>
-    : ActionEffectDefault<T>;
+  export type ActionOutcome<T = ActionOutcomeType> = T extends keyof ActionOutcomeTypes
+    ? ActionOutcomeDefault<T> & Pick<ActionOutcomeAll, ActionOutcomeTypes[T]>
+    : ActionOutcomeDefault<T>;
 
-  /** Possible action effect types. */
-  type ActionEffectTypes = {
+  /** Possible action outcome types. */
+  type ActionOutcomeTypes = {
     damage: "damage";
     apply_status: "status";
     custom: "evaluate";
   };
 
-  /** Default action effect data. */
-  type ActionEffectDefault<T> = {
-    /** Type of effect inflicted by the action.
+  /** Default action outcome data. */
+  type ActionOutcomeDefault<T> = {
+    /** Type of outcome inflicted by the action.
      *
      * - damage = deal damage to the target.
      * - apply_status = apply a status effect to the target.
@@ -46,9 +46,9 @@ declare global {
     type: T;
     /** Allow action to target allies or enemies. Default: enemies. */
     targetMode?: "allies" | "enemies";
-    /** The selected target this effect applies to. If greater than 1, player will be asked to select additional enemies. Default = 1.*/
+    /** The selected target this outcome applies to. If greater than 1, player will be asked to select additional enemies. Default = 1.*/
     targetNumber?: number;
-    /** What type of targeting the effect uses.
+    /** What type of targeting the outcome uses.
      *
      * - single = one enemy.
      * - adjacent = one enemy and adjacent enemies.
@@ -56,32 +56,30 @@ declare global {
      *
      * Default: single. */
     targetType?: TargetType;
-    /** Message sent for this effect instance. Variables: TARGET, DAMAGE, STATUS, SOURCE. */
+    /** Message sent for this outcome instance. Variables: TARGET, DAMAGE, STATUS, SOURCE. */
     messages: string[];
-    /** Target for action effect. DO NOT DEFINE. */
+    /** Target for action outcome. DO NOT DEFINE. */
     targets?: (Enemy | Player)[];
   };
 
-  /** All action effect data. */
-  type ActionEffectAll = {
+  /** All action outcome data. */
+  type ActionOutcomeAll = {
     /** Define damage type. */
-    damage?: ActionEffectDamage[] | ActionEffectDamage;
+    damage?: ActionOutcomeDamage[] | ActionOutcomeDamage;
     /** Define status type. */
     status?: {
-      /** Type of status. Default = "fixed". */
-      type: "fixed" | "custom";
-      /** Name of status effect. */
+      /** Name of status outcome. */
       name: string;
-      /** If type = "custom" then provide data. */
-      data?: any;
+      /** Level of the status effect. Default = 1. */
+      level?: number;
     };
     /** Define stat type and change. */
     changeStat?: {
       stat: "HP" | "";
     };
-    /** Function to evaluate effect. */
+    /** Function to evaluate outcome. */
     evaluate?: (
-      this: ActionEffect,
+      this: ActionOutcome,
       args: { source: Enemy | Player }
     ) => Promise<{
       players?: Player[];
@@ -92,20 +90,29 @@ declare global {
   /**
    * Action with evaluated damage.
    */
-  export type EvaluatedActionEffect = Modify<ActionEffect, { damage: number }>;
+  export type EvaluatedActionOutcome = Modify<ActionOutcome, { damage: number }>;
 
   export type ActionBase = ActionData & Prisma.Action;
 
   export type Action = ActionClass;
 
-  /** Action effect damage. */
-  export type ActionEffectDamage = {
+  /** Action outcome damage. */
+  export type ActionOutcomeDamage = {
+    origin?: "action";
     /** Damage type. */
     type: DamageType;
-    /** What stat does the action scale off. */
-    source: keyof typeof config.baseStats;
-    /** The base percent of source for scaling. */
-    basePercent: number;
+    /** Where to scale stats from. Default = source. */
+    statSource?: "target" | "source";
+    /** What type of scaling to use. Default = percent. */
+    scaling?: "flat" | "percent";
+    /** If scaling = "percent" then what stat does the action scale off. */
+    source?: Stat;
+    /** If scaling = "percent" then the base percent of source for scaling. */
+    basePercent?: number;
+    /** If scaling = "flat" then the base damage amount. */
+    baseFlat?: number;
+    /** Which stat to use for scaling resistance. Default = equivalent to source stat. */
+    resStat?: "RES" | "MAG_RES" | "SPC_RES";
   };
 
   /**

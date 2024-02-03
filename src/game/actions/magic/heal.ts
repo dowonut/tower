@@ -2,7 +2,7 @@ export default {
   name: "heal",
   type: "magic",
   description: "Heal yourself or one of your allies.",
-  effects: [
+  outcomes: [
     {
       type: "custom",
       targetMode: "allies",

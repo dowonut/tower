@@ -3,7 +3,7 @@ export default {
   requiredWeapon: ["spear"],
   description: "Poke the enemy gently with your spear.",
   type: "weapon_attack",
-  effects: [
+  outcomes: [
     {
       damage: [{ type: "piercing", source: "ATK", basePercent: 50 }],
       messages: [
@@ -11,14 +11,6 @@ export default {
         "TARGET receives a thorough poking by SOURCE, taking DAMAGE",
       ],
       type: "damage",
-    },
-    {
-      type: "apply_status",
-      status: {
-        type: "fixed",
-        name: "bleed",
-      },
-      messages: ["SOURCE inflicts TARGET with grave wounds, inflicting them with STATUS"],
     },
   ],
 } satisfies ActionData;

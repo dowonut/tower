@@ -1,4 +1,4 @@
-import { Interaction, TextChannel } from "discord.js";
+import { AttachmentBuilder, Interaction, TextChannel } from "discord.js";
 import { game, prisma, config } from "../../../tower.js";
 import { Menu, f } from "../index.js";
 import PlayerClass from "../../../game/_classes/players.js";
@@ -153,7 +153,7 @@ export default async function handleEncounter(args: {
                 // Automatically select remaining living enemy as target, or automatically target all enemies
                 if (
                   getAliveEnemies().length <= 1 ||
-                  !x.effects.some((x) => x.targetType !== "all")
+                  !x.outcomes.some((x) => x.targetType !== "all")
                 ) {
                   await game.runCommand("attack", {
                     message: m.botMessage,
@@ -319,7 +319,6 @@ ${turnOrderList}
   /** Send attack message when received. */
   async function onActionMessage(args: ActionMessageEmitter) {
     const { message, encounterId } = args;
-
     if (encounterId !== encounter.id) return;
 
     // Delete attack messages
@@ -333,7 +332,12 @@ ${turnOrderList}
     //   }, 10000);
     // }
 
-    const botMsg = await game.send({ player: players[0], reply: false, content: message });
+    const botMsg = await game.send({
+      player: players[0],
+      reply: false,
+      content: message,
+      files: [{ attachment: "./assets/seperator.png", name: "seperator.png" }],
+    });
     try {
       encounter = await prisma.encounter.update({
         where: { id: encounter.id },
@@ -345,11 +349,11 @@ ${turnOrderList}
 
   /** Function called by emitter when a player move is detected. */
   async function onPlayerMove(args: PlayerMoveEmitter) {
-    const { enemies = [], players = [] } = args;
-
-    // console.log("playerMove event listeners: ", game.emitter.listenerCount("playerMove"));
-
+    const { enemies = [], players = [], player } = args;
     if (args.encounterId !== encounter.id) return;
+
+    // Evaluate end of turn status effects
+    await player.evaluateStatusEffects({ enemies, players, currently: "turn_end" });
 
     // Update turnorder data
     updateTurnOrderList({ enemies, players });
@@ -380,7 +384,11 @@ ${turnOrderList}
 
     // Handle player
     if (nextEntity instanceof PlayerClass) {
-      const player = await nextEntity.evaluateTurnStart();
+      // Evaluate start of turn
+      const player = await nextEntity.evaluateTurnStart({
+        players: menu.variables.players,
+        enemies: menu.variables.enemies,
+      });
 
       // Skip player if dead
       if (player.dead) {
@@ -419,12 +427,33 @@ ${turnOrderList}
     // Send typing indicator
     await channel.sendTyping();
     setTimeout(async () => {
+      // Update status effect durations
+      enemy = await enemy.update({
+        statusEffects: {
+          updateMany: {
+            where: { remDuration: { gt: 0 } },
+            data: { remDuration: { increment: -1 } },
+          },
+        },
+      });
+      // Delete status effects with 0 remaining duration
+      if (enemy.statusEffects.some((x) => x?.remDuration < 1)) {
+        enemy = await enemy.update({
+          statusEffects: {
+            deleteMany: {
+              id: { in: enemy.statusEffects.filter((x) => x?.remDuration < 1).map((x) => x.id) },
+            },
+          },
+        });
+      }
+
       // Evaluate status effects
       await enemy.evaluateStatusEffects({
         currently: "turn_start",
         enemies: menu.variables.enemies,
         players: menu.variables.players,
       });
+      if (enemy.dead) return await nextTurn();
 
       // Get player
       let player = enemy.getTargetPlayer(menu.variables.players);
@@ -458,9 +487,16 @@ ${turnOrderList}
         }
       }
 
+      // Evaluate status effects
+      await enemy.evaluateStatusEffects({
+        currently: "turn_end",
+        enemies: menu.variables.enemies,
+        players: menu.variables.players,
+      });
+
       // Next turn
       await nextTurn();
-    }, game.random(1, 4) * 1000);
+    }, game.random(1, 3) * 1000);
   }
 
   /** Exit combat. */

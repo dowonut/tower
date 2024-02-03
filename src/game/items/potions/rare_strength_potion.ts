@@ -4,7 +4,7 @@ export default {
   description: "Makes you super strong and shit.",
   info: `A viscous substance that gives you an urge to hit things.`,
   // Passive effects if potion
-  effects: [
+  outcomes: [
     {
       // Type of effect (passive, health, etc)
       type: "passive",

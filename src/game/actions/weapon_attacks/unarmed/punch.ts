@@ -3,7 +3,7 @@ export default {
   requiredWeapon: ["unarmed"],
   description: "A simple punch using your fist.",
   type: "weapon_attack",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: [{ type: "bludgeoning", source: "ATK", basePercent: 30 }],

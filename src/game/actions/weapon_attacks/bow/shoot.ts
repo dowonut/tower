@@ -3,7 +3,7 @@ export default {
   requiredWeapon: ["bow"],
   description: "Shoot your target with an arrow.",
   type: "weapon_attack",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: { type: "piercing", source: "ATK", basePercent: 50 },

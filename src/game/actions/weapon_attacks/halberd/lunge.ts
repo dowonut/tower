@@ -4,7 +4,7 @@ export default {
   requiredWeapon: ["halberd"],
   description: "Lunge towards your enemies and hit them with your halberd.",
   cooldown: 1,
-  effects: [
+  outcomes: [
     {
       type: "damage",
       targetType: "single",

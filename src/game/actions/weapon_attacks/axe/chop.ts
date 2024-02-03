@@ -3,7 +3,7 @@ export default {
   type: "weapon_attack",
   requiredWeapon: ["axe"],
   description: "Chop the enemy down with your axe.",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: {

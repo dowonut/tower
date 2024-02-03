@@ -6,7 +6,7 @@ export default {
   // Attack description shown in attack command
   description: "Brutally smash a rock against your enemy's head.",
   type: "weapon_attack",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 200 },

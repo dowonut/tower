@@ -23,7 +23,7 @@ export class ActionClass extends ActionClassBase {
 
   /** Get number of required targets. */
   getRequiredTargets() {
-    return Math.max(...this.effects.map((x) => x.targetNumber || 1));
+    return Math.max(...this.outcomes.map((x) => x.targetNumber || 1));
   }
 
   /** Get image attachment. */
@@ -57,8 +57,8 @@ export class ActionClass extends ActionClassBase {
   }) {
     const { totalEnemies = 1, useFormatting = false, useEmojis = false } = args;
     let text: string[] = [];
-    const effects = this.effects.filter((x) => x.type == "damage");
-    for (const effect of effects as ActionEffect<"damage">[]) {
+    const effects = this.outcomes.filter((x) => x.type == "damage");
+    for (const effect of effects as ActionOutcome<"damage">[]) {
       let targetText: string = "";
       // If first target
       switch (effect.targetType) {
@@ -98,8 +98,8 @@ export class ActionClass extends ActionClassBase {
   /** Get short damage text for buttons. */
   getInfo() {
     let text: string[] = [];
-    const effects = this.effects.filter((x) => x.type == "damage");
-    for (const [i, effect] of (effects as ActionEffect<"damage">[]).entries()) {
+    const effects = this.outcomes.filter((x) => x.type == "damage");
+    for (const [i, effect] of (effects as ActionOutcome<"damage">[]).entries()) {
       let targetText: string = "";
       // If first target
       switch (effect.targetType) {
@@ -133,12 +133,12 @@ export class ActionClass extends ActionClassBase {
       }
       let prefix = `Deals`;
       let suffix = ``;
-      if (i > 0 && i !== this.effects.length - 1 && this.effects.length > 1) {
+      if (i > 0 && i !== this.outcomes.length - 1 && this.outcomes.length > 1) {
         prefix = `,`;
-      } else if (i == this.effects.length - 1 && this.effects.length > 1) {
+      } else if (i == this.outcomes.length - 1 && this.outcomes.length > 1) {
         prefix = `, and`;
         suffix = ".";
-      } else if (i == this.effects.length - 1) {
+      } else if (i == this.outcomes.length - 1) {
         suffix = ".";
       }
       let finalText = `${prefix} ${damageText.join(", ")} to **${targetText}**${suffix}`;
@@ -181,7 +181,7 @@ export class ActionClass extends ActionClassBase {
   getMessages(player: Player, enemy: Enemy, damage: EvaluatedDamage) {
     let messages: string[] = [];
 
-    for (const effect of this.effects) {
+    for (const effect of this.outcomes) {
       if (!effect.messages) continue;
 
       let message = game.getRandom(effect.messages);

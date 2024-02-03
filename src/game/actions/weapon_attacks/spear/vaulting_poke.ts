@@ -4,7 +4,7 @@ export default {
   description: "Jump into the air and poke the enemy with your spear.",
   type: "weapon_attack",
   cooldown: 1,
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: [{ type: "piercing", source: "ATK", basePercent: 70 }],

@@ -6,7 +6,7 @@ export default {
   // Attack description shown in attack command
   description: "A simple swing of your sword.",
   type: "weapon_attack",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: [{ type: "slashing", source: "ATK", basePercent: 30 }],

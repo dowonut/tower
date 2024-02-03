@@ -36,12 +36,12 @@ declare global {
   /**
    * Player stats.
    */
-  export type PlayerStat = keyof typeof config.baseStats;
+  export type PlayerStat = keyof typeof config.baseStats | "SV";
 
   /**
    * Enemy stats.
    */
-  export type EnemyStat = keyof typeof config.baseEnemyStats;
+  export type EnemyStat = keyof typeof config.baseEnemyStats | "SV";
 
   /**
    * General stats.
@@ -104,7 +104,7 @@ declare global {
   export type ActionType = (typeof config.actionTypes)[number];
 
   /** Action effect types. */
-  export type ActionEffectType = (typeof config.actionEffectTypes)[number];
+  export type ActionOutcomeType = (typeof config.ActionOutcomeTypes)[number];
 }
 
 export {};

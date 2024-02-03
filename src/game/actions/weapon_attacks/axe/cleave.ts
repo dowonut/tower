@@ -4,7 +4,7 @@ export default {
   requiredWeapon: ["axe"],
   description: "Swing your axe in a powerful move to hit all enemies.",
   cooldown: 1,
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: {

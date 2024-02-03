@@ -10,7 +10,7 @@ export default {
       name: "swallow",
       type: "ability",
       cooldown: 1,
-      effects: [
+      outcomes: [
         {
           type: "damage",
           targetType: "single",
@@ -26,7 +26,7 @@ export default {
     {
       name: "bounce",
       type: "ability",
-      effects: [
+      outcomes: [
         {
           type: "damage",
           targetType: "single",
@@ -43,7 +43,7 @@ export default {
       name: "burn",
       type: "ability",
       cooldown: 1,
-      effects: [
+      outcomes: [
         {
           type: "damage",
           targetType: "single",
@@ -67,7 +67,7 @@ export default {
       name: "drown",
       type: "ability",
       cooldown: 1,
-      effects: [
+      outcomes: [
         {
           type: "damage",
           targetType: "single",
@@ -88,4 +88,4 @@ export default {
       ],
     },
   ],
-} satisfies EnemyType;
+} as const satisfies EnemyType;

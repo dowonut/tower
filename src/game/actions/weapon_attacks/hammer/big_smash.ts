@@ -4,7 +4,7 @@ export default {
   type: "weapon_attack",
   requiredWeapon: ["hammer"],
   cooldown: 1,
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: { type: "bludgeoning", source: "ATK", basePercent: 50 },

@@ -3,7 +3,7 @@ export default {
   type: "weapon_attack",
   requiredWeapon: ["amplifier"],
   description: "Slap the enemy with your amplifier, dealing... damage?",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: [

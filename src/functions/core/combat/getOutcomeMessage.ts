@@ -3,15 +3,21 @@ import { EnemyClass } from "../../../game/_classes/enemies.js";
 import PlayerClass from "../../../game/_classes/players.js";
 import { game, config } from "../../../tower.js";
 
-/** Get an attack message. */
-export default function getEffectMessage(args: {
+/** Get message for an action or status effect outcome. */
+export default function getOutcomeMessage(args: {
   source: Player | Enemy;
   target: Player | Enemy;
   damage?: EvaluatedDamage;
-  effect: ActionEffect;
+  outcome: ActionOutcome | StatusEffectOutcome;
   previousHealth?: number;
 }) {
-  const { source, target, damage = { instances: [], total: 0 }, previousHealth = 0, effect } = args;
+  const {
+    source,
+    target,
+    damage = { instances: [], total: 0 },
+    previousHealth = 0,
+    outcome,
+  } = args;
 
   let healthText: string;
   let healthBar: string;
@@ -33,7 +39,7 @@ export default function getEffectMessage(args: {
   }
 
   // Format action message
-  let actionMessage = game.getRandom(effect.messages);
+  let actionMessage = game.getRandom(outcome.messages);
 
   const damageText = damage.instances
     .map((x) => {
@@ -43,7 +49,7 @@ export default function getEffectMessage(args: {
     })
     .join(", ");
 
-  actionMessage = actionMessage.replaceAll("TARGET", `**${targetName}**`);
+  actionMessage = actionMessage.replaceAll(/TARGET|HOST/g, `**${targetName}**`);
   actionMessage = actionMessage.replaceAll("DAMAGE", damageText + " damage");
   actionMessage = actionMessage.replaceAll("SOURCE", `**${sourceName}**`);
 
@@ -58,6 +64,12 @@ export default function getEffectMessage(args: {
   });
 
   const separatorLine = ""; //emojis.line.repeat(16);
-  const finalMessage = `_ _\n${healthText}\n${healthBar}\n${actionMessage}\n${separatorLine}`;
-  return finalMessage;
+  let message = ``;
+  if (damage.total > 0) {
+    message = `\n${healthText}\n${healthBar}\n${actionMessage}\n${separatorLine}`;
+  } else {
+    message = `\n${actionMessage}\n${separatorLine}`;
+  }
+
+  return message;
 }

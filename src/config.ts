@@ -15,13 +15,15 @@ export const developerId = "326536300985581568";
 export const emojis = {};
 export const integerLimit = 2147483647;
 
-export const speedGauge = 10000;
+export const baseSpeedGauge = 10000;
 export const baseStats = {
   maxHP: 20,
   ATK: 10,
   MAG: 10,
+  SPC: 5,
   RES: 10,
   MAG_RES: 10,
+  SPC_RES: 5,
   SPD: 80,
   CR: 10,
   CD: 40,
@@ -34,8 +36,10 @@ export const baseEnemyStats = {
   maxHP: 0,
   ATK: 5,
   MAG: 5,
+  SPC: 5,
   RES: 5,
   MAG_RES: 5,
+  SPC_RES: 5,
   SPD: 80,
 };
 export const baseWeaponStats = {
@@ -129,7 +133,11 @@ export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] 
 // Action types
 export const actionTypes = ["weapon_attack", "magic", "ability"] as const;
 // Action effect types
-export const actionEffectTypes = ["apply_status", "damage", "custom"] as const;
+export const ActionOutcomeTypes = ["apply_status", "damage", "custom"] as const;
+// Multiplier types
+export const MultiplierTypes: { name: string; stat: Stat | "all" }[] = [
+  { name: "DMG%", stat: "all" },
+];
 // Command categories
 export const commandCategories = [
   "general",
@@ -197,37 +205,49 @@ export const nextLevelXpSkill = (lvl: number) => {
 };
 
 // Get ATK based on level.
-export const level_ATK = (lvl: number) => {
+export const player_ATK = (lvl: number) => {
   let v = 3 * lvl + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
 // Get MAG based on level.
-export const level_MAG = (lvl: number) => {
+export const player_MAG = (lvl: number) => {
   let v = 3 * lvl + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
+// Get SPC based on level.
+export const player_SPC = (lvl: number) => {
+  let v = (3 * lvl + Math.pow(lvl, 1.3)) / 2;
+  return Math.floor(v);
+};
+
 // Get maxHP based on level.
-export const level_maxHP = (lvl: number) => {
+export const player_maxHP = (lvl: number) => {
   let v = lvl * 10 + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
 // Get RES based on level.
-export const level_RES = (lvl: number) => {
+export const player_RES = (lvl: number) => {
   let v = lvl * 2 + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
 // Get MAG RES based on level.
-export const level_MAG_RES = (lvl: number) => {
+export const player_MAG_RES = (lvl: number) => {
   let v = lvl * 2 + Math.pow(lvl, 1.3);
   return Math.floor(v);
 };
 
+// Get SPC RES based on level.
+export const player_SPC_RES = (lvl: number) => {
+  let v = (lvl * 2 + Math.pow(lvl, 1.3)) / 2;
+  return Math.floor(v);
+};
+
 // Get SPD based on level.
-export const level_SPD = (lvl: number) => {
+export const player_SPD = (lvl: number) => {
   let v = lvl / 4 + Math.pow(lvl, 1.3) / 50;
   return Math.floor(v);
 };
@@ -285,6 +305,12 @@ export const enemy_MAG = (lvl: number, boss = false) => {
   return Math.floor(v);
 };
 
+// Get enemy SPC.
+export const enemy_SPC = (lvl: number, boss = false) => {
+  let v = (Math.pow(lvl, 1.5) + lvl * 5) / 2;
+  return Math.floor(v);
+};
+
 // Get enemy RES.
 export const enemy_RES = (lvl: number, boss = false) => {
   let v = Math.pow(lvl, 1.4) + lvl * 10;
@@ -294,6 +320,12 @@ export const enemy_RES = (lvl: number, boss = false) => {
 // Get enemy MAG RES.
 export const enemy_MAG_RES = (lvl: number, boss = false) => {
   let v = Math.pow(lvl, 1.4) + lvl * 10;
+  return Math.floor(v);
+};
+
+// Get enemy SPC RES.
+export const enemy_SPC_RES = (lvl: number, boss = false) => {
+  let v = (Math.pow(lvl, 1.4) + lvl * 10) / 2;
   return Math.floor(v);
 };
 

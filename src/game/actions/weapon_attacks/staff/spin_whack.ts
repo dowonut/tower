@@ -4,7 +4,7 @@ export default {
   requiredWeapon: ["staff"],
   description: "Whack all enemies, hard, with your staff.",
   cooldown: 1,
-  effects: [
+  outcomes: [
     {
       type: "damage",
       targetType: "all",

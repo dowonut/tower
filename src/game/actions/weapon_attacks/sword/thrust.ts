@@ -4,7 +4,7 @@ export default {
   description: "A powerful thrust with your sword.",
   cooldown: 1,
   type: "weapon_attack",
-  effects: [
+  outcomes: [
     {
       type: "damage",
       damage: [{ type: "piercing", source: "ATK", basePercent: 35 }],

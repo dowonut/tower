@@ -114,7 +114,9 @@ export default {
             let titlePrefix: string;
             switch (filterOptions[0]) {
               case "current weapon":
-                titlePrefix = game.titleCase((await player.getEquipped("hand")).weaponType);
+                titlePrefix = game.titleCase(
+                  (await player.getEquipped("hand"))?.weaponType || "unarmed"
+                );
                 break;
               case "all":
                 titlePrefix = "All";
@@ -160,7 +162,7 @@ ${attack.getEmoji()} ${attackName} ${isCooldown ? cooldownText : damageText}`;
       let attack = await player.getAction(attackName);
 
       // Check if enemy provided
-      if (!targets[1] && attack.effects.some((x) => x.targetType !== "all"))
+      if (!targets[1] && attack.outcomes.some((x) => x.targetType !== "all"))
         return game.error({
           player,
           content: `provide the name or number of the enemy you want to attack.`,
@@ -179,7 +181,7 @@ ${attack.getEmoji()} ${attackName} ${isCooldown ? cooldownText : damageText}`;
       // Check if enough targets provided
       if (
         !targets[attack.getRequiredTargets()] &&
-        attack.effects.some((x) => x.targetType !== "all")
+        attack.outcomes.some((x) => x.targetType !== "all")
       ) {
         return game.error({
           player,

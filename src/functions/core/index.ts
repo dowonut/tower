@@ -53,7 +53,7 @@ export { default as createEncounterImage } from "./combat/createEncounterImage.j
 export { default as evaluateDamageInstance } from "./combat/evaluateDamageInstance.js";
 export { default as evaluateAction } from "./combat/evaluateAction.js";
 export { default as evaluateDamage } from "./combat/evaluateDamage.js";
-export { default as getEffectMessage } from "./combat/getEffectMessage.js";
+export { default as getOutcomeMessage } from "./combat/getOutcomeMessage.js";
 export { default as displayNumber } from "./display/displayNumber.js";
 export { default as getDiscordMessage } from "./get/getDiscordMessage.js";
 export { default as getStatusEffect } from "./get/getStatusEffect.js";
