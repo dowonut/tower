@@ -9,3 +9,4 @@ export { default as recipes } from "./recipes.js";
 export { default as skills } from "./skills.js";
 export { default as tutorials } from "./tutorials.js";
 export { default as actions } from "./actions.js";
+export { default as statusEffects } from "./statusEffects.js";
