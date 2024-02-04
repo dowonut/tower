@@ -12,5 +12,15 @@ export default {
       ],
       type: "damage",
     },
+    {
+      type: "apply_status",
+      messages: [
+        "SOURCE uses their skill with the spear to heal, inflicting themselves with STATUS",
+      ],
+      targetType: "self",
+      status: {
+        name: "regenerating",
+      },
+    },
   ],
 } as const satisfies ActionData;

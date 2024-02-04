@@ -1,6 +1,6 @@
 import { game } from "../../tower.js";
 
-/** Get loot from an enemy. */
+/** Give rewards from killing enemies. */
 export default (async function (args: { enemies: Enemy[] }) {
   const { enemies } = args;
   let loots: Item[] = [];
@@ -17,6 +17,7 @@ export default (async function (args: { enemies: Enemy[] }) {
       if (chance <= loot.dropChance) {
         const quantity = game.random(loot.min, loot.max);
 
+        // Give item to player
         await this.giveItem(loot.name, quantity);
         let item = game.getItem(loot.name);
         item.quantity = quantity;

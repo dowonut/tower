@@ -2,7 +2,7 @@ import Discord from "discord.js";
 
 import generic from "../game/_classes/generic.ts";
 
-import { playerFunctions } from "../tower.js";
+import { config, playerFunctions } from "../tower.js";
 
 import * as Prisma from "@prisma/client";
 import { Prisma as PrismaClient } from "@prisma/client";
@@ -152,14 +152,7 @@ declare global {
   export type User = {} & Prisma.User;
 
   /** Player Prisma Model */
-  type PlayerModel = PrismaClient.PlayerGetPayload<{
-    include: {
-      encounter: { include: { players: { include: { user: true } }; enemies: true } };
-      party: { include: { players: { include: { user: true } } } };
-      statusEffects: true;
-      inventory: true;
-    };
-  }>;
+  type PlayerModel = PrismaClient.PlayerGetPayload<{ include: typeof config.playerInclude }>;
 
   /**
    * Player base

@@ -26,7 +26,12 @@ export default function evaluateDamage(args: {
     let flatDamage = 0;
 
     // Get base damage
-    const baseDamage = Math.floor(source[damage.source] * (damage.basePercent / 100));
+    let baseDamage = 0;
+    if (!damage.scaling || damage.scaling == "percent") {
+      baseDamage = Math.floor(source[damage.source] * (damage.basePercent / 100));
+    } else if (damage.scaling == "flat") {
+      baseDamage = Math.floor(damage.baseFlat);
+    }
 
     // Add flat damage sources
     flatDamage += baseDamage;

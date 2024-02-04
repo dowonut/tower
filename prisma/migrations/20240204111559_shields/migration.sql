@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Enemy" ADD COLUMN     "shield" INTEGER NOT NULL DEFAULT 0;
+
+-- AlterTable
+ALTER TABLE "Player" ADD COLUMN     "shield" INTEGER NOT NULL DEFAULT 0;

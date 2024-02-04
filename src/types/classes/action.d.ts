@@ -53,6 +53,7 @@ declare global {
      * - single = one enemy.
      * - adjacent = one enemy and adjacent enemies.
      * - all = all enemies.
+     * - self = can only be used on themselves.
      *
      * Default: single. */
     targetType?: TargetType;

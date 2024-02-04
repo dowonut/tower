@@ -28,7 +28,7 @@ declare global {
      * custom = evaluate a custom function.
      */
     type: T;
-    /** Message to send on evaluation. Variables: HOST, SOURCE, DAMAGE, HEALING. */
+    /** Message to send on evaluation. Variables: HOST, SOURCE, DAMAGE, HEAL. */
     messages: string[];
   };
 
@@ -49,7 +49,7 @@ declare global {
     /** Function to evaluate status effect. */
     evaluate?: (
       this: StatusEffectOutcome,
-      args: { host: Enemy | Player }
+      args: { host: Enemy | Player; source: Enemy | Player }
     ) => Promise<{
       host?: Enemy | Player;
     }>;

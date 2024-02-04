@@ -37,11 +37,11 @@ export default async function evaluateStatusEffect(args: {
         await modifyStat(outcome);
         break;
       case "modify_health":
-        await modifyHealth;
+        await modifyHealth(outcome);
         break;
     }
     // Wait before evaluating next effect outcome
-    await setTimeout(game.random(0.5, 1) * 1000);
+    await setTimeout(game.random(2, 5) * 100);
   }
 
   return;
@@ -87,7 +87,7 @@ export default async function evaluateStatusEffect(args: {
 
   // Evaluate a custom outcome
   async function custom(outcome: StatusEffectOutcome<"custom">) {
-    await outcome.evaluate({ host });
+    await outcome.evaluate({ source, host });
     return;
   }
 
@@ -151,15 +151,42 @@ export default async function evaluateStatusEffect(args: {
 
   // Modify health
   async function modifyHealth(outcome: StatusEffectOutcome<"modify_health">) {
-    const modifyHealth = Array.isArray(outcome.modifyHealth)
+    const modifyHealths = Array.isArray(outcome.modifyHealth)
       ? outcome.modifyHealth
       : [outcome.modifyHealth];
+
+    // Iterate through healing
+    let totalHealing = 0;
+    const previousHealth = host.health;
+    for (const heal of modifyHealths) {
+      let statSource: Enemy | Player = source;
+      if (heal.statSource == "host") {
+        statSource = host;
+      }
+
+      let baseHealing = 0;
+      if (heal.scaling == "percent") {
+        baseHealing = Math.floor(source[heal.source] * (heal.basePercent / 100));
+      } else if (heal.scaling == "flat") {
+        baseHealing = Math.floor(heal.baseFlat);
+      }
+
+      const roundedHealing = Math.floor(baseHealing);
+
+      totalHealing += roundedHealing;
+    }
+
+    // Update health
+    const healAmount = Math.min(totalHealing, host.maxHP - host.health);
+    host = await (host as Player).update({ health: { increment: healAmount } });
 
     // Get message
     const message = game.getOutcomeMessage({
       outcome,
       source,
       target: host,
+      healAmount,
+      previousHealth,
     });
 
     // Send attack message

@@ -2,7 +2,7 @@ import { game, config, client, prisma } from "../../tower.js";
 
 export default {
   name: "region",
-  aliases: ["r"],
+  aliases: ["r", "re"],
   unlockCommands: ["floor", "travel"],
   description: "View information about the current region.",
   category: "location",
@@ -10,6 +10,7 @@ export default {
   async execute(message, args, player, server) {
     const region = player.getRegion();
     const regionName = game.titleCase(region.name);
+    const regionImage = game.getRegionImage({ name: region.name });
 
     const description = `
 *${region.description}*`;
@@ -55,8 +56,9 @@ export default {
     const embed = {
       description: description,
       fields: fields,
+      image: { url: "attachment://region.png" },
     };
 
-    game.fastEmbed({ player, embed, title });
+    game.fastEmbed({ player, embed, title, files: [regionImage] });
   },
 } as Command;

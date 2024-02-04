@@ -8,6 +8,7 @@ export default function getOutcomeMessage(args: {
   source: Player | Enemy;
   target: Player | Enemy;
   damage?: EvaluatedDamage;
+  healAmount?: number;
   outcome: ActionOutcome | StatusEffectOutcome;
   previousHealth?: number;
 }) {
@@ -15,6 +16,7 @@ export default function getOutcomeMessage(args: {
     source,
     target,
     damage = { instances: [], total: 0 },
+    healAmount = 0,
     previousHealth = 0,
     outcome,
   } = args;
@@ -55,10 +57,20 @@ export default function getOutcomeMessage(args: {
     })
     .join(", ");
 
+  // Define heal text
+  let healText: string;
+  if (healAmount > 0) {
+    healText = `${game.f(`${healAmount}`)} ${emojis.health}`;
+  } else {
+    healText = `\`already at max health\``;
+  }
+
+  // Format messages
   actionMessage = actionMessage.replaceAll(/TARGET|HOST/g, targetName);
   actionMessage = actionMessage.replaceAll("DAMAGE", damageText + " damage");
   actionMessage = actionMessage.replaceAll("SOURCE", sourceName);
   actionMessage = actionMessage.replaceAll("STATUS", `**${statusName}**`);
+  actionMessage = actionMessage.replaceAll("HEAL", healText);
 
   healthText =
     `${targetName} | ${config.emojis.health} ` + game.f(`${target.health} / ${target.maxHP}`);
@@ -72,7 +84,7 @@ export default function getOutcomeMessage(args: {
 
   const separatorLine = ""; //emojis.line.repeat(16);
   let message = ``;
-  if (damage.total > 0) {
+  if (damage.total > 0 || healAmount > 0) {
     message = `\n${healthText}\n${healthBar}\n${actionMessage}\n${separatorLine}`;
   } else {
     message = `\n${actionMessage}\n${separatorLine}`;

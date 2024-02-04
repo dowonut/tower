@@ -3,7 +3,8 @@ import fs from "fs";
 import { AttachmentBuilder } from "discord.js";
 
 /** Get the player's character image from local file storage. */
-export default (async function () {
+export default (async function (args: { returnPath?: boolean } = {}) {
+  const { returnPath = false } = args;
   const path = `./static/characters/${this.server.serverId}/${this.id}.png`;
 
   if (!fs.existsSync(path)) {
@@ -12,5 +13,6 @@ export default (async function () {
 
   const file = new AttachmentBuilder(path, { name: "character.png" });
 
+  if (returnPath) return path;
   return file;
 } satisfies PlayerFunction);

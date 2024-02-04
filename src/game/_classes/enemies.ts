@@ -46,7 +46,7 @@ export class EnemyClass extends EnemyBaseClass {
     const enemyInfo = await prisma.enemy.update({
       where: { id: this.id },
       data: args,
-      include: { statusEffects: true },
+      include: config.enemyInclude,
     });
     return Object.assign(this, enemyInfo);
   }
@@ -55,7 +55,7 @@ export class EnemyClass extends EnemyBaseClass {
   async refresh() {
     const enemyInfo = await prisma.enemy.findUnique({
       where: { id: this.id },
-      include: { statusEffects: true },
+      include: config.enemyInclude,
     });
     return Object.assign(this, enemyInfo);
   }

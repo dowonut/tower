@@ -61,6 +61,7 @@ model Player {
   xp            Int             @default(0)
   marks         Int             @default(0)
   health        Int             @default(20)
+  shield        Int             @default(0)
   // Equipment
   head          String?
   torso         String?
@@ -210,6 +211,7 @@ model Enemy {
   name          String
   number        Int                 @default(0)
   health        Int
+  shield        Int                 @default(0)
   actions       EnemyAction[]
   statusEffects EnemyStatusEffect[]
   encounter     Encounter?          @relation(fields: [encounterId], references: [id], onDelete: Cascade)

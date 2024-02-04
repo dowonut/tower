@@ -13,7 +13,7 @@ export default {
     let floor = floors[player.floor - 1];
 
     // Get initial embed
-    const { embed, title } = getEmbed(player);
+    const { embed, title, image } = getEmbed(player);
 
     // Get dropdown menu
     const menu = dropDown(player);
@@ -24,6 +24,7 @@ export default {
       embed,
       title,
       components: [row],
+      files: [image],
     });
 
     // Create collector
@@ -37,6 +38,7 @@ export default {
       for (const region of floor.regions) {
         // Get region name
         const regionName = `\`${game.titleCase(region.name)}\``;
+        const recLevel = floor.getRecommendedLevelForRegion(region.name);
 
         // Check if player is at current region and update title
         if (player.region !== region.name) {
@@ -52,24 +54,30 @@ export default {
             description += `${config.emojis.activities[activity.name]}`;
           }
         }
+        if (recLevel) {
+          description += ` | Rec. lvl: **\`${recLevel}\`**`;
+        }
       }
       //description += `\n\nTravel to a new region with \`${server.prefix}travel <region name>\``;
+      const image = game.getRegionImage({
+        name: floor.regions.find((x) => x.name == player.region).name,
+      });
 
       const title = `Floor ${player.floor} Regions`;
       const embed = {
         description: description,
+        image: { url: "attachment://region.png" },
       };
 
-      return { embed, title };
+      return { embed, title, image };
     }
 
     // Dropdown function
     function dropDown(player) {
       let options = [];
       for (const region of floor.regions) {
-        if (player.region == region.name) continue;
-
         options.push({
+          default: player.region == region.name,
           label: game.titleCase(region.name),
           value: region.name,
           description: region.description,
@@ -101,13 +109,14 @@ export default {
       const row = game.actionRow("menu", menu);
 
       // Get new embed
-      const { embed, title } = getEmbed(player);
+      const { embed, title, image } = getEmbed(player);
       const messageRef = await game.fastEmbed({
         player,
         embed,
         title,
         components: [row],
         send: false,
+        files: [image],
       });
 
       // Update message

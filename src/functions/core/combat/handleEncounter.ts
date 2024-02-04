@@ -303,6 +303,8 @@ ${turnOrderList}
   game.emitter.on("actionMessage", onActionMessage);
   // Skip current player
   game.emitter.on("skipPlayer", onSkipPlayer);
+  // Flee from combat
+  game.emitter.on("flee", onPlayerFlee);
 
   // EMITTER FUNCTIONS ===============================================================================
 
@@ -360,6 +362,13 @@ ${turnOrderList}
 
     // Initiate next turn
     await nextTurn();
+  }
+
+  /** On player flee. */
+  async function onPlayerFlee(args: PlayerFleeEmitter) {
+    const { player } = args;
+    if (args.encounterId !== encounter.id) return;
+    await exitCombat("fleeing");
   }
 
   // MAIN FUNCTIONS ===============================================================================
@@ -500,11 +509,12 @@ ${turnOrderList}
   }
 
   /** Exit combat. */
-  async function exitCombat(reason: "allPlayersDead" | "allEnemiesDead") {
+  async function exitCombat(reason: "allPlayersDead" | "allEnemiesDead" | "fleeing") {
     // Kill all emitters
     game.emitter.removeListener("playerMove", onPlayerMove);
     game.emitter.removeListener("actionMessage", onActionMessage);
     game.emitter.removeListener("skipPlayer", onSkipPlayer);
+    game.emitter.removeListener("onPlayerFlee", onPlayerFlee);
 
     // Delete messages
     // setTimeout(async () => {
@@ -533,18 +543,16 @@ ${turnOrderList}
         const { marks, region, newPlayer } = await player.die();
         players[i] = newPlayer;
       }
-      if (reason == "allEnemiesDead") {
-        const { xp, loot } = await player.giveEnemyLoot({ enemies: menu.variables.enemies });
+      // Give loot from dead enemies
+      if (reason == "allEnemiesDead" || reason == "fleeing") {
+        const { xp, loot } = await player.giveEnemyRewards({ enemies: menu.variables.enemies });
         playerLoot[i] = loot;
         playerXP[i] = xp;
       }
-      // Reset attack cooldowns
-      await prisma.action.updateMany({
-        where: {
-          playerId: player.id,
-          remCooldown: { gt: 0 },
-        },
-        data: { remCooldown: 0 },
+      // Delete status effects and update action cooldowns
+      await player.update({
+        statusEffects: { deleteMany: {} },
+        actions: { updateMany: { where: { remCooldown: { gt: 0 } }, data: { remCooldown: 0 } } },
       });
     }
 
@@ -623,6 +631,58 @@ ${turnOrderList}
             title,
             ping: true,
             color: "gold",
+            player,
+            reply: false,
+            thumbnail: player.user.pfp,
+          });
+        }
+      }
+    }
+
+    // Send flee message
+    else if (reason == "fleeing") {
+      let description = `# 💨 You fled from the encounter! 💨`;
+      // Add reward info for solo
+      if (players.length < 2) {
+        for (const loot of playerLoot[0] as Item[]) {
+          description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
+        }
+        description += `\n${f("+" + playerXP[0])} **XP** (${f(
+          players[0].remainingXp - playerXP[0]
+        )} until next level)`;
+      }
+      const botMessage = await game.fastEmbed({
+        description,
+        pingParty: true,
+        reply: false,
+        player: players[0],
+        color: "orange",
+      });
+      if (players.length < 2) {
+        await game.commandButton({
+          player: players[0],
+          botMessage,
+          commands: [{ name: "explore" }],
+        });
+      }
+
+      // Send individiual reward messages
+      if (players.length > 1) {
+        for (const [i, player] of players.entries()) {
+          if (_.isEmpty(playerLoot[i]) && _.isEmpty(playerXP[i])) continue;
+          const title = `${player.user.username}'s Loot`;
+          let description = ``;
+          for (const loot of playerLoot[i] as Item[]) {
+            description += `\n${f("+" + loot.quantity)} **${loot.getName()}** ${loot.getEmoji()}`;
+          }
+          description += `\n${f("+" + playerXP[i])} **XP** (${f(
+            player.remainingXp - playerXP[i]
+          )} until next level)`;
+          await game.fastEmbed({
+            description,
+            title,
+            ping: true,
+            color: "orange",
             player,
             reply: false,
             thumbnail: player.user.pfp,

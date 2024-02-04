@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { default as allEmojis } from "./emojis.js";
 
 // This is the config file!
@@ -185,8 +186,22 @@ export const embedColors = {
   gold: 0xf6cd26,
   default: 0x2b2d31,
   red: 0xff1d1d,
+  orange: 0xff621f,
   tower: towerColor,
 };
+
+// What to include when fetching player
+export const playerInclude = {
+  encounter: { include: { players: { include: { user: true } }, enemies: true } },
+  party: { include: { players: { include: { user: true } } } },
+  statusEffects: true,
+  inventory: true,
+} satisfies Prisma.PlayerInclude;
+
+// What to include when fetching enemy
+export const enemyInclude = {
+  statusEffects: true,
+} satisfies Prisma.EnemyInclude;
 
 // PLAYER LEVEL FORMULAS =======================================
 

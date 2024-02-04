@@ -150,19 +150,5 @@ declare global {
     /** Maximum responses to collect. */
     max?: number;
   }
-
-  /** Argument type for event emitter. */
-  export interface PlayerMoveEmitter {
-    encounterId: number;
-    player: Player;
-    enemies?: Enemy[];
-    players?: Player[];
-  }
-
-  /** Argument type for event emitter. */
-  export interface ActionMessageEmitter {
-    encounterId: number;
-    message: string;
-  }
 }
 export {};

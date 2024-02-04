@@ -1,4 +1,4 @@
-import { game, prisma, playerFunctions } from "../../../tower.js";
+import { game, prisma, playerFunctions, config } from "../../../tower.js";
 import PlayerClass from "../../../game/_classes/players.js";
 
 /** Get player. */
@@ -31,12 +31,7 @@ export default async function getPlayer(
   // Get player from database
   const playerData = await prisma.player.findUnique({
     where: { guildId_userId: { guildId: server.serverId, userId: user.id } },
-    include: {
-      encounter: { include: { enemies: true, players: { include: { user: true } } } },
-      party: { include: { players: { include: { user: true } } } },
-      statusEffects: true,
-      inventory: true,
-    },
+    include: config.playerInclude,
   });
 
   // Check if player has entry in database-

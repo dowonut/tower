@@ -98,7 +98,7 @@ declare global {
   export type Environment = "world" | "dungeon" | "protected";
 
   /** Action target type. */
-  export type TargetType = "single" | "adjacent" | "all";
+  export type TargetType = "single" | "adjacent" | "all" | "self";
 
   /** Action type.*/
   export type ActionType = (typeof config.actionTypes)[number];

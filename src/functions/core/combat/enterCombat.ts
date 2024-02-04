@@ -98,7 +98,7 @@ export default async function enterCombat(args: { player: Player; enemies: Enemy
     data: {
       enemies: { connect: enemyIds },
       players: { connect: playerIds },
-      currentPlayer: firstPlayer.id,
+      currentPlayer: null,
     },
     include: { players: true, enemies: true },
   });

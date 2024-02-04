@@ -60,6 +60,10 @@ export default async function evaluateAction(args: {
       case "all":
         outcome.targets.push(...entities);
         break;
+      // Self target
+      case "self":
+        outcome.targets.push(source);
+        break;
     }
     // console.log(outcome?.targets?.map((x) => ({ name: x.displayName, health: x.health })));
     switch (outcome.type) {
@@ -73,7 +77,7 @@ export default async function evaluateAction(args: {
         break;
     }
     // Wait before evaluating next action outcome
-    await setTimeout(game.random(0.5, 1) * 1000);
+    await setTimeout(game.random(2, 5) * 100);
   }
 
   // Returned with modified entities
@@ -151,7 +155,7 @@ export default async function evaluateAction(args: {
       sourceType,
     };
     // Iterate through targets
-    for (const target of outcome.targets) {
+    for (let target of outcome.targets) {
       if (!target) continue;
       // Check if stackable and skip if not
       if (statusEffect.stackable == false) {

@@ -33,7 +33,7 @@ ${markE} ${f(marks)}
 ${floorE} ${f(floor)} | ${f(region)}`;
 
     // Get the player's character image
-    const characterImage = await player.getCharacterImage();
+    const characterImage = await player.createCharacterImageWithBackground();
 
     // Add traits
     if (player.level > 0) {

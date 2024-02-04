@@ -38,6 +38,7 @@ export default async function createPlayer(
       userId: userData.id,
       guildId: server.serverId,
     },
+    include: config.playerInclude,
   });
 
   const entries = config.playerDefaultEntries;

@@ -1,6 +1,7 @@
 import Prisma from "@prisma/client";
 import { Prisma as PrismaClient } from "@prisma/client";
 import { EnemyClass } from "../../game/_classes/enemies.ts";
+import { config } from "../../tower.js";
 
 declare global {
   /**
@@ -37,9 +38,7 @@ declare global {
 
   /** Enemy Prisma Model */
   type EnemyModel = PrismaClient.EnemyGetPayload<{
-    include: {
-      statusEffects: true;
-    };
+    include: typeof config.enemyInclude;
   }>;
 
   /**

@@ -13,31 +13,24 @@ export default (async function (args: { players: Player[]; enemies: Enemy[] }) {
     data: { remCooldown: { increment: -1 } },
   });
 
-  // Update status effect durations
+  // Evaluate status effects
+  await this.evaluateStatusEffects({
+    currently: "turn_start",
+    enemies,
+    players,
+  });
+
+  // Update status effect durations and delete expired
   await this.update({
     statusEffects: {
       updateMany: {
         where: { remDuration: { gt: 0 } },
         data: { remDuration: { increment: -1 } },
       },
-    },
-  });
-  // Delete status effects with 0 remaining duration
-  if (this.statusEffects.some((x) => x?.remDuration < 1)) {
-    await this.update({
-      statusEffects: {
-        deleteMany: {
-          id: { in: this.statusEffects.filter((x) => x?.remDuration < 1).map((x) => x.id) },
-        },
+      deleteMany: {
+        remDuration: 0,
       },
-    });
-  }
-
-  // Evaluate status effects
-  await this.evaluateStatusEffects({
-    currently: "turn_start",
-    enemies,
-    players,
+    },
   });
 
   return await this.refresh();

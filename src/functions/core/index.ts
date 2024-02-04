@@ -56,3 +56,4 @@ export { default as getRandom } from "./math/getRandom";
 export { default as getWeightedArray } from "./math/getWeightedArray";
 export { default as random } from "./math/random";
 export { default as weightedRandom } from "./math/weightedRandom";
+export { default as getRegionImage } from "./display/getRegionImage.js";
