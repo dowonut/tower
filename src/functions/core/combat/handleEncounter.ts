@@ -1,10 +1,10 @@
 import { AttachmentBuilder, Interaction, TextChannel } from "discord.js";
 import { game, prisma, config } from "../../../tower.js";
-import { Menu, f } from "../index.js";
 import PlayerClass from "../../../game/_classes/players.js";
 import { EnemyClass } from "../../../game/_classes/enemies.js";
 import emojis from "../../../emojis.js";
 import _, { add } from "lodash";
+import { Menu, f } from "../index.js";
 
 /** handleEncounter */
 export default async function handleEncounter(args: {
