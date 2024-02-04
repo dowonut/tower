@@ -60,6 +60,17 @@ export class EnemyClass extends EnemyBaseClass {
     return Object.assign(this, enemyInfo);
   }
 
+  /** Get emoji. */
+  getEmoji(): string {
+    const emojiName = this.name.replaceAll(" ", "_").toLowerCase();
+
+    let emoji = config.emojis.enemies[emojiName];
+
+    if (!emoji) emoji = "";
+
+    return emoji;
+  }
+
   /** Get enemy image attachment. */
   getImageAttachment() {
     // Format item name

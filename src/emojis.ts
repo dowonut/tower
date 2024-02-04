@@ -71,7 +71,6 @@ const emojis = {
     fishing: "🐟",
     woodcutting: "🌲",
   },
-  enemies: {},
   bars: {
     red: {
       left: "<:red_left:1135151848223940638>",
@@ -113,6 +112,22 @@ const emojis = {
     sword_handle: "<:sword_handle:1137785916136628244>",
     leather: "<:leather:1202205924299915314>",
     frog_tongue: "<:frog_tongue:1202205927315611698>",
+  },
+  enemies: {
+    sentient_rock: "<:sentient_rock:1203553772119531540>",
+    green_frog: "<:green_frog:1203553773394591815>",
+    milky_frog: "<:milky_frog:1203553775848136714>",
+    evil_frog: "<:evil_frog:1203553777160949831>",
+    the_rock: "<:the_rock:1203553779803488356>",
+    placeholder: "<:placeholder:1203553780658995262>",
+    wet_slime: "<:wet_slime:1203553783209140264>",
+    small_slime: "<:small_slime:1203553784324694069>",
+    hungry_goblin: "<:hungry_goblin:1203553786149343232>",
+    hobgoblin: "<:hobgoblin:1203553788078587904>",
+    brown_frog: "<:brown_frog:1203553790284791838>",
+    baby_goblin: "<:baby_goblin:1203553793275465728>",
+    burning_slime: "<:burning_slime:1203553837634420856>",
+    big_slime: "<:big_slime:1203553839748489256>",
   },
 };
 export default emojis;

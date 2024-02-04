@@ -29,14 +29,14 @@ export default function getOutcomeMessage(args: {
   if (source instanceof PlayerClass) {
     sourceName = source.ping;
   } else if (source instanceof EnemyClass) {
-    sourceName = source.displayName;
+    sourceName = `${source.getEmoji()} **${source.displayName}**`;
   }
   if (target instanceof PlayerClass) {
     barColor = "green";
     targetName = target.ping;
   } else if (target instanceof EnemyClass) {
     barColor = "red";
-    targetName = target.displayName;
+    targetName = `${target.getEmoji()} **${target.displayName}**`;
   }
   // Define status effect name
   if (outcome.type == "apply_status") {
@@ -55,13 +55,13 @@ export default function getOutcomeMessage(args: {
     })
     .join(", ");
 
-  actionMessage = actionMessage.replaceAll(/TARGET|HOST/g, `**${targetName}**`);
+  actionMessage = actionMessage.replaceAll(/TARGET|HOST/g, targetName);
   actionMessage = actionMessage.replaceAll("DAMAGE", damageText + " damage");
-  actionMessage = actionMessage.replaceAll("SOURCE", `**${sourceName}**`);
+  actionMessage = actionMessage.replaceAll("SOURCE", sourceName);
   actionMessage = actionMessage.replaceAll("STATUS", `**${statusName}**`);
 
   healthText =
-    `**${targetName}** | ${config.emojis.health} ` + game.f(`${target.health} / ${target.maxHP}`);
+    `${targetName} | ${config.emojis.health} ` + game.f(`${target.health} / ${target.maxHP}`);
   healthBar = game.progressBar({
     type: barColor,
     min: target.health,
