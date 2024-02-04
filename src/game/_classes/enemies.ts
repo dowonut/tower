@@ -2,7 +2,6 @@ import { Prisma } from "@prisma/client";
 import _ from "lodash";
 import {
   createClassFromType,
-  loadFiles,
   getRandom,
   getWeightedArray,
   evaluateDamage,
@@ -12,10 +11,11 @@ import {
   createClassObject,
   evaluateStatusEffect,
 } from "../../functions/core/index.js";
-import { config, prisma, game } from "../../tower.js";
+import { config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
 import fs from "fs";
-import statusEffects from "./statusEffects.js";
+import { statusEffects } from "./index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
 
 const EnemyBaseClass = createClassFromType<EnemyBase>();
 

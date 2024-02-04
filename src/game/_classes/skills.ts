@@ -1,5 +1,6 @@
 import { config } from "../../tower.js";
-import { createClassFromType, loadFiles, titleCase } from "../../functions/core/index.js";
+import { createClassFromType, titleCase } from "../../functions/core/index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
 import _ from "lodash";
 
 const SkillBaseClass = createClassFromType<SkillBase>();

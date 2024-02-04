@@ -1,4 +1,5 @@
-import { createClassFromType, loadFiles } from "../../functions/core/index.js";
+import { createClassFromType } from "../../functions/core/index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
 import { game, config } from "../../tower.js";
 
 const RecipeBaseClass = createClassFromType<RecipeData>();
@@ -33,10 +34,7 @@ export class RecipeClass extends RecipeBaseClass {
       for (const item of this.items) {
         const playerItem = await player.getItem(item.name);
         // Check if player has item or enough of item
-        if (
-          !playerItem ||
-          (item.quantity && item.quantity > playerItem.quantity)
-        ) {
+        if (!playerItem || (item.quantity && item.quantity > playerItem.quantity)) {
           items.push(itemText(item));
         }
       }
@@ -46,8 +44,7 @@ export class RecipeClass extends RecipeBaseClass {
     // Function for item text
     function itemText(item: { name: string; quantity?: number }) {
       let itemText = `\`${game.titleCase(item.name)}\``;
-      if (item.quantity)
-        itemText = `\`${item.quantity}x ${game.titleCase(item.name)}\``;
+      if (item.quantity) itemText = `\`${item.quantity}x ${game.titleCase(item.name)}\``;
       return itemText;
     }
   }

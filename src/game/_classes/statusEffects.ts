@@ -1,6 +1,7 @@
 import { EnemyStatusEffect, Prisma } from "@prisma/client";
-import { createClassFromType, loadFiles } from "../../functions/core/index.js";
-import { game, config, prisma } from "../../tower.js";
+import { createClassFromType } from "../../functions/core/index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
+import { prisma } from "../../tower.js";
 
 const StatusEffectBaseClass = createClassFromType<StatusEffectBase>();
 

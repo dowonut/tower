@@ -14,7 +14,6 @@
     "dotenv": "^16.0.1",
     "fs": "^0.0.1-security",
     "lodash": "^4.17.21",
-    "loot-table": "github:jotson/LootTable.js",
     "npm": "^10.4.0",
     "npm-check-updates": "^16.0.5",
     "reflect-metadata": "^0.1.13",

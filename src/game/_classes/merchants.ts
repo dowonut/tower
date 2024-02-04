@@ -1,4 +1,5 @@
-import { createClassFromType, loadFiles } from "../../functions/core/index.js";
+import { createClassFromType } from "../../functions/core/index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
 import { game, config } from "../../tower.js";
 
 const MerchantBaseClass = createClassFromType<MerchantData>();

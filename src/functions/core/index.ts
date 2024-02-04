@@ -33,7 +33,6 @@ export { default as enemyEncounter } from "./game/enemyEncounter";
 export { default as events } from "./game/events";
 export { default as formatCommandArguments } from "./game/formatCommandArguments";
 export { default as giveItem } from "./game/giveItem";
-export { default as loadFiles } from "./game/loadFiles";
 export { default as parseCommandArguments } from "./game/parseCommandArguments";
 export { default as runCommand } from "./game/runCommand";
 export { default as getCommands } from "./get/getCommands";

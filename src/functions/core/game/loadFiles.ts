@@ -2,9 +2,11 @@ import fs from "fs";
 import path from "path";
 import generic from "../../../game/_classes/generic.js";
 
-export default async function loadFiles<Type>(folder: string, Class: new (name: Generic<Type>) => Type) {
+export async function loadFiles<Type>(folder: string, Class: new (name: Generic<Type>) => Type) {
   // Collect files
   let files = [];
+  throughDirectory(`./src/game/${folder}`, files);
+
   function throughDirectory(directory: string, array: any[]) {
     fs.readdirSync(directory).forEach((file) => {
       const absolute = path.join(directory, file);
@@ -12,7 +14,6 @@ export default async function loadFiles<Type>(folder: string, Class: new (name: 
       else return array.push(absolute);
     });
   }
-  throughDirectory(`./src/game/${folder}`, files);
 
   let items: Type[] = [];
   for (const file of files) {

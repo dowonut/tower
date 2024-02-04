@@ -1,5 +1,4 @@
 import { prisma, config, game } from "../../tower.js";
-import tutorials from "../../game/_classes/tutorials.js";
 
 export default (async function (commandNames: string[]) {
   const allCommands = await game.getCommands();

@@ -1,4 +1,4 @@
-import { createClassFromType, getTurnOrder, loadFiles } from "../../functions/core/index.js";
+import { createClassFromType, getTurnOrder } from "../../functions/core/index.js";
 import { config } from "../../tower.js";
 
 const PlayerBaseClass = createClassFromType<PlayerBase, false>();

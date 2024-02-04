@@ -1,4 +1,5 @@
-import { createClassFromType, loadFiles, f } from "../../functions/core/index.js";
+import { createClassFromType, f } from "../../functions/core/index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
 import { game, config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
 import { Prisma } from "@prisma/client";

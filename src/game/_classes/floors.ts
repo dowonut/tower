@@ -1,5 +1,6 @@
 import { config } from "../../tower.js";
-import { createClassFromType, loadFiles } from "../../functions/core/index.js";
+import { createClassFromType } from "../../functions/core/index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
 
 const FloorBaseClass = createClassFromType<FloorData>();
 

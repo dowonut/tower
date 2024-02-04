@@ -1,5 +1,6 @@
 import fs from "fs";
-import { createClassFromType, f, loadFiles } from "../../functions/core/index.js";
+import { loadFiles } from "../../functions/core/game/loadFiles.js";
+import { createClassFromType, f } from "../../functions/core/index.js";
 import { config } from "../../tower.js";
 
 const ItemBaseClass = createClassFromType<ItemBase>();
