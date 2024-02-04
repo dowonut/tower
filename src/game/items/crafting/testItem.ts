@@ -7,4 +7,4 @@
 export default {
   name: "testItem",
   category: "test",
-} satisfies ItemData;
+} as const satisfies ItemData;

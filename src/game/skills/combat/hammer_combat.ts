@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "hammer",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "smash" }] },
-    { rewards: [{ type: "unlockAttack", attack: "big smash" }] },
+    { rewards: [{ type: "unlockAction", action: "smash" }] },
+    { rewards: [{ type: "unlockAction", action: "big smash" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

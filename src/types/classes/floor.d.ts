@@ -17,7 +17,7 @@ declare global {
     /** Region enemies. */
     enemies?: {
       /** Enemy name. */
-      name: string;
+      name: StaticEnemyName;
       /** Weight of enemy spawning. */
       weight: number;
     }[];
@@ -42,7 +42,7 @@ declare global {
    */
   export type RegionLoot = {
     /** Item name. */
-    name: string;
+    name: StaticItemName;
     /** Weight of finding item. */
     weight: number;
     min?: number;

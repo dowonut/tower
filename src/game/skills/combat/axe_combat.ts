@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "axe",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "chop" }] },
-    { rewards: [{ type: "unlockAttack", attack: "cleave" }] },
+    { rewards: [{ type: "unlockAction", action: "chop" }] },
+    { rewards: [{ type: "unlockAction", action: "cleave" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

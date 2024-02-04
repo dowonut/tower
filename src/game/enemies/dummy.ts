@@ -4,4 +4,4 @@ export default {
   actions: ["stare"],
   level: 50,
   description: "Just a normal dummy.",
-} satisfies EnemyData;
+} as const satisfies EnemyData;

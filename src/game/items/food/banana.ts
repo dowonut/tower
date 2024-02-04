@@ -11,4 +11,4 @@ export default {
   health: 100,
   // Resell value.
   value: 19,
-} satisfies ItemData;
+} as const satisfies ItemData;

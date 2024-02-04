@@ -134,12 +134,21 @@ export class PlayerClass extends PlayerBaseClass {
 
     // Evaluate status effects
     for (const statusEffect of statusEffects) {
+      // Iterate through effect outomes
       for (const outcome of statusEffect.outcomes) {
+        // Modify stat
         if (outcome.type == "modify_stat") {
-          if (outcome.modifyStat.type == "multiplier") {
-            multipliers.statusEffects += outcome.modifyStat.basePercent / 100;
-          } else if (outcome.modifyStat.type == "flat") {
-            flatBonus += outcome.modifyStat.baseFlat;
+          const modifyStats = Array.isArray(outcome.modifyStat)
+            ? outcome.modifyStat
+            : [outcome.modifyStat];
+
+          // Iterate through stat modifications
+          for (const modifyStat of modifyStats) {
+            if (modifyStat.type == "multiplier") {
+              multipliers.statusEffects += modifyStat.basePercent / 100;
+            } else if (modifyStat.type == "flat") {
+              flatBonus += modifyStat.baseFlat;
+            }
           }
         }
       }

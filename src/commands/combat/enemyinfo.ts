@@ -7,9 +7,5 @@ export default {
   description: "View information about an enemy during combat.",
   category: "combat",
   useInCombatOnly: true,
-  async execute(message, args, player, server) {
-    const messageOptions = await game.enemyInfo({ message, player });
-
-    game.send({ player, ...messageOptions });
-  },
+  async execute(message, args, player, server) {},
 } as Command;

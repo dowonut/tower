@@ -39,4 +39,4 @@ export default {
       messages: ["SOURCE makes a third and final shot at TARGET and deals DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

@@ -5,7 +5,7 @@ declare global {
   export type RecipeData = {
     name: string;
     /** Materials required to craft recipe. */
-    items: { name: string; quantity?: number }[];
+    items: { name: StaticItemName; quantity?: number }[];
     /** Time it takes to make in seconds. */
     time: number;
     /** Base damage if weapon. */

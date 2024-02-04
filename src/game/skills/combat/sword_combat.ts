@@ -4,8 +4,8 @@ export default {
   weaponType: "sword",
   levels: [
     // Level 0
-    { rewards: [{ type: "unlockAttack", attack: "slash" }] },
+    { rewards: [{ type: "unlockAction", action: "slash" }] },
     // Level 1
-    { rewards: [{ type: "unlockAttack", attack: "thrust" }] },
+    { rewards: [{ type: "unlockAction", action: "thrust" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

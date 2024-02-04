@@ -23,6 +23,7 @@ export default function getOutcomeMessage(args: {
   let healthBar: string;
   let sourceName: string;
   let targetName: string;
+  let statusName: string;
   let barColor: ProgressBarColor;
   // Define source and target names
   if (source instanceof PlayerClass) {
@@ -37,10 +38,15 @@ export default function getOutcomeMessage(args: {
     barColor = "red";
     targetName = target.displayName;
   }
+  // Define status effect name
+  if (outcome.type == "apply_status") {
+    statusName = game.titleCase(outcome.status.name);
+  }
 
   // Format action message
   let actionMessage = game.getRandom(outcome.messages);
 
+  // Define damage text
   const damageText = damage.instances
     .map((x) => {
       const critEmoji = x.crit ? emojis.stats.CD : "";
@@ -52,6 +58,7 @@ export default function getOutcomeMessage(args: {
   actionMessage = actionMessage.replaceAll(/TARGET|HOST/g, `**${targetName}**`);
   actionMessage = actionMessage.replaceAll("DAMAGE", damageText + " damage");
   actionMessage = actionMessage.replaceAll("SOURCE", `**${sourceName}**`);
+  actionMessage = actionMessage.replaceAll("STATUS", `**${statusName}**`);
 
   healthText =
     `**${targetName}** | ${config.emojis.health} ` + game.f(`${target.health} / ${target.maxHP}`);

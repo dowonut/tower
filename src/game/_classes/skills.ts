@@ -23,8 +23,8 @@ export class SkillClass extends SkillBaseClass {
 
     let text = ``;
     for (const reward of skill.rewards) {
-      if (reward.type == "unlockAttack") {
-        text = `New attack available: **${titleCase(reward.attack)}**`;
+      if (reward.type == "unlockAction") {
+        text = `New attack available: **${titleCase(reward.action)}**`;
       }
 
       if (reward.type == "addPassive") {

@@ -15,4 +15,4 @@ export default {
       ],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

@@ -69,13 +69,9 @@ declare global {
     /** Define status type. */
     status?: {
       /** Name of status outcome. */
-      name: string;
+      name: StaticStatusEffectName;
       /** Level of the status effect. Default = 1. */
       level?: number;
-    };
-    /** Define stat type and change. */
-    changeStat?: {
-      stat: "HP" | "";
     };
     /** Function to evaluate outcome. */
     evaluate?: (

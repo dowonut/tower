@@ -5,4 +5,4 @@ export default {
   level: 7,
   actions: ["lick"],
   loot: [{ name: "frog tongue", dropChance: 60, min: 1, max: 2 }],
-} satisfies EnemyData;
+} as const satisfies EnemyData;

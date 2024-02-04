@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "unarmed",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "punch" }] },
-    { rewards: [{ type: "unlockAttack", attack: "uppercut" }] },
+    { rewards: [{ type: "unlockAction", action: "punch" }] },
+    { rewards: [{ type: "unlockAction", action: "uppercut" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

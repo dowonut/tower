@@ -69,7 +69,7 @@ declare global {
   /** Enemy loot. */
   export type EnemyLoot = {
     /** Name of item. */
-    name: string;
+    name: StaticItemName;
     /** Percent chance of dropping on kill. */
     dropChance: number;
     /** Minimum items to drop. */

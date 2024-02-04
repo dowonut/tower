@@ -4,4 +4,4 @@ export default {
   description: "A firm piece of leather.",
   info: "Leather from a cow. Useful for making things out of leather.",
   value: 1,
-} satisfies ItemData;
+} as const satisfies ItemData;

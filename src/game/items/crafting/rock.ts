@@ -4,4 +4,4 @@ export default {
   description: "Literally just a rock.",
   info: "Why did you pick up a rock?",
   value: 1,
-} satisfies ItemData;
+} as const satisfies ItemData;

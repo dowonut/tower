@@ -11,4 +11,4 @@ export default {
   actions: ["lick"],
   // Enemy loot table. Item names and drops.
   loot: [{ name: "frog tongue", dropChance: 50, min: 1, max: 2 }],
-} satisfies EnemyData;
+} as const satisfies EnemyData;

@@ -19,13 +19,11 @@ export default {
     },
     {
       type: "apply_status",
+      targetType: "all",
       status: {
-        type: "fixed",
-        name: "stagger",
+        name: "stunned",
       },
-      messages: [
-        "The shockwave from SOURCE's smash also causes TARGET to stagger, inflicting STATUS",
-      ],
+      messages: ["The shockwave from SOURCE's smash also shocks TARGET, inflicting STATUS"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "staff",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "bonk" }] },
-    { rewards: [{ type: "unlockAttack", attack: "spin whack" }] },
+    { rewards: [{ type: "unlockAction", action: "bonk" }] },
+    { rewards: [{ type: "unlockAction", action: "spin whack" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

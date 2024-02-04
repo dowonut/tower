@@ -27,4 +27,4 @@ export default {
       messages: ["SOURCE swiftly makes an extra swing at TARGET, dealing DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

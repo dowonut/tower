@@ -1,6 +1,6 @@
 export default {
-  name: "weak",
-  description: "Makes the target weak, decreasing their maximum health.",
+  name: "weakened",
+  description: "Weakens the target, decreasing their maximum health.",
   evaluateOn: "immediate",
   // duration: 3,
   stackable: false,
@@ -15,4 +15,4 @@ export default {
       },
     },
   ],
-} satisfies StatusEffectData;
+} as const satisfies StatusEffectData;

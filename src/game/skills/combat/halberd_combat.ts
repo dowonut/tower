@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "halberd",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "sweep" }] },
-    { rewards: [{ type: "unlockAttack", attack: "lunge" }] },
+    { rewards: [{ type: "unlockAction", action: "sweep" }] },
+    { rewards: [{ type: "unlockAction", action: "lunge" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

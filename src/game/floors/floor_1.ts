@@ -72,4 +72,4 @@ export default {
       ],
     },
   ],
-} satisfies FloorData;
+} as const satisfies FloorData;

@@ -19,24 +19,9 @@ declare global {
 
   type SkillReward = {
     /** The type of reward. */
-    type: "unlockAttack" | "addPassive";
-    /** Name of the attack to unlock. */
-    attack?: string;
-  };
-
-  type SkillLevelNewAttack = {
-    type: "attack";
-    /** Name of the attack to unlock. */
-    name: string;
-  };
-  type SkillLevelAddPassive = {
-    type: "passive";
-    /** Name of the passive to apply. */
-    name: string;
-    /** Value the passive applies to. */
-    target: string;
-    /** How much to increase the passve by. */
-    value: number;
+    type: "unlockAction" | "addPassive";
+    /** Name of the action to unlock. */
+    action?: StaticActionName;
   };
 
   export type SkillBase = Prisma.Skill & SkillData;

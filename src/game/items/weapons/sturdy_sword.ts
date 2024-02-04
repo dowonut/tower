@@ -7,4 +7,4 @@ export default {
   stats: {
     baseLevel: 3,
   },
-} satisfies ItemData;
+} as const satisfies ItemData;

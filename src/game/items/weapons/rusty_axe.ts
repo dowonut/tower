@@ -4,4 +4,4 @@ export default {
   weaponType: "axe",
   info: "This won't be doing a lot of chopping anymore.",
   equipSlot: "hand",
-} satisfies ItemData;
+} as const satisfies ItemData;

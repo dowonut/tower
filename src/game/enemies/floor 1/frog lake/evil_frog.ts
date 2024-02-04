@@ -6,4 +6,4 @@ export default {
   type: "frog",
   stats: { base_SPD: 90 },
   loot: [{ name: "frog tongue", dropChance: 100, min: 1, max: 3 }],
-} satisfies EnemyData;
+} as const satisfies EnemyData;

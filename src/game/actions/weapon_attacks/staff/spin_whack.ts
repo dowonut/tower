@@ -12,4 +12,4 @@ export default {
       messages: ["SOURCE spins around and whacks TARGET with their staff, dealing DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

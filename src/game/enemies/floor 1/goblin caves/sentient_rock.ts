@@ -11,4 +11,4 @@ export default {
   actions: ["smash"],
   // Enemy loot table. Item names and drops.
   loot: [{ name: "rock", dropChance: 100, min: 1, max: 10 }],
-} satisfies EnemyData;
+} as const satisfies EnemyData;

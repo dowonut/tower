@@ -154,7 +154,9 @@ export class EnemyClass extends EnemyBaseClass {
     const { player, players, evaluated = false } = args;
 
     // Fetch all class attacks available to the enemy
-    let actions = this.type.actions.filter((x) => this.actions.includes(x.name));
+    let actions = this.type.actions.filter((x) =>
+      this.actions.includes(x.name as StaticEnemyActionName)
+    );
 
     if (!evaluated) return actions as any;
 
@@ -276,13 +278,21 @@ export class EnemyClass extends EnemyBaseClass {
 
     // Evaluate status effects
     for (const statusEffect of statusEffects) {
+      // Iterate through effect outomes
       for (const outcome of statusEffect.outcomes) {
+        // Modify stat
         if (outcome.type == "modify_stat") {
-          if (outcome.modifyStat.stat !== stat) continue;
-          if (outcome.modifyStat.type == "multiplier") {
-            multipliers.statusEffects += outcome.modifyStat.basePercent / 100;
-          } else if (outcome.modifyStat.type == "flat") {
-            flatBonus += outcome.modifyStat.baseFlat;
+          const modifyStats = Array.isArray(outcome.modifyStat)
+            ? outcome.modifyStat
+            : [outcome.modifyStat];
+
+          // Iterate through stat modifications
+          for (const modifyStat of modifyStats) {
+            if (modifyStat.type == "multiplier") {
+              multipliers.statusEffects += modifyStat.basePercent / 100;
+            } else if (modifyStat.type == "flat") {
+              flatBonus += modifyStat.baseFlat;
+            }
           }
         }
       }

@@ -25,7 +25,7 @@ export default (async function (args: {
         .flat();
 
       for (const reward of rewards) {
-        if (reward.type == "unlockAttack") unlockedAttacks.push(reward.attack);
+        if (reward.type == "unlockAction") unlockedAttacks.push(reward.action);
       }
     }
 

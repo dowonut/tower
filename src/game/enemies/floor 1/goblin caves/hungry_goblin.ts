@@ -11,4 +11,4 @@ export default {
   actions: ["scratch", "punch"],
   // Enemy loot table. Item names and drops.
   loot: [{ name: "goblin skin", dropChance: 100, min: 1, max: 2 }],
-} satisfies EnemyData;
+} as const satisfies EnemyData;

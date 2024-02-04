@@ -14,4 +14,4 @@ export default {
       messages: ["SOURCE's fist connects with the underside of TARGET and deals DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

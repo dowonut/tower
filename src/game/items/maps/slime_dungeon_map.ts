@@ -9,4 +9,4 @@ export default {
   info: "A map leading to the dungeon located in the slime fields. Beware of slimes!",
   // Dungeon the map leads to. Only use if item category is map.
   dungeon: { name: "slime dungeon" },
-} satisfies ItemData;
+} as const satisfies ItemData;

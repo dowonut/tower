@@ -5,4 +5,4 @@ export default {
   level: 3,
   actions: ["swallow", "bounce"],
   loot: [{ name: "slimeball", dropChance: 100, min: 2, max: 4 }],
-} satisfies EnemyData;
+} as const satisfies EnemyData;

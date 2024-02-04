@@ -9,4 +9,4 @@ export default {
     { name: "rock", stock: 175, price: 29 },
     { name: "dusty stick", stock: 1, price: 10 },
   ],
-} satisfies MerchantData;
+} as const satisfies MerchantData;

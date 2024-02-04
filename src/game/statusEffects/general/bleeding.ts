@@ -1,6 +1,6 @@
 export default {
-  name: "bleed",
-  description: "Makes the target bleed.",
+  name: "bleeding",
+  description: "Causes the target to bleed.",
   duration: 2,
   evaluateOn: "turn_start",
   outcomes: [
@@ -23,4 +23,4 @@ export default {
       messages: ["HOST bleeds, taking DAMAGE"],
     },
   ],
-} satisfies StatusEffectData;
+} as const satisfies StatusEffectData;

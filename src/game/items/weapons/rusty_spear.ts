@@ -4,4 +4,4 @@ export default {
   category: "weapon",
   equipSlot: "hand",
   info: "Who made this? Why is the tip about to fall off?",
-} satisfies ItemData;
+} as const satisfies ItemData;

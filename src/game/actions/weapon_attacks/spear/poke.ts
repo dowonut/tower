@@ -13,4 +13,4 @@ export default {
       type: "damage",
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

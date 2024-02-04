@@ -25,4 +25,4 @@ export default {
       messages: ["SOURCE's swing also hits TARGET and deals DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

@@ -10,4 +10,4 @@ export default {
       messages: ["SOURCE bashes TARGET with their shield, dealing DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

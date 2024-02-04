@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "bow",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "shoot" }] },
-    { rewards: [{ type: "unlockAttack", attack: "multishot" }] },
+    { rewards: [{ type: "unlockAction", action: "shoot" }] },
+    { rewards: [{ type: "unlockAction", action: "multishot" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

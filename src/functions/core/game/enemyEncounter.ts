@@ -125,15 +125,10 @@ export default async function enemyEncounter(args: { player: Player }) {
             embed: { image: { url: "attachment://encounter.png" } },
           }),
       },
-      {
-        name: "info",
-        function: async (m) =>
-          await game.enemyInfo({
-            message: player.message,
-            player: m.player,
-            enemyData: enemies[0],
-          }),
-      },
+      // {
+      //   name: "info",
+      //   function: async (m) => {},
+      // },
     ],
   });
 

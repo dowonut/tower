@@ -12,7 +12,9 @@ declare global {
   };
 
   export type MerchantItem = {
-    name: string;
+    /** Name of the item. */
+    name: StaticItemName;
+    /** How many in stock. */
     stock: number;
     /** Price in marks. */
     price: number;

@@ -3,4 +3,4 @@ export default {
   recipeItem: "stone axe",
   category: "recipe",
   description: "Learn to craft Stone Axes",
-} satisfies ItemData;
+} as const satisfies ItemData;

@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "shield",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "bash" }] },
-    { rewards: [{ type: "unlockAttack", attack: "slam" }] },
+    { rewards: [{ type: "unlockAction", action: "bash" }] },
+    { rewards: [{ type: "unlockAction", action: "slam" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

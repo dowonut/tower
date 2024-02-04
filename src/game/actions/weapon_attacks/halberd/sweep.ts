@@ -15,4 +15,4 @@ export default {
       messages: ["SOURCE sweeps at TARGET with their halberd, dealing DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

@@ -20,29 +20,16 @@ declare global {
   export type ItemAllData = {
     /** Health regained if consumable. */
     health: number;
-    /** Effects of item when consumed. */
-    outcomes: {
-      /** Type of effect. */
-      type: PlayerStats | "passive";
-      /** What the modifier applies to. */
-      filter?: "all" | "sword combat";
-      /** What it modifies. */
-      target?: "damage" | "crit rate" | "crit damage";
-      /** How to apply modifier. */
-      modifier?: "multiply" | "add";
-      /** Duration in combat rounds. */
-      duration?: number;
-      /** Modification value. */
-      value: number;
-      /** Effect info. */
-      info: string;
+    /** Status effects to apply when the item is consumed. */
+    effects: {
+      /** Name of status effect to apply. */
+      name: string;
+      level?: number;
     }[];
     /** Item to unlock when given. */
     recipeItem: string;
-    // MAP ================================================
     /** Dungeon unlocked by map. */
     dungeon: { name: string };
-    // WEAPONS =============================================
     /** Weapon type. */
     weaponType: WeaponType;
     /** Which slot the item is equippable to. */

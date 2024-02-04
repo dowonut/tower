@@ -4,4 +4,4 @@ export default {
   description: "A piece of fabric.",
   info: "You could use it to wipe your nose.",
   value: 1,
-} satisfies ItemData;
+} as const satisfies ItemData;

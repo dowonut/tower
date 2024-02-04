@@ -9,4 +9,4 @@ export default {
   info: "A tasty apple you found lying on the ground somewhere...",
   // Health regained if food item.
   health: 5,
-} satisfies ItemData;
+} as const satisfies ItemData;

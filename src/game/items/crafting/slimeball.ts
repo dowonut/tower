@@ -9,4 +9,4 @@ export default {
   info: "A concentrated ball of slime collected by killing Slimes.",
   // Resell value.
   value: 1,
-} satisfies ItemData;
+} as const satisfies ItemData;

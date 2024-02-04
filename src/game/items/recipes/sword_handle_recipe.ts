@@ -3,4 +3,4 @@ export default {
   recipeItem: "sword handle",
   category: "recipe",
   description: "Learn to craft Sword Handles",
-} satisfies ItemData;
+} as const satisfies ItemData;

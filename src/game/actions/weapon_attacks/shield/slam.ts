@@ -20,4 +20,4 @@ export default {
       messages: ["SOURCE's slam also knocks over TARGET, dealing DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

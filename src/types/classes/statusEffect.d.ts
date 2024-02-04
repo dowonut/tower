@@ -28,18 +28,17 @@ declare global {
      * custom = evaluate a custom function.
      */
     type: T;
-    /** Message to send on evaluation. Variables: HOST, SOURCE, DAMAGE. */
+    /** Message to send on evaluation. Variables: HOST, SOURCE, DAMAGE, HEALING. */
     messages: string[];
   };
 
   type StatusEffectOutcomeAll = {
-    /** Change the host's stat. */
-    modifyStat: {
-      stat: Stat;
-      type: "flat" | "multiplier";
-      baseFlat?: number;
-      basePercent?: number;
-    };
+    /** Change the host's stats. */
+    modifyStat: StatusEffectModifyStat | StatusEffectModifyStat[];
+    /** Change the host's health. */
+    modifyHealth:
+      | Omit<StatusEffectDamage, "type" | "resStat">
+      | Omit<StatusEffectDamage, "type" | "resStat">[];
     /** Modify the host's speed gauge. */
     modifySpeedGauge: {
       /** Whether to advance forward or delay. */
@@ -62,7 +61,16 @@ declare global {
     damage: "damage";
     modify_stat: "modifyStat";
     modify_speed_gauge: "modifySpeedGauge";
+    modify_health: "modifyHealth";
     custom: "evaluate";
+  };
+
+  /** Stat modifier for status effect. */
+  export type StatusEffectModifyStat = {
+    stat: Stat;
+    type: "flat" | "multiplier";
+    baseFlat?: number;
+    basePercent?: number;
   };
 
   /** Status effect damage. */

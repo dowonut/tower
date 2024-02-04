@@ -4,4 +4,4 @@ export default {
   weaponType: "halberd",
   info: "A strange weapon from distant lands. Good for stabbing folks!",
   equipSlot: "hand",
-} satisfies ItemData;
+} as const satisfies ItemData;

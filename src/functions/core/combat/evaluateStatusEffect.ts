@@ -1,3 +1,4 @@
+import { setTimeout } from "timers/promises";
 import { config, game, prisma } from "../../../tower.js";
 
 /** Evaluate a status effect against a host. */
@@ -35,7 +36,12 @@ export default async function evaluateStatusEffect(args: {
       case "modify_stat":
         await modifyStat(outcome);
         break;
+      case "modify_health":
+        await modifyHealth;
+        break;
     }
+    // Wait before evaluating next effect outcome
+    await setTimeout(game.random(0.5, 1) * 1000);
   }
 
   return;
@@ -115,14 +121,41 @@ export default async function evaluateStatusEffect(args: {
 
   // Modify stat
   async function modifyStat(outcome: StatusEffectOutcome<"modify_stat">) {
-    // Check if health is overcapped
-    if (outcome.modifyStat.stat == "maxHP") {
-      if (host.health > host.maxHP) {
-        host = await (host as Player).update({ health: host.maxHP });
+    const modifyStats = Array.isArray(outcome.modifyStat)
+      ? outcome.modifyStat
+      : [outcome.modifyStat];
+
+    for (const modifyStat of modifyStats) {
+      // Check if health is overcapped
+      if (modifyStat.stat == "maxHP") {
+        if (host.health > host.maxHP) {
+          host = await (host as Player).update({ health: host.maxHP });
+        }
       }
     }
 
-    // Get attack message
+    // Get message
+    const message = game.getOutcomeMessage({
+      outcome,
+      source,
+      target: host,
+    });
+
+    // Send attack message
+    game.emitter.emit("actionMessage", {
+      encounterId: source.encounterId,
+      message,
+    } satisfies ActionMessageEmitter);
+    return;
+  }
+
+  // Modify health
+  async function modifyHealth(outcome: StatusEffectOutcome<"modify_health">) {
+    const modifyHealth = Array.isArray(outcome.modifyHealth)
+      ? outcome.modifyHealth
+      : [outcome.modifyHealth];
+
+    // Get message
     const message = game.getOutcomeMessage({
       outcome,
       source,

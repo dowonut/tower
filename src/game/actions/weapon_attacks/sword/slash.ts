@@ -23,4 +23,4 @@ export default {
       messages: ["SOURCE's slash also hits TARGET, dealing DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

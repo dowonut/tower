@@ -23,4 +23,4 @@ export default {
       messages: ["SOURCE squeezes out a final tiny thrust towards TARGET, dealing DAMAGE"],
     },
   ],
-} satisfies ActionData;
+} as const satisfies ActionData;

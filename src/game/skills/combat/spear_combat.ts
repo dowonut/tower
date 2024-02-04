@@ -3,7 +3,7 @@ export default {
   category: "combat",
   weaponType: "spear",
   levels: [
-    { rewards: [{ type: "unlockAttack", attack: "poke" }] },
-    { rewards: [{ type: "unlockAttack", attack: "vaulting poke" }] },
+    { rewards: [{ type: "unlockAction", action: "poke" }] },
+    { rewards: [{ type: "unlockAction", action: "vaulting poke" }] },
   ],
-} satisfies SkillData;
+} as const satisfies SkillData;

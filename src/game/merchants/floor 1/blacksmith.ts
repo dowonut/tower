@@ -15,4 +15,4 @@ export default {
     // { name: "sword handle recipe", stock: 1, price: 5 },
     // { name: "stone axe recipe", stock: 1, price: 5 },
   ],
-} satisfies MerchantData;
+} as const satisfies MerchantData;

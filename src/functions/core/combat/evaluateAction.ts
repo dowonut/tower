@@ -3,6 +3,7 @@ import { EnemyClass } from "../../../game/_classes/enemies.js";
 import { PlayerClass } from "../../../game/_classes/players.js";
 import { game, prisma } from "../../../tower.js";
 import { Prisma } from "@prisma/client";
+import { setTimeout } from "timers/promises";
 
 /** Evaluate an action in combat and return all enemies and players. */
 export default async function evaluateAction(args: {
@@ -61,7 +62,6 @@ export default async function evaluateAction(args: {
         break;
     }
     // console.log(outcome?.targets?.map((x) => ({ name: x.displayName, health: x.health })));
-
     switch (outcome.type) {
       case "damage":
         await evaluateDamage(outcome);
@@ -72,6 +72,8 @@ export default async function evaluateAction(args: {
       case "custom":
         break;
     }
+    // Wait before evaluating next action outcome
+    await setTimeout(game.random(0.5, 1) * 1000);
   }
 
   // Returned with modified entities
@@ -168,6 +170,17 @@ export default async function evaluateAction(args: {
           await prisma.enemyStatusEffect.create({ data: { ...data, enemyId: target.id } })
         );
       }
+      // Get message
+      const message = game.getOutcomeMessage({
+        outcome,
+        source,
+        target,
+      });
+      // Send inflict status effect message
+      game.emitter.emit("actionMessage", {
+        encounterId: source.encounterId,
+        message,
+      } satisfies ActionMessageEmitter);
       // Immediately evaluate status outcome
       if (statusEffect.evaluateOn == "immediate") {
         await game.evaluateStatusEffect({ host: target, statusEffect, enemies, players });
