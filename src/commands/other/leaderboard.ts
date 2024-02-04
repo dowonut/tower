@@ -64,11 +64,18 @@ export default {
   async execute(message, args: { category: LeaderboardCategory }, player, server) {
     let { category = "level" } = args;
 
+    const botMessage = await game.send({
+      player,
+      reply: true,
+      content: `${emojis.loading} **Generating guild leaderboard...**`,
+    });
+
     const players = await player.getGuildPlayers();
 
     let sortedPlayers = sortPlayers();
 
     const menu = new game.Menu({
+      botMessage,
       player,
       messages: [
         {

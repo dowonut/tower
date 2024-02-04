@@ -1,5 +1,6 @@
 const emojis = {
   bullet: "<:bullet:1007341922479771648>",
+  loading: "<a:loading:857273691124400159>",
   blank: "<:blank:1002523614345703424>",
   mark: "<:mark:1137785360005468322>",
   silver_mark: "<:silver_mark:986634284355969026>",
