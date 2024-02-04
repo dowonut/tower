@@ -21,7 +21,7 @@ export default class Menu<T> extends MenuBase<T> {
 
   //------------------------------------------------------------
   /** Initialise the board menu. */
-  async init(boardName: string, args: CollectorOptions = undefined) {
+  async init(boardName: (typeof this.boards)[number]["name"], args: CollectorOptions = undefined) {
     if (args) {
       this.collectorArgs = args;
     }

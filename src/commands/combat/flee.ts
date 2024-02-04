@@ -7,8 +7,10 @@ export default {
   category: "combat",
   useInCombatOnly: true,
   useInTurnOnly: true,
+  cooldownGroup: "combat_action",
   async execute(message, args, player, server) {
-    //const enemy = await player.getEnemy();
+    // Notify encounter of player action
+    game.emitPlayerAction({ player });
 
     if (player.party && !player.isPartyLeader)
       return game.error({

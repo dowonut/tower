@@ -17,6 +17,7 @@ export default {
 
     // Create embed fields
     let fields = [];
+    const explored = await player.getExploration();
 
     // Go through keys
     for (const key in region) {
@@ -27,15 +28,21 @@ export default {
           inline: true,
         };
 
-        const explored = await player.getExploration();
         const exploredArr = explored.map((x) => (x.name ? x.name : x.category));
 
         // Add key values
         for (const value of region[key]) {
-          let name = value.name ? value.name : value.category;
+          let name: string = value.name ? value.name : value.category;
 
-          let emoji =
-            config.emojis[key] && config.emojis[key][name] ? config.emojis[key][name] : ``;
+          let emoji = "";
+          switch (key) {
+            case "enemies":
+              emoji = config.emojis.enemies[name.replaceAll(" ", "_")] || "";
+              break;
+            case "loot":
+              emoji = config.emojis.items[name.replaceAll(" ", "_")] || "";
+              break;
+          }
 
           if (exploredArr.includes(name) || key == "activities") {
             if (key == "merchants") {

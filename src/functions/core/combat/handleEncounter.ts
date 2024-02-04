@@ -35,7 +35,7 @@ export default async function handleEncounter(args: {
     pendingAction: undefined as Action,
   };
 
-  // Create menu
+  //* Create menu ==========================
   const menu = new game.Menu({
     player: firstPlayer,
     variables,
@@ -45,16 +45,15 @@ export default async function handleEncounter(args: {
       // Enemy selected and pick attack
       {
         name: "select_attack",
-        rows: ["attacks"],
+        rows: ["attacks", "action_options"],
       },
       {
         name: "select_target",
         message: "main",
         rows: ["select_target", "cancel_action"],
       },
-      // Enemy turn ----------------------------
       {
-        name: "enemy_turn",
+        name: "no_input",
         rows: [],
         message: "main",
       },
@@ -175,6 +174,33 @@ export default async function handleEncounter(args: {
           });
         },
       },
+      // Action options
+      {
+        name: "action_options",
+        type: "buttons",
+        components: (m) => {
+          let actionType: ActionType;
+          let label: string;
+          let componentFunction: ComponentFunction;
+          switch (m.currentBoard) {
+            // Weapon attacks
+            case "select_attack":
+              actionType = "weapon_attack";
+              label = "Attacks";
+              componentFunction = async () => {
+                await game.runCommand("attack", {
+                  message: m.botMessage,
+                  discordId: m.player.user.discordId,
+                  server: m.player.server,
+                });
+              };
+              break;
+          }
+          return [
+            { id: "info", emoji: emojis.info, label: `View ${label}`, function: componentFunction },
+          ];
+        },
+      },
       // Select target
       {
         name: "select_target",
@@ -287,26 +313,28 @@ ${turnOrderList}
   // Initiate encounter message
   // If player
   if (turnOrder[0] instanceof PlayerClass) {
+    await turnOrder[0].update({ encounter: { update: { currentPlayer: turnOrder[0].id } } });
     await updateMenu("player", true);
   }
   // If enemy
   else if (turnOrder[0] instanceof EnemyClass) {
     // Remove current player
-    await prisma.encounter.update({ where: { id: encounter.id }, data: { currentPlayer: null } });
     await updateMenu("enemy", true);
     await enemyTurn(turnOrder[0] as Enemy);
   }
 
-  // On player move
-  game.emitter.on("playerMove", onPlayerMove);
+  //* EMITTER FUNCTIONS ===============================================================================
+
+  // On player action
+  game.emitter.on("playerAction", onPlayerAction);
+  // On player action done evaluating
+  game.emitter.on("playerActionComplete", onPlayerActionComplete);
   // On action message
   game.emitter.on("actionMessage", onActionMessage);
   // Skip current player
   game.emitter.on("skipPlayer", onSkipPlayer);
   // Flee from combat
   game.emitter.on("flee", onPlayerFlee);
-
-  // EMITTER FUNCTIONS ===============================================================================
 
   /** Skip the current player. */
   async function onSkipPlayer(args: { encounterId: number }) {
@@ -349,8 +377,8 @@ ${turnOrderList}
     } catch (err) {}
   }
 
-  /** Function called by emitter when a player move is detected. */
-  async function onPlayerMove(args: PlayerMoveEmitter) {
+  /** Function called by emitter when a player action is done evaluating. */
+  async function onPlayerActionComplete(args: PlayerActionCompleteEmitter) {
     const { enemies = [], players = [], player } = args;
     if (args.encounterId !== encounter.id) return;
 
@@ -364,6 +392,22 @@ ${turnOrderList}
     await nextTurn();
   }
 
+  /** Function called when the player initiates an action. */
+  async function onPlayerAction(args: PlayerActionEmitter) {
+    const { player } = args;
+    if (args.encounterId !== encounter.id) return;
+
+    // Prevent the player from taking further actions
+    encounter = await prisma.encounter.upsert({
+      where: { id: encounter.id },
+      update: { currentPlayer: null },
+      create: {},
+      include: { players: true, enemies: true },
+    });
+
+    await menu.switchBoard("no_input");
+  }
+
   /** On player flee. */
   async function onPlayerFlee(args: PlayerFleeEmitter) {
     const { player } = args;
@@ -371,7 +415,7 @@ ${turnOrderList}
     await exitCombat("fleeing");
   }
 
-  // MAIN FUNCTIONS ===============================================================================
+  //* MAIN FUNCTIONS ===============================================================================
 
   /** Initiate the next turn. */
   async function nextTurn() {
@@ -511,10 +555,11 @@ ${turnOrderList}
   /** Exit combat. */
   async function exitCombat(reason: "allPlayersDead" | "allEnemiesDead" | "fleeing") {
     // Kill all emitters
-    game.emitter.removeListener("playerMove", onPlayerMove);
+    game.emitter.removeListener("playerActionComplete", onPlayerActionComplete);
     game.emitter.removeListener("actionMessage", onActionMessage);
     game.emitter.removeListener("skipPlayer", onSkipPlayer);
     game.emitter.removeListener("onPlayerFlee", onPlayerFlee);
+    game.emitter.removeListener("playerAction", onPlayerAction);
 
     // Delete messages
     // setTimeout(async () => {
@@ -729,7 +774,7 @@ ${turnOrderList}
     }
     // Enemy
     else if (next == "enemy") {
-      await menu[menuFunction]("enemy_turn");
+      await menu[menuFunction]("no_input");
     }
   }
 

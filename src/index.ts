@@ -92,6 +92,14 @@ client.on("messageCreate", async (message) => {
   }
 });
 
+// Safety check against joining unwanted servers during development
+client.on("guildCreate", async (guild) => {
+  if (!config.guildOwnerWhitelist.includes(guild.ownerId)) {
+    console.log("> Tower was added to a new guild by: ", guild.ownerId);
+    await guild.leave();
+  }
+});
+
 // Error handling
 process.on("uncaughtException", (err) => {
   console.log("-----------------------------------");

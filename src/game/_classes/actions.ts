@@ -4,6 +4,7 @@ import { game, config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
 import { Prisma } from "@prisma/client";
 import fs from "fs";
+import _ from "lodash";
 
 const ActionClassBase = createClassFromType<ActionBase>();
 
@@ -98,12 +99,15 @@ export class ActionClass extends ActionClassBase {
 
   /** Get short damage text for buttons. */
   getInfo() {
-    let text: string[] = [];
-    const effects = this.outcomes.filter((x) => x.type == "damage");
-    for (const [i, effect] of (effects as ActionOutcome<"damage">[]).entries()) {
+    let textObject: {
+      [key in ActionOutcomeType]: string[];
+    } = { damage: [], apply_status: [], custom: [] };
+    const outcomes = this.outcomes;
+    for (const [i, outcome] of (outcomes as ActionOutcome[]).entries()) {
       let targetText: string = "";
       // If first target
-      switch (effect.targetType) {
+      switch (outcome.targetType) {
+        default:
         case "single":
           targetText = "a single target";
           break;
@@ -113,39 +117,72 @@ export class ActionClass extends ActionClassBase {
         case "all":
           targetText = "all targets";
           break;
-        default:
-          targetText = "a single target";
+        case "self":
+          targetText = "yourself";
           break;
       }
 
       // If additional targets
-      if (effect?.targetNumber > 1) {
-        targetText = `a ${game.displayNumber(effect.targetNumber)} target`;
+      if (outcome?.targetNumber > 1) {
+        targetText = `a ${game.displayNumber(outcome.targetNumber)} target`;
       }
 
-      let damageText: string[] = [];
-      const damages = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
-      for (const [i, damage] of damages.entries()) {
-        const emoji = emojis.damage[damage.type];
-        let prefix = ``;
-        if (i == damages.length - 1 && damages.length > 1) prefix = `and `;
-        let text = `${prefix}**\`${damage.basePercent}%\`** of **\`${damage.source}\`** as ${emoji}`;
-        damageText.push(text);
+      // Determine prefix
+      let outcomePrefix: string;
+      let finalText: string;
+      switch (outcome.type) {
+        case "damage":
+          outcomePrefix = "Deals";
+          break;
+        case "apply_status":
+          outcomePrefix = "Applies";
+          break;
+        case "custom":
+        default:
+          outcomePrefix = "";
+          break;
       }
-      let prefix = `Deals`;
+      // Format suffix and prefix based on index
       let suffix = ``;
-      if (i > 0 && i !== this.outcomes.length - 1 && this.outcomes.length > 1) {
-        prefix = `,`;
-      } else if (i == this.outcomes.length - 1 && this.outcomes.length > 1) {
-        prefix = `, and`;
+      const outComesOfType = this.outcomes.filter((x) => x.type == outcome.type);
+      const index = textObject[outcome.type].length;
+      if (index > 0 && index !== outComesOfType.length - 1 && outComesOfType.length > 1) {
+        outcomePrefix = `,`;
+      } else if (index == outComesOfType.length - 1 && outComesOfType.length > 1) {
+        outcomePrefix = `, and`;
         suffix = ".";
-      } else if (i == this.outcomes.length - 1) {
+      } else if (index == outComesOfType.length - 1) {
         suffix = ".";
       }
-      let finalText = `${prefix} ${damageText.join(", ")} to **${targetText}**${suffix}`;
-      text.push(finalText);
+      // Determine specific outcome text
+      switch (outcome.type) {
+        // Damage
+        case "damage":
+          const damages = Array.isArray(outcome.damage) ? outcome.damage : [outcome.damage];
+          let damageText: string[] = [];
+          for (const [i, damage] of damages.entries()) {
+            const damageEmoji = emojis.damage[damage.type];
+            const statEmoji = emojis.stats[damage.source];
+            let prefix = ``;
+            if (i == damages.length - 1 && damages.length > 1) prefix = `and `;
+            let text = `${prefix}**\`${damage.basePercent}%\`** of ${statEmoji} as ${damageEmoji}`;
+            damageText.push(text);
+          }
+          finalText = `${outcomePrefix} ${damageText.join(", ")} to **${targetText}**${suffix}`;
+          break;
+        // Status effect
+        case "apply_status":
+          let statusText = `${game.f(outcome.status.name)}`;
+          finalText = `${outcomePrefix} ${statusText} to **${targetText}**${suffix}`;
+          break;
+        case "custom":
+          let customText = _.isFunction(outcome.info) ? outcome.info() : outcome.info;
+          finalText = customText + `\n\n`;
+          break;
+      }
+      textObject[outcome.type].push(finalText);
     }
-    return text.join("");
+    return textObject;
   }
 
   /** Get cooldown text. */

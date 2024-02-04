@@ -36,10 +36,13 @@ export default {
       switch (action.type) {
         // Weapon attack
         case "weapon_attack":
-          let description = `*${action?.description}*\n`;
-          let info = action.getInfo();
+          let description = `*${action?.description}*`;
+          let infoObject = action.getInfo();
+          let damageInfo = `\n\n` + infoObject.damage.join("") || "";
+          let statusEffectInfo = `\n\n` + infoObject.apply_status.join("") || "";
+          let customInfo = `\n\n` + infoObject.custom.join("") || "";
           const image = action.getImage();
-          description += `\n${info}\n`;
+          description += `${damageInfo}${statusEffectInfo}${customInfo}`;
           return game.fastEmbed({
             player,
             fullSend: false,

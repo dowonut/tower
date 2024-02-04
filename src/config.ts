@@ -13,6 +13,7 @@ export const purple = 0x9600ff;
 export const botBanner = "https://i.imgur.com/RwqxsiL.png";
 export const botIcon = "https://i.imgur.com/S9LRuXa.png";
 export const developerId = "326536300985581568";
+export const guildOwnerWhitelist = [developerId];
 export const emojis = {};
 export const integerLimit = 2147483647;
 
@@ -72,6 +73,10 @@ export const defaultWardrobe: PlayerWardrobe = {
   legs: { name: "trousers", color: "brown" },
   torso: { name: "plain_shirt", color: "pink" },
   feet: { name: "shoes", color: "black" },
+};
+
+export const cooldownGroups = {
+  combat_action: "3",
 };
 
 // export const subStats = {

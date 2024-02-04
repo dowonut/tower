@@ -1,6 +1,6 @@
 declare global {
-  /** On player move. */
-  export interface PlayerMoveEmitter {
+  /** On player finish action. */
+  export interface PlayerActionCompleteEmitter {
     encounterId: number;
     player: Player;
     enemies?: Enemy[];
@@ -15,6 +15,12 @@ declare global {
 
   /** On player flee. */
   export interface PlayerFleeEmitter {
+    encounterId: number;
+    player: Player;
+  }
+
+  /** On player initiate action. */
+  export interface PlayerActionEmitter {
     encounterId: number;
     player: Player;
   }

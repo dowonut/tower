@@ -46,10 +46,17 @@ export default async function runCommand(
     if (!client.cooldowns.has(command.name)) {
       client.cooldowns.set(command.name, new Discord.Collection());
     }
+    if (command?.cooldownGroup && !client.cooldowns.has(command.cooldownGroup)) {
+      client.cooldowns.set(command.cooldownGroup, new Discord.Collection());
+    }
 
     const now = Date.now();
-    const timestamps = client.cooldowns.get(command.name);
-    const cooldownAmount = (parseInt(command.cooldown) || 0) * 1000;
+    const timestamps = command?.cooldownGroup
+      ? client.cooldowns.get(command.cooldownGroup)
+      : client.cooldowns.get(command.name);
+    const cooldownAmount =
+      (parseInt(command.cooldown) || parseInt(config.cooldownGroups[command?.cooldownGroup]) || 0) *
+      1000;
 
     // if (message) {
     //   // Check if user has permission to run the command
@@ -99,6 +106,22 @@ export default async function runCommand(
           content: `this server has been locked by an administrator. `,
         });
       }
+
+      // Check if the user is on cooldown for that command
+      if (timestamps.has(userId)) {
+        const expirationTime = timestamps.get(userId) + cooldownAmount;
+        const remainingSeconds = Math.ceil((expirationTime - now) / 1000);
+        if (now < expirationTime) {
+          return game.send({
+            player,
+            content: `:hourglass_flowing_sand: **${player.user.username}**, wait a moment before using this command again \`(${remainingSeconds} seconds)\``,
+          });
+        }
+      }
+
+      // Update command cooldown for user
+      timestamps.set(userId, now);
+      setTimeout(() => timestamps.delete(userId), cooldownAmount);
 
       // Check if user is Dowonut
       if (command.dev && userId !== config.developerId) {
@@ -188,22 +211,6 @@ export default async function runCommand(
             )}\`**.` + info,
         });
       }
-
-      // Check if the user is on cooldown for that command
-      if (timestamps.has(userId)) {
-        const expirationTime = timestamps.get(userId) + cooldownAmount;
-        const remainingSeconds = Math.ceil((expirationTime - now) / 1000);
-        if (now < expirationTime) {
-          return game.send({
-            player,
-            content: `:hourglass_flowing_sand: **${player.user.username}**, wait a moment before using this command again \`(${remainingSeconds} seconds)\``,
-          });
-        }
-      }
-
-      // Update command cooldown for user
-      timestamps.set(userId, now);
-      setTimeout(() => timestamps.delete(userId), cooldownAmount);
 
       // Try to run the command
       try {

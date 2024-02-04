@@ -32,7 +32,7 @@ declare global {
   type ActionOutcomeTypes = {
     damage: "damage";
     apply_status: "status";
-    custom: "evaluate";
+    custom: "evaluate" | "info";
   };
 
   /** Default action outcome data. */
@@ -57,7 +57,7 @@ declare global {
      *
      * Default: single. */
     targetType?: TargetType;
-    /** Message sent for this outcome instance. Variables: TARGET, DAMAGE, STATUS, SOURCE. */
+    /** Message sent for this outcome instance. Variables: SOURCE, TARGET, DAMAGE, STATUS. */
     messages: string[];
     /** Target for action outcome. DO NOT DEFINE. */
     targets?: (Enemy | Player)[];
@@ -66,22 +66,26 @@ declare global {
   /** All action outcome data. */
   type ActionOutcomeAll = {
     /** Define damage type. */
-    damage?: ActionOutcomeDamage[] | ActionOutcomeDamage;
+    damage: ActionOutcomeDamage[] | ActionOutcomeDamage;
     /** Define status type. */
-    status?: {
+    status: {
       /** Name of status outcome. */
       name: StaticStatusEffectName;
       /** Level of the status effect. Default = 1. */
       level?: number;
     };
-    /** Function to evaluate outcome. */
-    evaluate?: (
+    /** Evaluate custom outcome. */
+    evaluate: (
       this: ActionOutcome,
       args: { source: Enemy | Player }
-    ) => Promise<{
-      players?: Player[];
-      enemies?: Enemy[];
-    }>;
+    ) =>
+      | Promise<{
+          players?: Player[];
+          enemies?: Enemy[];
+        }>
+      | { players?: Player[]; enemies?: Enemy[] };
+    /** Get custom info text. */
+    info: string | ((this: ActionOutcome) => string);
   };
 
   /**

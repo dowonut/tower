@@ -62,6 +62,8 @@ declare global {
     mustUnlock?: boolean;
     /** Specify a specific environment(s) in which the command can be used. Default: any.*/
     environment?: Environment[];
+    /** Evaluate the command as part of a cooldown group. */
+    cooldownGroup?: keyof typeof config.cooldownGroups;
     /** The main command function. */
     execute: Execute;
   }

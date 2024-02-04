@@ -25,7 +25,7 @@ export default {
   ],
   category: "combat",
   useInCombat: true,
-  cooldown: "2",
+  cooldownGroup: "combat_action",
   async execute(
     message,
     args: {
@@ -197,6 +197,9 @@ ${attack.getEmoji()} ${attackName} ${isCooldown ? cooldownText : damageText}`;
         });
       }
 
+      // Notify encounter of player action
+      game.emitPlayerAction({ player });
+
       // Evaluate attack
       const evaluatedAction = await game.evaluateAction({
         action: attack,
@@ -213,11 +216,11 @@ ${attack.getEmoji()} ${attackName} ${isCooldown ? cooldownText : damageText}`;
       }
 
       // Send emitter
-      game.emitter.emit("playerMove", {
+      game.emitter.emit("playerActionComplete", {
         encounterId: player.encounterId,
         player,
         enemies,
-      } satisfies PlayerMoveEmitter);
+      } satisfies PlayerActionCompleteEmitter);
 
       // Give skill xp
       for (const weaponType of attack.requiredWeapon) {
