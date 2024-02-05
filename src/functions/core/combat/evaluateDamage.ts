@@ -28,7 +28,7 @@ export default function evaluateDamage(args: {
     // Get base damage
     let baseDamage = 0;
     if (!damage.scaling || damage.scaling == "percent") {
-      baseDamage = Math.floor(source[damage.source] * (damage.basePercent / 100));
+      baseDamage = Math.floor(source[damage.scalingStat] * (damage.basePercent / 100));
     } else if (damage.scaling == "flat") {
       baseDamage = Math.floor(damage.baseFlat);
     }
@@ -56,7 +56,7 @@ export default function evaluateDamage(args: {
 
     // Determined stat to use for scaling resistance
     let resStat: "RES" | "MAG_RES" | "SPC_RES" = "RES";
-    switch (damage.source) {
+    switch (damage.scalingStat) {
       case "ATK":
         resStat = "RES";
         break;

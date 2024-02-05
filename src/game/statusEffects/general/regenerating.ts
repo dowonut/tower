@@ -1,5 +1,6 @@
 export default {
   name: "regenerating",
+  type: "buff",
   description: "Makes the target regenerate health over time.",
   duration: 3,
   evaluateOn: "turn_start",
@@ -10,7 +11,7 @@ export default {
       modifyHealth: [
         {
           scaling: "percent",
-          source: "maxHP",
+          scalingStat: "maxHP",
           statSource: "source",
           basePercent: 20,
         },

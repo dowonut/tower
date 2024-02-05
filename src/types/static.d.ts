@@ -78,7 +78,8 @@ declare global {
     | "commandCategory"
     | "item"
     | "region"
-    | "target";
+    | "target"
+    | "statusEffect";
 
   export type ProgressBarColor = "red" | "green" | "orange" | "white";
 

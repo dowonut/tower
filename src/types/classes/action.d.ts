@@ -107,7 +107,7 @@ declare global {
     /** What type of scaling to use. Default = percent. */
     scaling?: "flat" | "percent";
     /** If scaling = "percent" then what stat does the action scale off. */
-    source?: Stat;
+    scalingStat?: Stat;
     /** If scaling = "percent" then the base percent of source for scaling. */
     basePercent?: number;
     /** If scaling = "flat" then the base damage amount. */

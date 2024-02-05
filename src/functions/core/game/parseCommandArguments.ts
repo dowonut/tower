@@ -50,6 +50,7 @@ export default async function parseCommandArguments(options: {
     // Handle argument type
     if (argument.type && input) {
       switch (argument.type) {
+        //* Number type
         case "number":
           if (input == "all" || input == "a") argsObject[argument.name] = "all";
           // If argument isn't a number
@@ -71,7 +72,7 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
-        // Strict number type
+        //* Strict number type
         case "strictNumber":
           if (isNaN(+input)) {
             errorContent = `Argument **\`${argument.name}\`** must be a number`;
@@ -86,7 +87,7 @@ export default async function parseCommandArguments(options: {
           argsObject[argument.name] = parseInt(input);
           break;
 
-        // Must be a valid item in the game.
+        //* Must be a valid item in the game.
         case "item":
           const gameItem = game.getItem(input);
           if (!gameItem) {
@@ -95,7 +96,7 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
-        // Must be a valid action in the game.
+        //* Must be a valid action in the game.
         case "playerAction":
           const action = await player.getAction(input);
           if (!action) {
@@ -105,7 +106,7 @@ export default async function parseCommandArguments(options: {
           argsObject[argument.name] = action;
           break;
 
-        // Must be the name of an item owned by the player
+        //* Must be the name of an item owned by the player
         case "playerOwnedItem":
           const playerItem = await player.getItem(input);
           if (!playerItem) {
@@ -115,7 +116,7 @@ export default async function parseCommandArguments(options: {
           argsObject[argument.name] = playerItem;
           break;
 
-        // Must be the name of an attack available to the player
+        //* Must be the name of an attack available to the player
         case "playerAvailableAttack":
           const attack = await player.getActions({
             onlyAvailable: true,
@@ -128,7 +129,7 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
-        // Must be a merchant unlocked by the player
+        //* Must be a merchant unlocked by the player
         case "playerAvailableMerchant":
           const merchantErrorMessage = `No merchant found with name or category **\`${input}\`**`;
           const merchant = game.getMerchant(input);
@@ -144,7 +145,7 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
-        // Must be a valid command category
+        //* Must be a valid command category
         case "commandCategory":
           if (!config.commandCategories.includes(input.toLowerCase() as CommandCategory)) {
             let commandCategories = config.commandCategories
@@ -158,7 +159,7 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
-        // Must be a valid region
+        //* Must be a valid region
         case "region":
           const region = game.getRegion(player, input);
           if (!region) {
@@ -167,7 +168,7 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
-        // Must be a valid user in the game
+        //* Must be a valid user in the game
         case "user":
           let discordId: string;
           if (input.startsWith("<@") && input.endsWith(">")) {
@@ -204,6 +205,8 @@ export default async function parseCommandArguments(options: {
             argsObject[argument.name] = playerReference;
           }
           break;
+
+        //* Must be a valid target in combat
         case "target":
           if (!player.inCombat) {
             errorContent = `Targets can only be provided during combat.`;
@@ -218,6 +221,17 @@ export default async function parseCommandArguments(options: {
             error();
           } else {
             argsObject[argument.name] = target;
+          }
+          break;
+
+        //* Must be a valid status effect
+        case "statusEffect":
+          const statusEffect = game.getStatusEffect(input);
+          if (!statusEffect) {
+            errorContent = `No status effect found with name **\`${input}\`**`;
+            error();
+          } else {
+            argsObject[argument.name] = statusEffect;
           }
           break;
       }

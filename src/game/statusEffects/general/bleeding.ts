@@ -1,5 +1,6 @@
 export default {
   name: "bleeding",
+  type: "debuff",
   description: "Causes the target to bleed.",
   duration: 2,
   evaluateOn: "turn_start",
@@ -10,13 +11,13 @@ export default {
         {
           type: "slashing",
           statSource: "host",
-          source: "health",
+          scalingStat: "health",
           basePercent: 10,
           resStat: "SPC_RES",
         },
         {
           type: "slashing",
-          source: "SPC",
+          scalingStat: "SPC",
           basePercent: 10,
         },
       ],

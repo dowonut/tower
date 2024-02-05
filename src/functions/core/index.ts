@@ -59,3 +59,5 @@ export { default as getRandom } from "./math/getRandom.js";
 export { default as getWeightedArray } from "./math/getWeightedArray.js";
 export { default as random } from "./math/random.js";
 export { default as weightedRandom } from "./math/weightedRandom.js";
+export { default as listPrefix } from "./display/listPrefix.js";
+export { default as toArray } from "./game/toArray.js";

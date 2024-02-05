@@ -1,4 +1,4 @@
-import { createClassFromType, f } from "../../functions/core/index.js";
+import { createClassFromType, f, listPrefix } from "../../functions/core/index.js";
 import { loadFiles } from "../../functions/core/game/loadFiles.js";
 import { game, config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
@@ -148,6 +148,9 @@ export class ActionClass extends ActionClassBase {
       const index = textObject[outcome.type].length;
       if (index > 0 && index !== outComesOfType.length - 1 && outComesOfType.length > 1) {
         outcomePrefix = `,`;
+      } else if (index == outComesOfType.length - 1 && outComesOfType.length == 2) {
+        outcomePrefix = ` and`;
+        suffix = ".";
       } else if (index == outComesOfType.length - 1 && outComesOfType.length > 1) {
         outcomePrefix = `, and`;
         suffix = ".";
@@ -161,18 +164,23 @@ export class ActionClass extends ActionClassBase {
           const damages = Array.isArray(outcome.damage) ? outcome.damage : [outcome.damage];
           let damageText: string[] = [];
           for (const [i, damage] of damages.entries()) {
-            const damageEmoji = emojis.damage[damage.type];
-            const statEmoji = emojis.stats[damage.source];
-            let prefix = ``;
-            if (i == damages.length - 1 && damages.length > 1) prefix = `and `;
-            let text = `${prefix}**\`${damage.basePercent}%\`** of ${statEmoji} as ${damageEmoji}`;
-            damageText.push(text);
+            const damageType = `${emojis.damage[damage.type]}**\`${damage.type}\`**`;
+            const stat = `${emojis.stats[damage.scalingStat]}**\`${damage.scalingStat}\`**`;
+            const statSource = damage?.statSource ? damage.statSource : "source";
+            let prefix = listPrefix(i, damages);
+            if (!damage.scaling || damage.scaling == "percent") {
+              let text = `${prefix}**\`${damage.basePercent}%\`** of the **${statSource}**'s ${stat} as ${damageType}`;
+              damageText.push(text);
+            } else if (damage.scaling == "flat") {
+              let text = `${prefix}**\`${damage.basePercent}\`** as ${damageType}`;
+              damageText.push(text);
+            }
           }
-          finalText = `${outcomePrefix} ${damageText.join(", ")} to **${targetText}**${suffix}`;
+          finalText = `${outcomePrefix} ${damageText.join("")} to **${targetText}**${suffix}`;
           break;
         // Status effect
         case "apply_status":
-          let statusText = `${game.f(outcome.status.name)}`;
+          let statusText = `**${game.f(outcome.status.name)}**`;
           finalText = `${outcomePrefix} ${statusText} to **${targetText}**${suffix}`;
           break;
         case "custom":

@@ -1,15 +1,16 @@
 export default {
   name: "strengthened",
+  type: "buff",
   description: "Imbues the target with a surge of strength.",
   duration: 2,
-  evaluateOn: "turn_start",
+  evaluateOn: "passive",
   outcomes: [
     {
       type: "modify_stat",
       messages: ["TARGET is strengthened! Their ATK is increased by **20%**"],
       modifyStat: {
         stat: "ATK",
-        type: "multiplier",
+        scaling: "percent",
         basePercent: 20,
       },
     },

@@ -11,6 +11,7 @@ const emojis = {
   error: "<:error:1093637241215144006>",
   i_cursor: "<:i_cursor:1096550891533905972>",
   info: "<:info:1203301428844822579>",
+  question_mark: "<:question_mark:1204075149511360542>",
   magic: "<:magic:1137753181431009404>",
   gold_arrow: "<:gold_arrow:1138473885457715230>",
   green_arrow: "<:green_arrow:1138476227653533706>",
@@ -22,6 +23,8 @@ const emojis = {
   eye_dropper: "<:eye_dropper:1198309178737954876>",
   coalition: "<a:coalition:1198916667384799264>",
   line: "<:line:1138480015739211927>",
+  buff: "<:Buff:1204094385869037568>",
+  debuff: "<:Debuff:1204094388318502952>",
   weapons: {
     axe: "<:axe:1137354627361280081>",
     sword: "<:sword:1137355113648902144>",
@@ -41,6 +44,7 @@ const emojis = {
     defense: "<:defence:1137785039871021056>",
   },
   stats: {
+    health: "<:health:1137785046804213870>",
     maxHP: "<:HP:1138615553947340840>",
     ATK: "<:ATK:1138615548423454853>",
     MAG: "<:MAG:1138615557411852469>",

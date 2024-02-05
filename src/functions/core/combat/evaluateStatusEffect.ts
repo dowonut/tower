@@ -166,7 +166,7 @@ export default async function evaluateStatusEffect(args: {
 
       let baseHealing = 0;
       if (heal.scaling == "percent") {
-        baseHealing = Math.floor(source[heal.source] * (heal.basePercent / 100));
+        baseHealing = Math.floor(source[heal.scalingStat] * (heal.basePercent / 100));
       } else if (heal.scaling == "flat") {
         baseHealing = Math.floor(heal.baseFlat);
       }

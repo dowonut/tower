@@ -3,7 +3,7 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "attack",
   aliases: ["a"],
-  unlockCommands: ["enemyinfo", "flee", "status"],
+  unlockCommands: ["enemyinfo", "flee", "status", "statuseffectinfo"],
   description: "View your attacks or attack an enemy.",
   arguments: [
     { name: "attack_name", type: "playerAvailableAttack", required: false },

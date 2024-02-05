@@ -184,9 +184,10 @@ export default async function evaluateAction(args: {
       game.emitter.emit("actionMessage", {
         encounterId: source.encounterId,
         message,
+        data: { statusEffect: statusEffect.name },
       } satisfies ActionMessageEmitter);
       // Immediately evaluate status outcome
-      if (statusEffect.evaluateOn == "immediate") {
+      if (statusEffect.evaluateOn == "immediate" || statusEffect.evaluateOn == "passive") {
         await game.evaluateStatusEffect({ host: target, statusEffect, enemies, players });
       }
     }

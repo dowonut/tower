@@ -2,6 +2,7 @@ import { MessageCreateOptions, MessageEditOptions, MessagePayload, TextChannel }
 import { config } from "../../../tower.js";
 import { MessagePayloadOption } from "discord.js";
 import { MessageReplyOptions } from "discord.js";
+import type Discord from "discord.js";
 
 /**
  * Send a message to Discord.
@@ -16,7 +17,7 @@ export default async function send<B extends boolean = true>(args: {
   content?: string;
   embeds?: Embed[];
   components?: any[];
-  files?: any[];
+  files?: DiscordAttachment[];
   /** Send the message or return object with message create options. Default: true. */
   send?: B;
   /** Ping all members of the party in the message. Default: false. */

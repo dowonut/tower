@@ -5,13 +5,14 @@ import { config } from "../../tower.ts";
 declare global {
   type StatusEffectData = {
     name: string;
+    type: "buff" | "debuff";
     description: string;
     /** When to evaluate the status effect.
      * - turn_end = when the host's turn ends.
      * - turn_start = when the host's turn starts.
      * - immediate = once when the status effect is inflicted.
      */
-    evaluateOn: "turn_end" | "turn_start" | "immediate";
+    evaluateOn: "turn_end" | "turn_start" | "immediate" | "passive";
     /** All outcomes of the status effect. */
     outcomes: StatusEffectOutcome[];
     /** For how many combat rounds does the status effect last. If left empty then infinite. */
@@ -55,6 +56,8 @@ declare global {
     }>;
     /** Damage dealt by the status effect. */
     damage: StatusEffectDamage | StatusEffectDamage[];
+    /** Get custom info text. */
+    info: string | ((this: StatusEffectOutcome) => string);
   };
 
   type StatusEffectOutcomeTypes = {
@@ -62,13 +65,13 @@ declare global {
     modify_stat: "modifyStat";
     modify_speed_gauge: "modifySpeedGauge";
     modify_health: "modifyHealth";
-    custom: "evaluate";
+    custom: "evaluate" | "info";
   };
 
   /** Stat modifier for status effect. */
   export type StatusEffectModifyStat = {
     stat: Stat;
-    type: "flat" | "multiplier";
+    scaling: "flat" | "percent";
     baseFlat?: number;
     basePercent?: number;
   };
@@ -83,7 +86,7 @@ declare global {
     /** What type of scaling to use. Default = percent. */
     scaling?: "flat" | "percent";
     /** If scaling = "percent" then what stat does the action scale off. */
-    source?: Stat;
+    scalingStat?: Stat;
     /** If scaling = "percent" then the base percent of source for scaling. */
     basePercent?: number;
     /** If scaling = "flat" then the base damage amount. */

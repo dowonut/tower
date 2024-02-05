@@ -23,7 +23,11 @@ export default {
       // Check if user is Dowonut
       if (command.dev && message.author.id !== config.developerId) continue;
       // Check if command is unlocked
-      if (!player.user.unlockedCommands.includes(command.name) && message.author.id !== config.developerId) continue;
+      if (
+        !player.user.unlockedCommands.includes(command.name) &&
+        message.author.id !== config.developerId
+      )
+        continue;
 
       allCommandsFiltered.push(command);
     }
@@ -109,6 +113,7 @@ export default {
       player,
       embeds: [embed],
       components: [row],
+      files: [{ attachment: "./assets/bot/banner_icon_wide.png", name: "banner.png" }],
     });
 
     game.componentCollector({ player, botMessage: botMsg, components: [selectMenu] });
@@ -119,6 +124,7 @@ export default {
         thumbnail: { url: config.botIcon },
         description: `${commandObject[currentCategory].text}`,
         color: config.towerColor,
+        image: { url: "attachment://banner.png" },
       };
 
       return embed;

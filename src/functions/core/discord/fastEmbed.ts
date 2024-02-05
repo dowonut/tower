@@ -16,7 +16,7 @@ export default async function fastEmbed<T extends boolean = true>(args: {
   /** Optional components. */
   components?: any[];
   /** Optional files. */
-  files?: any[];
+  files?: DiscordAttachment[];
   /** Send the message or return object with message create options. Default: true. */
   send?: T;
   /** Send the message normally or return game.send object. Default: true. */

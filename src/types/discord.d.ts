@@ -1,4 +1,5 @@
 import Discord, { Interaction, TextChannel } from "discord.js";
+import { Stream } from "stream";
 
 declare global {
   /**
@@ -150,5 +151,12 @@ declare global {
     /** Maximum responses to collect. */
     max?: number;
   }
+
+  export type DiscordAttachment =
+    | Discord.Attachment
+    | Discord.AttachmentPayload
+    | Discord.AttachmentBuilder
+    | Discord.BufferResolvable
+    | Stream;
 }
 export {};

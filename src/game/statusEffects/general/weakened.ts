@@ -1,8 +1,9 @@
 export default {
   name: "weakened",
+  type: "debuff",
   description: "Weakens the target, decreasing their maximum health.",
-  evaluateOn: "immediate",
-  // duration: 3,
+  evaluateOn: "passive",
+  duration: 3,
   stackable: false,
   outcomes: [
     {
@@ -10,7 +11,7 @@ export default {
       messages: ["HOST is weakened and their max HP is decreased by **20%**"],
       modifyStat: {
         stat: "maxHP",
-        type: "multiplier",
+        scaling: "percent",
         basePercent: -20,
       },
     },
