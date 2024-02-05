@@ -9,7 +9,7 @@ export default {
       type: "damage",
       damage: {
         type: "slashing",
-        source: "ATK",
+        scalingStat: "ATK",
         basePercent: 30,
       },
       messages: ["SOURCE hits TARGET with a powerful cleave, dealing DAMAGE"],
@@ -19,7 +19,7 @@ export default {
       targetType: "all",
       damage: {
         type: "slashing",
-        source: "ATK",
+        scalingStat: "ATK",
         basePercent: 10,
       },
       messages: ["SOURCE's swing also hits TARGET and deals DAMAGE"],

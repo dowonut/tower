@@ -10,7 +10,7 @@ export default {
       targetType: "single",
       damage: {
         type: "slashing",
-        source: "ATK",
+        scalingStat: "ATK",
         basePercent: 50,
       },
       messages: ["SOURCE lunges at TARGET with their halberd, dealing DAMAGE"],
@@ -21,7 +21,7 @@ export default {
       targetNumber: 2,
       damage: {
         type: "slashing",
-        source: "ATK",
+        scalingStat: "ATK",
         basePercent: 15,
       },
       messages: ["SOURCE swiftly makes an extra swing at TARGET, dealing DAMAGE"],

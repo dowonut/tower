@@ -299,9 +299,9 @@ export class EnemyClass extends EnemyBaseClass {
 
           // Iterate through stat modifications
           for (const modifyStat of modifyStats) {
-            if (modifyStat.type == "multiplier") {
+            if (modifyStat.scaling == "percent") {
               multipliers.statusEffects += modifyStat.basePercent / 100;
-            } else if (modifyStat.type == "flat") {
+            } else if (modifyStat.scaling == "flat") {
               flatBonus += modifyStat.baseFlat;
             }
           }

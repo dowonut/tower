@@ -8,7 +8,7 @@ export default {
     {
       type: "damage",
       targetType: "all",
-      damage: { type: "bludgeoning", source: "ATK", basePercent: 20 },
+      damage: { type: "bludgeoning", scalingStat: "ATK", basePercent: 20 },
       messages: ["SOURCE spins around and whacks TARGET with their staff, dealing DAMAGE"],
     },
   ],

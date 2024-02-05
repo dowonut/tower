@@ -9,7 +9,7 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: { type: "bludgeoning", source: "ATK", basePercent: 200 },
+      damage: { type: "bludgeoning", scalingStat: "ATK", basePercent: 200 },
       messages: [
         "Rock in hand, you brutally smash it against TARGET, dealing DAMAGE",
         "You channel the energy of your caveman ancestors, brutally crushing the rock against TARGET and dealing DAMAGE",

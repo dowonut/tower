@@ -17,7 +17,7 @@ export default {
           damage: [
             {
               type: "bludgeoning",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 80,
             },
           ],

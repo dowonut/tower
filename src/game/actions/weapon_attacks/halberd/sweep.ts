@@ -9,7 +9,7 @@ export default {
       targetType: "all",
       damage: {
         type: "slashing",
-        source: "ATK",
+        scalingStat: "ATK",
         basePercent: 10,
       },
       messages: ["SOURCE sweeps at TARGET with their halberd, dealing DAMAGE"],

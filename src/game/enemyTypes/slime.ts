@@ -16,7 +16,7 @@ export default {
           targetType: "single",
           damage: {
             type: "bludgeoning",
-            source: "ATK",
+            scalingStat: "ATK",
             basePercent: 60,
           },
           messages: ["SOURCE tries to swallow TARGET, dealing DAMAGE"],
@@ -32,7 +32,7 @@ export default {
           targetType: "single",
           damage: {
             type: "bludgeoning",
-            source: "ATK",
+            scalingStat: "ATK",
             basePercent: 30,
           },
           messages: ["SOURCE bounces on TARGET, dealing DAMAGE"],
@@ -50,12 +50,12 @@ export default {
           damage: [
             {
               type: "bludgeoning",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 30,
             },
             {
               type: "fire",
-              source: "MAG",
+              scalingStat: "MAG",
               basePercent: 30,
             },
           ],
@@ -74,12 +74,12 @@ export default {
           damage: [
             {
               type: "bludgeoning",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 30,
             },
             {
               type: "water",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 30,
             },
           ],

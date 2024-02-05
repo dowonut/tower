@@ -10,7 +10,7 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: [{ type: "bludgeoning", source: "ATK", basePercent: 50 }],
+      damage: [{ type: "bludgeoning", scalingStat: "ATK", basePercent: 50 }],
       messages: ["SOURCE's fist connects with the underside of TARGET and deals DAMAGE"],
     },
   ],

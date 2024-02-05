@@ -7,7 +7,7 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: [{ type: "piercing", source: "ATK", basePercent: 70 }],
+      damage: [{ type: "piercing", scalingStat: "ATK", basePercent: 70 }],
       messages: [
         "SOURCE runs and jumps into the air, poking TARGET with their spear and dealing DAMAGE",
       ],

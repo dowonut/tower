@@ -9,7 +9,7 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: [{ type: "slashing", source: "ATK", basePercent: 30 }],
+      damage: [{ type: "slashing", scalingStat: "ATK", basePercent: 30 }],
       messages: [
         "SOURCE slashes elegantly at TARGET and deals DAMAGE",
         "SOURCE's sword cuts cleanly through TARGET, dealing DAMAGE",
@@ -19,7 +19,7 @@ export default {
     {
       type: "damage",
       targetType: "adjacent",
-      damage: [{ type: "slashing", source: "ATK", basePercent: 10 }],
+      damage: [{ type: "slashing", scalingStat: "ATK", basePercent: 10 }],
       messages: ["SOURCE's slash also hits TARGET, dealing DAMAGE"],
     },
   ],

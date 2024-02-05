@@ -12,7 +12,7 @@ export default {
           damage: [
             {
               type: "slashing",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 50,
             },
           ],
@@ -30,7 +30,7 @@ export default {
           targetType: "all",
           damage: {
             type: "water",
-            source: "MAG",
+            scalingStat: "MAG",
             basePercent: 30,
           },
           messages: ["SOURCE opens their mouth and splashes milk all over TARGET, dealing DAMAGE"],
@@ -46,7 +46,7 @@ export default {
           type: "damage",
           damage: {
             type: "piercing",
-            source: "ATK",
+            scalingStat: "ATK",
             basePercent: 50,
           },
           messages: ["SOURCE emits an evil aura and licks TARGET, dealing DAMAGE"],
@@ -56,7 +56,7 @@ export default {
           targetType: "all",
           damage: {
             type: "void",
-            source: "MAG",
+            scalingStat: "MAG",
             basePercent: 10,
           },
           messages: [

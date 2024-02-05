@@ -6,7 +6,7 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: { type: "piercing", source: "ATK", basePercent: 50 },
+      damage: { type: "piercing", scalingStat: "ATK", basePercent: 50 },
       messages: [
         "SOURCE shoots a piercing arrow at TARGET, dealing DAMAGE",
         "SOURCE makes a beautiful shot at TARGET and deals DAMAGE",

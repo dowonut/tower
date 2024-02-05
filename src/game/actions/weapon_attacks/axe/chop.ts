@@ -8,7 +8,7 @@ export default {
       type: "damage",
       damage: {
         type: "slashing",
-        source: "ATK",
+        scalingStat: "ATK",
         basePercent: 50,
       },
       messages: [

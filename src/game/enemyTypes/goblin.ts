@@ -16,7 +16,7 @@ export default {
           damage: [
             {
               type: "slashing",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 60,
             },
           ],
@@ -33,7 +33,7 @@ export default {
           damage: [
             {
               type: "bludgeoning",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 50,
             },
           ],
@@ -51,7 +51,7 @@ export default {
           damage: [
             {
               type: "bludgeoning",
-              source: "ATK",
+              scalingStat: "ATK",
               basePercent: 70,
             },
           ],

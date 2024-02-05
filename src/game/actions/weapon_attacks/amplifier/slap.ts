@@ -9,22 +9,22 @@ export default {
       damage: [
         {
           type: "earth",
-          source: "ATK",
+          scalingStat: "MAG",
           basePercent: 10,
         },
         {
           type: "fire",
-          source: "ATK",
+          scalingStat: "MAG",
           basePercent: 10,
         },
         {
           type: "air",
-          source: "ATK",
+          scalingStat: "MAG",
           basePercent: 10,
         },
         {
           type: "water",
-          source: "ATK",
+          scalingStat: "MAG",
           basePercent: 10,
         },
       ],
