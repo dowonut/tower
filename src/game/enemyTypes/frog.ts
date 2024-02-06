@@ -18,6 +18,13 @@ export default {
           ],
           messages: ["SOURCE extends a tongue of blades and licks TARGET, dealing DAMAGE"],
         },
+        {
+          type: "apply_status",
+          messages: ["SOURCE causes TARGET to bleed, inflicting STATUS"],
+          status: {
+            name: "bleeding",
+          },
+        },
       ],
     },
     {

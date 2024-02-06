@@ -348,7 +348,7 @@ ${turnOrderList}
 
   /** Send attack message when received. */
   async function onActionMessage(args: ActionMessageEmitter) {
-    const { message, encounterId } = args;
+    const { message, encounterId, data = {} } = args;
     if (encounterId !== encounter.id) return;
 
     // Delete attack messages
@@ -362,12 +362,47 @@ ${turnOrderList}
     //   }, 10000);
     // }
 
+    // Attach status effect button
+    let buttons: Button[] = [];
+    let row = {};
+    if (data.statusEffect) {
+      buttons = [
+        {
+          id: "status_effect",
+          label: `${game.titleCase(data.statusEffect.name)}`,
+          emoji: emojis.question_mark,
+          function: async (r) => {
+            await r.edit({
+              content: `${r.content}\n## ${data.statusEffect.getEmoji()}${game.titleCase(
+                data.statusEffect.name
+              )}\n${data.statusEffect.getInfo()}`,
+              components: [],
+            });
+          },
+          stop: true,
+        },
+      ];
+      row = game.actionRow("buttons", buttons);
+    }
+
+    // Send message
     const botMsg = await game.send({
       player: players[0],
       reply: false,
       content: message,
       files: [{ attachment: "./assets/seperator.png", name: "seperator.png" }],
+      components: _.isEmpty(buttons) ? [] : [row],
     });
+
+    // Attach collector
+    if (!_.isEmpty(buttons)) {
+      game.componentCollector({
+        components: buttons,
+        botMessage: botMsg,
+        player: menu.player,
+      });
+    }
+
     try {
       encounter = await prisma.encounter.update({
         where: { id: encounter.id },

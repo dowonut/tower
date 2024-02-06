@@ -159,7 +159,7 @@ export class ActionClass extends ActionClassBase {
       }
       // Determine specific outcome text
       switch (outcome.type) {
-        // Damage
+        //* Damage
         case "damage":
           const damages = Array.isArray(outcome.damage) ? outcome.damage : [outcome.damage];
           let damageText: string[] = [];
@@ -178,9 +178,10 @@ export class ActionClass extends ActionClassBase {
           }
           finalText = `${outcomePrefix} ${damageText.join("")} to **${targetText}**${suffix}`;
           break;
-        // Status effect
+        //* Status effect
         case "apply_status":
-          let statusText = `**${game.f(outcome.status.name)}**`;
+          const statusEffect = game.getStatusEffect(outcome.status.name);
+          let statusText = `${statusEffect.getEmoji()}**${game.f(outcome.status.name)}**`;
           finalText = `${outcomePrefix} ${statusText} to **${targetText}**${suffix}`;
           break;
         case "custom":

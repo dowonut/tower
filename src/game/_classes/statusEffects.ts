@@ -47,8 +47,10 @@ export class StatusEffectClass extends StatusEffectBaseClass {
     let emoji = "";
     switch (this.type) {
       case "buff":
+        emoji = emojis.buff;
         break;
       case "debuff":
+        emoji = emojis.debuff;
         break;
     }
     return emoji;

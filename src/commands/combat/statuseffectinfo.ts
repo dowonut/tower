@@ -7,6 +7,7 @@ export default {
   description: "View information about a specific status effect.",
   category: "combat",
   arguments: [{ name: "status_effect", type: "statusEffect" }],
+  useInCombat: true,
   async execute(message, args: { status_effect: StatusEffect }, player, server) {
     const { status_effect: statusEffect } = args;
 

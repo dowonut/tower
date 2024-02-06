@@ -26,6 +26,7 @@ export default function getOutcomeMessage(args: {
   let sourceName: string;
   let targetName: string;
   let statusName: string;
+  let statusEffect: StatusEffect;
   let barColor: ProgressBarColor;
   // Define source and target names
   if (source instanceof PlayerClass) {
@@ -43,6 +44,7 @@ export default function getOutcomeMessage(args: {
   // Define status effect name
   if (outcome.type == "apply_status") {
     statusName = game.titleCase(outcome.status.name);
+    statusEffect = game.getStatusEffect(outcome.status.name);
   }
 
   // Format action message
@@ -69,7 +71,10 @@ export default function getOutcomeMessage(args: {
   actionMessage = actionMessage.replaceAll(/TARGET|HOST/g, targetName);
   actionMessage = actionMessage.replaceAll("DAMAGE", damageText + " damage");
   actionMessage = actionMessage.replaceAll("SOURCE", sourceName);
-  actionMessage = actionMessage.replaceAll("STATUS", `**${statusName}**`);
+  actionMessage = actionMessage.replaceAll(
+    "STATUS",
+    `${statusEffect?.getEmoji()}**${statusName}**`
+  );
   actionMessage = actionMessage.replaceAll("HEAL", healText);
 
   healthText =
