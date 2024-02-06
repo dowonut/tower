@@ -150,7 +150,7 @@ export default async function evaluateAction(args: {
       | Prisma.EnemyStatusEffectCreateWithoutEnemyInput;
     data = {
       name: statusEffect.name,
-      remDuration: statusEffect.duration,
+      remDuration: statusEffect?.duration || null,
       sourceId: source.id,
       sourceType,
     };

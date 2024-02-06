@@ -4,5 +4,5 @@ export default {
   description: "Makes you super strong and shit.",
   info: `A viscous substance that gives you an urge to hit things.`,
   // Passive effects if potion
-  effects: [{ name: "strength" }],
+  effects: [{ name: "strengthened" }],
 } as const satisfies ItemData;

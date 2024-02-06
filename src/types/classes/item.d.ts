@@ -23,7 +23,7 @@ declare global {
     /** Status effects to apply when the item is consumed. */
     effects: {
       /** Name of status effect to apply. */
-      name: string;
+      name: StaticStatusEffectName;
       level?: number;
     }[];
     /** Item to unlock when given. */

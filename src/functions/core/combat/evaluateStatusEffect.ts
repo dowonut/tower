@@ -3,21 +3,21 @@ import { config, game, prisma } from "../../../tower.js";
 
 /** Evaluate a status effect against a host. */
 export default async function evaluateStatusEffect(args: {
-  enemies: Enemy[];
-  players: Player[];
+  enemies?: Enemy[];
+  players?: Player[];
+  source?: Player | Enemy;
   host: Player | Enemy;
   statusEffect: StatusEffect;
 }) {
-  let { host, statusEffect, players, enemies } = args;
+  let { host, statusEffect, players = [], enemies = [], source } = args;
 
   // Refresh host
   host = await (host as Player).refresh();
 
   // Determine status effect source
-  let source: Enemy | Player;
-  if (statusEffect.sourceType == "player") {
+  if (!source && statusEffect.sourceType == "player") {
     source = players.find((x) => x.id == statusEffect.sourceId);
-  } else if (statusEffect.sourceType == "enemy") {
+  } else if (!source && statusEffect.sourceType == "enemy") {
     source = enemies.find((x) => x.id == statusEffect.sourceId);
   }
 
@@ -76,12 +76,8 @@ export default async function evaluateStatusEffect(args: {
       previousHealth: previousHostHealth,
     });
 
-    // Send attack message
-    game.emitter.emit("actionMessage", {
-      encounterId: source.encounterId,
-      message,
-    } satisfies ActionMessageEmitter);
-
+    // Send message
+    emitMessage(source, message);
     return;
   }
 
@@ -111,11 +107,7 @@ export default async function evaluateStatusEffect(args: {
     });
 
     // Send attack message
-    game.emitter.emit("actionMessage", {
-      encounterId: source.encounterId,
-      message,
-    } satisfies ActionMessageEmitter);
-
+    emitMessage(source, message);
     return;
   }
 
@@ -142,10 +134,7 @@ export default async function evaluateStatusEffect(args: {
     });
 
     // Send attack message
-    game.emitter.emit("actionMessage", {
-      encounterId: source.encounterId,
-      message,
-    } satisfies ActionMessageEmitter);
+    emitMessage(source, message);
     return;
   }
 
@@ -189,11 +178,16 @@ export default async function evaluateStatusEffect(args: {
       previousHealth,
     });
 
-    // Send attack message
+    // Send message
+    emitMessage(source, message);
+    return;
+  }
+
+  function emitMessage(source: Player | Enemy, message: string) {
+    if (!source?.encounterId) return;
     game.emitter.emit("actionMessage", {
       encounterId: source.encounterId,
       message,
     } satisfies ActionMessageEmitter);
-    return;
   }
 }

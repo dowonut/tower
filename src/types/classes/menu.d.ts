@@ -9,9 +9,9 @@ declare global {
     /** Optional variables stored in the menu. */
     variables?: T;
     /** Boards. */
-    boards: TowerBoard<T>[];
+    boards?: TowerBoard<T>[];
     /** Rows. */
-    rows: TowerRow<T>[];
+    rows?: TowerRow<T>[];
     /** Messages. */
     messages?: TowerMessage<T>[];
     /** Optionally attach menu to existing message. */

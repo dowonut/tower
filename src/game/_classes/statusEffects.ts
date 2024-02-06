@@ -57,7 +57,7 @@ export class StatusEffectClass extends StatusEffectBaseClass {
   }
 
   /** Get advanced info about the status effect. */
-  getInfo() {
+  getInfo(includeTitle: boolean = false) {
     let textObject: {
       [key in StatusEffectOutcomeType]: string[];
     } = { damage: [], modify_health: [], modify_speed_gauge: [], modify_stat: [], custom: [] };
@@ -188,9 +188,13 @@ export class StatusEffectClass extends StatusEffectBaseClass {
       textObject[outcome.type].push(finalText);
     }
     let finalText = ``;
+    // Add title
+    if (includeTitle) finalText += `### ${this.getEmoji()}**${this.getName()}**\n`;
+    // Add duration
     const duration = this.duration || undefined;
     if (duration && this.evaluateOn !== "immediate")
-      finalText += `⏳ Duration: \`${this.duration} rounds\`\n\n`;
+      finalText += `**Duration:** \`${this.duration} rounds\` ⏳\n\n`;
+    // Format final string
     for (const info of Object.values(textObject)) {
       if (_.isEmpty(info)) continue;
       finalText += `${turnText} ${info.join("")}\n\n`;

@@ -70,6 +70,7 @@ declare global {
 
   /** Stat modifier for status effect. */
   export type StatusEffectModifyStat = {
+    /** Which of the host's stats to modify. */
     stat: Stat;
     scaling: "flat" | "percent";
     baseFlat?: number;

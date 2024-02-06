@@ -1,4 +1,4 @@
-import { createClassFromType, getTurnOrder } from "../../functions/core/index.js";
+import { createClassFromType, getTurnOrder, toArray } from "../../functions/core/index.js";
 import { config } from "../../tower.js";
 
 const PlayerBaseClass = createClassFromType<PlayerBase, false>();
@@ -63,18 +63,17 @@ export class PlayerClass extends PlayerBaseClass {
     ? number
     : {
         [key in
-          | "totalBeforeMultipliers"
-          | "levelBonus"
-          | "traitMultiplier"
+          | "base"
+          | "flatBonus"
           | "weaponLevelBonus"
+          | "totalBeforeMultipliers"
+          | "traitMultiplier"
+          | "statusEffectMultiplier"
+          | "multipliersBonus"
           | "total"]: number;
       } {
     // Get status effects
     const statusEffects = this.getStatusEffects();
-
-    // ---------------------------------------
-    // Define flat bonus
-    let flatBonus = 0;
 
     // Get base stat
     let baseStat = 0;
@@ -86,12 +85,15 @@ export class PlayerClass extends PlayerBaseClass {
         baseStat = config.baseStats[stat];
         break;
     }
-    flatBonus += baseStat;
 
-    // Get flat bonus from level
+    // Get bonus from level
     const levelBonusFunction = config["player_" + stat];
     const levelBonus = levelBonusFunction ? levelBonusFunction(this.level) : 0;
-    flatBonus += levelBonus;
+    baseStat += levelBonus;
+
+    // ---------------------------------------
+    // Define flat bonus
+    let flatBonus = 0;
 
     // Get flat bonuses from equipment
     let weaponLevelBonus = 0;
@@ -133,19 +135,19 @@ export class PlayerClass extends PlayerBaseClass {
     multipliers.traits += traitMultiplier;
 
     // Evaluate status effects
+    let statusEffectMultiplier = 0;
     for (const statusEffect of statusEffects) {
       // Iterate through effect outomes
       for (const outcome of statusEffect.outcomes) {
         // Modify stat
         if (outcome.type == "modify_stat") {
-          const modifyStats = Array.isArray(outcome.modifyStat)
-            ? outcome.modifyStat
-            : [outcome.modifyStat];
+          const modifyStats = toArray(outcome.modifyStat);
 
           // Iterate through stat modifications
           for (const modifyStat of modifyStats) {
+            if (modifyStat.stat !== stat) continue;
             if (modifyStat.scaling == "percent") {
-              multipliers.statusEffects += modifyStat.basePercent / 100;
+              statusEffectMultiplier += modifyStat.basePercent / 100;
             } else if (modifyStat.scaling == "flat") {
               flatBonus += modifyStat.baseFlat;
             }
@@ -153,22 +155,29 @@ export class PlayerClass extends PlayerBaseClass {
         }
       }
     }
+    multipliers.statusEffects += statusEffectMultiplier;
 
     // ---------------------------------------
     // Evaluate multipliers
-    let totalBeforeMultipliers = flatBonus;
+    let totalBeforeMultipliers = baseStat + flatBonus;
     let total = totalBeforeMultipliers;
+    let multipliersBonus = 0;
     for (const [key, multiplier] of Object.entries(multipliers)) {
+      multipliersBonus += multiplier - 1;
       total *= multiplier;
     }
+    multipliersBonus = Math.round(multipliersBonus);
 
     // Return all details
     if (verbose) {
       return {
-        totalBeforeMultipliers,
-        levelBonus,
-        traitMultiplier,
+        base: baseStat,
+        flatBonus,
         weaponLevelBonus,
+        totalBeforeMultipliers,
+        traitMultiplier,
+        statusEffectMultiplier,
+        multipliersBonus,
         total,
       } as any;
     }

@@ -1,5 +1,6 @@
 import { InteractionCollector } from "discord.js";
 import { game } from "../../../tower.js";
+import _ from "lodash";
 
 type MenuOptions<T> = TowerMenuOptions<T>;
 
@@ -24,6 +25,12 @@ export default class Menu<T> extends MenuBase<T> {
   async init(boardName: (typeof this.boards)[number]["name"], args: CollectorOptions = undefined) {
     if (args) {
       this.collectorArgs = args;
+    }
+    if (!this.boards || !this.rows) {
+      throw game.error({
+        player: this.player,
+        content: `Menu must contain one of both boards and rows before initialization.`,
+      });
     }
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
@@ -155,5 +162,23 @@ export default class Menu<T> extends MenuBase<T> {
       options: args,
     });
     this.currentCollector = collector;
+  }
+
+  //------------------------------------------------------------
+  /** Set boards. */
+  async setBoards(boards: TowerBoard<T>[]) {
+    this.boards = boards;
+  }
+
+  //------------------------------------------------------------
+  /** Set rows. */
+  async setRows(boards: TowerRow<T>[]) {
+    this.rows = boards;
+  }
+
+  //------------------------------------------------------------
+  /** Set messages. */
+  async setMessages(boards: TowerMessage<T>[]) {
+    this.messages = boards;
   }
 }
