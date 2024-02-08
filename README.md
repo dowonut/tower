@@ -1,4 +1,4 @@
-# Tower
+# ![Tower](https://imgur.com/aMyFqOS.png)
 #### A turn-based MMORPG entirely on Discord.
 
 Development server:
