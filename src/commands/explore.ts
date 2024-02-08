@@ -51,7 +51,7 @@ export default {
       case "enemies":
         // Start random enemy encounter in region
         await game.enemyEncounter({ player });
-        player.unlockCommands(["entercombat"]);
+        player.unlockCommands(["entercombat", "enemyinfo"]);
         break;
       case "loot":
         // Give the player some random loot from that region
