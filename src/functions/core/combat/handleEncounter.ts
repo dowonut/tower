@@ -349,7 +349,7 @@ ${turnOrderList}
   /** Send attack message when received. */
   async function onActionMessage(args: ActionMessageEmitter) {
     const { message, encounterId, data = {} } = args;
-    if (encounterId !== encounter.id) return;
+    if (encounterId !== encounter.id || !message) return;
 
     // Delete attack messages
     // if (encounter.lastAttackMessageId) {
@@ -369,7 +369,6 @@ ${turnOrderList}
       buttons = [
         {
           id: "status_effect",
-          label: `${game.titleCase(data.statusEffect.name)}`,
           emoji: emojis.question_mark,
           function: async (r) => {
             await r.edit({
@@ -584,7 +583,7 @@ ${turnOrderList}
 
       // Next turn
       await nextTurn();
-    }, game.random(1, 3) * 1000);
+    }, game.random(10, 20) * 100);
   }
 
   /** Exit combat. */
@@ -873,6 +872,7 @@ ${turnOrderList}
             label: x.displayName,
             value: x.number.toString(),
             default: total > 1 ? false : targets[0] == x.number ? true : false,
+            emoji: x.getEmoji(),
           };
         }),
       function: async (r, i, s) => {

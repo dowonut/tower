@@ -26,12 +26,6 @@ export default class Menu<T> extends MenuBase<T> {
     if (args) {
       this.collectorArgs = args;
     }
-    if (!this.boards || !this.rows) {
-      throw game.error({
-        player: this.player,
-        content: `Menu must contain one of both boards and rows before initialization.`,
-      });
-    }
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;

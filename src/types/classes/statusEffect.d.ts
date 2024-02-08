@@ -29,8 +29,8 @@ declare global {
      * custom = evaluate a custom function.
      */
     type: T;
-    /** Message to send on evaluation. Variables: HOST, SOURCE, DAMAGE, HEAL. */
-    messages: string[];
+    /** Optional message to send on evaluation. Variables: HOST, SOURCE, DAMAGE, HEAL. */
+    messages?: string[];
   };
 
   type StatusEffectOutcomeAll = {

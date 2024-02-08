@@ -1,3 +1,4 @@
+import _ from "lodash";
 import enemies from "../../../game/_classes/enemies.js";
 import { game, config, prisma, client } from "../../../tower.js";
 
@@ -71,7 +72,7 @@ export default async function enemyEncounter(args: { player: Player }) {
     player,
     boards: [
       { name: "encounter", message: "encounter", rows: ["encounterOptions"] },
-      { name: "info", message: "info", rows: ["encounterOptions"] },
+      { name: "info", message: "encounter", rows: ["encounterOptions", "selectEnemy"] },
       { name: "end", message: "encounter", rows: [] },
     ],
     rows: [
@@ -103,12 +104,34 @@ export default async function enemyEncounter(args: { player: Player }) {
               id: "info",
               emoji: config.emojis.info,
               disable: m.currentBoard == "info" ? true : false,
-              function: () => {
-                m.switchBoard("info");
+              function: async () => {
+                await m.switchBoard("info");
               },
             },
           ];
         },
+      },
+      {
+        name: "selectEnemy",
+        type: "menu",
+        components: (m) => ({
+          id: "selectEnemy",
+          placeholder: "Select an enemy to view more information...",
+          options: _.uniq(enemies).map((x) => ({
+            id: x.name + x.number,
+            label: x.getName(),
+            value: x.name,
+            emoji: x.getEmoji(),
+          })),
+          function: async (r, i, s) => {
+            await game.runCommand("enemyinfo", {
+              channel: m.player.channel,
+              discordId: m.player.user.discordId,
+              server: m.player.server,
+              args: [s],
+            });
+          },
+        }),
       },
     ],
     messages: [
@@ -125,10 +148,6 @@ export default async function enemyEncounter(args: { player: Player }) {
             embed: { image: { url: "attachment://encounter.png" } },
           }),
       },
-      // {
-      //   name: "info",
-      //   function: async (m) => {},
-      // },
     ],
   });
 

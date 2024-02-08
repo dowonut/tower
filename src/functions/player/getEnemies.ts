@@ -2,6 +2,7 @@ import enemies from "../../game/_classes/enemies.js";
 
 import { game, prisma } from "../../tower.js";
 
+/** Get enemies in current combat encounter. */
 export default (async function () {
   if (!this.inCombat) return; //throw new Error("Player must be in combat to get enemy.");
 

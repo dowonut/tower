@@ -1,3 +1,4 @@
+import _ from "lodash";
 import emojis from "../../../emojis.js";
 import { EnemyClass } from "../../../game/_classes/enemies.js";
 import PlayerClass from "../../../game/_classes/players.js";
@@ -20,6 +21,8 @@ export default function getOutcomeMessage(args: {
     previousHealth = 0,
     outcome,
   } = args;
+
+  if (_.isEmpty(outcome?.messages)) return undefined;
 
   let healthText: string;
   let healthBar: string;

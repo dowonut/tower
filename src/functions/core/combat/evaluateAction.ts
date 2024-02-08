@@ -77,7 +77,7 @@ export default async function evaluateAction(args: {
         break;
     }
     // Wait before evaluating next action outcome
-    await setTimeout(game.random(2, 5) * 100);
+    await setTimeout(game.random(10, 20) * 100);
   }
 
   // Returned with modified entities

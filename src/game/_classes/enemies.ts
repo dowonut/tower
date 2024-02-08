@@ -10,6 +10,7 @@ import {
   evaluateAction,
   createClassObject,
   evaluateStatusEffect,
+  titleCase,
 } from "../../functions/core/index.js";
 import { config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
@@ -84,9 +85,16 @@ export class EnemyClass extends EnemyBaseClass {
       // Get image file
       let file = {
         attachment: path,
-        name: `${enemyName}.png`,
+        name: `enemy.png`,
       };
-
+      return file;
+    }
+    // Return with placeholder image
+    else {
+      let file = {
+        attachment: `./assets/enemies/placeholder.png`,
+        name: `enemy.png`,
+      };
       return file;
     }
   }
@@ -248,6 +256,23 @@ export class EnemyClass extends EnemyBaseClass {
 
   get displayName() {
     return this.getName() + ` (${this.number})`;
+  }
+
+  // INFO =======================================================================
+
+  /** Get info text for enemy stats. */
+  getStatsInfo() {
+    let text = ``;
+    for (let statName of Object.keys(config.baseEnemyStats) as EnemyStat[]) {
+      if (statName == "XP") continue;
+      let name: string = statName;
+      if (statName == "maxHP") name = "Max HP";
+      let percent = ``;
+      if (["CR", "CD", "AR", "AD"].includes(name)) percent = `%`;
+      const statText = f(this.getStat(statName).toString() + percent);
+      text += `${emojis.stats[statName]} ${titleCase(name)}: ${statText}\n`;
+    }
+    return text;
   }
 
   // STATS =======================================================================
