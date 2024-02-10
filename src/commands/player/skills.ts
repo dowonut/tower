@@ -24,6 +24,7 @@ export default {
   description: "View all your skills or one specific skill.",
   category: "player",
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args: { skill: Skill }, player, server) {
     const { skill } = args;
     const { f } = game;

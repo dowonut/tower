@@ -1,6 +1,6 @@
 export default {
   name: "slime dungeon",
-  description: "This place is very slimey...",
+  description: "This place is very slimy...",
   chambers: [
     {
       type: "combat",
@@ -16,6 +16,20 @@ export default {
         ],
       },
       weight: 100,
+    },
+    {
+      type: "puzzle",
+      description: "Solve a silly puzzle.",
+      puzzle: {},
+      id: 2,
+      weight: 40,
+    },
+    {
+      type: "reward",
+      description: "You get a cool reward!",
+      reward: {},
+      id: 3,
+      weight: 10,
     },
   ],
   bossChamber: {

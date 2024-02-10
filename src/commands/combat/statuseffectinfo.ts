@@ -8,6 +8,7 @@ export default {
   category: "combat",
   arguments: [{ name: "status_effect", type: "statusEffect" }],
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args: { status_effect: StatusEffect }, player, server) {
     const { status_effect: statusEffect } = args;
 

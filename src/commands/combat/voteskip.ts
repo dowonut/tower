@@ -9,6 +9,7 @@ export default {
   cooldown: "0",
   partyOnly: true,
   useInCombatOnly: true,
+  useInDungeon: true,
   async execute(message, args, player, server) {
     // Check if party size is correct
     if (player.party.players.length <= 2)

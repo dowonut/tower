@@ -10,6 +10,7 @@ export default {
   description: "View detailed information about an item.",
   category: "item",
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args: { item: Item }, player, server) {
     // Get player item
     let { item } = args;
@@ -34,7 +35,8 @@ export default {
           type: "buttons",
           components: async (m) => {
             let buttons: Button[] = [];
-            const disableCheck = player.inCombat || item.quantity < 1;
+            if (!item) return [];
+            const disableCheck = player.inCombat || item?.quantity < 1;
 
             // Create sell button
             if (item.value) {
@@ -103,6 +105,31 @@ export default {
                 },
               });
             }
+            // Create locate dungeon button
+            if (item.category == "map" && item.dungeon) {
+              buttons.push({
+                id: "locate_dungeon",
+                label: "Locate Dungeon",
+                style: "success",
+                emoji: "🔎",
+                disable: player.exploration.some(
+                  (x) => x.type == "dungeon" && x.name == item.dungeon.name
+                ),
+                function: async () => {
+                  await player.giveItem(item.name, -1);
+                  await player.addExploration({ type: "dungeon", name: item.dungeon.name });
+                  await m.botMessage.delete();
+                  await game.send({
+                    player,
+                    reply: true,
+                    content: `You've uncovered the location of the **${game.titleCase(
+                      item.dungeon.name
+                    )}**`,
+                  });
+                  await player.unlockCommands(["dungeons"]);
+                },
+              });
+            }
 
             return buttons;
           },
@@ -168,6 +195,7 @@ export default {
         {
           name: "main",
           function: (m) => {
+            if (!item) return m.botMessage.delete();
             // Format item description
             let description = item.getDescription();
 

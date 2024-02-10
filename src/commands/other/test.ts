@@ -6,8 +6,5 @@ export default {
   description: "For testing purposes.",
   category: "admin",
   dev: true,
-  async execute(message, args, player, server) {
-    const dungeon = game.get("dungeons", "slime dungeon");
-    dungeon.generateInstance();
-  },
+  async execute(message, args, player, server) {},
 } as Command;

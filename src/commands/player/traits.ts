@@ -9,6 +9,7 @@ export default {
   description: "View your traits.",
   category: "player",
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args, player, server) {
     const menu = new game.Menu({
       player,

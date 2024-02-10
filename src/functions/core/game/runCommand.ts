@@ -179,6 +179,19 @@ export default async function runCommand(
         });
       }
 
+      // Check if user is in a dungeon
+      if (
+        player.environment == "dungeon" &&
+        command.useInDungeon !== true &&
+        command.category !== "admin" &&
+        !command?.environment?.includes("dungeon")
+      ) {
+        return game.error({
+          player,
+          content: `this command can't be used while inside a dungeon.`,
+        });
+      }
+
       // Check party
       if (!player.party && command.partyOnly) {
         return game.error({

@@ -9,6 +9,7 @@ export default {
   ],
   description: "Eat food you have in your inventory.",
   category: "item",
+  useInDungeon: true,
   async execute(message, args: { item: Item; quantity: number | "all" }, player, server) {
     let { item, quantity } = args;
     const maxHP = player.maxHP;

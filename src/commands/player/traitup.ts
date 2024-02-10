@@ -22,6 +22,7 @@ export default {
       type: "number",
     },
   ],
+  useInDungeon: true,
   description: "Increase a trait using trait points.",
   category: "player",
   async execute(message, args: { trait: PlayerTrait; amount: number | "all" }, player, server) {

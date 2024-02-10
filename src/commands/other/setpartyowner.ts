@@ -7,6 +7,7 @@ export default {
   category: "other",
   arguments: [{ name: "player", required: true, type: "user" }],
   partyOnly: true,
+  useInDungeon: true,
   async execute(message, args, player, server) {
     if (!player.isPartyLeader)
       return game.error({

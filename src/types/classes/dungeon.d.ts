@@ -1,3 +1,6 @@
+import Prisma from "@prisma/client";
+import { DungeonClass } from "../../game/_classes/dungeons.js";
+
 declare global {
   /** Dungeon data. */
   export type DungeonData = {
@@ -7,8 +10,6 @@ declare global {
     chambers: DungeonChamber[];
     /** The boss chamber in the dungeon. */
     bossChamber: DungeonChamberBoss;
-    /** DO NOT DEFINE. Generated dungeon instance. */
-    instance?: DungeonInstance;
   };
 
   /** Default data for all dungeon chambers. */
@@ -40,6 +41,7 @@ declare global {
 
   /** Boss type dungeon chamber. */
   type DungeonChamberBoss = {
+    type?: "boss";
     enemies: StaticEnemyName[];
     effects?: StaticStatusEffectName[];
   };
@@ -64,8 +66,8 @@ declare global {
     ? DungeonChamberDefault<T> & Pick<DungeonChamberAll, DungeonChamberTypes[T]>
     : DungeonChamberDefault<T>;
 
-  /** Generated dungeon instance. */
-  export type DungeonInstance = [
+  /** Describes the structure of a generated dungeon instance. */
+  export type DungeonStructure = [
     ChamberVertical,
     ChamberVertical,
     ChamberVertical,
@@ -76,8 +78,6 @@ declare global {
     ChamberVertical
   ];
 
-  type DungeonInstanceChamber = number | 0;
-
   type ChamberVertical = [
     DungeonInstanceChamber,
     DungeonInstanceChamber,
@@ -85,5 +85,11 @@ declare global {
     DungeonInstanceChamber,
     DungeonInstanceChamber
   ];
+
+  type DungeonInstanceChamber = number | 0;
+
+  export type DungeonBase = Prisma.Dungeon & DungeonData;
+
+  export type Dungeon = DungeonClass;
 }
 export {};

@@ -10,6 +10,7 @@ export default {
   description: "View detailed information about an enemy.",
   category: "combat",
   useInCombat: true,
+  useInDungeon: true,
   arguments: [
     {
       name: "enemy",

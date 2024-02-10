@@ -8,6 +8,7 @@ export default {
   useInCombatOnly: true,
   useInTurnOnly: true,
   cooldownGroup: "combat_action",
+  useInDungeon: true,
   async execute(message, args, player, server) {
     // Notify encounter of player action
     game.emitPlayerAction({ player });

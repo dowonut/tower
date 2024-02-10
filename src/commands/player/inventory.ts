@@ -7,6 +7,7 @@ export default {
   description: "View all your items.",
   category: "player",
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args, player, server) {
     let items = await player.getItems();
 

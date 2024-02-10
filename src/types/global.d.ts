@@ -52,6 +52,8 @@ declare global {
     useInCombatOnly?: boolean;
     /** The command can be used in combat. Default: false.*/
     useInCombat?: boolean;
+    /** The command can be used in a dungeon. Default: false. */
+    useInDungeon?: boolean;
     /** The command can only be used when it's the players turn in combat. Default: false. */
     useInTurnOnly?: boolean;
     /** Ignore the command in the help menu. Default: false. */

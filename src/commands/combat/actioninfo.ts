@@ -14,6 +14,7 @@ export default {
       type: "playerAction",
     },
   ],
+  useInDungeon: true,
   async execute(message, args: { action_name: Action }, player, server) {
     const { action_name: action } = args;
 

@@ -152,6 +152,7 @@ export const commandCategories = [
   "item",
   "crafting",
   "combat",
+  "dungeon",
   "settings",
   "other",
   "admin",
@@ -199,8 +200,10 @@ export const embedColors = {
 export const playerInclude = {
   encounter: { include: { players: { include: { user: true } }, enemies: true } },
   party: { include: { players: { include: { user: true } } } },
+  exploration: true,
   statusEffects: true,
   inventory: true,
+  dungeon: true,
 } satisfies Prisma.PlayerInclude;
 
 // What to include when fetching enemy

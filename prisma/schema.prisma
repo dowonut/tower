@@ -84,6 +84,9 @@ model Player {
   dead          Boolean         @default(false)
   /// [PrismaDiscordMessage]
   preEncounter  Json?
+  // Dungeon
+  dungeon       Dungeon?        @relation(fields: [dungeonId], references: [id])
+  dungeonId     Int?
 
   @@unique([guildId, userId])
 }
@@ -240,6 +243,24 @@ model Encounter {
   discordMessageId    String?
   discordChannelId    String?
   lastActionMessageId String?
+}
+
+// Dungeon instance
+model Dungeon {
+  id               Int      @id @default(autoincrement())
+  name             String
+  players          Player[]
+  /// [PrismaDungeonStructure]
+  structure        Json?
+  discordMessageId String?
+  discordChannelId String?
+  // Describes the current position of the party in the dungeon
+  x                Int      @default(1)
+  y                Int      @default(3)
+  /// [PrismaDungeonCoordinates]
+  discoveredTiles  Json[]
+  /// [PrismaDungeonCoordinates]
+  completedTiles   Json[]
 }
 
 // Player parties

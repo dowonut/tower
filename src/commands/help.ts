@@ -10,6 +10,7 @@ export default {
   arguments: [{ name: "category", type: "commandCategory", required: false }],
   useInCombat: true,
   ignoreInHelp: true,
+  useInDungeon: true,
   // needChar: false,
   async execute(message, args, player, server) {
     const allCommands = await game.getCommands();

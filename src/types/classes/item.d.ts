@@ -29,7 +29,7 @@ declare global {
     /** Item to unlock when given. */
     recipeItem: string;
     /** Dungeon unlocked by map. */
-    dungeon: { name: string };
+    dungeon: { name: StaticDungeonName };
     /** Weapon type. */
     weaponType: WeaponType;
     /** Which slot the item is equippable to. */

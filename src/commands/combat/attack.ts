@@ -26,6 +26,7 @@ export default {
   category: "combat",
   useInCombat: true,
   cooldownGroup: "combat_action",
+  useInDungeon: true,
   async execute(
     message,
     args: {

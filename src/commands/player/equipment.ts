@@ -6,6 +6,7 @@ export default {
   arguments: [{ name: "item", type: "playerOwnedItem", required: false }],
   description: "View your current equipment or equip a new item.",
   category: "player",
+  useInDungeon: true,
   async execute(message, args: { item: Item }, player, server) {
     const { item } = args;
 

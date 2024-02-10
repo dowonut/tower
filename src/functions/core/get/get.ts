@@ -9,7 +9,7 @@ export default function get<T extends keyof typeof classes>(
   name: string
 ): (typeof classes)[T][0] {
   const list = classes[type];
-  if (!(name in list) || !_.isArray(list)) return;
+  if (!_.isArray(list)) return;
   const item = list.find((x) => {
     if (x instanceof FloorClass) return;
     return x.name == name.toLowerCase();

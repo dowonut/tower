@@ -1,9 +1,10 @@
 declare global {
-  type StaticEnemyType = typeof import("../game/enemyTypes/");
-  type StaticEnemy = typeof import("../game/enemies/");
-  type StaticItem = typeof import("../game/items/");
-  type StaticStatusEffect = typeof import("../game/statusEffects/");
-  type StaticAction = typeof import("../game/actions/");
+  type StaticEnemyType = typeof import("../game/enemyTypes/index.js");
+  type StaticEnemy = typeof import("../game/enemies/index.js");
+  type StaticItem = typeof import("../game/items/index.js");
+  type StaticStatusEffect = typeof import("../game/statusEffects/index.js");
+  type StaticAction = typeof import("../game/actions/index.js");
+  type StaticDungeon = typeof import("../game/dungeons/index.js");
 
   // Enemies
   export type StaticEnemyTypeName = StaticEnemyType[keyof StaticEnemyType]["name"];
@@ -18,5 +19,8 @@ declare global {
 
   // Actions
   export type StaticActionName = StaticAction[keyof StaticAction]["name"];
+
+  // Dungeons
+  export type StaticDungeonName = StaticDungeon[keyof StaticDungeon]["name"];
 }
 export {};

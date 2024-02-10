@@ -5,6 +5,7 @@ export default {
   aliases: ["trr", "traitrefund", "refundtraits"],
   description: "Refund all your trait points.",
   category: "player",
+  useInDungeon: true,
   async execute(message, args: { trait: PlayerTrait; amount: number | "all" }, player, server) {
     let totalPoints = 0;
     let prismaObject = {};

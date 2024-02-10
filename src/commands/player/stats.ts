@@ -9,6 +9,7 @@ export default {
   arguments: [{ name: "user", type: "user", required: false }],
   category: "player",
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args: { user: Player }, player, server) {
     if (args.user) {
       player = args.user;

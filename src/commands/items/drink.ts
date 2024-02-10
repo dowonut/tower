@@ -3,11 +3,11 @@ import { game, config, client, prisma } from "../../tower.js";
 /** @type {Command} */
 export default {
   name: "drink",
-  aliases: ["d"],
+  aliases: ["dr"],
   arguments: [{ name: "item", type: "playerOwnedItem" }],
   description: "Drink a potion from your inventory.",
   category: "item",
-  useInCombat: true,
+  useInDungeon: true,
   async execute(message, args: { item: Item }, player, server) {
     const { item } = args;
 

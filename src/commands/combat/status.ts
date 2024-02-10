@@ -7,6 +7,7 @@ export default {
   description: "View your current health and status effects.",
   category: "combat",
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args, player, server) {
     const statusEffects = _.orderBy(player.getStatusEffects(), ["type"], ["desc"]);
 

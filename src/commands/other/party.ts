@@ -7,6 +7,7 @@ export default {
   unlockCommands: ["invite", "setpartyowner", "kick", "leaveparty", "disbandparty", "voteskip"],
   category: "other",
   useInCombat: true,
+  useInDungeon: true,
   async execute(message, args, player, server) {
     if (!player.party)
       return game.error({

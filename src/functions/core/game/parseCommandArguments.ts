@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { game, prisma, config, client } from "../../../tower.js";
 
 export default async function parseCommandArguments(options: {
@@ -125,6 +126,17 @@ export default async function parseCommandArguments(options: {
           });
           if (!attack[0]) {
             errorContent = `No attack found with name **\`${input}\`**`;
+            error();
+          }
+          break;
+
+        //* Must be the name of a dungeon available to the player
+        case "playerAvailableDungeon":
+          const exploration = player.exploration.filter(
+            (x) => x.type == "dungeon" && x.floor == player.floor
+          );
+          if (_.isEmpty(exploration)) {
+            errorContent = `No dungeon found with name **\`${input}\`**`;
             error();
           }
           break;
