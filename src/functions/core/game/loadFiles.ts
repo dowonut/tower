@@ -29,7 +29,10 @@ export async function loadFiles<Type>(folder: string, Class: new (name: Generic<
     if (Class.name == "EnemyClass") {
       // Import type
       try {
-        const { default: itemType } = await import(`../../../game/enemyTypes/${item.type}.js`);
+        let name = item.type.replaceAll(" ", "_");
+        let path = `../../../game/enemyTypes/${name}.js`;
+        if (finalItem.isBoss) path = `../../../game/enemyTypes/bosses/${name}.js`;
+        const { default: itemType } = await import(path);
         finalItem = { ...finalItem, type: { ...itemType } };
       } catch (err) {
         console.error(err);

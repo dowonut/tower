@@ -11,6 +11,8 @@ declare global {
     name: string;
     /** Type the enemy belongs to. Must be the name of an existing enemy type. */
     type: StaticEnemyTypeName;
+    /** This enemy is a boss. Default: false. */
+    isBoss?: boolean;
     description: string;
     /** Enemy level. */
     level: number;
@@ -51,8 +53,6 @@ declare global {
    */
   export type EnemyType = {
     name: string;
-    /** This enemy is a boss. Default: false. */
-    isBoss?: boolean;
     /** Class resistances. */
     strong?: DamageType[];
     /** Class weaknesses. */

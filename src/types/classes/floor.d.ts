@@ -1,3 +1,5 @@
+import { FloorClass } from "../../game/_classes/floors.js";
+
 declare global {
   /**
    * Tower floor data.
@@ -48,6 +50,11 @@ declare global {
     min?: number;
     max?: number;
   };
+
+  /**
+   * Floor class.
+   */
+  export type Floor = FloorClass;
 }
 
 export {};

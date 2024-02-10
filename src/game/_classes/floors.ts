@@ -5,7 +5,7 @@ import _ from "lodash";
 
 const FloorBaseClass = createClassFromType<FloorData>();
 
-class FloorClass extends FloorBaseClass {
+export class FloorClass extends FloorBaseClass {
   constructor(floor: Generic<FloorData>) {
     super(floor);
   }
