@@ -1,6 +1,10 @@
-export { default as bleeding } from "./general/bleeding.js";
-export { default as god } from "./general/god.js";
-export { default as regenerating } from "./general/regenerating.js";
-export { default as strengthened } from "./general/strengthened.js";
-export { default as stunned } from "./general/stunned.js";
-export { default as weakened } from "./general/weakened.js";
+export { default as god } from "./buffs/god.js";
+export { default as invigorated } from "./buffs/invigorated.js";
+export { default as regenerating } from "./buffs/regenerating.js";
+export { default as strengthened } from "./buffs/strengthened.js";
+export { default as bleeding } from "./debuffs/bleeding.js";
+export { default as burning } from "./debuffs/burning.js";
+export { default as dazed } from "./debuffs/dazed.js";
+export { default as stunned } from "./debuffs/stunned.js";
+export { default as weakened } from "./debuffs/weakened.js";
+export { default as wet } from "./debuffs/wet.js";

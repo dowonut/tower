@@ -10,6 +10,7 @@ export default {
         type: "slashing",
         scalingStat: "ATK",
         basePercent: 50,
+        scaling: "percent",
       },
       messages: [
         "SOURCE uses their axe to chop TARGET, dealing DAMAGE",

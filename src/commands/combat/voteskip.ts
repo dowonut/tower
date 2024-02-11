@@ -57,7 +57,6 @@ export default {
               emoji: "👍",
               function(r, i, s) {
                 agree = _.union(agree, [i.user.id]);
-                console.log(agree.length, total);
                 m.refresh();
                 if (agree.length >= total) {
                   skip();

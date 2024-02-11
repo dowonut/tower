@@ -7,7 +7,7 @@ export default {
   outcomes: [
     {
       type: "modify_speed_gauge",
-      modifySpeedGauge: { percent: 100, type: "delay" },
+      modifySpeedGauge: { percent: 60, type: "delay" },
     },
   ],
 } as const satisfies StatusEffectData;

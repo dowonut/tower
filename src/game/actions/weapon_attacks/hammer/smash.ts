@@ -6,7 +6,7 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: { type: "bludgeoning", scalingStat: "ATK", basePercent: 50 },
+      damage: { type: "bludgeoning", scalingStat: "ATK", basePercent: 50, scaling: "percent" },
       messages: ["SOURCE smashes TARGET with their hammer, dealing DAMAGE"],
     },
   ],

@@ -293,10 +293,17 @@ export class EnemyClass extends EnemyBaseClass {
         baseStat = Math.floor(this.SG / this.SPD);
         break;
       default:
-        baseStat =
-          this?.stats?.["base_" + stat] ||
-          this.type?.stats?.["base_" + stat] ||
-          config.baseEnemyStats[stat];
+        if (this.stats && stat in this.stats) {
+          baseStat = this.stats[stat];
+        } else if (this.type.stats && stat in this.type.stats) {
+          baseStat = this.type.stats[stat];
+        } else if (stat in config.baseStatsDamage) {
+          baseStat = config.baseStatsDamage[stat];
+        } else if (stat in config.baseStatsResistance) {
+          baseStat = config.baseStatsResistance[stat];
+        } else {
+          baseStat = config.baseEnemyStats[stat];
+        }
         break;
     }
     flatBonus += baseStat;

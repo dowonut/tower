@@ -10,7 +10,7 @@ export default {
       outcomes: [
         {
           type: "damage",
-          damage: { type: "piercing", scalingStat: "ATK", basePercent: 50 },
+          damage: { type: "piercing", scalingStat: "ATK", basePercent: 50, scaling: "percent" },
           messages: ["SOURCE spits a ball of slime at TARGET dealing DAMAGE"],
         },
       ],

@@ -3,6 +3,7 @@ export default {
   strong: ["water"],
   weak: ["fire"],
   actions: [
+    //* Lick ability
     {
       name: "lick",
       type: "ability",
@@ -14,6 +15,7 @@ export default {
               type: "slashing",
               scalingStat: "ATK",
               basePercent: 50,
+              scaling: "percent",
             },
           ],
           messages: ["SOURCE extends a tongue of blades and licks TARGET, dealing DAMAGE"],
@@ -27,6 +29,7 @@ export default {
         },
       ],
     },
+    //* Milky splash ability
     {
       name: "milky splash",
       type: "ability",
@@ -39,11 +42,13 @@ export default {
             type: "water",
             scalingStat: "MAG",
             basePercent: 30,
+            scaling: "percent",
           },
           messages: ["SOURCE opens their mouth and splashes milk all over TARGET, dealing DAMAGE"],
         },
       ],
     },
+    //* Malicious lick ability
     {
       name: "malicious lick",
       type: "ability",
@@ -55,6 +60,7 @@ export default {
             type: "piercing",
             scalingStat: "ATK",
             basePercent: 50,
+            scaling: "percent",
           },
           messages: ["SOURCE emits an evil aura and licks TARGET, dealing DAMAGE"],
         },
@@ -65,10 +71,19 @@ export default {
             type: "void",
             scalingStat: "MAG",
             basePercent: 10,
+            scaling: "percent",
           },
           messages: [
             "The evil aura emitted by SOURCE creeps into TARGET, dealing an additional DAMAGE",
           ],
+        },
+        {
+          type: "apply_status",
+          status: {
+            name: "weakened",
+          },
+          targetType: "all",
+          messages: ["TARGET is very afraid of SOURCE, inflicting them with STATUS"],
         },
       ],
     },

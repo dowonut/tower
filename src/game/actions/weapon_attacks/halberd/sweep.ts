@@ -11,6 +11,7 @@ export default {
         type: "slashing",
         scalingStat: "ATK",
         basePercent: 10,
+        scaling: "percent",
       },
       messages: ["SOURCE sweeps at TARGET with their halberd, dealing DAMAGE"],
     },

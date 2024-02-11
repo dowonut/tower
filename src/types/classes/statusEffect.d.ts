@@ -37,9 +37,7 @@ declare global {
     /** Change the host's stats. */
     modifyStat: StatusEffectModifyStat | StatusEffectModifyStat[];
     /** Change the host's health. */
-    modifyHealth:
-      | Omit<StatusEffectDamage, "type" | "resStat">
-      | Omit<StatusEffectDamage, "type" | "resStat">[];
+    modifyHealth: StatusEffectHeal | StatusEffectHeal[];
     /** Modify the host's speed gauge. */
     modifySpeedGauge: {
       /** Whether to advance forward or delay. */
@@ -71,30 +69,60 @@ declare global {
   /** Stat modifier for status effect. */
   export type StatusEffectModifyStat = {
     /** Which of the host's stats to modify. */
-    stat: Stat;
-    scaling: "flat" | "percent";
-    baseFlat?: number;
-    basePercent?: number;
-  };
+    stat: Stat_;
+  } & (
+    | { scaling: "flat"; baseFlat: number }
+    | {
+        scaling: "percent";
+        basePercent: number;
+      }
+  );
 
   /** Status effect damage. */
   export type StatusEffectDamage = {
+    /** DO NOT DEFINE. */
     origin?: "status_effect";
     /** Damage type. */
     type: DamageType;
-    /** Where to scale stats from. Default = source. */
-    statSource?: "host" | "source";
-    /** What type of scaling to use. Default = percent. */
-    scaling?: "flat" | "percent";
-    /** If scaling = "percent" then what stat does the action scale off. */
-    scalingStat?: Stat;
-    /** If scaling = "percent" then the base percent of source for scaling. */
-    basePercent?: number;
-    /** If scaling = "flat" then the base damage amount. */
-    baseFlat?: number;
     /** Which stat to use for scaling resistance. Default = equivalent to source stat. */
     resStat?: "RES" | "MAG_RES" | "SPC_RES";
-  };
+  } & (
+    | {
+        /** What type of scaling to use.*/
+        scaling: "flat";
+        /** If scaling = "flat" then the base damage amount. */
+        baseFlat: number;
+      }
+    | {
+        /** What type of scaling to use.*/
+        scaling: "percent";
+        /** Where to scale stats from. Default = source. */
+        statSource?: "source" | "host";
+        /** If scaling = "percent" then what stat does the action scale off. */
+        scalingStat: Stat;
+        /** If scaling = "percent" then the base percent of source for scaling. */
+        basePercent: number;
+      }
+  );
+
+  /** Modify health info. */
+  export type StatusEffectHeal =
+    | {
+        /** What type of scaling to use.*/
+        scaling: "flat";
+        /** If scaling = "flat" then the base healing amount. */
+        baseFlat: number;
+      }
+    | {
+        /** What type of scaling to use.*/
+        scaling: "percent";
+        /** Where to scale stats from. Default = source. */
+        statSource?: "source" | "host";
+        /** If scaling = "percent" then what stat does the healing scale off. */
+        scalingStat: Stat;
+        /** If scaling = "percent" then the base percent of source for scaling. */
+        basePercent: number;
+      };
 
   export type StatusEffectOutcome<T = StatusEffectOutcomeType> =
     T extends keyof StatusEffectOutcomeTypes

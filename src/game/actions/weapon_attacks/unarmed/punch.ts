@@ -6,7 +6,7 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: [{ type: "bludgeoning", scalingStat: "ATK", basePercent: 30 }],
+      damage: [{ type: "bludgeoning", scalingStat: "ATK", basePercent: 30, scaling: "percent" }],
       messages: [
         "SOURCE lands a solid punch on TARGET and deals DAMAGE",
         "SOURCE's fist meets with TARGET and deals DAMAGE",

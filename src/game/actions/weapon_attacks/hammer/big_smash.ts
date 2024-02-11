@@ -7,13 +7,13 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: { type: "bludgeoning", scalingStat: "ATK", basePercent: 50 },
+      damage: { type: "bludgeoning", scalingStat: "ATK", basePercent: 50, scaling: "percent" },
       targetType: "single",
       messages: ["SOURCE runs up and smashes TARGET with their big fat hammer, dealing DAMAGE"],
     },
     {
       type: "damage",
-      damage: [{ type: "bludgeoning", scalingStat: "ATK", basePercent: 10 }],
+      damage: [{ type: "bludgeoning", scalingStat: "ATK", basePercent: 10, scaling: "percent" }],
       targetType: "adjacent",
       messages: ["SOURCE's smash causes a shockwave, dealing DAMAGE to TARGET"],
     },

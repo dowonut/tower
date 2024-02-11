@@ -7,18 +7,17 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: [{ type: "piercing", scalingStat: "ATK", basePercent: 70 }],
+      damage: [{ type: "piercing", scalingStat: "ATK", basePercent: 70, scaling: "percent" }],
       messages: [
         "SOURCE runs and jumps into the air, poking TARGET with their spear and dealing DAMAGE",
       ],
     },
     {
       type: "apply_status",
-      messages: ["SOURCE's damage causes TARGET to bleed, inflicting them with STATUS"],
+      messages: ["SOURCE's poke causes TARGET to bleed, inflicting them with STATUS"],
       status: {
         name: "bleeding",
       },
-      targetNumber: 2,
     },
   ],
 } as const satisfies ActionData;

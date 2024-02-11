@@ -18,6 +18,20 @@ export const emojis = {};
 export const integerLimit = 2147483647;
 
 export const baseSpeedGauge = 10000;
+
+// Types of damage
+export const damageTypes = [
+  "slashing",
+  "piercing",
+  "bludgeoning",
+  "air",
+  "earth",
+  "fire",
+  "water",
+  "void",
+  "light",
+] as const;
+// The default player stats
 export const baseStats = {
   maxHP: 20,
   ATK: 10,
@@ -32,6 +46,28 @@ export const baseStats = {
   AR: 10,
   AD: 40,
   AGR: 100,
+};
+export const baseStatsDamage = {
+  bludgeoning_DMG: 0,
+  piercing_DMG: 0,
+  slashing_DMG: 0,
+  fire_DMG: 0,
+  water_DMG: 0,
+  earth_DMG: 0,
+  air_DMG: 0,
+  void_DMG: 0,
+  light_DMG: 0,
+};
+export const baseStatsResistance = {
+  bludgeoning_RES: 0,
+  piercing_RES: 0,
+  slashing_RES: 0,
+  fire_RES: 0,
+  water_RES: 0,
+  earth_RES: 0,
+  air_RES: 0,
+  void_RES: 0,
+  light_RES: 0,
 };
 export const baseEnemyStats = {
   XP: 10,
@@ -79,27 +115,6 @@ export const cooldownGroups = {
   combat_action: "3",
 };
 
-// export const subStats = {
-//   bludgeoning: 0,
-//   piercing: 0,
-//   slashing: 0,
-//   fire: 0,
-//   water: 0,
-//   earth: 0,
-//   air: 0,
-//   light: 0,
-//   void: 0,
-//   "bludgeoning RES": 0,
-//   "piercing RES": 0,
-//   "slashing RES": 0,
-//   "fire RES": 0,
-//   "water RES": 0,
-//   "earth RES": 0,
-//   "air RES": 0,
-//   "light RES": 0,
-//   "void RES": 0,
-// };
-
 export const playerDefaultEntries = {
   skill: ["unarmed combat"],
 };
@@ -122,18 +137,6 @@ export const weapons = {
 export const traits = ["strength", "defense", "arcane", "vitality"] as const;
 // Possible equipment slots
 export const equipSlots = ["head", "torso", "legs", "feet", "hand"] as const;
-// Types of damage
-export const damageTypes = [
-  "slashing",
-  "piercing",
-  "bludgeoning",
-  "air",
-  "earth",
-  "fire",
-  "water",
-  "void",
-  "light",
-] as const;
 // Types of shards
 export const shardTypes = ["grey", "green", "blue", "red", "pink", "legendary"] as const;
 // Action types

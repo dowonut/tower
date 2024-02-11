@@ -64,3 +64,4 @@ export { default as random } from "./math/random.js";
 export { default as weightedRandom } from "./math/weightedRandom.js";
 export { default as createDungeonImage } from "./combat/createDungeonImage.js";
 export { default as handleDungeon } from "./dungeon/handleDungeon.js";
+export { default as statEmoji } from "./display/statEmoji.js";

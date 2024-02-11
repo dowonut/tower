@@ -79,20 +79,7 @@ declare global {
 
   /** Enemy base stats. */
   export type EnemyStats = {
-    /** Optional base XP. Default: 20. */
-    base_XP?: number;
-    /** Optional base maxHP. Default: 0. */
-    base_maxHP?: number;
-    /** Optional base ATK. Default: 10. */
-    base_ATK?: number;
-    /** Optional base MAG. Default: 10. */
-    base_MAG?: number;
-    /** Optional base RES. Default: 20. */
-    base_RES?: number;
-    /** Optional base MAG RES. Default: 20. */
-    base_MAG_RES?: number;
-    /** Optional base SPD. Default: 80. */
-    base_SPD?: number;
+    [key in EnemyStat_]?: number;
   };
 
   /** Enemy action without class properties. */

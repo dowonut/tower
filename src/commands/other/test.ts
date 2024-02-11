@@ -6,5 +6,7 @@ export default {
   description: "For testing purposes.",
   category: "admin",
   dev: true,
-  async execute(message, args, player, server) {},
+  async execute(message, args, player, server) {
+    console.log(player.getStat("fire_RES", true));
+  },
 } as Command;

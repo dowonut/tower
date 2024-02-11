@@ -19,6 +19,7 @@ export default {
               type: "bludgeoning",
               scalingStat: "ATK",
               basePercent: 80,
+              scaling: "percent",
             },
           ],
           messages: [

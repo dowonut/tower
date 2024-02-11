@@ -4,6 +4,8 @@ import {
   displayNumber,
   f,
   listPrefix,
+  statEmoji,
+  titleCase,
   toArray,
 } from "../../functions/core/index.js";
 import { loadFiles } from "../../functions/core/game/loadFiles.js";
@@ -119,14 +121,14 @@ export class StatusEffectClass extends StatusEffectBaseClass {
           let damageText: string[] = [];
           for (const [i, damage] of damages.entries()) {
             const damageType = `${emojis.damage[damage.type]}**\`${damage.type}\`**`;
-            const stat = `${emojis.stats[damage.scalingStat]}**\`${damage.scalingStat}\`**`;
-            const statSource = damage?.statSource ? damage.statSource : "source";
             const prefix = listPrefix(i, damages);
-            if (!damage.scaling || damage.scaling == "percent") {
+            if (damage.scaling == "percent") {
+              const stat = `${emojis.stats[damage.scalingStat]}**\`${damage.scalingStat}\`**`;
+              const statSource = damage?.statSource ? damage.statSource : "source";
               let text = `${prefix}**\`${damage.basePercent}%\`** of the **${statSource}**'s ${stat} as ${damageType}`;
               damageText.push(text);
             } else if (damage.scaling == "flat") {
-              let text = `${prefix}**\`${damage.basePercent}\`** as ${damageType}`;
+              let text = `${prefix}**\`${damage.baseFlat}\`** as ${damageType}`;
               damageText.push(text);
             }
           }
@@ -138,9 +140,9 @@ export class StatusEffectClass extends StatusEffectBaseClass {
           let healText: string[] = [];
           for (const [i, heal] of heals.entries()) {
             const prefix = listPrefix(i, heals);
-            const stat = `${emojis.stats[heal.scalingStat]}**\`${heal.scalingStat}\`**`;
-            const statSource = heal?.statSource ? heal.statSource : "source";
-            if (!heal.scaling || heal.scaling == "percent") {
+            if (heal.scaling == "percent") {
+              const stat = `${emojis.stats[heal.scalingStat]}**\`${heal.scalingStat}\`**`;
+              const statSource = heal?.statSource ? heal.statSource : "source";
               let text = `${prefix}**\`${heal.basePercent}%\`** of the **${statSource}**'s ${stat}`;
               healText.push(text);
             } else if (heal.scaling == "flat") {
@@ -162,14 +164,17 @@ export class StatusEffectClass extends StatusEffectBaseClass {
           let statText: string[] = [];
           for (const [i, modifyStat] of stats.entries()) {
             let verb: string;
-            if (modifyStat?.baseFlat < 0 || modifyStat?.basePercent < 0) {
+            if (
+              ("baseFlat" in modifyStat && modifyStat?.baseFlat < 0) ||
+              ("basePercent" in modifyStat && modifyStat?.basePercent < 0)
+            ) {
               verb = "decreases";
             } else {
               verb = "increases";
             }
-            const stat = `${emojis.stats[modifyStat.stat]}**\`${modifyStat.stat}\`**`;
+            const stat = `${statEmoji(modifyStat.stat)}**\`${titleCase(modifyStat.stat)}\`**`;
             const prefix = listPrefix(i, stats);
-            if (!modifyStat.scaling || modifyStat.scaling == "percent") {
+            if (modifyStat.scaling == "percent") {
               let text = `${prefix}${verb} their ${stat} by **\`${modifyStat.basePercent * 1}%\`**`;
               statText.push(text);
             } else if (modifyStat.scaling == "flat") {

@@ -10,8 +10,15 @@ export default {
   outcomes: [
     {
       type: "damage",
-      damage: [{ type: "bludgeoning", scalingStat: "ATK", basePercent: 50 }],
+      damage: [{ type: "bludgeoning", scalingStat: "ATK", basePercent: 50, scaling: "percent" }],
       messages: ["SOURCE's fist connects with the underside of TARGET and deals DAMAGE"],
+    },
+    {
+      type: "apply_status",
+      status: {
+        name: "dazed",
+      },
+      messages: ["SOURCE's uppercut shakes TARGET to the core, inflicting them with STATUS"],
     },
   ],
 } as const satisfies ActionData;

@@ -19,6 +19,7 @@ export default {
               type: "bludgeoning",
               scalingStat: "ATK",
               basePercent: 0,
+              scaling: "percent",
             },
           ],
           messages: ["SOURCE does nothing."],

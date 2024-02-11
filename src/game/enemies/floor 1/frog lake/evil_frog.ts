@@ -4,6 +4,6 @@ export default {
   level: 10,
   actions: ["lick", "malicious lick"],
   type: "frog",
-  stats: { base_SPD: 90 },
+  stats: { SPD: 90 },
   loot: [{ name: "frog tongue", dropChance: 100, min: 1, max: 3 }],
 } as const satisfies EnemyData;

@@ -27,7 +27,6 @@ export default {
           let title = `${player.user.username}'s Stats`;
 
           for (let statName of Object.keys(config.baseStats) as PlayerStat[]) {
-            const { stats } = config.emojis;
             let name: string = statName;
             if (statName == "maxHP") name = "Max HP";
             let percent = ``;
@@ -78,7 +77,7 @@ export default {
               statText = `${game.f(base + percent)}${flatText}${traitText}${statusText}`;
             }
 
-            description += `\n${stats[statName]} ${game.titleCase(name)}: ${statText}`;
+            description += `\n${game.statEmoji(statName)} ${game.titleCase(name)}: ${statText}`;
           }
 
           return game.fastEmbed({

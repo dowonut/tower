@@ -8,5 +8,5 @@ export default {
   // Item info. Long and shown in "iteminfo".
   info: "A tasty apple you found lying on the ground somewhere...",
   // Health regained if food item.
-  health: 5,
+  health: 10,
 } as const satisfies ItemData;

@@ -10,6 +10,7 @@ export default {
       damage: [
         {
           type: "slashing",
+          scaling: "percent",
           statSource: "host",
           scalingStat: "health",
           basePercent: 5,
@@ -17,6 +18,7 @@ export default {
         },
         {
           type: "slashing",
+          scaling: "percent",
           scalingStat: "SPC",
           basePercent: 5,
         },

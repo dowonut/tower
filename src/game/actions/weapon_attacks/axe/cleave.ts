@@ -11,8 +11,16 @@ export default {
         type: "slashing",
         scalingStat: "ATK",
         basePercent: 30,
+        scaling: "percent",
       },
       messages: ["SOURCE hits TARGET with a powerful cleave, dealing DAMAGE"],
+    },
+    {
+      type: "apply_status",
+      status: {
+        name: "dazed",
+      },
+      messages: ["SOURCE's cleave confuses TARGET, inflicting them with STATUS"],
     },
     {
       type: "damage",
@@ -21,6 +29,7 @@ export default {
         type: "slashing",
         scalingStat: "ATK",
         basePercent: 10,
+        scaling: "percent",
       },
       messages: ["SOURCE's swing also hits TARGET and deals DAMAGE"],
     },

@@ -149,7 +149,7 @@ export default async function evaluateStatusEffect(args: {
     const previousHealth = host.health;
     for (const heal of modifyHealths) {
       let statSource: Enemy | Player = source;
-      if (heal.statSource == "host") {
+      if (heal.scaling == "percent" && heal.statSource == "host") {
         statSource = host;
       }
 

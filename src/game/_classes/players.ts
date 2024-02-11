@@ -6,6 +6,12 @@ const PlayerBaseClass = createClassFromType<PlayerBase, false>();
 export class PlayerClass extends PlayerBaseClass {
   constructor(player: PlayerBase) {
     super(player);
+
+    Object.defineProperty(this, "testget", {
+      get() {
+        return "hello";
+      },
+    });
   }
 
   /** Get number in party */
@@ -57,7 +63,7 @@ export class PlayerClass extends PlayerBaseClass {
 
   /** Get a specific evaluated stat. */
   getStat<T extends boolean = false>(
-    stat: PlayerStat,
+    stat: Stat_,
     verbose?: T
   ): T extends false
     ? number
@@ -83,6 +89,8 @@ export class PlayerClass extends PlayerBaseClass {
         break;
       default:
         baseStat = config.baseStats[stat];
+        if (stat in config.baseStatsDamage) baseStat = config.baseStatsDamage[stat];
+        if (stat in config.baseStatsResistance) baseStat = config.baseStatsResistance[stat];
         break;
     }
 

@@ -12,7 +12,8 @@ export default {
       damage: {
         type: "piercing",
         scalingStat: "ATK",
-        basePercent: 20,
+        basePercent: 25,
+        scaling: "percent",
       },
       messages: ["SOURCE makes a fast shot at TARGET and deals DAMAGE"],
     },
@@ -23,7 +24,8 @@ export default {
       damage: {
         type: "piercing",
         scalingStat: "ATK",
-        basePercent: 20,
+        basePercent: 25,
+        scaling: "percent",
       },
       messages: ["SOURCE makes a second shot at TARGET and deals DAMAGE"],
     },
@@ -34,7 +36,8 @@ export default {
       damage: {
         type: "piercing",
         scalingStat: "ATK",
-        basePercent: 20,
+        basePercent: 25,
+        scaling: "percent",
       },
       messages: ["SOURCE makes a third and final shot at TARGET and deals DAMAGE"],
     },

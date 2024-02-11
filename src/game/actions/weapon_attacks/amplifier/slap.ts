@@ -11,21 +11,25 @@ export default {
           type: "earth",
           scalingStat: "MAG",
           basePercent: 10,
+          scaling: "percent",
         },
         {
           type: "fire",
           scalingStat: "MAG",
           basePercent: 10,
+          scaling: "percent",
         },
         {
           type: "air",
           scalingStat: "MAG",
           basePercent: 10,
+          scaling: "percent",
         },
         {
           type: "water",
           scalingStat: "MAG",
           basePercent: 10,
+          scaling: "percent",
         },
       ],
       messages: [

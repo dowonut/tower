@@ -18,7 +18,10 @@ export default function evaluateDamage(args: {
   for (const damage of damageInstances) {
     // Define where to draw stats from
     let source: Enemy | Player = trueSource;
-    if (damage.statSource == "host" || damage.statSource == "target") {
+    if (
+      damage.scaling == "percent" &&
+      (damage.statSource == "host" || damage.statSource == "target")
+    ) {
       source = target;
     }
 
@@ -27,7 +30,7 @@ export default function evaluateDamage(args: {
 
     // Get base damage
     let baseDamage = 0;
-    if (!damage.scaling || damage.scaling == "percent") {
+    if (damage.scaling == "percent") {
       baseDamage = Math.floor(source[damage.scalingStat] * (damage.basePercent / 100));
     } else if (damage.scaling == "flat") {
       baseDamage = Math.floor(damage.baseFlat);
@@ -56,16 +59,18 @@ export default function evaluateDamage(args: {
 
     // Determined stat to use for scaling resistance
     let resStat: "RES" | "MAG_RES" | "SPC_RES" = "RES";
-    switch (damage.scalingStat) {
-      case "ATK":
-        resStat = "RES";
-        break;
-      case "MAG":
-        resStat = "MAG_RES";
-        break;
-      case "SPC":
-        resStat = "SPC_RES";
-        break;
+    if (damage.scaling == "percent") {
+      switch (damage.scalingStat) {
+        case "ATK":
+          resStat = "RES";
+          break;
+        case "MAG":
+          resStat = "MAG_RES";
+          break;
+        case "SPC":
+          resStat = "SPC_RES";
+          break;
+      }
     }
     if (damage.resStat) resStat = damage.resStat;
 

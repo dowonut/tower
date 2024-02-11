@@ -87,9 +87,13 @@ export class ActionClass extends ActionClassBase {
       const damages = Array.isArray(effect.damage) ? effect.damage : [effect.damage];
       for (const [i, damage] of damages.entries()) {
         const emoji = useEmojis ? emojis.damage[damage.type] : "";
-        let finalText = useFormatting
-          ? emoji + `**\`${damage.basePercent}%\`**`
-          : `${damage.basePercent}%`;
+        let value: string;
+        if (damage.scaling == "percent") {
+          value = `${damage.basePercent}%`;
+        } else if (damage.scaling == "flat") {
+          value = `${damage.baseFlat}`;
+        }
+        let finalText = useFormatting ? emoji + `**\`${value}\`**` : `${value}`;
         if (i === damages.length - 1) finalText += ` ${targetText}`;
         text.push(finalText);
       }
@@ -165,14 +169,14 @@ export class ActionClass extends ActionClassBase {
           let damageText: string[] = [];
           for (const [i, damage] of damages.entries()) {
             const damageType = `${emojis.damage[damage.type]}**\`${damage.type}\`**`;
-            const stat = `${emojis.stats[damage.scalingStat]}**\`${damage.scalingStat}\`**`;
-            const statSource = damage?.statSource ? damage.statSource : "source";
             let prefix = listPrefix(i, damages);
-            if (!damage.scaling || damage.scaling == "percent") {
+            if (damage.scaling == "percent") {
+              const stat = `${emojis.stats[damage.scalingStat]}**\`${damage.scalingStat}\`**`;
+              const statSource = damage?.statSource ? damage.statSource : "source";
               let text = `${prefix}**\`${damage.basePercent}%\`** of the **${statSource}**'s ${stat} as ${damageType}`;
               damageText.push(text);
             } else if (damage.scaling == "flat") {
-              let text = `${prefix}**\`${damage.basePercent}\`** as ${damageType}`;
+              let text = `${prefix}**\`${damage.baseFlat}\`** as ${damageType}`;
               damageText.push(text);
             }
           }

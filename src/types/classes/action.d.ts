@@ -102,19 +102,26 @@ declare global {
     origin?: "action";
     /** Damage type. */
     type: DamageType;
-    /** Where to scale stats from. Default = source. */
-    statSource?: "target" | "source";
-    /** What type of scaling to use. Default = percent. */
-    scaling?: "flat" | "percent";
-    /** If scaling = "percent" then what stat does the action scale off. */
-    scalingStat?: Stat;
-    /** If scaling = "percent" then the base percent of source for scaling. */
-    basePercent?: number;
-    /** If scaling = "flat" then the base damage amount. */
-    baseFlat?: number;
     /** Which stat to use for scaling resistance. Default = equivalent to source stat. */
     resStat?: "RES" | "MAG_RES" | "SPC_RES";
-  };
+  } & (
+    | {
+        /** What type of scaling to use.*/
+        scaling: "flat";
+        /** If scaling = "flat" then the base damage amount. */
+        baseFlat: number;
+      }
+    | {
+        /** What type of scaling to use.*/
+        scaling: "percent";
+        /** Where to scale stats from. Default = source. */
+        statSource?: "target" | "source";
+        /** If scaling = "percent" then what stat does the action scale off. */
+        scalingStat: Stat;
+        /** If scaling = "percent" then the base percent of source for scaling. */
+        basePercent: number;
+      }
+  );
 
   /**
    * Evaluated damage towards a target.

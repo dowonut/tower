@@ -12,6 +12,7 @@ export default {
         type: "slashing",
         scalingStat: "ATK",
         basePercent: 50,
+        scaling: "percent",
       },
       messages: ["SOURCE lunges at TARGET with their halberd, dealing DAMAGE"],
     },
@@ -23,8 +24,25 @@ export default {
         type: "slashing",
         scalingStat: "ATK",
         basePercent: 15,
+        scaling: "percent",
       },
       messages: ["SOURCE swiftly makes an extra swing at TARGET, dealing DAMAGE"],
+    },
+    {
+      type: "apply_status",
+      status: {
+        name: "weakened",
+      },
+      messages: ["SOURCE's attack weakens TARGET, inflicting STATUS"],
+      targetNumber: 1,
+    },
+    {
+      type: "apply_status",
+      status: {
+        name: "weakened",
+      },
+      messages: ["SOURCE's attack also weakens TARGET, inflicting STATUS"],
+      targetNumber: 2,
     },
   ],
 } as const satisfies ActionData;

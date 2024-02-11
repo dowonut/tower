@@ -81,9 +81,7 @@ export default async function handleEncounter(args: {
               label: "Flee",
               emoji: "💨",
               function: async (r, i) => {
-                const response = await m.player.runCommand({ name: "flee" });
-                if (response !== "success") return;
-                m.botMessage.delete();
+                await m.player.runCommand({ name: "flee" });
               },
             },
           ];
@@ -370,6 +368,7 @@ ${turnOrderList}
         {
           id: "status_effect",
           emoji: emojis.question_mark,
+          label: `${game.titleCase(data.statusEffect.name)}`,
           function: async (r) => {
             await r.edit({
               content: `${r.content}\n## ${data.statusEffect.getEmoji()}${game.titleCase(
@@ -399,6 +398,9 @@ ${turnOrderList}
         components: buttons,
         botMessage: botMsg,
         player: menu.player,
+        options: {
+          unique: false,
+        },
       });
     }
 
@@ -563,12 +565,19 @@ ${turnOrderList}
         });
       }
 
+      // Save dead players
+      const deadPlayers = menu.variables.players.filter((x) => x.dead).map((x) => x.id);
+
       // Update the turn order
       updateTurnOrderList({ players, enemies });
 
       // Send player death message
       for (const player of players) {
-        if (player.dead && menu.variables.players.length > 1) {
+        if (
+          player.dead &&
+          menu.variables.players.length > 1 &&
+          !deadPlayers.some((x) => x == player.id)
+        ) {
           const deathMessage = `## :skull: ${player.ping} **has died!**`;
           await game.send({ player, content: deathMessage, reply: false });
         }

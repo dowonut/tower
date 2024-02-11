@@ -36,7 +36,8 @@ export default {
                     m.switchBoard("options");
                   } else {
                     await game.runCommand("traitup", {
-                      message,
+                      discordId: m.player.user.discordId,
+                      channel: m.player.channel,
                       server,
                       args: [x],
                     });
@@ -50,7 +51,11 @@ export default {
               style: "danger",
               label: "Refund",
               function: async () => {
-                await game.runCommand("traitrefund", { message, server });
+                await game.runCommand("traitrefund", {
+                  discordId: m.player.user.discordId,
+                  channel: m.player.channel,
+                  server,
+                });
                 m.refresh();
               },
             });
@@ -67,7 +72,8 @@ export default {
               style: "success",
               function: async () => {
                 await game.runCommand("traitup", {
-                  message,
+                  discordId: m.player.user.discordId,
+                  channel: m.player.channel,
                   server,
                   args: [m.variables.selectedTrait, "1"],
                 });
@@ -80,7 +86,8 @@ export default {
               style: "success",
               function: async () => {
                 await game.runCommand("traitup", {
-                  message,
+                  discordId: m.player.user.discordId,
+                  channel: m.player.channel,
                   server,
                   args: [m.variables.selectedTrait, "10"],
                 });
@@ -93,7 +100,8 @@ export default {
               style: "success",
               function: async () => {
                 await game.runCommand("traitup", {
-                  message,
+                  discordId: m.player.user.discordId,
+                  channel: m.player.channel,
                   server,
                   args: [m.variables.selectedTrait, "all"],
                 });

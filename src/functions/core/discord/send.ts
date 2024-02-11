@@ -2,7 +2,7 @@ import { MessageCreateOptions, MessageEditOptions, MessagePayload, TextChannel }
 import { config } from "../../../tower.js";
 import { MessagePayloadOption } from "discord.js";
 import { MessageReplyOptions } from "discord.js";
-import type Discord from "discord.js";
+import Discord from "discord.js";
 
 /**
  * Send a message to Discord.

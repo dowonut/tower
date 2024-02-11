@@ -62,6 +62,7 @@ export default async function createEncounterImage(object: {
       tempCtx.strokeRect(160 * i + 10 - 1, heightOffset + 170 - 1, 140 + 2, 10 + 2);
       tempCtx.fillStyle = enemy.dead ? "#9c9c9c" : "#ed3f3f";
       tempCtx.lineWidth = 4;
+      // console.log(enemy.health, Math.floor((Math.max(enemy.health, 0) / enemy.maxHP) * 140));
       tempCtx.fillRect(
         160 * i + 10,
         heightOffset + 170,
