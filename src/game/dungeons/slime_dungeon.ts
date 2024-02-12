@@ -1,6 +1,10 @@
 export default {
   name: "slime dungeon",
   description: "This place is very slimy...",
+  dimensions: {
+    width: 5,
+    height: 3,
+  },
   chambers: [
     {
       type: "combat",
@@ -30,6 +34,12 @@ export default {
       reward: {},
       id: 3,
       weight: 10,
+    },
+    {
+      type: "respite",
+      id: 4,
+      weight: 5,
+      description: "A chance to heal and calm yourself.",
     },
   ],
   bossChamber: {

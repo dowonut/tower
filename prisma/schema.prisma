@@ -255,8 +255,8 @@ model Dungeon {
   discordMessageId String?
   discordChannelId String?
   // Describes the current position of the party in the dungeon
-  x                Int      @default(1)
-  y                Int      @default(3)
+  x                Int?
+  y                Int?
   /// [PrismaDungeonCoordinates]
   discoveredTiles  Json[]
   /// [PrismaDungeonCoordinates]

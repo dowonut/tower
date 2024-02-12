@@ -25,5 +25,10 @@ declare global {
     encounterId: number;
     player: Player;
   }
+
+  /** On player moving inside dungeon. */
+  export interface DungeonMoveEmitter {
+    dungeon: Dungeon;
+  }
 }
 export {};

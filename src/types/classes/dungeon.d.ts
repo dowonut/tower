@@ -10,6 +10,11 @@ declare global {
     chambers: DungeonChamber[];
     /** The boss chamber in the dungeon. */
     bossChamber: DungeonChamberBoss;
+    /** Optionally define the dimensions of the dungeon. Default = 8x5 */
+    dimensions?: {
+      width: number;
+      height: number;
+    };
   };
 
   /** Default data for all dungeon chambers. */
@@ -37,6 +42,7 @@ declare global {
     combat: "combat";
     puzzle: "puzzle";
     reward: "reward";
+    respite: undefined;
   };
 
   /** Boss type dungeon chamber. */
@@ -67,24 +73,7 @@ declare global {
     : DungeonChamberDefault<T>;
 
   /** Describes the structure of a generated dungeon instance. */
-  export type DungeonStructure = [
-    ChamberVertical,
-    ChamberVertical,
-    ChamberVertical,
-    ChamberVertical,
-    ChamberVertical,
-    ChamberVertical,
-    ChamberVertical,
-    ChamberVertical
-  ];
-
-  type ChamberVertical = [
-    DungeonInstanceChamber,
-    DungeonInstanceChamber,
-    DungeonInstanceChamber,
-    DungeonInstanceChamber,
-    DungeonInstanceChamber
-  ];
+  export type DungeonStructure = DungeonInstanceChamber[][];
 
   type DungeonInstanceChamber = number | 0;
 

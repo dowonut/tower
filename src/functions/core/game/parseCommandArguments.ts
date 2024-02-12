@@ -136,6 +136,11 @@ export default async function parseCommandArguments(options: {
             (x) => x.type == "dungeon" && x.floor == player.floor
           );
           if (_.isEmpty(exploration)) {
+            errorContent = `You haven't located any dungeons on this floor.`;
+            error();
+          }
+          const dungeon = exploration.find((x) => x.name == input);
+          if (!dungeon) {
             errorContent = `No dungeon found with name **\`${input}\`**`;
             error();
           }

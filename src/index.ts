@@ -18,6 +18,7 @@ dotenv.config();
 // import allEvents from "./game/classes/events.js";
 import { game, config, prisma, client } from "./tower.js";
 import { cleanEncounters } from "./functions/core/index.js";
+import cleanDungeons from "./functions/core/game/cleanDungeons.js";
 
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
@@ -123,6 +124,7 @@ client.on("ready", async () => {
 
     // Handle cleaners
     cleanEncounters();
+    cleanDungeons();
   }
 });
 
