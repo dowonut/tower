@@ -34,7 +34,10 @@ export default {
 
     // Fetch dungeon and generate structure
     const dungeon = await player.getDungeon();
-    await dungeon.generateStructure(dungeon?.dimensions?.width, dungeon?.dimensions?.height);
+    const randomWidth = game.random(5, 21);
+    const randomHeight = game.random(3, 13);
+    // await dungeon.generateStructure(dungeon?.dimensions?.width, dungeon?.dimensions?.height);
+    await dungeon.generateStructure(randomWidth, randomHeight);
 
     // Handle dungeon
     let finalPlayers: Player[] = [player];
