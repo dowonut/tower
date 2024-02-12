@@ -40,6 +40,30 @@ export class DungeonClass extends DungeonBaseClass {
     return Object.assign(this, await this.update({}));
   }
 
+  /** Get a discord attachment for a dungeon chamber image. */
+  getChamberImage(chamber: DungeonChamberType) {
+    return {
+      attachment: `./assets/dungeons/chambers/large/${chamber}.png`,
+      name: `chamber.png`,
+    };
+  }
+
+  /** Check if an adjacent chamber is accessible. */
+  chamberIsAccessible(direction: "up" | "down" | "left" | "right") {
+    // Check if chamber exists
+    const newChamber = this.getRelativeChamber(direction, this.x, this.y);
+    if (!newChamber) return false;
+    // Check if able to move to chamber
+    const newChamberCoords = this.getRelativeCoords(direction, this.x, this.y);
+    if (
+      !this.completedTiles.some((t) => t.x == this.x && t.y == this.y) &&
+      !this.completedTiles.some((t) => t.x == newChamberCoords.x && t.y == newChamberCoords.y)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
   /** Get a random possible chamber based on weights. */
   getRandomWeightedChamber() {
     const chamber = getWeightedArray<{ id: number; weight: number }>(

@@ -113,6 +113,7 @@ export const defaultWardrobe: PlayerWardrobe = {
 
 export const cooldownGroups = {
   combat_action: "3",
+  dungeon_action: "3",
 };
 
 export const playerDefaultEntries = {

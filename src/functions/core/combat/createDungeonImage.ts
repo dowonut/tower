@@ -68,7 +68,6 @@ export default async function createDungeonImage(args: { dungeon: Dungeon }) {
       let chamber = dungeon.getChamber(x, y);
       if (!isCurrent && !isAdjacent && chamber?.type !== "boss" && !isDiscovered) continue;
       let type = chamber.type;
-      if (chamber.type == "boss") type = "combat";
       const chamberType = await loadImage(`./assets/dungeons/chambers/${type}.png`);
       ctx.drawImage(chamberType, offset + tileW * realX, offset + tileH * realY, tileW, tileH);
     }

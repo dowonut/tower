@@ -6,7 +6,7 @@ export default {
   description: "Enter a dungeon.",
   category: "dungeon",
   cooldown: "5",
-  unlockCommands: ["leavedungeon", "move"],
+  unlockCommands: ["leavedungeon", "move", "enterchamber"],
   arguments: [{ required: true, name: "dungeon", type: "playerAvailableDungeon" }],
   async execute(message, args: { dungeon: string }, player, server) {
     const { dungeon: dungeonName } = args;
@@ -34,10 +34,7 @@ export default {
 
     // Fetch dungeon and generate structure
     const dungeon = await player.getDungeon();
-    const randomWidth = game.random(5, 21);
-    const randomHeight = game.random(3, 13);
-    // await dungeon.generateStructure(dungeon?.dimensions?.width, dungeon?.dimensions?.height);
-    await dungeon.generateStructure(randomWidth, randomHeight);
+    await dungeon.generateStructure(dungeon?.dimensions?.width, dungeon?.dimensions?.height);
 
     // Handle dungeon
     let finalPlayers: Player[] = [player];

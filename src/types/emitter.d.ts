@@ -27,7 +27,8 @@ declare global {
   }
 
   /** On player moving inside dungeon. */
-  export interface DungeonMoveEmitter {
+  export interface DungeonActionEmitter {
+    action: "move_chamber" | "enter_chamber" | "exit_chamber";
     dungeon: Dungeon;
   }
 }

@@ -7,6 +7,7 @@ export default {
   description: "Move while inside of a dungeon",
   category: "dungeon",
   environment: ["dungeon"],
+  cooldownGroup: "dungeon_action",
   arguments: [
     {
       name: "direction",
@@ -49,6 +50,18 @@ export default {
     // Get dungeon
     const dungeon = await player.getDungeon();
 
+    // Check if current tile is completed
+    const newChamberCoords = dungeon.getRelativeCoords(direction, dungeon.x, dungeon.y);
+    if (
+      !dungeon.completedTiles.some((t) => t.x == dungeon.x && t.y == dungeon.y) &&
+      !dungeon.completedTiles.some((t) => t.x == newChamberCoords.x && t.y == newChamberCoords.y)
+    ) {
+      return game.error({
+        player,
+        content: `you must complete the current chamber before moving to a new one.`,
+      });
+    }
+
     // Check if valid direction
     const newChamber = dungeon.getRelativeChamber(direction, dungeon.x, dungeon.y);
     if (!newChamber) {
@@ -69,8 +82,9 @@ export default {
     });
 
     // Send emitter
-    game.emitter.emit("playerMoveInDungeon", {
+    game.emitter.emit("playerDungeonAction", {
+      action: "move_chamber",
       dungeon,
-    } satisfies DungeonMoveEmitter);
+    } satisfies DungeonActionEmitter);
   },
 } satisfies Command;

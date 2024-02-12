@@ -192,7 +192,7 @@ model StatusEffect {
   player      Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
   playerId    Int
   sourceType  String @default("enemy")
-  sourceId    Int
+  sourceId    Int?
   name        String
   remDuration Int?
 }

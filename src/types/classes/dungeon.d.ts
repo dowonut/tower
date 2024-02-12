@@ -43,11 +43,13 @@ declare global {
     puzzle: "puzzle";
     reward: "reward";
     respite: undefined;
+    boss: undefined;
   };
 
   /** Boss type dungeon chamber. */
   type DungeonChamberBoss = {
     type?: "boss";
+    description?: string;
     enemies: StaticEnemyName[];
     effects?: StaticStatusEffectName[];
   };

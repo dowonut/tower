@@ -6,6 +6,7 @@ export default {
   description: "Leave your current dungeon.",
   category: "dungeon",
   environment: ["dungeon"],
+  cooldownGroup: "dungeon_action",
   async execute(message, args, player, server) {
     game.send({
       player,

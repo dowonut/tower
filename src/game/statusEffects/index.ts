@@ -1,3 +1,4 @@
+export { default as full_heal } from "./buffs/full_heal.js";
 export { default as god } from "./buffs/god.js";
 export { default as invigorated } from "./buffs/invigorated.js";
 export { default as regenerating } from "./buffs/regenerating.js";

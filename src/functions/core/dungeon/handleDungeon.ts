@@ -28,6 +28,7 @@ export default async function handleDungeon(args: {
 
   //* Messages
   menu.setMessages([
+    // Main dungeon overview
     {
       name: "main",
       function: async (m) => {
@@ -41,6 +42,27 @@ export default async function handleDungeon(args: {
           player: leader,
           title,
           embed: { image: { url: "attachment://dungeon.png" } },
+        });
+      },
+    },
+    // Inside specific chamber
+    {
+      name: "chamber",
+      function: (m) => {
+        const chamber = dungeon.getChamber(dungeon.x, dungeon.y);
+        const title = `${dungeon.getName()} | ${game.titleCase(chamber.type)} Chamber`;
+        const thumbnail = dungeon.getChamberImage(chamber.type);
+
+        let description = ``;
+        if (chamber.description) description += `*${chamber.description}*`;
+
+        return game.fastEmbed({
+          fullSend: false,
+          player: leader,
+          title,
+          description: `Nothing here yet...`,
+          files: [thumbnail],
+          thumbnail: "attachment://chamber.png",
         });
       },
     },
@@ -58,7 +80,7 @@ export default async function handleDungeon(args: {
           id: "up",
           emoji: emojis.up,
           style: "primary",
-          disable: dungeon.getRelativeChamber("up", dungeon.x, dungeon.y) == undefined,
+          disable: !dungeon.chamberIsAccessible("up"),
           function: async () => {
             await runCommand("move", ["up"]);
           },
@@ -75,7 +97,7 @@ export default async function handleDungeon(args: {
           id: "left",
           emoji: emojis.left,
           style: "primary",
-          disable: dungeon.getRelativeChamber("left", dungeon.x, dungeon.y) == undefined,
+          disable: !dungeon.chamberIsAccessible("left"),
           function: async () => {
             await runCommand("move", ["left"]);
           },
@@ -84,7 +106,7 @@ export default async function handleDungeon(args: {
           id: "down",
           emoji: emojis.down,
           style: "primary",
-          disable: dungeon.getRelativeChamber("down", dungeon.x, dungeon.y) == undefined,
+          disable: !dungeon.chamberIsAccessible("down"),
           function: async () => {
             await runCommand("move", ["down"]);
           },
@@ -93,12 +115,48 @@ export default async function handleDungeon(args: {
           id: "right",
           emoji: emojis.right,
           style: "primary",
-          disable: dungeon.getRelativeChamber("right", dungeon.x, dungeon.y) == undefined,
+          disable: !dungeon.chamberIsAccessible("right"),
           function: async () => {
             await runCommand("move", ["right"]);
           },
         },
       ],
+    },
+    // Outside chamber interaction buttons
+    {
+      name: "options",
+      type: "buttons",
+      components: (m) => [
+        {
+          id: "enter_chamber",
+          label: `Enter ${game.titleCase(dungeon.getChamber(dungeon.x, dungeon.y).type)} Chamber`,
+          style: "success",
+          emoji: emojis.enter,
+          disable: dungeon.completedTiles.some((t) => t.x == dungeon.x && t.y == dungeon.y),
+          function: async () => {
+            await runCommand("enterchamber");
+          },
+        },
+      ],
+    },
+    // Options when inside a chamber
+    {
+      name: "chamber_options",
+      type: "buttons",
+      components: (m) => {
+        let buttons: Button[] = [];
+
+        buttons.push({
+          id: "exit_chamber",
+          label: "Exit Chamber",
+          style: "danger",
+          function: () => {
+            console.log("exit chamber");
+          },
+        });
+
+        return buttons;
+      },
     },
   ]);
 
@@ -107,7 +165,12 @@ export default async function handleDungeon(args: {
     {
       name: "main",
       message: "main",
-      rows: ["movement1", "movement2"],
+      rows: ["movement1", "movement2", "options"],
+    },
+    {
+      name: "inside_chamber",
+      message: "chamber",
+      rows: ["chamber_options"],
     },
   ]);
 
@@ -116,26 +179,46 @@ export default async function handleDungeon(args: {
 
   //* EMITTER FUNCTIONS ===============================================================================
 
-  game.emitter.on("playerMoveInDungeon", onPlayerMoveInDungeon);
+  game.emitter.on("playerDungeonAction", onPlayerDungeonAction);
 
   /** Update when the player moves to a new tile. */
-  async function onPlayerMoveInDungeon({ dungeon: newDungeon }: DungeonMoveEmitter) {
+  async function onPlayerDungeonAction({ dungeon: newDungeon, action }: DungeonActionEmitter) {
+    // Handle different outcomes
+    switch (action) {
+      //* Enter chamber
+      case "enter_chamber":
+        await menu.switchBoard("inside_chamber");
+        const chamber = dungeon.getChamber(dungeon.x, dungeon.y);
+        await onEnterChamber(chamber);
+        break;
+      //* Default
+      default:
+        menu.refresh();
+        break;
+    }
+
     // Update dungeon with new data
     Object.assign(dungeon, newDungeon);
-
-    // Refresh the menu
-    menu.refresh();
   }
 
   //* FUNCTIONS ===============================================================================
 
   /** Execute a command as the party leader. */
-  async function runCommand(name: string, args: string[]) {
+  async function runCommand(name: string, args?: string[]) {
     await game.runCommand(name, {
       server: leader.server,
       discordId: leader.user.discordId,
       channel: leader.channel,
       args,
     });
+  }
+
+  /** Handle entering a new chamber. */
+  async function onEnterChamber(chamber: DungeonChamber | DungeonChamberBoss) {
+    if (chamber.type == "respite") {
+      for (const player of players) {
+        await game.applyStatusEffect("full heal", player, "other");
+      }
+    }
   }
 }
