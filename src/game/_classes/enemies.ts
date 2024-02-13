@@ -11,6 +11,7 @@ import {
   createClassObject,
   evaluateStatusEffect,
   titleCase,
+  toArray,
 } from "../../functions/core/index.js";
 import { config, prisma } from "../../tower.js";
 import emojis from "../../emojis.js";
@@ -325,12 +326,11 @@ export class EnemyClass extends EnemyBaseClass {
       for (const outcome of statusEffect.outcomes) {
         // Modify stat
         if (outcome.type == "modify_stat") {
-          const modifyStats = Array.isArray(outcome.modifyStat)
-            ? outcome.modifyStat
-            : [outcome.modifyStat];
+          const modifyStats = toArray(outcome.modifyStat);
 
           // Iterate through stat modifications
           for (const modifyStat of modifyStats) {
+            if (modifyStat.stat !== stat) continue;
             if (modifyStat.scaling == "percent") {
               multipliers.statusEffects += modifyStat.basePercent / 100;
             } else if (modifyStat.scaling == "flat") {

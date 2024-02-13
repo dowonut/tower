@@ -20,18 +20,5 @@ export default (async function (args: { players: Player[]; enemies: Enemy[] }) {
     players,
   });
 
-  // Update status effect durations and delete expired
-  await this.update({
-    statusEffects: {
-      updateMany: {
-        where: { remDuration: { gt: 0 } },
-        data: { remDuration: { increment: -1 } },
-      },
-      deleteMany: {
-        remDuration: 0,
-      },
-    },
-  });
-
   return await this.refresh();
 } satisfies PlayerFunction);

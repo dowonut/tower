@@ -2,7 +2,7 @@ export default {
   name: "weakened",
   type: "debuff",
   description: "Weakens the target, decreasing their maximum health.",
-  evaluateOn: "passive",
+  evaluateOn: "turn_end",
   duration: 2,
   stackable: false,
   outcomes: [

@@ -5,17 +5,18 @@ import { config } from "../../tower.ts";
 declare global {
   type StatusEffectData = {
     name: string;
-    type: "buff" | "debuff";
     description: string;
-    /** When to evaluate the status effect.
+    /** Whether the status effect is classified as a buff or a debuff. Only affects visual indicators. */
+    type: "buff" | "debuff";
+    /** When to evaluate the status effect. Also affects when the duration is modified.
      * - turn_end = when the host's turn ends.
      * - turn_start = when the host's turn starts.
      * - immediate = once when the status effect is inflicted.
      */
-    evaluateOn: "turn_end" | "turn_start" | "immediate" | "passive";
+    evaluateOn: "turn_end" | "turn_start" | "immediate";
     /** All outcomes of the status effect. */
     outcomes: StatusEffectOutcome[];
-    /** For how many combat rounds does the status effect last. If left empty then infinite. */
+    /** How many turns the status effect lasts for, decreased during evaluateOn. If left empty then infinite. */
     duration?: number;
     /** Can the status effect can stack. Default: true.*/
     stackable?: boolean;
@@ -31,6 +32,11 @@ declare global {
     type: T;
     /** Optional message to send on evaluation. Variables: HOST, SOURCE, DAMAGE, HEAL. */
     messages?: string[];
+    /** Whether the status effect is evaluated passively or actively. Default = active.
+     * - active = the status effect has all its outcomes evaluated on evaluateOn.
+     * - passive = the status effect never has its outcomes evaluated.
+     */
+    evaluateType?: "active" | "passive";
   };
 
   type StatusEffectOutcomeAll = {

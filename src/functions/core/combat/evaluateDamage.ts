@@ -10,8 +10,16 @@ export default function evaluateDamage(args: {
   target: Enemy | Player;
   /** Can the damage crit and acute. Default = true. */
   canCritandAcute?: boolean;
+  /** Whether or not to return detailed information about the damage evaluation. Default = false. */
+  verbose?: boolean;
 }) {
-  const { damageInstances, source: trueSource, target, canCritandAcute = true } = args;
+  const {
+    damageInstances,
+    source: trueSource,
+    target,
+    canCritandAcute = true,
+    verbose = false,
+  } = args;
   const evaluatedDamage: EvaluatedDamage = { instances: [], total: 0 };
 
   // Iterate through damage instances of attack
@@ -40,13 +48,16 @@ export default function evaluateDamage(args: {
     flatDamage += baseDamage;
 
     // Define multipliers
-    let multipliers = [];
+    let multipliers: DamageMultipliers = {
+      critMultiplier: 1,
+      resMultiplier: 1,
+    };
 
     // Get CRIT multiplier
     let isCrit = false;
     if (source instanceof PlayerClass && canCritandAcute) {
       isCrit = game.random(1, 100) <= source.CR;
-      if (isCrit) multipliers.push(1 + source.CD / 100);
+      if (isCrit) multipliers.critMultiplier = 1 + source.CD / 100;
     }
 
     // Evaluate ACUTE damage
@@ -77,16 +88,34 @@ export default function evaluateDamage(args: {
     // Get RES multiplier
     const resMultiplier =
       1 - (target[resStat] * targetResModifier) / (target[resStat] * targetResModifier + 1000);
-    multipliers.push(resMultiplier);
+    multipliers.resMultiplier = resMultiplier;
 
     // Calculate multipliers and total damage
-    let totalDamage = flatDamage;
-    for (const multiplier of multipliers) {
+    let totalDamageBeforeMultipliers = flatDamage;
+    let totalDamage = totalDamageBeforeMultipliers;
+    for (const multiplier of Object.values(multipliers)) {
       totalDamage *= multiplier;
     }
 
     // Round final damage value down
     const roundedDamage = Math.floor(totalDamage);
+
+    // Supply extra info to details
+    let details: EvaluatedDamageDetails;
+    if (verbose) {
+      details = {
+        baseDamage,
+        targetResModifier,
+        multipliers,
+        totalDamageBeforeMultipliers,
+        totalDamage,
+        roundedDamage,
+        resStat,
+        damage,
+        target,
+        source,
+      };
+    }
 
     // Add to evaluated damage object
     evaluatedDamage.instances.push({
@@ -94,6 +123,7 @@ export default function evaluateDamage(args: {
       total: roundedDamage,
       crit: isCrit,
       acute: isAcute,
+      details,
     });
     evaluatedDamage.total += roundedDamage;
   }

@@ -4,11 +4,12 @@ import PlayerClass from "../../../game/_classes/players.js";
 import { game, prisma } from "../../../tower.js";
 
 /** Apply a status effect to an entity. */
-export default async function applyStatusEffect(
-  name: StaticStatusEffectName,
-  target: Enemy | Player,
-  source: Enemy | Player | "other"
-) {
+export default async function applyStatusEffect(args: {
+  name: StaticStatusEffectName;
+  target: Enemy | Player;
+  source: Enemy | Player | "other";
+}) {
+  const { name, target, source } = args;
   // Get fixed status outcome
   let statusEffect = game.getStatusEffect(name);
   let sourceType: "enemy" | "player" | "other";
@@ -47,7 +48,7 @@ export default async function applyStatusEffect(
     );
   }
   // Immediately evaluate status outcome
-  if (statusEffect.evaluateOn == "immediate" || statusEffect.evaluateOn == "passive") {
+  if (statusEffect.evaluateOn == "immediate") {
     await game.evaluateStatusEffect({ host: target, statusEffect });
   }
   return;

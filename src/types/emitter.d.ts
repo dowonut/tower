@@ -11,7 +11,7 @@ declare global {
   export interface ActionMessageEmitter {
     encounterId: number;
     message: string;
-    data?: { statusEffect?: StatusEffect };
+    data?: { statusEffect?: StatusEffect; damage?: EvaluatedDamage };
   }
 
   /** On player flee. */

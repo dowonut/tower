@@ -98,6 +98,7 @@ export default async function evaluateAction(args: {
         damageInstances: damage,
         source,
         target,
+        verbose: true,
       });
       const totalDamage = evaluatedDamage.total;
       const previousTargetHealth = target.health;
@@ -128,6 +129,7 @@ export default async function evaluateAction(args: {
       game.emitter.emit("actionMessage", {
         encounterId: source.encounterId,
         message,
+        data: { damage: evaluatedDamage },
       } satisfies ActionMessageEmitter);
     }
     return;
@@ -187,7 +189,7 @@ export default async function evaluateAction(args: {
         data: { statusEffect },
       } satisfies ActionMessageEmitter);
       // Immediately evaluate status outcome
-      if (statusEffect.evaluateOn == "immediate" || statusEffect.evaluateOn == "passive") {
+      if (statusEffect.evaluateOn == "immediate") {
         await game.evaluateStatusEffect({ host: target, statusEffect, enemies, players });
       }
     }

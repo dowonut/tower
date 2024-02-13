@@ -136,8 +136,30 @@ declare global {
       crit: boolean;
       /** Is the damage instance an acute hit. Default = false. */
       acute: boolean;
+      /** Details returned by setting verbose = true. */
+      details?: EvaluatedDamageDetails;
     }[];
     total: number;
+  };
+
+  /** Specific details of an evaluated damage instance. */
+  export type EvaluatedDamageDetails = {
+    baseDamage: number;
+    targetResModifier: number;
+    multipliers: DamageMultipliers;
+    totalDamageBeforeMultipliers: number;
+    totalDamage: number;
+    roundedDamage: number;
+    resStat: "RES" | "MAG_RES" | "SPC_RES";
+    damage: StatusEffectDamage | ActionOutcomeDamage;
+    source: Player | Enemy;
+    target: Player | Enemy;
+  };
+
+  /** Types of damage multipliers. */
+  export type DamageMultipliers = {
+    critMultiplier: number;
+    resMultiplier: number;
   };
 
   /** Object containing selected targets. */

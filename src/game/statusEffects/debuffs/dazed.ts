@@ -3,7 +3,7 @@ export default {
   description: "The target is dazed, making it harder for them to hit things.",
   type: "debuff",
   duration: 1,
-  evaluateOn: "passive",
+  evaluateOn: "turn_end",
   stackable: false,
   outcomes: [
     {

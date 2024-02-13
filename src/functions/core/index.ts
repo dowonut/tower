@@ -20,6 +20,7 @@ export { default as send } from "./discord/send.js";
 export { default as displayNumber } from "./display/displayNumber.js";
 export { default as f } from "./display/f.js";
 export { default as fastProgressBar } from "./display/fastProgressBar.js";
+export { default as getDamageBreakdown } from "./display/getDamageBreakdown.js";
 export { default as getEnemyInfo } from "./display/getEnemyInfo.js";
 export { default as getRegionImage } from "./display/getRegionImage.js";
 export { default as levelProgress } from "./display/levelProgress.js";

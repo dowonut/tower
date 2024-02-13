@@ -1,5 +1,6 @@
 import { setTimeout } from "timers/promises";
 import { config, game, prisma } from "../../../tower.js";
+import PlayerClass from "../../../game/_classes/players.js";
 
 /** Evaluate a status effect against a host. */
 export default async function evaluateStatusEffect(args: {
@@ -10,6 +11,10 @@ export default async function evaluateStatusEffect(args: {
   statusEffect: StatusEffect;
 }) {
   let { host, statusEffect, players = [], enemies = [], source } = args;
+
+  // console.log(
+  //   `> Evaluating ${statusEffect.name} on ${host.displayName} (${statusEffect.evaluateOn})`
+  // );
 
   // Refresh host
   host = await (host as Player).refresh();
@@ -44,7 +49,22 @@ export default async function evaluateStatusEffect(args: {
     await setTimeout(game.random(2, 5) * 100);
   }
 
+  // Update status effect durations and delete expired
+  await host.update({
+    statusEffects: {
+      update: {
+        where: { id: statusEffect.id },
+        data: { remDuration: { increment: -1 } },
+      },
+      deleteMany: {
+        remDuration: 0,
+      },
+    },
+  });
+
   return;
+
+  //* Functions =================================================================
 
   // Deal damage to the host
   async function evaluateDamage(outcome: StatusEffectOutcome<"damage">) {
@@ -56,6 +76,7 @@ export default async function evaluateStatusEffect(args: {
       source,
       target: host,
       canCritandAcute: false,
+      verbose: true,
     });
     const totalDamage = evaluatedDamage.total;
     const previousHostHealth = host.health;
@@ -77,7 +98,7 @@ export default async function evaluateStatusEffect(args: {
     });
 
     // Send message
-    emitMessage(source, message);
+    emitMessage(source, message, { damage: evaluatedDamage });
     return;
   }
 
@@ -183,11 +204,24 @@ export default async function evaluateStatusEffect(args: {
     return;
   }
 
-  function emitMessage(source: Player | Enemy, message: string) {
-    if (!source?.encounterId) return;
-    game.emitter.emit("actionMessage", {
-      encounterId: source.encounterId,
-      message,
-    } satisfies ActionMessageEmitter);
+  function emitMessage(source: Player | Enemy, message: string, data = {}) {
+    // Send action message if source is in an encounter
+    if (source?.encounterId) {
+      game.emitter.emit("actionMessage", {
+        encounterId: source.encounterId,
+        message,
+        data,
+      } satisfies ActionMessageEmitter);
+    }
+    // Otherwise send global message
+    else if (host instanceof PlayerClass) {
+      // Send message
+      game.send({
+        player: host,
+        reply: false,
+        content: message,
+        files: [{ attachment: "./assets/seperator.png", name: "seperator.png" }],
+      });
+    }
   }
 }

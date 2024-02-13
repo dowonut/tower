@@ -3,7 +3,7 @@ export default {
   type: "buff",
   description: "Imbues the target with a surge of strength.",
   duration: 2,
-  evaluateOn: "passive",
+  evaluateOn: "turn_end",
   outcomes: [
     {
       type: "modify_stat",

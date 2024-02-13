@@ -217,7 +217,7 @@ export default async function handleDungeon(args: {
   async function onEnterChamber(chamber: DungeonChamber | DungeonChamberBoss) {
     if (chamber.type == "respite") {
       for (const player of players) {
-        await game.applyStatusEffect("full heal", player, "other");
+        await game.applyStatusEffect({ name: "full heal", target: player, source: "other" });
       }
     }
   }

@@ -202,7 +202,12 @@ export const embedColors = {
 
 // What to include when fetching player
 export const playerInclude = {
-  encounter: { include: { players: { include: { user: true } }, enemies: true } },
+  encounter: {
+    include: {
+      players: { include: { user: true } },
+      enemies: { include: { statusEffects: true } },
+    },
+  },
   party: { include: { players: { include: { user: true } } } },
   exploration: true,
   statusEffects: true,

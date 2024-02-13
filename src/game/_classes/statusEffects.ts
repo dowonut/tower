@@ -76,13 +76,15 @@ export class StatusEffectClass extends StatusEffectBaseClass {
       case "turn_start":
         turnText = "When the host's turn **begins**,";
         break;
-      case "passive":
-        turnText = "When applied to an entity, **passively**";
-        break;
     }
 
     const outcomes = this.outcomes;
     for (const [i, outcome] of (outcomes as StatusEffectOutcome[]).entries()) {
+      // Change evaluation text if outcome is a passive stat modifiers
+      if (outcome.type == "modify_stat" || outcome.evaluateType == "passive") {
+        turnText = "When applied to an entity, **passively**";
+      }
+
       // Determine verb
       let outcomePrefix: string;
       let finalText: string;
@@ -182,7 +184,7 @@ export class StatusEffectClass extends StatusEffectBaseClass {
               statText.push(text);
             }
           }
-          finalText = `${outcomePrefix} ${statText.join("")}${suffix}`;
+          finalText = `${statText.join("")}${suffix}`;
           break;
         //* Has custom effect
         case "custom":
@@ -194,7 +196,7 @@ export class StatusEffectClass extends StatusEffectBaseClass {
     }
     let finalText = ``;
     // Add title
-    if (includeTitle) finalText += `### ${this.getEmoji()}**${this.getName()}**\n`;
+    if (includeTitle) finalText += `## ${this.getEmoji()}**${this.getName()}**\n`;
     // Add duration
     const duration = this.duration || undefined;
     if (duration && this.evaluateOn !== "immediate")

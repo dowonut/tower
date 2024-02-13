@@ -3,7 +3,7 @@ export default {
   description: "The target is wet.",
   type: "debuff",
   duration: 2,
-  evaluateOn: "passive",
+  evaluateOn: "turn_end",
   stackable: false,
   outcomes: [
     {

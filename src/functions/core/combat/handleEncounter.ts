@@ -371,9 +371,7 @@ ${turnOrderList}
           label: `${game.titleCase(data.statusEffect.name)}`,
           function: async (r) => {
             await r.edit({
-              content: `${r.content}\n## ${data.statusEffect.getEmoji()}${game.titleCase(
-                data.statusEffect.name
-              )}\n${data.statusEffect.getInfo()}`,
+              content: `${r.content}\n${data.statusEffect.getInfo(true)}`,
               components: [],
             });
           },
@@ -402,6 +400,27 @@ ${turnOrderList}
           unique: false,
         },
       });
+    }
+
+    // Attach reaction listener for damage breakdown
+    if (data.damage) {
+      botMsg
+        .awaitReactions({
+          filter: (r) => r.emoji.name == "ℹ️" && r.message.id == botMsg.id,
+          max: 1,
+          time: 120_000,
+        })
+        .then(async (c) => {
+          let breakdownText = `## Damage Breakdown\n`;
+          for (const instance of data.damage.instances) {
+            breakdownText += `${game.getDamageBreakdown(instance)}\n\n`;
+          }
+
+          await c.first()?.message?.edit({
+            content: `${botMsg.content}\n${breakdownText}`,
+            components: [],
+          });
+        });
     }
 
     try {
@@ -516,26 +535,6 @@ ${turnOrderList}
     // Send typing indicator
     await channel.sendTyping();
     setTimeout(async () => {
-      // Update status effect durations
-      enemy = await enemy.update({
-        statusEffects: {
-          updateMany: {
-            where: { remDuration: { gt: 0 } },
-            data: { remDuration: { increment: -1 } },
-          },
-        },
-      });
-      // Delete status effects with 0 remaining duration
-      if (enemy.statusEffects.some((x) => x?.remDuration < 1)) {
-        enemy = await enemy.update({
-          statusEffects: {
-            deleteMany: {
-              id: { in: enemy.statusEffects.filter((x) => x?.remDuration < 1).map((x) => x.id) },
-            },
-          },
-        });
-      }
-
       // Evaluate status effects
       await enemy.evaluateStatusEffects({
         currently: "turn_start",

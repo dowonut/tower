@@ -3,7 +3,7 @@ export default {
   description: "Makes the target feel invigorated, increasing their speed and attack.",
   type: "buff",
   duration: 1,
-  evaluateOn: "passive",
+  evaluateOn: "turn_end",
   outcomes: [
     {
       type: "modify_stat",
