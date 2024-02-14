@@ -6,11 +6,29 @@ export default (async function (args: { enemies: Enemy[] }) {
   let loots: Item[] = [];
   let totalXP = 0;
 
+  let essences = {
+    "frail essence": 0,
+    "ordinary essence": 0,
+    "potent essence": 0,
+  };
+
   for (const enemy of enemies) {
     if (!enemy.dead) continue;
     let enemyLoot = [];
     if (enemy.loot) enemyLoot.push(...enemy.loot);
     if (enemy.type.loot) enemyLoot.push(...enemy.type.loot);
+    // Frail essence
+    if (enemy.level <= 40) {
+      essences["frail essence"] += game.random(enemy.level, enemy.level + 5);
+    }
+    // Ordinary essence
+    if (enemy.level >= 30 && enemy.level <= 70) {
+      essences["ordinary essence"] += game.random(enemy.level - 29, enemy.level - 29 + 5);
+    }
+    // Potent essence
+    if (enemy.level >= 60) {
+      essences["potent essence"] += game.random(enemy.level - 59, enemy.level - 59 + 5);
+    }
     // Get loot
     for (const loot of enemyLoot) {
       const chance = Math.random() * 100;
@@ -31,6 +49,15 @@ export default (async function (args: { enemies: Enemy[] }) {
     // Get XP
     const xp = enemy.XP;
     totalXP += xp;
+  }
+
+  // Add essences to loot list
+  for (const [key, value] of Object.entries(essences)) {
+    if (value <= 0) continue;
+    const item = game.getItem(key);
+    item.quantity = value;
+    await this.giveItem(key, value);
+    loots.push(item);
   }
 
   return { xp: totalXP, loot: loots };

@@ -121,6 +121,9 @@ const emojis = {
     sword_handle: "<:sword_handle:1137785916136628244>",
     leather: "<:leather:1202205924299915314>",
     frog_tongue: "<:frog_tongue:1202205927315611698>",
+    frail_essence: "<:frail_essence:1207311985369288714>",
+    ordinary_essence: "<:ordinary_essence:1207311986505945088>",
+    potent_essence: "<:potent_essence:1207311987814563840>",
   },
   enemies: {
     sentient_rock: "<:sentient_rock:1203553772119531540>",

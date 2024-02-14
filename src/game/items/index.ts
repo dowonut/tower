@@ -1,3 +1,6 @@
+export { default as frail_essence } from "./XP materials/frail_essence.js";
+export { default as ordinary_essence } from "./XP materials/ordinary_essence.js";
+export { default as potent_essence } from "./XP materials/potent_essence.js";
 export { default as fabric } from "./crafting/fabric.js";
 export { default as frog_tongue } from "./crafting/frog_tongue.js";
 export { default as goblin_skin } from "./crafting/goblin_skin.js";
@@ -7,10 +10,8 @@ export { default as rock } from "./crafting/rock.js";
 export { default as slimeball } from "./crafting/slimeball.js";
 export { default as stick } from "./crafting/stick.js";
 export { default as sword_handle } from "./crafting/sword_handle.js";
-export { default as testItem } from "./crafting/testItem.js";
-export { default as grey_shard } from "./enhancement/grey_shard.js";
 export { default as apple } from "./food/apple.js";
-export { default as banana } from "./food/banana.js";
+export { default as orange } from "./food/orange.js";
 export { default as slime_dungeon_map } from "./maps/slime_dungeon_map.js";
 export { default as rare_strength_potion } from "./potions/rare_strength_potion.js";
 export { default as strength_potion } from "./potions/strength_potion.js";

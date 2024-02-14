@@ -108,7 +108,7 @@ export class PlayerClass extends PlayerBaseClass {
     for (const [key, item] of Object.entries(this.equipment)) {
       // Get weapon stats
       if (item?.category == "weapon") {
-        if (!item.weaponType) continue;
+        if (!item.weapon.type) continue;
         if (!Object.keys(config.baseWeaponStats).includes(stat)) continue;
         weaponLevelBonus += item.getStat(stat as WeaponStat);
       }
@@ -147,6 +147,7 @@ export class PlayerClass extends PlayerBaseClass {
     for (const statusEffect of statusEffects) {
       // Iterate through effect outomes
       for (const outcome of statusEffect.outcomes) {
+        const levelBonus = (outcome?.levelScaling || 0) * statusEffect.level;
         // Modify stat
         if (outcome.type == "modify_stat") {
           const modifyStats = toArray(outcome.modifyStat);
@@ -155,9 +156,9 @@ export class PlayerClass extends PlayerBaseClass {
           for (const modifyStat of modifyStats) {
             if (modifyStat.stat !== stat) continue;
             if (modifyStat.scaling == "percent") {
-              statusEffectMultiplier += modifyStat.basePercent / 100;
+              statusEffectMultiplier += (modifyStat.basePercent + levelBonus) / 100;
             } else if (modifyStat.scaling == "flat") {
-              flatBonus += modifyStat.baseFlat;
+              flatBonus += modifyStat.baseFlat + levelBonus;
             }
           }
         }

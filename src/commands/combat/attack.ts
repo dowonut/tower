@@ -116,7 +116,7 @@ export default {
             switch (filterOptions[0]) {
               case "current weapon":
                 titlePrefix = game.titleCase(
-                  (await player.getEquipped("hand"))?.weaponType || "unarmed"
+                  (await player.getEquipped("hand"))?.weapon.type || "unarmed"
                 );
                 break;
               case "all":

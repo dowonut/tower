@@ -8,8 +8,9 @@ export default async function applyStatusEffect(args: {
   name: StaticStatusEffectName;
   target: Enemy | Player;
   source: Enemy | Player | "other";
+  level?: number;
 }) {
-  const { name, target, source } = args;
+  const { name, target, source, level = 0 } = args;
   // Get fixed status outcome
   let statusEffect = game.getStatusEffect(name);
   let sourceType: "enemy" | "player" | "other";
@@ -29,6 +30,7 @@ export default async function applyStatusEffect(args: {
     remDuration: statusEffect?.duration || null,
     sourceId: source == "other" ? undefined : source.id,
     sourceType,
+    level,
   };
   // Check if stackable and skip if not
   if (statusEffect.stackable == false) {

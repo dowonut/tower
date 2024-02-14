@@ -56,14 +56,14 @@ export default {
               });
             }
             // Create eat button
-            if (item.health) {
+            if (item?.consumable?.type == "food") {
               // Refresh player data
               const { health, maxHP } = m.player;
               const disable = disableCheck || health == maxHP ? true : false;
               buttons.push({
                 id: "eat",
                 emoji: config.emojis.health,
-                label: `Eat for ${item.health} HP`,
+                label: `Eat`,
                 style: "success",
                 disable: disable,
                 function: async () => {
@@ -73,9 +73,9 @@ export default {
               });
             }
             // Create equip button
-            if (item.equipSlot) {
+            if (item.getEquipSlot()) {
               // Get current equipped item
-              let current = await m.player.getEquipment(item.equipSlot);
+              let current = await m.player.getEquipment(item.weapon.equipSlot);
 
               // Check if item is equipped
               const equipped = current?.name == item.name;
@@ -93,7 +93,7 @@ export default {
               });
             }
             // Create drink button
-            if (item.category == "potion") {
+            if (item?.consumable?.type == "potion") {
               buttons.push({
                 id: "drink",
                 label: "Drink",
@@ -195,17 +195,22 @@ export default {
         {
           name: "main",
           function: (m) => {
-            if (!item) return m.botMessage.delete();
+            // Delete item when no more in inventory.
+            if (!item || item?.quantity < 1) {
+              m.botMessage.delete();
+              return;
+            }
+
             // Format item description
             let description = item.getDescription();
 
             let title = `${item.getName()} ${item.quantity > 1 ? `(x${item.quantity})` : ``}`;
 
-            if (item.category == "weapon") {
-              title += ` | \`Lvl. ${item.level}\``;
+            if (item.category == "weapon" || item.category == "armor") {
+              title += ` | \`Lvl. ${item.getLevel()}\``;
             }
 
-            let embed: any = {
+            let embed: Embed = {
               description,
             };
 

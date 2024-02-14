@@ -44,7 +44,7 @@ export default (async function (args: {
 
     // Check if attack is currently available
     if (onlyAvailable) {
-      const weapon = (await this.getEquipped("hand"))?.weaponType || "unarmed";
+      const weapon = (await this.getEquipped("hand"))?.weapon.type || "unarmed";
       attacks = attacks.filter((x) => x.requiredWeapon.includes(weapon));
     }
 

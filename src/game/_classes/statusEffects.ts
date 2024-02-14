@@ -58,6 +58,13 @@ export class StatusEffectClass extends StatusEffectBaseClass {
     return emoji;
   }
 
+  /** Formatted display name with emoji and level. */
+  get displayName() {
+    let levelText = ``;
+    if (this.level > 0) levelText = ` **+${this.level}**`;
+    return `${this.getEmoji()}**${this.getName()}**${levelText}`;
+  }
+
   /** Get advanced info about the status effect. */
   getInfo(includeTitle: boolean = false) {
     let textObject: {
@@ -80,6 +87,9 @@ export class StatusEffectClass extends StatusEffectBaseClass {
 
     const outcomes = this.outcomes;
     for (const [i, outcome] of (outcomes as StatusEffectOutcome[]).entries()) {
+      const levelScaling = outcome?.levelScaling || 0;
+      const levelBonus = levelScaling * this.level;
+
       // Change evaluation text if outcome is a passive stat modifiers
       if (outcome.type == "modify_stat" || outcome.evaluateType == "passive") {
         turnText = "When applied to an entity, **passively**";
@@ -127,10 +137,11 @@ export class StatusEffectClass extends StatusEffectBaseClass {
             if (damage.scaling == "percent") {
               const stat = `${emojis.stats[damage.scalingStat]}**\`${damage.scalingStat}\`**`;
               const statSource = damage?.statSource ? damage.statSource : "source";
-              let text = `${prefix}**\`${damage.basePercent}%\`** of the **${statSource}**'s ${stat} as ${damageType}`;
+              const percent = levelBonus + damage.basePercent;
+              let text = `${prefix}**\`${percent}%\`** of the **${statSource}**'s ${stat} as ${damageType}`;
               damageText.push(text);
             } else if (damage.scaling == "flat") {
-              let text = `${prefix}**\`${damage.baseFlat}\`** as ${damageType}`;
+              let text = `${prefix}**\`${damage.baseFlat + levelBonus}\`** as ${damageType}`;
               damageText.push(text);
             }
           }
@@ -145,10 +156,12 @@ export class StatusEffectClass extends StatusEffectBaseClass {
             if (heal.scaling == "percent") {
               const stat = `${emojis.stats[heal.scalingStat]}**\`${heal.scalingStat}\`**`;
               const statSource = heal?.statSource ? heal.statSource : "source";
-              let text = `${prefix}**\`${heal.basePercent}%\`** of the **${statSource}**'s ${stat}`;
+              let text = `${prefix}**\`${
+                heal.basePercent + levelBonus
+              }%\`** of the **${statSource}**'s ${stat}`;
               healText.push(text);
             } else if (heal.scaling == "flat") {
-              let text = `${prefix}**\`${heal.baseFlat}\`**`;
+              let text = `${prefix}**\`${heal.baseFlat + levelBonus}\`**`;
               healText.push(text);
             }
           }
@@ -157,7 +170,7 @@ export class StatusEffectClass extends StatusEffectBaseClass {
         //* Delays or advances host
         case "modify_speed_gauge":
           const type = outcome.modifySpeedGauge.type + "s";
-          const amount = outcome.modifySpeedGauge.percent;
+          const amount = outcome.modifySpeedGauge.percent + levelBonus;
           finalText = `${type} their next action by **\`${amount}%\`**`;
           break;
         //* Modifies the host's stats
@@ -177,10 +190,14 @@ export class StatusEffectClass extends StatusEffectBaseClass {
             const stat = `${statEmoji(modifyStat.stat)}**\`${titleCase(modifyStat.stat)}\`**`;
             const prefix = listPrefix(i, stats);
             if (modifyStat.scaling == "percent") {
-              let text = `${prefix}${verb} their ${stat} by **\`${modifyStat.basePercent * 1}%\`**`;
+              let text = `${prefix}${verb} their ${stat} by **\`${
+                modifyStat.basePercent + levelBonus
+              }%\`**`;
               statText.push(text);
             } else if (modifyStat.scaling == "flat") {
-              let text = `${prefix}${verb} their ${stat} by **\`${modifyStat.baseFlat * 1}\`**`;
+              let text = `${prefix}${verb} their ${stat} by **\`${
+                modifyStat.baseFlat + levelBonus
+              }\`**`;
               statText.push(text);
             }
           }
@@ -196,7 +213,7 @@ export class StatusEffectClass extends StatusEffectBaseClass {
     }
     let finalText = ``;
     // Add title
-    if (includeTitle) finalText += `## ${this.getEmoji()}**${this.getName()}**\n`;
+    if (includeTitle) finalText += `### ${this.displayName}\n`;
     // Add duration
     const duration = this.duration || undefined;
     if (duration && this.evaluateOn !== "immediate")

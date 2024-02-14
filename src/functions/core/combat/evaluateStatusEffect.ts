@@ -77,6 +77,7 @@ export default async function evaluateStatusEffect(args: {
       target: host,
       canCritandAcute: false,
       verbose: true,
+      levelBonus: statusEffect.level * (outcome?.levelScaling || 0),
     });
     const totalDamage = evaluatedDamage.total;
     const previousHostHealth = host.health;
@@ -112,10 +113,12 @@ export default async function evaluateStatusEffect(args: {
   async function modifySpeedGauge(outcome: StatusEffectOutcome<"modify_speed_gauge">) {
     const currentSG = host.SG;
     let multiplier = 0;
+    const percent =
+      outcome.modifySpeedGauge.percent + statusEffect.level * (outcome?.levelScaling || 0);
     if (outcome.modifySpeedGauge.type == "forward") {
-      multiplier += outcome.modifySpeedGauge.percent / 100;
+      multiplier += percent / 100;
     } else if (outcome.modifySpeedGauge.type == "delay") {
-      multiplier -= outcome.modifySpeedGauge.percent / 100;
+      multiplier -= percent / 100;
     }
     const newSG = currentSG - config.baseSpeedGauge * multiplier;
     host = await (host as Player).update({ SG: newSG });
@@ -161,6 +164,7 @@ export default async function evaluateStatusEffect(args: {
 
   // Modify health
   async function modifyHealth(outcome: StatusEffectOutcome<"modify_health">) {
+    const levelBonus = statusEffect.level * (outcome?.levelScaling || 0);
     const modifyHealths = Array.isArray(outcome.modifyHealth)
       ? outcome.modifyHealth
       : [outcome.modifyHealth];
@@ -176,9 +180,11 @@ export default async function evaluateStatusEffect(args: {
 
       let baseHealing = 0;
       if (heal.scaling == "percent") {
-        baseHealing = Math.floor(statSource[heal.scalingStat] * (heal.basePercent / 100));
+        baseHealing = Math.floor(
+          statSource[heal.scalingStat] * ((heal.basePercent + levelBonus) / 100)
+        );
       } else if (heal.scaling == "flat") {
-        baseHealing = Math.floor(heal.baseFlat);
+        baseHealing = Math.floor(heal.baseFlat + levelBonus);
       }
 
       const roundedHealing = Math.floor(baseHealing);

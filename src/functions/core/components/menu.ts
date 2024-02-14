@@ -52,7 +52,7 @@ export default class Menu<T> extends MenuBase<T> {
       this.botMessage = (await this.botMessage.edit({ components: messageComponents })) as Message;
       this.createCollector(components);
     } else throw new Error("Initial board must contain a message function.");
-    if (this.onLoad) this.onLoad(this);
+    if (this.onLoad) await this.onLoad(this);
     return;
   }
 
@@ -61,7 +61,7 @@ export default class Menu<T> extends MenuBase<T> {
   async refresh(args: CollectorOptions = undefined) {
     if (!this.currentBoard || !this.botMessage)
       throw new Error("Cannot refresh before initialized.");
-    if (this.onRefresh) this.onRefresh(this);
+    if (this.onRefresh) await this.onRefresh(this);
     await this.switchBoard(this.currentBoard, args);
   }
 
@@ -71,8 +71,8 @@ export default class Menu<T> extends MenuBase<T> {
     if (args) {
       this.collectorArgs = args;
     }
-    if (!this.currentBoard || !this.botMessage)
-      throw new Error("Cannot switch board before initialized.");
+    if (!this.currentBoard || !this.botMessage || !this.botMessage.editable)
+      throw new Error("Tried to switch board but missing bot message.");
     const board = this.boards.find((x) => x.name == boardName);
     if (!board) return;
     this.currentBoard = boardName;
@@ -84,8 +84,13 @@ export default class Menu<T> extends MenuBase<T> {
       // messageOptions = await board.message();
     }
     const { messageComponents, components } = await this.getComponents(board);
-    this.botMessage.edit({ ...messageOptions, components: messageComponents || [] });
-    this.createCollector(components);
+    if (_.isEmpty(messageOptions) && _.isEmpty(messageComponents)) return;
+    try {
+      this.botMessage.edit({ ...messageOptions, components: messageComponents || [] });
+      this.createCollector(components);
+    } catch (err) {
+      throw new Error("Menu message no longer exists.");
+    }
   }
 
   //------------------------------------------------------------

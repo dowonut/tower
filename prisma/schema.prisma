@@ -137,8 +137,9 @@ model Inventory {
   enhancements Enhancement[]
   // Equipment
   level        Int?          @default(1)
+  xp           Int?          @default(0)
   grade        String?       @default("common")
-  materials    String[]      @default(["steel"])
+  materials    String[]
 }
 
 // Item enhancements 
@@ -195,6 +196,7 @@ model StatusEffect {
   sourceId    Int?
   name        String
   remDuration Int?
+  level       Int    @default(0)
 }
 
 // Enemy status effects
@@ -206,6 +208,7 @@ model EnemyStatusEffect {
   sourceId    Int?
   name        String
   remDuration Int?
+  level       Int    @default(0)
 }
 
 // Enemy tracking

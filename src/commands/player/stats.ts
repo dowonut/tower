@@ -65,14 +65,21 @@ export default {
               }
               const traitText =
                 traitMultiplier > 0
-                  ? ` ${traitEmoji}${game.f("+" + traitMultiplier * 100 + "%")}`
+                  ? ` ${traitEmoji}${game.f("+" + Math.round(traitMultiplier * 100) + "%")}`
                   : "";
               // Status effect bonus
-              const statusEmoji = emojis.buff;
-              const statusText =
-                statusEffectMultiplier > 0
-                  ? ` ${statusEmoji}${game.f("+" + statusEffectMultiplier * 100 + "%")}`
-                  : "";
+              let statusText = ``;
+              if (statusEffectMultiplier > 0) {
+                const statusEmoji = emojis.buff;
+                statusText = ` ${statusEmoji}${game.f(
+                  "+" + Math.round(statusEffectMultiplier * 100) + "%"
+                )}`;
+              } else if (statusEffectMultiplier < 0) {
+                const statusEmoji = emojis.debuff;
+                statusText = ` ${statusEmoji}${game.f(
+                  Math.round(statusEffectMultiplier * 100) + "%"
+                )}`;
+              }
               // Finalize
               statText = `${game.f(base + percent)}${flatText}${traitText}${statusText}`;
             }

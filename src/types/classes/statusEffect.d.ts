@@ -30,13 +30,22 @@ declare global {
      * custom = evaluate a custom function.
      */
     type: T;
-    /** Optional message to send on evaluation. Variables: HOST, SOURCE, DAMAGE, HEAL. */
+    /** Optional message to send on evaluation.
+     * Variables:
+     * - HOST = the entity the status effect is applied to.
+     * - SOURCE = the entity the status effect was applied by.
+     * - DAMAGE = damage dealt by damage-type status effects.
+     * - HEAL = health regained by healing status effects.
+     * - VALUE = parameter for other types of status effects.
+     */
     messages?: string[];
     /** Whether the status effect is evaluated passively or actively. Default = active.
      * - active = the status effect has all its outcomes evaluated on evaluateOn.
      * - passive = the status effect never has its outcomes evaluated.
      */
     evaluateType?: "active" | "passive";
+    /** Optionally modify the parameters of the status effect based on its level. */
+    levelScaling?: number;
   };
 
   type StatusEffectOutcomeAll = {

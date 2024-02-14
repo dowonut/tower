@@ -13,14 +13,10 @@ export default {
   async execute(message, args, player, server) {
     const toPlayer: Player = args.user;
 
-    const newItem = await game.giveItem(
-      args.user,
-      args.item_name,
-      args.quantity
-    );
+    await toPlayer.giveItem(args.item_name, args.quantity);
 
     message.channel.send(
-      `Gave \`${args.quantity}x\` **${newItem.getName()}** to <@${
+      `Gave \`${args.quantity}x\` **${game.titleCase(args.item_name)}** to <@${
         toPlayer.user.discordId
       }>`
     );

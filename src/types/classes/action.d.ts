@@ -71,7 +71,7 @@ declare global {
     status: {
       /** Name of status outcome. */
       name: StaticStatusEffectName;
-      /** Level of the status effect. Default = 1. */
+      /** Level of the status effect. Default = 0. */
       level?: number;
     };
     /** Evaluate custom outcome. */

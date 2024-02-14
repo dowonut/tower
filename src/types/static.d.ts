@@ -89,6 +89,7 @@ declare global {
   export type CommandArgumentType =
     | "number"
     | "strictNumber"
+    | "strictNumberZero"
     | "playerSkill"
     | "playerOwnedItem"
     | "playerAvailableMerchant"

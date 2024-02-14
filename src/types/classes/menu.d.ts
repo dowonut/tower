@@ -17,9 +17,9 @@ declare global {
     /** Optionally attach menu to existing message. */
     botMessage?: Message;
     /** Optional function to run once menu is initialized. */
-    onLoad?(m: Menu<T>): void;
+    onLoad?(m: Menu<T>): Promise<void> | void;
     /** Optional function to run every time the menu is refreshed. */
-    onRefresh?(m: Menu<T>): void;
+    onRefresh?(m: Menu<T>): Promise<void> | void;
   };
 
   export type TowerBoard<T> = {

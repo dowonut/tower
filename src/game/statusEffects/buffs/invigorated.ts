@@ -19,6 +19,7 @@ export default {
           basePercent: 10,
         },
       ],
+      levelScaling: 10,
     },
   ],
 } as const satisfies StatusEffectData;

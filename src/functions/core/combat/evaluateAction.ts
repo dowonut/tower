@@ -155,6 +155,7 @@ export default async function evaluateAction(args: {
       remDuration: statusEffect?.duration || null,
       sourceId: source.id,
       sourceType,
+      level: outcome.status?.level || 0,
     };
     // Iterate through targets
     for (let target of outcome.targets) {

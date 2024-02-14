@@ -1,6 +1,6 @@
 import fs from "fs";
 import { loadFiles } from "../../functions/core/game/loadFiles.js";
-import { createClassFromType, f } from "../../functions/core/index.js";
+import { createClassFromType, f, getStatusEffect, toArray } from "../../functions/core/index.js";
 import { config } from "../../tower.js";
 
 const ItemBaseClass = createClassFromType<ItemBase>();
@@ -21,7 +21,7 @@ export class ItemClass extends ItemBaseClass {
 
     // Change path for weapons
     if (this.category == "weapon") {
-      path = `./assets/icons/weapons/${this.weaponType}.png`;
+      path = `./assets/icons/weapons/${this.weapon.type}.png`;
     }
 
     // Attach image
@@ -44,7 +44,7 @@ export class ItemClass extends ItemBaseClass {
 
     // Get weapon icon
     if (this.category == "weapon") {
-      emoji = config.emojis.weapons[this.weaponType];
+      emoji = config.emojis.weapons[this.weapon.type];
     }
 
     if (!emoji) emoji = config.emojis.blank;
@@ -57,7 +57,7 @@ export class ItemClass extends ItemBaseClass {
     let imageName = this.name.split(" ").join("_").toLowerCase();
 
     if (this.category == "map") imageName = "map";
-    else if (this.category == "potion") imageName = "potion";
+    else if (this?.consumable?.type == "potion") imageName = "potion";
     else if (this.category == "recipe") imageName = "recipe";
 
     return imageName;
@@ -72,10 +72,28 @@ export class ItemClass extends ItemBaseClass {
 
     // Weapon
     if (this.category == "weapon") {
-      text += `\nWeapon Type: ${f(this.weaponType)}`;
+      text += `\nWeapon Type: ${f(this.weapon.type)}`;
       text += `\n\n${ATK} ${f(this.ATK)} | ${MAG} ${f(this.MAG)} | ${RES} ${f(
         this.RES
       )} | ${SPD} ${f(this.SPD)}`;
+    }
+
+    // Equipment XP Material
+    if (this.category == "equipment XP material") {
+      text += `\nXP: ${f(this.xpMaterial.amount)}`;
+    }
+
+    // Applies status effect
+    if (
+      this.consumable &&
+      toArray(this.consumable.effects).some((x) => x.type == "apply_status_effect")
+    ) {
+      const effects = toArray(this.consumable.effects);
+      for (const effect of effects) {
+        if (effect.type !== "apply_status_effect") continue;
+        const statusEffect = getStatusEffect(effect.name);
+        text += `\n\n${Object.assign(statusEffect, { level: effect?.level || 0 }).getInfo(true)}`;
+      }
     }
 
     return text;
@@ -87,7 +105,7 @@ export class ItemClass extends ItemBaseClass {
   getStat(stat: WeaponStat) {
     if (this.category !== "weapon") return;
 
-    const factor = config.weapons[this.weaponType]?.[stat] || 0;
+    const factor = config.weapons[this.weapon.type]?.[stat] || 0;
 
     const baseStat = config.baseWeaponStats?.[stat] * factor || 0;
 
@@ -100,13 +118,17 @@ export class ItemClass extends ItemBaseClass {
 
   /** Get item level. */
   getLevel() {
-    const level = this.level || this?.stats?.baseLevel || 1;
+    const level = this.level || this?.weapon?.baseLevel || this?.armor?.baseLevel || 1;
     return level;
   }
 
   getGrade() {
-    const grade = this.grade || this?.stats?.baseGrade || "common";
+    const grade = this.grade || this?.weapon?.baseGrade || this?.armor?.baseGrade || "common";
     return grade;
+  }
+
+  getEquipSlot() {
+    return this?.weapon?.equipSlot || this?.armor?.equipSlot;
   }
 
   /** Attack */

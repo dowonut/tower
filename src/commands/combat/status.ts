@@ -23,17 +23,15 @@ export default {
             let emoji = m.variables.selectedStatusEffect ? config.emojis.blank : "";
             if (statusEffect.id == m.variables.selectedStatusEffect) emoji = "👉";
             const remDuration =
-              statusEffect?.remDuration > 0
-                ? ` | \`${statusEffect.remDuration} turns remaining\``
-                : "";
-            description += `${emoji}${statusEffect.getEmoji()}**${statusEffect.getName()}**${remDuration}\n`;
+              statusEffect?.remDuration > 0 ? ` | ⏳\`${statusEffect.remDuration} turns\`` : "";
+            description += `${emoji}${statusEffect.displayName}${remDuration}\n`;
           }
 
           if (m.variables.selectedStatusEffect) {
             const statusEffect = statusEffects.find(
               (x) => x.id == m.variables.selectedStatusEffect
             );
-            description += `\n### ${statusEffect.getEmoji()}**${statusEffect.getName()}**\n${statusEffect.getInfo()}`;
+            description += `\n${statusEffect.getInfo(true)}`;
           }
 
           return game.fastEmbed({
@@ -59,7 +57,7 @@ export default {
             options: statusEffects.map((s) => {
               return {
                 value: s.id.toString(),
-                label: s.getName(),
+                label: `${s.getName()} ${s.level > 0 ? `+${s.level}` : ``}`,
                 emoji: s.getEmoji(),
                 default: m.variables?.selectedStatusEffect == s.id,
                 description: s?.description || "",

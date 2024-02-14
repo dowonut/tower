@@ -88,6 +88,21 @@ export default async function parseCommandArguments(options: {
           argsObject[argument.name] = parseInt(input);
           break;
 
+        //* Strict number type
+        case "strictNumberZero":
+          if (isNaN(+input)) {
+            errorContent = `Argument **\`${argument.name}\`** must be a number`;
+            error();
+          } else if (+input < 0) {
+            errorContent = `Argument **\`${argument.name}\`** cannot be less than 0`;
+            error();
+          } else if (+input >= 2147483647) {
+            errorContent = `Number too large.`;
+            error();
+          }
+          argsObject[argument.name] = parseInt(input);
+          break;
+
         //* Must be a valid item in the game.
         case "item":
           const gameItem = game.getItem(input);
@@ -260,6 +275,9 @@ export default async function parseCommandArguments(options: {
         case "number":
         case "strictNumber":
           argsObject[argument.name] = 1;
+          break;
+        case "strictNumberZero":
+          argsObject[argument.name] = 0;
           break;
       }
     }

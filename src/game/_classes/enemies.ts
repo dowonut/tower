@@ -4,7 +4,6 @@ import {
   createClassFromType,
   getRandom,
   getWeightedArray,
-  evaluateDamage,
   f,
   random,
   evaluateAction,
@@ -324,6 +323,7 @@ export class EnemyClass extends EnemyBaseClass {
     for (const statusEffect of statusEffects) {
       // Iterate through effect outomes
       for (const outcome of statusEffect.outcomes) {
+        const levelBonus = (outcome?.levelScaling || 0) * statusEffect.level;
         // Modify stat
         if (outcome.type == "modify_stat") {
           const modifyStats = toArray(outcome.modifyStat);
@@ -332,9 +332,9 @@ export class EnemyClass extends EnemyBaseClass {
           for (const modifyStat of modifyStats) {
             if (modifyStat.stat !== stat) continue;
             if (modifyStat.scaling == "percent") {
-              multipliers.statusEffects += modifyStat.basePercent / 100;
+              multipliers.statusEffects += (modifyStat.basePercent + levelBonus) / 100;
             } else if (modifyStat.scaling == "flat") {
-              flatBonus += modifyStat.baseFlat;
+              flatBonus += modifyStat.baseFlat + levelBonus;
             }
           }
         }

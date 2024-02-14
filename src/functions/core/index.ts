@@ -41,7 +41,6 @@ export { default as emitter } from "./game/emitter.js";
 export { default as enemyEncounter } from "./game/enemyEncounter.js";
 export { default as events } from "./game/events.js";
 export { default as formatCommandArguments } from "./game/formatCommandArguments.js";
-export { default as giveItem } from "./game/giveItem.js";
 export * from "./game/loadFiles.js";
 export { default as parseCommandArguments } from "./game/parseCommandArguments.js";
 export { default as runCommand } from "./game/runCommand.js";

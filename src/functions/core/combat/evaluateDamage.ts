@@ -12,6 +12,8 @@ export default function evaluateDamage(args: {
   canCritandAcute?: boolean;
   /** Whether or not to return detailed information about the damage evaluation. Default = false. */
   verbose?: boolean;
+  /** The bonus to base stats provided by the level of the damage instance. */
+  levelBonus?: number;
 }) {
   const {
     damageInstances,
@@ -19,6 +21,7 @@ export default function evaluateDamage(args: {
     target,
     canCritandAcute = true,
     verbose = false,
+    levelBonus = 0,
   } = args;
   const evaluatedDamage: EvaluatedDamage = { instances: [], total: 0 };
 
@@ -39,9 +42,11 @@ export default function evaluateDamage(args: {
     // Get base damage
     let baseDamage = 0;
     if (damage.scaling == "percent") {
-      baseDamage = Math.floor(source[damage.scalingStat] * (damage.basePercent / 100));
+      baseDamage = Math.floor(
+        source[damage.scalingStat] * ((damage.basePercent + levelBonus) / 100)
+      );
     } else if (damage.scaling == "flat") {
-      baseDamage = Math.floor(damage.baseFlat);
+      baseDamage = Math.floor(damage.baseFlat + levelBonus);
     }
 
     // Add flat damage sources

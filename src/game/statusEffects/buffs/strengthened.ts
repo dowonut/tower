@@ -7,12 +7,12 @@ export default {
   outcomes: [
     {
       type: "modify_stat",
-      messages: ["TARGET is strengthened! Their ATK is increased by **20%**"],
       modifyStat: {
         stat: "ATK",
         scaling: "percent",
         basePercent: 20,
       },
+      levelScaling: 10,
     },
   ],
 } as const satisfies StatusEffectData;

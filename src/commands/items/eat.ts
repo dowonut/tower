@@ -14,16 +14,25 @@ export default {
     let { item, quantity } = args;
     const maxHP = player.maxHP;
 
-    if (item.category !== "food") return game.error({ player, content: `this isn't food idiot.` });
+    if (item.category !== "consumable" || item.consumable.type !== "food")
+      return game.error({ player, content: `this isn't food idiot.` });
+
+    let itemHeal = 0;
+    const consumableEffects = game.toArray(item.consumable.effects);
+    for (const effect of consumableEffects) {
+      if (effect.type == "heal") {
+        itemHeal += effect.amount;
+      }
+    }
 
     if (quantity == "all") {
       let healthRemaining = maxHP - player.health;
-      let foodRequired = Math.ceil(healthRemaining / item.health);
+      let foodRequired = Math.ceil(healthRemaining / itemHeal);
 
-      quantity = foodRequired;
+      quantity = Math.min(foodRequired, item.quantity);
     }
 
-    let heal = item.health * quantity;
+    let heal = itemHeal * quantity;
 
     if (player.health == maxHP)
       return game.error({ player, content: `you're already at max health!` });

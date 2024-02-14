@@ -25,8 +25,8 @@ export default {
     // Boolean for showing list
     let showingList = false;
 
-    const sortOptions = ["name", "quantity", "value", "damage"];
-    const filterOptions = ["all", "equipment", "crafting", "consumables", "other"];
+    const sortOptions = ["name", "quantity", "value", "level"];
+    const filterOptions = ["all", "equipment", "crafting", "consumables", "XP materials", "other"];
 
     // Get total pages
     let totalPages = Math.ceil(items.length / 10);
@@ -76,8 +76,6 @@ export default {
         const equipped = item.equipped ? `\`Equipped\`` : undefined;
         // Get item value
         const value = item.value ? `\`${item.value}\`${config.emojis.mark}` : undefined;
-        // Get damage value
-        const damage = ``;
 
         // Get item emoji
         let emoji = item.getEmoji();
@@ -85,13 +83,11 @@ export default {
         // Set item name
         description += `\n${emoji} **${item.getName()}**`;
 
+        if (filter == "equipment") description += ` \`Lvl. ${item.level}\``;
         if (quantity) description += " " + quantity;
         if (equipped) description += " | " + equipped;
         if (sort == "value") {
           if (value) description += " | " + value;
-        }
-        if (sort == "damage") {
-          if (damage) description += " | " + damage;
         }
         //if (item.description) description += " | " + `*${item.description}*`;
       }
@@ -114,7 +110,7 @@ export default {
       // Sort items
       if (sort == "name") {
         var sortedItems = [...items].sort((a, b) => (a.name > b.name ? 1 : -1));
-      } else if (sort == "damage" || sort == "value" || sort == "quantity") {
+      } else if (sort == "level" || sort == "value" || sort == "quantity") {
         var sortedItems = [...items].sort((a, b) => {
           const bValue = b[sort] ? b[sort] : 0;
           const aValue = a[sort] ? a[sort] : 0;
@@ -130,7 +126,9 @@ export default {
       } else if (filter == "other") {
         filterKeys = ["map", "enhancement", "recipe"];
       } else if (filter == "consumables") {
-        filterKeys = ["food", "potion"];
+        filterKeys = ["consumable"];
+      } else if (filter == "XP materials") {
+        filterKeys = ["equipment XP material"];
       }
 
       // Filter items by category

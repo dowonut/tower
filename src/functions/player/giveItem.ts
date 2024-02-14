@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma, game } from "../../tower.js";
 
 export default (async function (name: string, quantity: number = 1) {
@@ -37,22 +38,46 @@ export default (async function (name: string, quantity: number = 1) {
   else {
     // Check if item is recipe
     if (item.category == "recipe") {
-      await this.addRecipe(item.recipeItem);
-    } else {
-      // Create new item
-      await prisma.inventory.create({
-        data: {
-          playerId: this.id,
-          name: item.name,
-          quantity: quantity,
-        },
-      });
+      return await this.addRecipe(item.recipe.itemName);
     }
+
+    // Default data
+    let data: Prisma.InventoryUncheckedCreateInput = {
+      playerId: this.id,
+      name: item.name,
+      quantity: quantity,
+      added: new Date(),
+    };
+
+    // Armor data
+    if (item.category == "armor") {
+      data = {
+        ...data,
+        level: item.armor?.baseLevel,
+        grade: item.armor?.baseGrade,
+        materials: item.armor?.baseMaterials,
+      };
+    }
+
+    // Weapon data
+    if (item.category == "weapon") {
+      data = {
+        ...data,
+        level: item.weapon?.baseLevel,
+        grade: item.weapon?.baseGrade,
+        materials: item.weapon?.baseMaterials,
+      };
+    }
+
+    // Create new item
+    await prisma.inventory.create({
+      data,
+    });
   }
 
   // Give new skill
-  if (item?.weaponType) {
-    await this.giveSkillXP({ skillName: item.weaponType + " combat", amount: 0 });
+  if (item?.weapon?.type) {
+    await this.giveSkillXP({ skillName: item.weapon.type + " combat", amount: 0 });
   }
 
   const newItem = await this.getItem(item.name);

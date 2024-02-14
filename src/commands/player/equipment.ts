@@ -33,15 +33,23 @@ export default {
 
     // Equip / unequip item
     else {
+      let equipData: ItemWeaponData | ItemArmorData;
+      if (item.category == "weapon") {
+        equipData = item.weapon;
+      } else if (item.category == "armor") {
+        equipData = item.armor;
+      }
+
       // Check if item is equippable
-      if (!item.equipSlot) return game.error({ player, content: "you can't equip this silly." });
+      if (!equipData.equipSlot)
+        return game.error({ player, content: "you can't equip this silly." });
 
       // Get currently equipped item
-      const equippedItem = await player.getEquipped(item.equipSlot);
+      const equippedItem = await player.getEquipped(equipData.equipSlot);
 
       // Unequip item
       if (item.equipped) {
-        await player.update({ [item.equipSlot]: null });
+        await player.update({ [equipData.equipSlot]: null });
         await prisma.inventory.updateMany({
           where: {
             playerId: player.id,
@@ -58,7 +66,7 @@ export default {
       }
 
       // Equip item
-      await player.update({ [item.equipSlot]: item.name });
+      await player.update({ [equipData.equipSlot]: item.name });
       await prisma.inventory.updateMany({
         where: {
           playerId: player.id,
@@ -69,7 +77,7 @@ export default {
 
       // Add item skill
       if (item.category == "weapon") {
-        await player.giveSkillXP({ skillName: item.weaponType + " combat", amount: 0 });
+        await player.giveSkillXP({ skillName: item.weapon.type + " combat", amount: 0 });
       }
 
       // Unequip existing item

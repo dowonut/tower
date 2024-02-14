@@ -90,7 +90,7 @@ export default {
     game.send({
       player,
       reply: true,
-      content: `you bought \`${quantity}x\` **${item.getName()}** ${item.getEmoji()} for \`${
+      content: `Purchased \`${quantity}x\` **${item.getName()}** ${item.getEmoji()} for \`${
         merchantItem.price * quantity
       }\` ${config.emojis.mark}`,
     });
@@ -100,8 +100,8 @@ export default {
       game.send({
         player,
         reply: true,
-        content: `you unlocked a new recipe: **${game.titleCase(
-          item.recipeItem
+        content: `Unlocked a new recipe: **${game.titleCase(
+          item.recipe.itemName
         )}**\nSee all your recipes with \`${server.prefix}recipes\``,
       });
     }

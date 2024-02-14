@@ -5,7 +5,7 @@ declare global {
   export type ItemDefaultData<T> = {
     name: string;
     /** Category of the item. */
-    category: T; // extends any ? T : ItemCategory;
+    category: T;
     /** Short description shown next to item in inventory. */
     description?: string;
     /** Detailed description shown with iteminfo command. */
@@ -18,28 +18,60 @@ declare global {
    * Item data.
    */
   export type ItemAllData = {
-    /** Health regained if consumable. */
-    health: number;
-    /** Status effects to apply when the item is consumed. */
-    effects: {
-      /** Name of status effect to apply. */
-      name: StaticStatusEffectName;
-      level?: number;
-    }[];
+    /** Consumable data. */
+    consumable: {
+      /** Status effects applied by the consumable. */
+      effects: ItemConsumableEffect | ItemConsumableEffect[];
+      /** The type of consumable. */
+      type: "food" | "potion";
+    };
     /** Item to unlock when given. */
-    recipeItem: string;
+    recipe: { itemName: string };
     /** Dungeon unlocked by map. */
-    dungeon: { name: StaticDungeonName };
-    /** Weapon type. */
-    weaponType: WeaponType;
-    /** Which slot the item is equippable to. */
-    equipSlot: EquipSlot;
-    /** Weapon stats. */
-    stats?: WeaponStats;
+    dungeon: { name: string };
+    /** Weapon data. */
+    weapon: ItemWeaponData;
+    /** Armor data. */
+    armor: ItemArmorData;
+    /** XP material data. */
+    xpMaterial: {
+      /** How much XP it provides. */
+      amount: number;
+    };
   };
 
-  /** Weapon specific stats. */
-  type WeaponStats = {
+  /** Effect caused by consumable item. */
+  type ItemConsumableEffect =
+    | {
+        type: "apply_status_effect";
+        /** Name of status effect to apply. */
+        name: StaticStatusEffectName;
+        level?: number;
+      }
+    | {
+        type: "heal";
+        /** Amount of health to regain. */
+        amount: number;
+      };
+
+  /** Data for weapon items. */
+  export type ItemWeaponData = {
+    /** Weapon type. */
+    type: WeaponType;
+    /** Which slot the weapon is equippable to. */
+    equipSlot: EquipSlot;
+    /** Optional base level. Default: 0. */
+    baseLevel?: number;
+    /** Optional base grade. Default: common. */
+    baseGrade?: ItemGrade;
+    /** Optional base materials. Default: steel. */
+    baseMaterials?: ItemMaterial[];
+  };
+
+  /** Data for armor items. */
+  export type ItemArmorData = {
+    /** Which slot the armor is equippable to. */
+    equipSlot: EquipSlot;
     /** Optional base level. Default: 0. */
     baseLevel?: number;
     /** Optional base grade. Default: common. */
@@ -51,15 +83,14 @@ declare global {
   /** Item types and properties. */
   export type ItemTypes = {
     // Regular types
-    weapon: "weaponType" | "equipSlot" | "stats";
+    weapon: "weapon";
+    armor: "armor";
     tool: undefined;
-    food: "health";
+    consumable: "consumable";
     crafting: undefined;
-    recipe: "recipeItem";
-    potion: "effects";
+    recipe: "recipe";
     map: "dungeon";
-    test: undefined;
-    enhancement: undefined;
+    "equipment XP material": "xpMaterial";
     // Combined types
     "weapon/tool": ItemTypes["weapon"] | ItemTypes["tool"];
   };

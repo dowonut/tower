@@ -17,6 +17,7 @@ export default {
           resStat: "SPC_RES",
         },
       ],
+      levelScaling: 5,
       messages: ["HOST bleeds, taking DAMAGE"],
     },
   ],

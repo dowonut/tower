@@ -1,7 +1,6 @@
 export default {
   name: "rusty halberd",
   category: "weapon",
-  weaponType: "halberd",
   info: "A strange weapon from distant lands. Good for stabbing folks!",
-  equipSlot: "hand",
+  weapon: { type: "halberd", equipSlot: "hand" },
 } as const satisfies ItemData;

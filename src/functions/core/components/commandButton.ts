@@ -1,8 +1,12 @@
 import { config, game } from "../../../tower.js";
 
 export type CommandButtonCommand = {
+  /** Name of the command to execute. */
   name: string;
+  /** Args to pass to the command. */
   args?: string[];
+  /** Optional button label. Defaults to command name. */
+  label?: string;
   emoji?: string;
   style?: ButtonStyle;
 };
@@ -39,7 +43,7 @@ export default async function commandButton(obj: {
             return commands.map((x) => {
               return {
                 id: x.name,
-                label: game.titleCase(x.name),
+                label: x?.label || game.titleCase(x.name),
                 emoji: x.emoji ? x.emoji : config.emojis.side_arrow,
                 function: async () => {
                   await player.runCommand({ name: x.name, args: x?.args });

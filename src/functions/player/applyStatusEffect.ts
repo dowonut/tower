@@ -21,6 +21,7 @@ export default (async function (...effects: StatusEffect[]) {
       sourceId,
       sourceType,
       remDuration: effect?.duration || null,
+      level: effect?.level || 0,
     };
     createData.push(data);
     // Add database data to class object
@@ -31,7 +32,7 @@ export default (async function (...effects: StatusEffect[]) {
 
   // Evaluate immediate
   for (let effect of effects) {
-    if (effect.evaluateOn == "immediate" || effect.evaluateOn == "passive") {
+    if (effect.evaluateOn == "immediate") {
       await game.evaluateStatusEffect({ host: this, statusEffect: effect });
     }
   }

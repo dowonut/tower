@@ -1,7 +1,6 @@
 export default {
   name: "crooked bow",
   category: "weapon",
-  weaponType: "bow",
   info: "You would feel scammed if it hadn't been so cheap.",
-  equipSlot: "hand",
+  weapon: { type: "bow", equipSlot: "hand" },
 } as const satisfies ItemData;

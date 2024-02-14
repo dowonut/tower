@@ -65,6 +65,7 @@ export default async function enemyEncounter(args: { player: Player }) {
   if (player.preEncounter) {
     const message = await game.getDiscordMessage(player.preEncounter);
     if (message) await message.edit({ components: [] });
+    game.emitter.removeListener("enterCombat", onEnterCombat);
   }
 
   // Create menu
