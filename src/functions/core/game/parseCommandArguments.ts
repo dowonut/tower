@@ -73,6 +73,28 @@ export default async function parseCommandArguments(options: {
           }
           break;
 
+        //* Number type defaults to 0
+        case "numberZero":
+          if (input == "all" || input == "a") argsObject[argument.name] = "all";
+          // If argument isn't a number
+          else if (isNaN(+input)) {
+            errorContent = `Argument **\`${argument.name}\`** must be a number`;
+            error();
+          }
+          // If number isn't above 0
+          else if (+input < 0) {
+            errorContent = `Argument **\`${argument.name}\`** cannot be less than 0`;
+            error();
+          }
+          // If above 32 bit integer limit
+          else if (+input >= 2147483647) {
+            errorContent = `Number too large.`;
+            error();
+          } else {
+            argsObject[argument.name] = parseInt(input);
+          }
+          break;
+
         //* Strict number type
         case "strictNumber":
           if (isNaN(+input)) {
@@ -88,7 +110,7 @@ export default async function parseCommandArguments(options: {
           argsObject[argument.name] = parseInt(input);
           break;
 
-        //* Strict number type
+        //* Strict number type defaults to 0
         case "strictNumberZero":
           if (isNaN(+input)) {
             errorContent = `Argument **\`${argument.name}\`** must be a number`;
@@ -276,6 +298,7 @@ export default async function parseCommandArguments(options: {
         case "strictNumber":
           argsObject[argument.name] = 1;
           break;
+        case "numberZero":
         case "strictNumberZero":
           argsObject[argument.name] = 0;
           break;

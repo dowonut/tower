@@ -2,7 +2,7 @@ export default {
   name: "invigorated",
   description: "Makes the target feel invigorated, increasing their speed and attack.",
   type: "buff",
-  duration: 1,
+  duration: 2,
   evaluateOn: "turn_end",
   outcomes: [
     {

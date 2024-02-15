@@ -16,9 +16,9 @@ export default {
       damage: {
         type: "fire",
         scaling: "percent",
-        scalingStat: "health",
+        scalingStat: "maxHP",
         statSource: "host",
-        basePercent: 10,
+        basePercent: 8,
       },
     },
   ],

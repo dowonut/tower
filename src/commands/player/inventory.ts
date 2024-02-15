@@ -3,7 +3,16 @@ import { game, config, client, prisma } from "../../tower.js";
 export default {
   name: "inventory",
   aliases: ["i", "items"],
-  unlockCommands: ["iteminfo", "buy", "sell", "drink", "eat", "merchants", "equipment"],
+  unlockCommands: [
+    "iteminfo",
+    "buy",
+    "sell",
+    "drink",
+    "eat",
+    "merchants",
+    "equipment",
+    "equipmentup",
+  ],
   description: "View all your items.",
   category: "player",
   useInCombat: true,

@@ -1,13 +1,29 @@
 import fs from "fs";
 import { loadFiles } from "../../functions/core/game/loadFiles.js";
-import { createClassFromType, f, getStatusEffect, toArray } from "../../functions/core/index.js";
-import { config } from "../../tower.js";
+import {
+  createClassFromType,
+  f,
+  fastProgressBar,
+  getStatusEffect,
+  toArray,
+} from "../../functions/core/index.js";
+import { config, prisma } from "../../tower.js";
+import { Prisma } from "@prisma/client";
 
 const ItemBaseClass = createClassFromType<ItemBase>();
 
 export class ItemClass extends ItemBaseClass {
   constructor(item: Generic<ItemBase>) {
     super(item);
+  }
+
+  /** Update the item in the database. */
+  async update(args: Prisma.InventoryUncheckedUpdateInput | Prisma.InventoryUpdateInput) {
+    const itemInfo = await prisma.inventory.update({
+      where: { id: this.id },
+      data: args,
+    });
+    return Object.assign(this, itemInfo);
   }
 
   /** Get image object. */
@@ -29,7 +45,7 @@ export class ItemClass extends ItemBaseClass {
       // Get image file
       file = {
         attachment: path,
-        name: `${itemName}.png`,
+        name: `item.png`,
       };
     }
 
@@ -83,6 +99,11 @@ export class ItemClass extends ItemBaseClass {
       text += `\nXP: ${f(this.xpMaterial.amount)}`;
     }
 
+    // Equipment
+    if (this.category == "weapon" || this.category == "armor") {
+      text += `\n\n${fastProgressBar("xp", this)}`;
+    }
+
     // Applies status effect
     if (
       this.consumable &&
@@ -129,6 +150,16 @@ export class ItemClass extends ItemBaseClass {
 
   getEquipSlot() {
     return this?.weapon?.equipSlot || this?.armor?.equipSlot;
+  }
+
+  /** Get all stats. */
+  getStats() {
+    let object: { [key in WeaponStat]?: number } = {};
+    for (const [stat, value] of Object.entries(config.baseWeaponStats)) {
+      const total = this.getStat(stat as WeaponStat);
+      object[stat] = total;
+    }
+    return object;
   }
 
   /** Attack */

@@ -18,16 +18,23 @@ export default (async function (args: { enemies: Enemy[] }) {
     if (enemy.loot) enemyLoot.push(...enemy.loot);
     if (enemy.type.loot) enemyLoot.push(...enemy.type.loot);
     // Frail essence
+    const levelScale = Math.floor(enemy.level / 2);
     if (enemy.level <= 40) {
-      essences["frail essence"] += game.random(enemy.level, enemy.level + 5);
+      essences["frail essence"] += Math.max(game.random(levelScale - 1, levelScale + 3), 1);
     }
     // Ordinary essence
     if (enemy.level >= 30 && enemy.level <= 70) {
-      essences["ordinary essence"] += game.random(enemy.level - 29, enemy.level - 29 + 5);
+      essences["ordinary essence"] += Math.max(
+        game.random(levelScale - 14 - 1, levelScale - 14 + 3),
+        0
+      );
     }
     // Potent essence
     if (enemy.level >= 60) {
-      essences["potent essence"] += game.random(enemy.level - 59, enemy.level - 59 + 5);
+      essences["potent essence"] += Math.max(
+        game.random(levelScale - 29 - 1, levelScale - 29 + 3),
+        0
+      );
     }
     // Get loot
     for (const loot of enemyLoot) {

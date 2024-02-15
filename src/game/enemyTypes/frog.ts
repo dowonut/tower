@@ -14,7 +14,7 @@ export default {
             {
               type: "slashing",
               scalingStat: "ATK",
-              basePercent: 50,
+              basePercent: 20,
               scaling: "percent",
             },
           ],

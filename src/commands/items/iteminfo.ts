@@ -1,11 +1,12 @@
 import { MessageEditOptions } from "discord.js";
 import { game, config, client, prisma } from "../../tower.js";
 import { f } from "../../functions/core/index.js";
+import emojis from "../../emojis.js";
 
 export default {
   name: "iteminfo",
   aliases: ["ii"],
-  unlockCommands: ["sell", "eat", "drink", "buy", "equipment"],
+  unlockCommands: ["sell", "eat", "drink", "buy", "equipment", "equipmentup"],
   arguments: [{ name: "item", type: "playerOwnedItem" }],
   description: "View detailed information about an item.",
   category: "item",
@@ -24,9 +25,12 @@ export default {
 
     const menu = new game.Menu({
       player,
+      variables: { selectedEssence: undefined as "frail" | "ordinary" | "potent" },
       boards: [
         { name: "main", rows: ["main"], message: "main" },
-        { name: "sell", rows: ["sell"] },
+        { name: "sell", rows: ["sell"], message: "main" },
+        { name: "level_up", rows: ["level_up"], message: "main" },
+        { name: "select_essence_amount", rows: ["select_essence_amount"], message: "main" },
       ],
       rows: [
         // Main buttons
@@ -131,6 +135,19 @@ export default {
               });
             }
 
+            // Create level up buttons
+            if (item.category == "armor" || item.category == "weapon") {
+              buttons.push({
+                id: "level_up",
+                style: "success",
+                label: "Level Up",
+                emoji: emojis.up,
+                function: async () => {
+                  await m.switchBoard("level_up");
+                },
+              });
+            }
+
             return buttons;
           },
         },
@@ -189,6 +206,127 @@ export default {
             return buttons;
           },
         },
+        // Level up buttons
+        {
+          name: "level_up",
+          type: "buttons",
+          components: async (m) => {
+            const frailEssence = game.getItem("frail essence");
+            const ordinaryEssence = game.getItem("ordinary essence");
+            const potentEssence = game.getItem("potent essence");
+
+            return [
+              {
+                id: "frail_essence",
+                emoji: frailEssence.getEmoji(),
+                label: `(${
+                  m.player.inventory.find((x) => x.name == "frail essence")?.quantity || `0`
+                })`,
+                disable: !m.player.inventory.find((x) => x.name == "frail essence"),
+                style: "primary",
+                function: async () => {
+                  if (m.player.inventory.find((x) => x.name == "frail essence").quantity > 1) {
+                    m.variables.selectedEssence = "frail";
+                    m.switchBoard("select_essence_amount");
+                  } else {
+                    await levelUp({ frail: 1 });
+                  }
+                },
+              },
+              {
+                id: "ordinary_essence",
+                emoji: ordinaryEssence.getEmoji(),
+                label: `(${
+                  m.player.inventory.find((x) => x.name == "ordinary essence")?.quantity || `0`
+                })`,
+                disable: !m.player.inventory.find((x) => x.name == "ordinary essence"),
+                style: "primary",
+                function: async () => {
+                  if (m.player.inventory.find((x) => x.name == "ordinary essence").quantity > 1) {
+                    m.variables.selectedEssence = "ordinary";
+                    m.switchBoard("select_essence_amount");
+                  } else {
+                    await levelUp({ ordinary: 1 });
+                  }
+                },
+              },
+              {
+                id: "potent_essence",
+                emoji: potentEssence.getEmoji(),
+                label: `(${
+                  m.player.inventory.find((x) => x.name == "potent essence")?.quantity || `0`
+                })`,
+                disable: !m.player.inventory.find((x) => x.name == "potent essence"),
+                style: "primary",
+                function: async () => {
+                  if (m.player.inventory.find((x) => x.name == "potent essence").quantity > 1) {
+                    m.variables.selectedEssence = "potent";
+                    m.switchBoard("select_essence_amount");
+                  } else {
+                    await levelUp({ potent: 1 });
+                  }
+                },
+              },
+              {
+                id: "return",
+                board: "main",
+              },
+            ];
+          },
+        },
+        // Select essence amount
+        {
+          name: "select_essence_amount",
+          type: "buttons",
+          components: (m) => [
+            {
+              id: "one",
+              label: "Use 1",
+              style: "success",
+              disable:
+                !m.player.inventory.find(
+                  (x) => x.name == `${m.variables.selectedEssence} essence`
+                ) ||
+                m.player.inventory.find((x) => x.name == `${m.variables.selectedEssence} essence`)
+                  ?.quantity < 1,
+              function: async () => {
+                await levelUp({ [m.variables.selectedEssence]: 1 });
+              },
+            },
+            {
+              id: "ten",
+              label: "Use 10",
+              style: "success",
+              disable:
+                !m.player.inventory.find(
+                  (x) => x.name == `${m.variables.selectedEssence} essence`
+                ) ||
+                m.player.inventory.find((x) => x.name == `${m.variables.selectedEssence} essence`)
+                  ?.quantity < 10,
+              function: async () => {
+                await levelUp({ [m.variables.selectedEssence]: 10 });
+              },
+            },
+            {
+              id: "all",
+              label: "Use All",
+              style: "success",
+              disable:
+                !m.player.inventory.find(
+                  (x) => x.name == `${m.variables.selectedEssence} essence`
+                ) ||
+                m.player.inventory.find((x) => x.name == `${m.variables.selectedEssence} essence`)
+                  ?.quantity < 1,
+              function: async () => {
+                await levelUp({ [m.variables.selectedEssence]: "all" });
+              },
+            },
+            {
+              id: "return",
+              board: "level_up",
+            },
+          ],
+        },
       ],
       messages: [
         // Main item message
@@ -221,7 +359,7 @@ export default {
             // Set embed thumbnail
             if (file)
               embed.thumbnail = {
-                url: `attachment://${file.name}`,
+                url: `attachment://item.png`,
               };
 
             return game.fastEmbed({ player, embed, title, files, fullSend: false });
@@ -262,7 +400,6 @@ export default {
         args: [item.name],
         server,
       });
-      item = await player.getItem(item.name);
     }
 
     // Drink potion
@@ -270,6 +407,23 @@ export default {
       await game.runCommand("drink", { message, args: [item.name], server });
       const { quantity } = (await player.getItem(item.name)) || {};
       item.quantity = quantity;
+    }
+
+    async function levelUp(args: {
+      frail?: number | "all";
+      ordinary?: number | "all";
+      potent?: number | "all";
+    }) {
+      const { frail = 0, ordinary = 0, potent = 0 } = args;
+
+      await game.runCommand("equipmentup", {
+        args: [item.name, frail.toString(), ordinary.toString(), potent.toString()],
+        discordId: player.user.discordId,
+        channel: player.channel,
+        server: player.server,
+      });
+
+      menu.refresh();
     }
   },
 } as Command;

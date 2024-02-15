@@ -118,6 +118,6 @@ export default {
 
     menu.setBoards([{ name: "main", message: "main", rows: ["options"] }]);
 
-    menu.init("main");
+    menu.init("main", { unique: false });
   },
 } satisfies Command;

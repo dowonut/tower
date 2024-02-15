@@ -220,7 +220,7 @@ export const enemyInclude = {
   statusEffects: true,
 } satisfies Prisma.EnemyInclude;
 
-// PLAYER LEVEL FORMULAS =======================================
+//* PLAYER LEVEL FORMULAS =======================================
 
 // Required XP for next player level.
 export const nextLevelXp = (lvl: number) => {
@@ -284,7 +284,13 @@ export const player_SPD = (lvl: number) => {
   return Math.floor(v);
 };
 
-// WEAPON LEVEL FORMULAS =======================================
+//* WEAPON LEVEL FORMULAS =======================================
+
+// Required XP for next weapon level.
+export const weapon_nextLevelXp = (lvl: number) => {
+  let v = 5 * Math.pow(lvl, 2) + 50 * lvl + 50;
+  return Math.floor(v);
+};
 
 // Get weapon ATK.
 export const weapon_ATK = (lvl: number, factor: number) => {
@@ -310,7 +316,7 @@ export const weapon_SPD = (lvl: number, factor: number) => {
   return Math.floor(v);
 };
 
-// ENEMY LEVEL FORMULAS ============================================
+//* ENEMY LEVEL FORMULAS ============================================
 
 // Get XP dropped by enemy.
 export const enemy_XP = (lvl: number, boss = false) => {

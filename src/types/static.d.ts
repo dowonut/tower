@@ -88,6 +88,7 @@ declare global {
    */
   export type CommandArgumentType =
     | "number"
+    | "numberZero"
     | "strictNumber"
     | "strictNumberZero"
     | "playerSkill"
